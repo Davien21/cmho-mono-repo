@@ -115,27 +115,59 @@ Before creating a PR, run linting to ensure code quality:
 
 2. **Fix any linting errors** before proceeding with the PR
 
-## Step 5: PR Creation
+## Step 5: GitHub CLI Setup (If Needed)
 
-Use GitHub MCP to create the pull request:
+Before creating a PR, ensure GitHub CLI is installed and authenticated:
 
-1. **Check branch status** - ensure branch is pushed to remote
+1. **Check if GitHub CLI is installed:**
+   ```bash
+   gh --version
+   ```
+
+2. **If not installed, install it:**
+   - macOS: `brew install gh`
+   - Linux: Follow [GitHub CLI installation guide](https://github.com/cli/cli#installation)
+   - Windows: `winget install --id GitHub.cli`
+
+3. **Authenticate with GitHub:**
+   ```bash
+   gh auth login
+   ```
+   Follow the prompts to authenticate using your GitHub account.
+
+4. **Verify authentication:**
+   ```bash
+   gh auth status
+   ```
+
+## Step 6: PR Creation
+
+### Automated PR Creation Process
+
+1. **Ensure branch is pushed** to remote (use `git push -u origin branch-name`)
 2. **Get current branch name** to use as PR title
-3. **Create PR** with:
+3. **Generate PR description** following the template format
+4. **Create PR using GitHub CLI:**
+   
+   ```bash
+   gh pr create --title "branch-name" --body "PR description" --base main
+   ```
+   
+   The command will output the PR URL which you should extract.
 
-   - `title`: Current branch name
-   - `head`: Current feature branch name
-   - `base`: Target branch (usually "main")
-   - `body`: Generated description following template
+5. **Parse the PR URL** from the command output
 
-4. **Provide user with:**
-   - Direct link to the created PR
-   - PR number and ID
-   - Confirmation of successful creation
+6. **If GitHub CLI fails:**
+   - Check authentication status
+   - Ensure branch is pushed to remote
+   - Verify repository access
+   
+7. **Only as last resort:**
+   - Fall back to providing clickable link for manual PR creation
 
-## Step 6: Response Format
+## Step 7: Response Format
 
-After creating the PR, provide this information with a clickable markdown link:
+### After Successfully Creating PR (Automated):
 
 ```markdown
 🎉 Pull Request Created Successfully!
@@ -143,13 +175,12 @@ After creating the PR, provide this information with a clickable markdown link:
 🔗 [View Pull Request #[number]]([GitHub PR URL])
 
 **Details:**
-
 - **Title:** [PR Title]
 - **Base branch:** [target branch]
 - **Head branch:** [feature branch]
 ```
 
-Example output:
+**Example:**
 
 ```markdown
 🎉 Pull Request Created Successfully!
@@ -157,10 +188,25 @@ Example output:
 🔗 [View Pull Request #123](https://github.com/owner/repo/pull/123)
 
 **Details:**
-
 - **Title:** feature/add-inventory-system
 - **Base branch:** main
 - **Head branch:** feature/add-inventory-system
+```
+
+### If Manual Creation Required:
+
+Only if automated creation is not possible:
+
+```markdown
+## Pull Request Ready to Create
+
+🔗 [Click here to create the Pull Request](https://github.com/owner/repo/pull/new/feature/add-inventory-system)
+
+**Branch:** feature/add-inventory-system
+
+**Copy and paste this PR description:**
+
+[Full PR description following template]
 ```
 
 ## Common Patterns
@@ -191,10 +237,13 @@ Example output:
 4. Stage and commit related changes together using commits.mdc format
 5. Run `pnpm lint` to check code quality
 6. Fix any linting errors if present
-7. Analyze commits to understand what was implemented
-8. Generate PR description following template
-9. Create PR with GitHub MCP (if available) or provide instructions
-10. Provide user with link and details
+7. Push branch to remote
+8. Analyze commits to understand what was implemented
+9. Generate PR description following template
+10. Check if GitHub CLI is available (`gh --version`)
+11. Create PR using `gh pr create` command
+12. Extract PR URL from the CLI output
+13. Provide user with clickable markdown link to the created PR
 
 ## Important Notes
 
@@ -202,7 +251,10 @@ Example output:
 - Keep changes list flat (no frontend/backend separation)
 - **Create logical commits** - group related changes together, separate unrelated changes
 - Run `pnpm lint` before creating PR to ensure code quality
-- Use GitHub MCP functions when available
+- **Always use GitHub CLI (`gh`) to create PRs automatically** - don't just provide compare links
+- If GitHub CLI is not installed, install it first using `brew install gh` (macOS) or appropriate command
+- Authenticate with `gh auth login` if not already authenticated
+- **Always provide clickable markdown links** - never provide plain URLs
 - Provide complete PR link and details to user
 - Ensure all commits follow conventional commit format before creating PR
 - Each commit should represent a cohesive, logical set of changes
