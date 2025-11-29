@@ -1,0 +1,47 @@
+---
+description: When cursor is making commits for me
+alwaysApply: false
+---
+
+# Cursor Project Rules
+
+## Commit Message Format
+
+For all git commits, use conventional commit format with double hyphen prefix.
+
+**Format**: `--{TYPE}: {description}`
+
+### Examples:
+
+- `--feat: Add locking functionality`
+- `--chore: Update dependencies`
+- `--refactor: Restructure API endpoints`
+
+### Conventional Commit Types:
+
+- `--feat`: New feature
+- `--fix`: Bug fix
+- `--chore`: Maintenance tasks, dependencies, tooling
+- `--refactor`: Code restructuring without functionality changes
+- `--docs`: Documentation changes
+- `--style`: Code style/formatting changes
+- `--test`: Adding or updating tests
+- `--perf`: Performance improvements
+- `--ci`: CI/CD related changes
+
+### Rules:
+
+1. Always prefix commit type with double hyphen (`--`)
+2. Use appropriate conventional commit type
+3. Keep descriptions concise but descriptive
+4. Use present tense ("Add" not "Added")
+5. Capitalize first letter of description
+6. No period at end of description
+
+### Examples:
+
+- ✅ `--feat: Add network instance locking functionality`
+- ✅ `--fix: Resolve lock state synchronization issue`
+- ✅ `--chore: Update dependencies`
+- ❌ `feat: Add locking` (missing double hyphen)
+- ❌ `--feat: added locking` (wrong tense, lowercase)
