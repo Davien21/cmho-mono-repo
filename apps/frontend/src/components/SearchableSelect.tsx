@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,7 +65,7 @@ export function SearchableSelect({
             disabled={disabled}
           >
             {selectedOption ? selectedOption.label : placeholder}
-            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -77,7 +77,7 @@ export function SearchableSelect({
             <CommandInput placeholder={searchPlaceholder} className="h-9" />
             <CommandList>
               <CommandEmpty>{emptyText}</CommandEmpty>
-              <CommandGroup className="overflow-y-auto">
+              <CommandGroup className="max-h-60 overflow-y-auto">
                 {options.map((option) => (
                   <CommandItem
                     key={option.value}
