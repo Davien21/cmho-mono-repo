@@ -70,9 +70,14 @@ Use the `.github/pull_request_template.md` structure and follow this format:
 
 2. **GitHub Issue:**
 
-   - Provide link to GitHub issue if available
-   - Format: `https://github.com/{owner}/{repo}/issues/{number}`
-   - Use "N/A" if not applicable
+   - **IMPORTANT: Check the user's prompt for issue links first**
+   - If an issue link is provided in the prompt (e.g., `https://github.com/{owner}/{repo}/issues/{number}` or `#123`), use it in the PR description
+   - Extract issue links from various formats:
+     - Full URL: `https://github.com/owner/repo/issues/123`
+     - Issue reference: `#123`
+     - Text mention: "closes #123", "fixes #123", "resolves #123"
+   - If issue link is found in prompt, use the full URL format: `https://github.com/{owner}/{repo}/issues/{number}`
+   - If no issue link is provided in prompt, use "N/A"
 
 3. **Related PRs:**
 
@@ -124,6 +129,7 @@ Use the GitHub MCP tools to create the pull request automatically:
 1. **Ensure branch is pushed** to remote (use `git push -u origin branch-name`)
 
 2. **Extract repository information** from the git remote:
+
    - Parse `owner` and `repo` from the remote URL
    - Example: `https://github.com/owner/repo.git` → owner: `owner`, repo: `repo`
 
@@ -132,6 +138,7 @@ Use the GitHub MCP tools to create the pull request automatically:
 4. **Generate PR description** following the template format
 
 5. **Create PR using GitHub MCP:**
+
    - Use the `mcp_github_create_pull_request` tool
    - Parameters:
      - `owner`: Repository owner (from git remote)
@@ -142,6 +149,7 @@ Use the GitHub MCP tools to create the pull request automatically:
      - `body`: Generated PR description following template
 
 6. **Extract PR information** from the MCP response:
+
    - PR number
    - PR URL
    - PR ID
@@ -219,19 +227,20 @@ Only if automated creation is not possible:
 
 ## Example Workflow
 
-1. User says "commit my changes and create a PR"
-2. Run `git status` to check for changes
-3. Analyze changes and group them logically
-4. Stage and commit related changes together using commits.mdc format
-5. Run `pnpm lint` to check code quality
-6. Fix any linting errors if present
-7. Push branch to remote
-8. Extract repository owner and name from git remote URL
-9. Analyze commits to understand what was implemented
-10. Generate PR description following template
-11. Use `mcp_github_create_pull_request` to create the PR
-12. Extract PR URL and number from the MCP response
-13. Provide user with clickable markdown link to the created PR
+1. User says "commit my changes and create a PR" (optionally with issue link)
+2. **Check user's prompt for any GitHub issue links** (e.g., `#123`, `https://github.com/owner/repo/issues/123`, or "closes #123")
+3. Run `git status` to check for changes
+4. Analyze changes and group them logically
+5. Stage and commit related changes together using commits.mdc format
+6. Run `pnpm lint` to check code quality
+7. Fix any linting errors if present
+8. Push branch to remote
+9. Extract repository owner and name from git remote URL
+10. Analyze commits to understand what was implemented
+11. Generate PR description following template, **using the issue link from prompt if provided**
+12. Use `mcp_github_create_pull_request` to create the PR
+13. Extract PR URL and number from the MCP response
+14. Provide user with clickable markdown link to the created PR
 
 ## Important Notes
 
@@ -245,3 +254,4 @@ Only if automated creation is not possible:
 - Provide complete PR link and details to user
 - Ensure all commits follow conventional commit format before creating PR
 - Each commit should represent a cohesive, logical set of changes
+- **Check user's prompt for issue links** - if provided, extract and use them in the PR description's GitHub Issue section
