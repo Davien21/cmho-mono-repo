@@ -17,8 +17,8 @@ import {
   InventoryType,
   InventoryStatus,
   UnitLevel,
-  UnitGrouping,
 } from "@/types/inventory";
+import { INVENTORY_CATEGORIES } from "@/lib/inventory-defaults";
 import { storageService } from "@/lib/inventory-storage";
 
 interface EditInventoryModalProps {
@@ -36,10 +36,8 @@ export function EditInventoryModal({
     item.inventoryType
   );
   const [name, setName] = useState(item.name);
-  const [units, setUnits] = useState<UnitLevel[]>(item.grouping?.units || []);
-  const [initialUnits] = useState<UnitLevel[]>(
-    item.grouping?.units || []
-  );
+  const [units, setUnits] = useState<UnitLevel[]>(item.units || []);
+  const [initialUnits] = useState<UnitLevel[]>(item.units || []);
   const [status, setStatus] = useState<InventoryStatus>(item.status);
 
   const getBaseUnit = (): UnitLevel | undefined => {
@@ -68,25 +66,16 @@ export function EditInventoryModal({
       return;
     }
 
-    // Update or create new grouping
-    const grouping: UnitGrouping = {
-      id: item.grouping?.id || `grouping-${Date.now()}`,
-      name: `${inventoryType} - ${units[0]?.name}`,
-      units,
-    };
-
     const updatedItem: InventoryItem = {
       ...item,
       name,
       inventoryType,
-      groupingId: grouping.id,
-      grouping: grouping,
+      units,
       status,
     };
 
     // Save to local storage
     storageService.saveItem(updatedItem);
-    storageService.saveGrouping(grouping);
 
     onSave(updatedItem);
     onClose();
@@ -151,11 +140,11 @@ export function EditInventoryModal({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Drug">Drug</SelectItem>
-                    <SelectItem value="Injection">Injection</SelectItem>
-                    <SelectItem value="Syrup">Syrup</SelectItem>
-                    <SelectItem value="Bottle">Bottle</SelectItem>
-                    <SelectItem value="Equipment">Equipment</SelectItem>
+                    {Object.values(INVENTORY_CATEGORIES).map((category) => (
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

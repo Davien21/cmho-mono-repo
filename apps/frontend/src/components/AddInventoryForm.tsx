@@ -17,10 +17,9 @@ import {
   InventoryType,
   InventoryStatus,
   UnitLevel,
-  UnitGrouping,
 } from "@/types/inventory";
 import {
-  getDefaultGrouping,
+  getDefaultUnits,
   INVENTORY_CATEGORIES,
 } from "@/lib/inventory-defaults";
 import { storageService } from "@/lib/inventory-storage";
@@ -34,10 +33,9 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
   const [inventoryType, setInventoryType] = useState<InventoryType>("Drug");
   const [name, setName] = useState("");
 
-  // Initialize units synchronously with default grouping to prevent UI flash
+  // Initialize units synchronously with defaults to prevent UI flash
   const getInitialUnits = () => {
-    const defaultGrouping = getDefaultGrouping("Drug");
-    return defaultGrouping.units;
+    return getDefaultUnits("Drug");
   };
 
   const [units, setUnits] = useState<UnitLevel[]>(getInitialUnits);
@@ -51,9 +49,9 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
   };
 
   useEffect(() => {
-    const defaultGrouping = getDefaultGrouping(inventoryType);
-    setUnits(defaultGrouping.units);
-    setInitialUnits(defaultGrouping.units);
+    const defaultUnits = getDefaultUnits(inventoryType);
+    setUnits(defaultUnits);
+    setInitialUnits(defaultUnits);
   }, [inventoryType]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -71,20 +69,13 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
       return;
     }
 
-    const grouping: UnitGrouping = {
-      id: `grouping-${Date.now()}`,
-      name: `${inventoryType} - ${units[0]?.name}`,
-      units,
-    };
-
     const item: InventoryItem = {
-      id: `item-${Date.now()}`,
+      id: crypto.randomUUID(),
       name,
       description: "",
       category: "",
       inventoryType,
-      groupingId: grouping.id,
-      grouping: grouping,
+      units,
       status,
       stocks: [],
     };
