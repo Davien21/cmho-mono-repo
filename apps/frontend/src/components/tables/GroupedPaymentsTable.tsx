@@ -23,7 +23,7 @@ const GroupedPaymentsTable = ({
   const transfers = transfersResponse?.data.transfers || [];
 
   const handleViewDetails = (transferId: string) => {
-    navigate(`/payments/${transferId}`);
+    navigate(`/salary/payments/${transferId}`);
   };
 
   if (isLoading) return <TableSkeleton />;
