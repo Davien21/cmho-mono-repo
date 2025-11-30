@@ -1,4 +1,4 @@
-import { UnitGrouping, InventoryType } from "@/types/inventory";
+import { UnitLevel, InventoryType } from "@/types/inventory";
 
 // All unique units extracted from INVENTORY_CATEGORIES
 export const PACKAGE_UNITS = {
@@ -35,20 +35,21 @@ export const INVENTORY_CATEGORIES = {
     name: "Consumable",
     units: [PACKAGE_UNITS.piece],
   },
-} as const satisfies Record<string, UnitGrouping>;
+} as const satisfies Record<
+  string,
+  { id: string; name: string; units: readonly UnitLevel[] }
+>;
 
-// Hydrate preset grouping with runtime fields (quantity)
-export function hydrateGrouping(grouping: UnitGrouping): UnitGrouping {
-  const hydratedUnits = grouping.units.map((unit) => ({
+// Hydrate preset units with runtime fields (quantity)
+export function hydrateUnits(units: readonly UnitLevel[]): UnitLevel[] {
+  return units.map((unit) => ({
     ...unit,
     quantity: "",
   }));
-
-  return { ...grouping, units: hydratedUnits };
 }
 
-export function getDefaultGrouping(type: InventoryType): UnitGrouping {
-  return hydrateGrouping(INVENTORY_CATEGORIES[type]);
+export function getDefaultUnits(type: InventoryType): UnitLevel[] {
+  return hydrateUnits(INVENTORY_CATEGORIES[type].units);
 }
 
 // Extract all unique unit names from PACKAGE_UNITS

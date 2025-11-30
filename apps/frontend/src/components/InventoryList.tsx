@@ -55,7 +55,7 @@ export function InventoryList({
   };
 
   const getBaseUnitName = (item: InventoryItem): string => {
-    const units = item.grouping?.units || [];
+    const units = item.units || [];
     // Base unit is the last unit in the array
     const baseUnit = units.length > 0 ? units[units.length - 1] : null;
     return baseUnit?.name || "units";
@@ -73,7 +73,7 @@ export function InventoryList({
   ): string => {
     if (totalInBaseUnits === 0) return `0 ${getBaseUnitName(item)}`;
 
-    const units = item.grouping?.units || [];
+    const units = item.units || [];
     if (units.length === 0)
       return `${totalInBaseUnits} ${getBaseUnitName(item)}`;
 

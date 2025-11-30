@@ -9,13 +9,6 @@ export interface UnitLevel {
   quantity?: number | string; // Runtime field for conversion factor (user input)
 }
 
-export interface UnitGrouping {
-  id: string;
-  name: string;
-  units: UnitLevel[];
-  createdAt?: string;
-}
-
 // Derive the InventoryType from the keys of INVENTORY_CATEGORIES
 export type InventoryType = keyof typeof INVENTORY_CATEGORIES;
 
@@ -37,8 +30,7 @@ export interface InventoryItem {
   description: string;
   category: string;
   inventoryType: InventoryType;
-  groupingId: string;
-  grouping: UnitGrouping;
+  units: UnitLevel[];
   status: InventoryStatus;
   stocks?: StockEntry[];
 }
