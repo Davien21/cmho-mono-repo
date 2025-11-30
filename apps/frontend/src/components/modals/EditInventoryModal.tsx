@@ -27,12 +27,22 @@ interface EditInventoryModalProps {
   onSave: (item: InventoryItem) => void;
 }
 
-export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModalProps) {
-  const [inventoryType, setInventoryType] = useState<InventoryType>(item.inventoryType);
-  const [customInventoryType, setCustomInventoryType] = useState(item.customInventoryType || "");
+export function EditInventoryModal({
+  item,
+  onClose,
+  onSave,
+}: EditInventoryModalProps) {
+  const [inventoryType, setInventoryType] = useState<InventoryType>(
+    item.inventoryType
+  );
+  const [customInventoryType, setCustomInventoryType] = useState(
+    item.customInventoryType || ""
+  );
   const [name, setName] = useState(item.name);
   const [units, setUnits] = useState<UnitLevel[]>(item.grouping?.units || []);
-  const [initialUnits, setInitialUnits] = useState<UnitLevel[]>(item.grouping?.units || []);
+  const [initialUnits] = useState<UnitLevel[]>(
+    item.grouping?.units || []
+  );
   const [status, setStatus] = useState<InventoryStatus>(item.status);
 
   const getBaseUnit = (): UnitLevel | undefined => {
@@ -72,7 +82,8 @@ export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModal
       ...item,
       name,
       inventoryType,
-      customInventoryType: inventoryType === "Custom" ? customInventoryType : undefined,
+      customInventoryType:
+        inventoryType === "Custom" ? customInventoryType : undefined,
       groupingId: grouping.id,
       grouping: grouping,
       status,
@@ -81,7 +92,7 @@ export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModal
     // Save to local storage
     storageService.saveItem(updatedItem);
     storageService.saveGrouping(grouping);
-    
+
     onSave(updatedItem);
     onClose();
   };
@@ -187,4 +198,3 @@ export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModal
     </div>
   );
 }
-
