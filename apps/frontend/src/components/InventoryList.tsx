@@ -1,32 +1,159 @@
-import { useState } from 'react';
-import { Search, Package, Edit2, PackagePlus } from 'lucide-react';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { InventoryItem } from '@/types/inventory';
+import { useState } from "react";
+import {
+  Search,
+  Package,
+  MoreVertical,
+  PackagePlus,
+  Edit2,
+  Trash2,
+} from "lucide-react";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { InventoryItem, UnitLevel } from "@/types/inventory";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface InventoryListProps {
   items: InventoryItem[];
   onUpdateStock: (item: InventoryItem) => void;
   onEdit: (item: InventoryItem) => void;
+  onDelete: (item: InventoryItem) => void;
 }
 
-export function InventoryList({ items, onUpdateStock, onEdit }: InventoryListProps) {
-  const [search, setSearch] = useState('');
+type DisplayMode = "full" | "skipOne" | "baseOnly";
 
-  const filteredItems = items.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+export function InventoryList({
+  items,
+  onUpdateStock,
+  onEdit,
+  onDelete,
+}: InventoryListProps) {
+  const [search, setSearch] = useState("");
+  // Track display mode per item
+  const [displayModes, setDisplayModes] = useState<Map<string, DisplayMode>>(
+    new Map()
+  );
+
+  const filteredItems = items.filter((item) => {
+    const matchesSearch = item.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
     return matchesSearch;
   });
 
   const getTotalStock = (item: InventoryItem): number => {
     if (!item.stocks || item.stocks.length === 0) return 0;
-    return item.stocks.reduce((sum, stock) => sum + stock.quantityInBaseUnits, 0);
+    return item.stocks.reduce(
+      (sum, stock) => sum + stock.quantityInBaseUnits,
+      0
+    );
   };
 
   const getBaseUnitName = (item: InventoryItem): string => {
-    const baseUnit = item.grouping?.units.find(u => u.id === item.grouping?.baseUnitId);
-    return baseUnit?.name || 'units';
+    const units = item.grouping?.units || [];
+    // Base unit is the last unit in the array
+    const baseUnit = units.length > 0 ? units[units.length - 1] : null;
+    return baseUnit?.name || "units";
+  };
+
+  const getSortedUnits = (units: UnitLevel[]) => {
+    // Units are already in the correct order in the array
+    return units;
+  };
+
+  const convertBaseUnitsToRepresentation = (
+    item: InventoryItem,
+    totalInBaseUnits: number,
+    mode: DisplayMode
+  ): string => {
+    if (totalInBaseUnits === 0) return `0 ${getBaseUnitName(item)}`;
+
+    const units = item.grouping?.units || [];
+    if (units.length === 0)
+      return `${totalInBaseUnits} ${getBaseUnitName(item)}`;
+
+    const sortedUnits = getSortedUnits(units);
+    // Base unit is the last unit in the array
+    const baseUnit = units.length > 0 ? units[units.length - 1] : null;
+
+    // Mode C: Base unit only
+    if (mode === "baseOnly") {
+      return `${totalInBaseUnits} ${baseUnit?.name || "units"}`;
+    }
+
+    // Calculate unit multipliers (how many base units each unit represents)
+    const unitMultipliers = new Map<string, number>();
+    sortedUnits.forEach((unit, unitIndex) => {
+      // Multiply all child unit quantities (units that come after this one)
+      let multiplier = 1;
+      for (let i = unitIndex + 1; i < sortedUnits.length; i++) {
+        multiplier *= Number(sortedUnits[i].quantity) || 1;
+      }
+      unitMultipliers.set(unit.id, multiplier);
+    });
+
+    // Get units to use based on mode
+    let unitsToUse = [...sortedUnits];
+    if (mode === "skipOne" && sortedUnits.length > 1) {
+      // Skip the top-level unit (pack in the example)
+      unitsToUse = sortedUnits.slice(1);
+    }
+
+    // Convert to the representation
+    let remaining = totalInBaseUnits;
+    const result: { name: string; quantity: number }[] = [];
+
+    unitsToUse.forEach((unit) => {
+      const multiplier = unitMultipliers.get(unit.id) || 1;
+      if (multiplier > 1) {
+        const quantity = Math.floor(remaining / multiplier);
+        if (quantity > 0) {
+          result.push({ name: unit.name, quantity });
+          remaining -= quantity * multiplier;
+        }
+      }
+    });
+
+    // Add remaining base units
+    if (remaining > 0 && baseUnit) {
+      result.push({ name: baseUnit.name, quantity: remaining });
+    }
+
+    return result.map((r) => `${r.quantity} ${r.name}`).join(", ");
+  };
+
+  const toggleDisplayMode = (itemId: string) => {
+    setDisplayModes((prev) => {
+      const newModes = new Map(prev);
+      const current = newModes.get(itemId) || "full";
+      let next: DisplayMode;
+
+      if (current === "full") {
+        next = "skipOne";
+      } else if (current === "skipOne") {
+        next = "baseOnly";
+      } else {
+        next = "full";
+      }
+
+      newModes.set(itemId, next);
+      return newModes;
+    });
+  };
+
+  const getDisplayMode = (itemId: string): DisplayMode => {
+    return displayModes.get(itemId) || "full";
+  };
+
+  const getFormattedStock = (item: InventoryItem): string => {
+    const total = getTotalStock(item);
+    const mode = getDisplayMode(item.id);
+    return convertBaseUnitsToRepresentation(item, total, mode);
   };
 
   return (
@@ -47,7 +174,9 @@ export function InventoryList({ items, onUpdateStock, onEdit }: InventoryListPro
             <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p className="text-lg font-medium mb-1">No items found</p>
             <p className="text-sm">
-              {search ? 'Try adjusting your search' : 'Add your first inventory item to get started'}
+              {search
+                ? "Try adjusting your search"
+                : "Add your first inventory item to get started"}
             </p>
           </div>
         </div>
@@ -62,15 +191,17 @@ export function InventoryList({ items, onUpdateStock, onEdit }: InventoryListPro
                     <div>
                       <h3 className="font-medium text-gray-900">{item.name}</h3>
                       <p className="text-sm text-gray-600 mt-1">
-                        {item.inventoryType === 'Custom' ? item.customInventoryType : item.inventoryType}
+                        {item.inventoryType}
                       </p>
                     </div>
                     <Badge
-                      variant={item.status === 'ready' ? 'default' : 'secondary'}
+                      variant={
+                        item.status === "ready" ? "success" : "secondary"
+                      }
                       className={
-                        item.status === 'ready'
-                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        item.status === "ready"
+                          ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
                       }
                     >
                       {item.status}
@@ -78,24 +209,41 @@ export function InventoryList({ items, onUpdateStock, onEdit }: InventoryListPro
                   </div>
                   <div className="mb-3">
                     <p className="text-sm text-gray-500">
-                      Stock: <span className="font-semibold text-gray-900">{getTotalStock(item)}</span> {getBaseUnitName(item)}
+                      Stock:{" "}
+                      <span
+                        className="font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                        onClick={() => toggleDisplayMode(item.id)}
+                        title="Click to toggle display format"
+                      >
+                        {getFormattedStock(item)}
+                      </span>
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onEdit(item)}
-                      className="flex-1 p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center gap-1"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onUpdateStock(item)}
-                      className="flex-1 px-3 py-2 bg-green-100 text-green-700 hover:bg-green-200 rounded-lg transition-colors flex items-center justify-center gap-1"
-                    >
-                      <PackagePlus className="w-4 h-4" />
-                      Add Stock
-                    </button>
+                  <div className="flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onUpdateStock(item)}>
+                          <PackagePlus className="mr-2 h-4 w-4" />
+                          Add Stock
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onEdit(item)}>
+                          <Edit2 className="mr-2 h-4 w-4" />
+                          Edit Item
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onDelete(item)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete Item
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               ))}
@@ -114,7 +262,7 @@ export function InventoryList({ items, onUpdateStock, onEdit }: InventoryListPro
                     Category
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock Qty
+                    Stock Left
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
@@ -128,48 +276,66 @@ export function InventoryList({ items, onUpdateStock, onEdit }: InventoryListPro
                 {filteredItems.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">
-                        {item.inventoryType === 'Custom' ? item.customInventoryType : item.inventoryType}
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.name}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <span className="font-semibold">{getTotalStock(item)}</span>{' '}
-                        <span className="text-gray-500">{getBaseUnitName(item)}</span>
+                      <div className="text-sm text-gray-600">
+                        {item.inventoryType}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div
+                        className="text-sm text-gray-900 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                        onClick={() => toggleDisplayMode(item.id)}
+                        title="Click to toggle display format"
+                      >
+                        {getFormattedStock(item)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge
-                        variant={item.status === 'ready' ? 'default' : 'secondary'}
+                        variant={
+                          item.status === "ready" ? "success" : "secondary"
+                        }
                         className={
-                          item.status === 'ready'
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          item.status === "ready"
+                            ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
                         }
                       >
                         {item.status}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          onClick={() => onEdit(item)}
-                          className="bg-transparent shadow-none p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit item"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          onClick={() => onUpdateStock(item)}
-                          className="bg-green-100 shadow-none p-2 text-green-700 hover:text-green-800 hover:bg-green-200 rounded-lg transition-colors"
-                          title="Add stock"
-                        >
-                          <PackagePlus className="w-4 h-4" />
-                          Add Stock
-                        </Button>
+                      <div className="flex justify-end">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => onUpdateStock(item)}
+                            >
+                              <PackagePlus className="mr-2 h-4 w-4" />
+                              Add Stock
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onEdit(item)}>
+                              <Edit2 className="mr-2 h-4 w-4" />
+                              Edit Item
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => onDelete(item)}
+                              className="text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete Item
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </td>
                   </tr>
@@ -182,4 +348,3 @@ export function InventoryList({ items, onUpdateStock, onEdit }: InventoryListPro
     </div>
   );
 }
-
