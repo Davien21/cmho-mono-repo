@@ -27,16 +27,24 @@ interface EditInventoryModalProps {
   onSave: (item: InventoryItem) => void;
 }
 
-export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModalProps) {
-  const [inventoryType, setInventoryType] = useState<InventoryType>(item.inventoryType);
-  const [customInventoryType, setCustomInventoryType] = useState(item.customInventoryType || "");
+export function EditInventoryModal({
+  item,
+  onClose,
+  onSave,
+}: EditInventoryModalProps) {
+  const [inventoryType, setInventoryType] = useState<InventoryType>(
+    item.inventoryType
+  );
   const [name, setName] = useState(item.name);
   const [units, setUnits] = useState<UnitLevel[]>(item.grouping?.units || []);
-  const [initialUnits, setInitialUnits] = useState<UnitLevel[]>(item.grouping?.units || []);
+  const [initialUnits] = useState<UnitLevel[]>(
+    item.grouping?.units || []
+  );
   const [status, setStatus] = useState<InventoryStatus>(item.status);
 
   const getBaseUnit = (): UnitLevel | undefined => {
-    return units.find((u) => !units.some((unit) => unit.parentId === u.id));
+    // Base unit is the last unit in the array
+    return units.length > 0 ? units[units.length - 1] : undefined;
   };
 
   // Update initial units when inventory type changes
@@ -65,14 +73,12 @@ export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModal
       id: item.grouping?.id || `grouping-${Date.now()}`,
       name: `${inventoryType} - ${units[0]?.name}`,
       units,
-      baseUnitId: baseUnit.id,
     };
 
     const updatedItem: InventoryItem = {
       ...item,
       name,
       inventoryType,
-      customInventoryType: inventoryType === "Custom" ? customInventoryType : undefined,
       groupingId: grouping.id,
       grouping: grouping,
       status,
@@ -81,7 +87,7 @@ export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModal
     // Save to local storage
     storageService.saveItem(updatedItem);
     storageService.saveGrouping(grouping);
-    
+
     onSave(updatedItem);
     onClose();
   };
@@ -150,18 +156,8 @@ export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModal
                     <SelectItem value="Syrup">Syrup</SelectItem>
                     <SelectItem value="Bottle">Bottle</SelectItem>
                     <SelectItem value="Equipment">Equipment</SelectItem>
-                    <SelectItem value="Custom">Custom</SelectItem>
                   </SelectContent>
                 </Select>
-                {inventoryType === "Custom" && (
-                  <Input
-                    id="customType"
-                    value={customInventoryType}
-                    onChange={(e) => setCustomInventoryType(e.target.value)}
-                    placeholder="Enter custom type"
-                    className="mt-2"
-                  />
-                )}
               </div>
             </div>
           </div>
@@ -187,4 +183,3 @@ export function EditInventoryModal({ item, onClose, onSave }: EditInventoryModal
     </div>
   );
 }
-

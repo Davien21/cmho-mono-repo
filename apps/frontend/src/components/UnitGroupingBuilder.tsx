@@ -1,6 +1,5 @@
 import { Plus, Trash2, RotateCcw } from "lucide-react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { UnitLevel } from "@/types/inventory";
 import {
   ContextMenu,
@@ -8,8 +7,9 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "./ui/context-menu";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { UnitDropdown } from "./UnitDropDown";
+import { getPackageUnitNames } from "@/lib/inventory-defaults";
 
 interface UnitGroupingBuilderProps {
   units: UnitLevel[];
@@ -22,27 +22,13 @@ export function UnitGroupingBuilder({
   onChange,
   initialUnits = [],
 }: UnitGroupingBuilderProps) {
-  const [customUnits, setCustomUnits] = useState<string[]>([]);
-
   const addLevel = () => {
-    if (sortedUnits.length === 0) {
-      const baseUnit: UnitLevel = {
-        id: `unit-${Date.now()}`,
-        name: "Pack",
-        quantity: 1,
-        parentId: undefined,
-      };
-      onChange([baseUnit]);
-    } else {
-      const lastUnit = sortedUnits[sortedUnits.length - 1];
-      const newUnit: UnitLevel = {
-        id: `unit-${Date.now()}`,
-        name: "",
-        quantity: 1,
-        parentId: lastUnit.id,
-      };
-      onChange([...units, newUnit]);
-    }
+    const newUnit: UnitLevel = {
+      id: crypto.randomUUID(),
+      name: "",
+      quantity: "",
+    };
+    onChange([...units, newUnit]);
   };
 
   const resetUnits = () => {
@@ -63,40 +49,12 @@ export function UnitGroupingBuilder({
     [updateUnit]
   );
 
-  const handleAddCustomUnit = useCallback(
-    (unitId: string, value: string) => {
-      if (!customUnits.includes(value)) {
-        setCustomUnits((prev) => [...prev, value]);
-      }
-      updateUnit(unitId, { name: value });
-    },
-    [customUnits, updateUnit]
-  );
-
   const removeUnit = (id: string) => {
-    const unitToRemove = units.find((u) => u.id === id);
-    if (!unitToRemove) return;
-
-    const updatedUnits = units
-      .filter((u) => u.id !== id)
-      .map((u) => {
-        if (u.parentId === id) {
-          return { ...u, parentId: unitToRemove.parentId };
-        }
-        return u;
-      });
-
-    onChange(updatedUnits);
+    onChange(units.filter((u) => u.id !== id));
   };
 
-  const sortedUnits = [...units].sort((a, b) => {
-    const getDepth = (unit: UnitLevel): number => {
-      if (!unit.parentId) return 0;
-      const parent = units.find((u) => u.id === unit.parentId);
-      return parent ? getDepth(parent) + 1 : 0;
-    };
-    return getDepth(a) - getDepth(b);
-  });
+  // Units are already in the correct order in the array
+  const sortedUnits = units;
 
   const rootUnit = sortedUnits[0];
 
@@ -145,8 +103,6 @@ export function UnitGroupingBuilder({
                       className="w-24 text-sm border-0 bg-transparent py-1.5 pr-3 pl-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-offset-0 shadow-none"
                       maxHeight={180}
                       onSelect={handleUnitSelect}
-                      customUnits={customUnits}
-                      onAddCustomUnit={handleAddCustomUnit}
                     />
                   </div>
                 </ContextMenuTrigger>
@@ -168,12 +124,13 @@ export function UnitGroupingBuilder({
                         </span>
 
                         <div className="flex items-center bg-neutral-100 rounded-md">
-                          <Input
+                          <input
                             type="text"
                             value={unit.quantity}
                             onChange={(e) =>
                               updateUnit(unit.id, { quantity: e.target.value })
                             }
+                            placeholder="-"
                             className="w-8 text-sm border-0 bg-transparent py-1.5 pl-3 pr-1 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                           />
 
@@ -188,8 +145,6 @@ export function UnitGroupingBuilder({
                             className="w-24 text-sm border-0 bg-transparent py-1.5 pr-3 pl-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-offset-0 shadow-none"
                             maxHeight={180}
                             onSelect={handleUnitSelect}
-                            customUnits={customUnits}
-                            onAddCustomUnit={handleAddCustomUnit}
                           />
                         </div>
                       </div>
@@ -211,15 +166,4 @@ export function UnitGroupingBuilder({
   );
 }
 
-const PREDEFINED_UNITS = [
-  "Pack",
-  "Box",
-  "Card",
-  "Strip",
-  "Sachet",
-  "Bottle",
-  "Tube",
-  "Piece",
-  "Tablet",
-  "Capsule",
-];
+const PREDEFINED_UNITS = getPackageUnitNames();
