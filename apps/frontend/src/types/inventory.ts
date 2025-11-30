@@ -1,28 +1,32 @@
+// InventoryType is derived from INVENTORY_CATEGORIES keys in inventory-defaults.ts
+
+import { INVENTORY_CATEGORIES } from "@/lib/inventory-defaults";
+
 export interface UnitLevel {
   id: string;
   name: string;
-  quantity: number | string;
-  parentId?: string;
+  plural: string; // Optional, used in presets
+  quantity?: number | string; // Runtime field for conversion factor (user input)
 }
 
 export interface UnitGrouping {
   id: string;
   name: string;
   units: UnitLevel[];
-  baseUnitId: string;
   createdAt?: string;
 }
 
-export type InventoryType = 'Drug' | 'Injection' | 'Syrup' | 'Bottle' | 'Equipment' | 'Custom';
+// Derive the InventoryType from the keys of INVENTORY_CATEGORIES
+export type InventoryType = keyof typeof INVENTORY_CATEGORIES;
 
-export type InventoryStatus = 'draft' | 'ready';
+export type InventoryStatus = "draft" | "ready";
 
 export interface StockEntry {
   id: string;
   inventoryItemId: string;
-  purchasePrice: number;
+  costPrice: number;
   sellingPrice: number;
-  expiryDate?: string;
+  expiryDate: string;
   quantityInBaseUnits: number;
   createdAt: string;
 }
@@ -33,10 +37,8 @@ export interface InventoryItem {
   description: string;
   category: string;
   inventoryType: InventoryType;
-  customInventoryType?: string;
   groupingId: string;
   grouping: UnitGrouping;
   status: InventoryStatus;
   stocks?: StockEntry[];
 }
-

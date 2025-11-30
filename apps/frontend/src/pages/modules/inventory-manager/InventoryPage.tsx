@@ -49,6 +49,13 @@ export default function InventoryPage() {
     setSelectedItem(null);
   };
 
+  const handleDelete = (item: InventoryItem) => {
+    if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
+      storageService.deleteItem(item.id);
+      setItems([...storageService.getItems()]);
+    }
+  };
+
   return (
     <Layout>
       <div className="flex flex-col gap-4 sm:gap-6">
@@ -75,6 +82,7 @@ export default function InventoryPage() {
           items={items}
           onUpdateStock={handleUpdateStock}
           onEdit={handleEdit}
+          onDelete={handleDelete}
         />
 
         {showAddForm && (
