@@ -19,7 +19,10 @@ import {
   UnitLevel,
   UnitGrouping,
 } from "@/types/inventory";
-import { getDefaultGrouping } from "@/lib/inventory-defaults";
+import {
+  getDefaultGrouping,
+  INVENTORY_CATEGORIES,
+} from "@/lib/inventory-defaults";
 import { storageService } from "@/lib/inventory-storage";
 
 interface AddInventoryFormProps {
@@ -29,13 +32,12 @@ interface AddInventoryFormProps {
 
 export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
   const [inventoryType, setInventoryType] = useState<InventoryType>("Drug");
-  const [customInventoryType, setCustomInventoryType] = useState("");
   const [name, setName] = useState("");
 
   // Initialize units synchronously with default grouping to prevent UI flash
   const getInitialUnits = () => {
     const defaultGrouping = getDefaultGrouping("Drug");
-    return defaultGrouping ? defaultGrouping.units : [];
+    return defaultGrouping.units;
   };
 
   const [units, setUnits] = useState<UnitLevel[]>(getInitialUnits);
@@ -44,18 +46,14 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
   const [status, setStatus] = useState<InventoryStatus>("ready");
 
   const getBaseUnit = (): UnitLevel | undefined => {
-    return units.find((u) => !units.some((unit) => unit.parentId === u.id));
+    // Base unit is the last unit in the array
+    return units.length > 0 ? units[units.length - 1] : undefined;
   };
 
   useEffect(() => {
     const defaultGrouping = getDefaultGrouping(inventoryType);
-    if (defaultGrouping) {
-      setUnits(defaultGrouping.units);
-      setInitialUnits(defaultGrouping.units);
-    } else {
-      setUnits([]);
-      setInitialUnits([]);
-    }
+    setUnits(defaultGrouping.units);
+    setInitialUnits(defaultGrouping.units);
   }, [inventoryType]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -77,7 +75,6 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
       id: `grouping-${Date.now()}`,
       name: `${inventoryType} - ${units[0]?.name}`,
       units,
-      baseUnitId: baseUnit.id,
     };
 
     const item: InventoryItem = {
@@ -86,8 +83,6 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
       description: "",
       category: "",
       inventoryType,
-      customInventoryType:
-        inventoryType === "Custom" ? customInventoryType : undefined,
       groupingId: grouping.id,
       grouping: grouping,
       status,
@@ -159,23 +154,13 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Drug">Drug</SelectItem>
-                    <SelectItem value="Injection">Injection</SelectItem>
-                    <SelectItem value="Syrup">Syrup</SelectItem>
-                    <SelectItem value="Bottle">Bottle</SelectItem>
-                    <SelectItem value="Equipment">Equipment</SelectItem>
-                    <SelectItem value="Custom">Custom</SelectItem>
+                    {Object.values(INVENTORY_CATEGORIES).map((category) => (
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                {inventoryType === "Custom" && (
-                  <Input
-                    id="customType"
-                    value={customInventoryType}
-                    onChange={(e) => setCustomInventoryType(e.target.value)}
-                    placeholder="Enter custom type"
-                    className="mt-2"
-                  />
-                )}
               </div>
             </div>
           </div>

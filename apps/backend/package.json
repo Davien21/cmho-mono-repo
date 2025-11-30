@@ -51,6 +51,7 @@
     "dev": "tsx watch api/index.ts",
     "seed": "tsx seeds/index.ts",
     "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
     "build": "echo '🟡 Skipped build (using tsx)'"
   }
 }

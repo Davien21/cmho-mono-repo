@@ -1,46 +1,57 @@
-import { InventoryType, UnitGrouping } from '@/types/inventory';
+import { UnitGrouping, InventoryType } from "@/types/inventory";
 
-export const DEFAULT_GROUPINGS: Record<InventoryType, UnitGrouping | null> = {
+// All unique units extracted from INVENTORY_CATEGORIES
+export const PACKAGE_UNITS = {
+  pack: { id: "pack", name: "Pack", plural: "Packs" },
+  card: { id: "card", name: "Card", plural: "Cards" },
+  tablet: { id: "tablet", name: "Tablet", plural: "Tablets" },
+  bottle: { id: "bottle", name: "Bottle", plural: "Bottles" },
+  piece: { id: "piece", name: "Piece", plural: "Pieces" },
+} as const;
+
+export const INVENTORY_CATEGORIES = {
   Drug: {
-    id: 'default-drug',
-    name: 'Drug Default',
-    units: [
-      { id: 'pack', name: 'Pack', quantity: 1, parentId: undefined },
-      { id: 'card', name: 'Card', quantity: 10, parentId: 'pack' },
-      { id: 'tablet', name: 'Tablet', quantity: 10, parentId: 'card' }
-    ],
-    baseUnitId: 'tablet',
+    id: "drug",
+    name: "Drug",
+    units: [PACKAGE_UNITS.pack, PACKAGE_UNITS.card, PACKAGE_UNITS.tablet],
   },
   Injection: {
-    id: 'default-injection',
-    name: 'Injection Default',
-    units: [
-      { id: 'pack', name: 'Pack', quantity: 1, parentId: undefined },
-      { id: 'bottle', name: 'Bottle', quantity: 10, parentId: 'pack' }
-    ],
-    baseUnitId: 'bottle',
+    id: "injection",
+    name: "Injection",
+    units: [PACKAGE_UNITS.pack, PACKAGE_UNITS.bottle],
   },
   Syrup: {
-    id: 'default-syrup',
-    name: 'Syrup Default',
-    units: [
-      { id: 'bottle', name: 'Bottle', quantity: 1, parentId: undefined }
-    ],
-    baseUnitId: 'bottle',
+    id: "syrup",
+    name: "Syrup",
+    units: [PACKAGE_UNITS.bottle],
   },
-  Bottle: {
-    id: 'default-bottle',
-    name: 'Bottle Default',
-    units: [
-      { id: 'bottle', name: 'Bottle', quantity: 1, parentId: undefined }
-    ],
-    baseUnitId: 'bottle',
+  Water: {
+    id: "bottle",
+    name: "Bottle",
+    units: [PACKAGE_UNITS.bottle],
   },
-  Equipment: null,
-  Custom: null
-};
+  Consumable: {
+    id: "consumable",
+    name: "Consumable",
+    units: [PACKAGE_UNITS.piece],
+  },
+} as const satisfies Record<string, UnitGrouping>;
 
-export function getDefaultGrouping(type: InventoryType): UnitGrouping | null {
-  return DEFAULT_GROUPINGS[type];
+// Hydrate preset grouping with runtime fields (quantity)
+export function hydrateGrouping(grouping: UnitGrouping): UnitGrouping {
+  const hydratedUnits = grouping.units.map((unit) => ({
+    ...unit,
+    quantity: "",
+  }));
+
+  return { ...grouping, units: hydratedUnits };
 }
 
+export function getDefaultGrouping(type: InventoryType): UnitGrouping {
+  return hydrateGrouping(INVENTORY_CATEGORIES[type]);
+}
+
+// Extract all unique unit names from PACKAGE_UNITS
+export function getPackageUnitNames(): string[] {
+  return Object.values(PACKAGE_UNITS).map((unit) => unit.name);
+}
