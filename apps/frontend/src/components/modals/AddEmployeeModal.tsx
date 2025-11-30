@@ -1,3 +1,4 @@
+import * as yup from "yup";
 import { useState } from "react";
 import {
   useForm,
@@ -15,7 +16,6 @@ import { useAddEmployeeMutation } from "@/store/employees-slice";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { cn, getYupCurrencyValidator } from "@/lib/utils";
 import { MoneyInput } from "@/components/MoneyInput";

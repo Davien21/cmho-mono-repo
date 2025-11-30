@@ -77,7 +77,7 @@ export function SearchableSelect({
             <CommandInput placeholder={searchPlaceholder} className="h-9" />
             <CommandList>
               <CommandEmpty>{emptyText}</CommandEmpty>
-              <CommandGroup className="overflow-y-auto">
+              <CommandGroup className="max-h-60 overflow-y-auto">
                 {options.map((option) => (
                   <CommandItem
                     key={option.value}

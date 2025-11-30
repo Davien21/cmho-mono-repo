@@ -34,7 +34,7 @@ export default function LoginPage() {
             <Lock className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-            Salary Manager
+            CMHO Portal
           </h1>
           <p className="text-gray-600 text-sm sm:text-base">
             Enter your password to continue
