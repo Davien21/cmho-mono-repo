@@ -65,7 +65,7 @@ export function SearchableSelect({
             disabled={disabled}
           >
             {selectedOption ? selectedOption.label : placeholder}
-            <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent

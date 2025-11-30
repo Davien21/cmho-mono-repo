@@ -1,5 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, User, DollarSign, Calendar, Hash } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { User, DollarSign, Calendar, Hash } from "lucide-react";
 import { useGetTransferDetailsQuery } from "@/store/transfers-slice";
 import { formatDate, formatKobo } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +10,6 @@ import PaymentsTable, {
 
 const TransferDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const {
     data: transferDetailsResponse,
@@ -28,13 +27,6 @@ const TransferDetailsPage = () => {
     return (
       <Layout>
         <div className="space-y-6">
-          <button
-            onClick={() => navigate("/payments")}
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Transfer History
-          </button>
           <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
             <div className="text-red-400 mb-4">
               <Hash className="w-12 h-12 mx-auto" />
@@ -54,19 +46,6 @@ const TransferDetailsPage = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate("/payments")}
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Payment History
-            </button>
-          </div>
-        </div>
-
         {/* Transfer Overview */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -137,10 +116,6 @@ const TransferDetailsPage = () => {
 const TransferDetailsSkeleton = () => (
   <Layout>
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Skeleton className="h-6 w-32" />
-      </div>
-
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex justify-between items-start mb-6">
           <div>
