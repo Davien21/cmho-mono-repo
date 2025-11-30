@@ -47,7 +47,7 @@ export function AddStockModal({
     if (item) {
       setInventoryItem(item);
       // Initialize quantity inputs for all units
-      const sortedUnits = getSortedUnits(item.grouping.units);
+      const sortedUnits = getSortedUnits(item.units);
       setQuantityInputs(
         sortedUnits.map((unit) => ({ unitId: unit.id, value: "0" }))
       );
@@ -67,7 +67,7 @@ export function AddStockModal({
 
   const getBaseUnit = () => {
     if (!inventoryItem) return null;
-    const units = inventoryItem.grouping.units;
+    const units = inventoryItem.units;
     // Base unit is the last unit in the array
     return units.length > 0 ? units[units.length - 1] : null;
   };
@@ -75,7 +75,7 @@ export function AddStockModal({
   const calculateTotalInBaseUnits = () => {
     if (!inventoryItem) return 0;
 
-    const units = inventoryItem.grouping.units;
+    const units = inventoryItem.units;
     let total = 0;
 
     units.forEach((unit, unitIndex) => {
@@ -139,7 +139,7 @@ export function AddStockModal({
     }
 
     const stockEntry: StockEntry = {
-      id: `stock-${Date.now()}`,
+      id: crypto.randomUUID(),
       inventoryItemId: inventoryItem.id,
       costPrice: parseFloat(costPrice),
       sellingPrice: parseFloat(sellingPrice),
@@ -164,7 +164,7 @@ export function AddStockModal({
   if (!inventoryItem) return <EmptyState />;
 
   const baseUnit = getBaseUnit();
-  const sortedUnits = getSortedUnits(inventoryItem.grouping.units);
+  const sortedUnits = getSortedUnits(inventoryItem.units);
   const totalInBaseUnits = calculateTotalInBaseUnits();
 
   const profit = calculateProfit();
