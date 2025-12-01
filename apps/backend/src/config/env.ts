@@ -51,7 +51,7 @@ const APP_NAME = "cmho";
 const PORT = process.env.PORT;
 
 let API_BASE_URL = `http://localhost:${PORT}`;
-let CLIENT_URL = "http://localhost:5173";
+let CLIENT_URL = "http://localhost:3000";
 if (activeEnv === "production") {
   API_BASE_URL = `https://api.${APP_NAME}.xyz`;
   CLIENT_URL = `https://${APP_NAME}.xyz`;

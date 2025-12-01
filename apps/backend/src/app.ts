@@ -4,15 +4,16 @@ import morgan from "morgan";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import helmet from "helmet";
+import mongoose from "mongoose";
 
 import { NotFoundError } from "../src/config/errors";
 import errorMiddleware from "../src/middlewares/error";
 import routes from "../src/config/routes";
 import { env, parseEnv } from "../src/config/env";
 import logger from "../src/config/logger";
-import openDBConnection from "../src/config/db";
+import { openDBConnection, closeDBConnection } from "../src/config/db";
 import { CookieNames } from "./utils/cookie-names";
-import helmet from "helmet";
 import { extraHeaders } from "./middlewares/extra-headers";
 
 const app = express();
@@ -78,8 +79,24 @@ app.use((_req: Request, _res: Response, next: NextFunction) => {
 });
 app.use(errorMiddleware);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`app listening at port ${PORT} in ${mode} mode`);
 });
+
+const gracefulShutdown = (signal: NodeJS.Signals) => {
+  logger.info(`${signal} received. Starting graceful shutdown...`);
+
+  server.close((err) => {
+    if (err) {
+      logger.error(`Error closing HTTP server: ${err.message}`);
+      process.exit(1);
+    }
+
+    closeDBConnection();
+  });
+};
+
+process.on("SIGINT", gracefulShutdown);
+process.on("SIGTERM", gracefulShutdown);
 
 export default app;
