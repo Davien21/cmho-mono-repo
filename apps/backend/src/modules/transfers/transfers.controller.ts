@@ -194,7 +194,7 @@ export async function getTransactionsByTransferId(req: Request, res: Response) {
  * Get stored transfers from database with filtering, sorting, and pagination
  */
 export async function getStoredTransfers(
-  req: Request<{}, {}, {}, TransferQuerySchema>,
+  req: Request<Record<string, never>, Record<string, never>, Record<string, never>, TransferQuerySchema>,
   res: Response
 ) {
   const {

@@ -13,7 +13,7 @@ import { formatBankDetails } from "../../utils/random";
 import { NotFoundError } from "../../config/errors";
 
 export async function getEmployees(
-  req: Request<{}, {}, {}, GetEmployeesQuerySchema>,
+  req: Request<Record<string, never>, Record<string, never>, Record<string, never>, GetEmployeesQuerySchema>,
   res: Response
 ) {
   try {

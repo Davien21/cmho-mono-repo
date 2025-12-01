@@ -36,9 +36,10 @@ const schema = z.object({
 });
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface ProcessEnv {
-      [key: string]: any;
+      [key: string]: string | undefined;
     }
   }
 }

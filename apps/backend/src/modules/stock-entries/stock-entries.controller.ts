@@ -5,7 +5,7 @@ import { GetStockEntriesQuerySchema } from "./stock-entries.validators";
 import { StockEntryRequest } from "./stock-entries.types";
 
 export async function getStockEntries(
-  req: Request<{}, {}, {}, GetStockEntriesQuerySchema>,
+  req: Request<Record<string, never>, Record<string, never>, Record<string, never>, GetStockEntriesQuerySchema>,
   res: Response
 ) {
   try {
