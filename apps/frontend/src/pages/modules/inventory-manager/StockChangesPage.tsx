@@ -6,9 +6,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { InventoryItem, StockEntry, UnitLevel } from "@/types/inventory";
-import { storageService } from "@/lib/inventory-storage";
+import { StockEntry, UnitLevel } from "@/types/inventory";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
+import {
+  IInventoryItemDto,
+  IStockEntryDto,
+  useGetInventoryItemsQuery,
+  useGetStockEntriesQuery,
+} from "@/store/inventory-slice";
 
 type StockChangeRow = StockEntry & {
   itemName: string;
@@ -28,16 +33,34 @@ function formatDateTime(iso: string) {
 }
 
 export default function StockChangesPage() {
-  const [items, setItems] = useState<InventoryItem[]>([]);
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [searchInitialized, setSearchInitialized] = useState(false);
   const [selectedRow, setSelectedRow] = useState<StockChangeRow | null>(null);
 
-  useEffect(() => {
-    const loadedItems = storageService.getItems();
-    setItems(loadedItems);
-  }, []);
+  const { data: itemsResponse } = useGetInventoryItemsQuery();
+  const { data: stockEntriesResponse } = useGetStockEntriesQuery();
+
+  const items = useMemo(() => {
+    const dtos: IInventoryItemDto[] = itemsResponse?.data || [];
+    return dtos.map((dto) => ({
+      id: dto._id,
+      name: dto.name,
+      description: "",
+      category: dto.category,
+      inventoryCategory: dto.category,
+      units: (dto.units || []).map((u) => ({
+        id: u.id,
+        name: u.name,
+        plural: u.plural,
+        quantity: u.quantity,
+      })),
+      lowStockValue: dto.lowStockValue,
+      status: dto.setupStatus,
+      stocks: [],
+      currentStockInBaseUnits: dto.currentStockInBaseUnits,
+    }));
+  }, [itemsResponse]);
 
   const filterItemId = searchParams.get("itemId");
 
@@ -48,31 +71,55 @@ export default function StockChangesPage() {
 
   useEffect(() => {
     if (filteredItem && !searchInitialized) {
+      // Seed the search input with the filtered item's name
+      // when arriving from a specific inventory item.
       setSearch(filteredItem.name);
       setSearchInitialized(true);
+    } else if (!filterItemId && searchInitialized) {
+      // When there's no item filter in the URL anymore (e.g. user clicked
+      // the "Stock" breadcrumb to view all stock), clear the seeded search.
+      setSearch("");
+      setSearchInitialized(false);
     }
-  }, [filteredItem, searchInitialized]);
+  }, [filteredItem, filterItemId, searchInitialized]);
 
   const rows: StockChangeRow[] = useMemo(() => {
-    const all: StockChangeRow[] = [];
+    const itemById = new Map<string, { name: string; units: UnitLevel[] }>();
     items.forEach((item) => {
-      if (filterItemId && item.id !== filterItemId) {
-        return;
-      }
-      (item.stocks || []).forEach((entry) => {
-        all.push({
-          ...entry,
-          itemName: item.name,
-          units: item.units || [],
-        });
-      });
+      itemById.set(item.id, { name: item.name, units: item.units || [] });
     });
+
+    const entries: IStockEntryDto[] = stockEntriesResponse?.data || [];
+
+    const all: StockChangeRow[] = entries
+      .filter(
+        (entry) => !filterItemId || entry.inventoryItemId === filterItemId
+      )
+      .map((entry) => {
+        const meta = itemById.get(entry.inventoryItemId);
+        return {
+          id: entry._id,
+          inventoryItemId: entry.inventoryItemId,
+          operationType: entry.operationType,
+          supplier: entry.supplier?.name ?? null,
+          costPrice: entry.costPrice,
+          sellingPrice: entry.sellingPrice,
+          expiryDate: entry.expiryDate.toString(),
+          quantityInBaseUnits: entry.quantityInBaseUnits,
+          createdAt: entry.createdAt
+            ? entry.createdAt.toString()
+            : new Date().toISOString(),
+          performedBy: entry.createdBy,
+          itemName: meta?.name ?? "Unknown item",
+          units: meta?.units || [],
+        };
+      });
 
     return all.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [items, filterItemId]);
+  }, [items, stockEntriesResponse, filterItemId]);
 
   const filteredRows: StockChangeRow[] = useMemo(() => {
     const term = search.trim().toLowerCase();

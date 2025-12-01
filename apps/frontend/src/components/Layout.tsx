@@ -16,8 +16,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import ProtectedRoute from "./ProtectedRoute";
-import { storageService } from "@/lib/inventory-storage";
 import { useLocation, Link } from "react-router-dom";
+import {
+  useGetInventoryCategoriesQuery,
+  useGetInventoryItemsQuery,
+  useGetInventoryUnitsQuery,
+} from "@/store/inventory-slice";
 
 type BreadcrumbItem = {
   label: string;
@@ -26,6 +30,11 @@ type BreadcrumbItem = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+
+  // Prefetch inventory units & categories globally so they're cached before use
+  useGetInventoryUnitsQuery();
+  useGetInventoryCategoriesQuery();
+  const { data: inventoryItemsResponse } = useGetInventoryItemsQuery();
 
   // Get breadcrumbs for current route from centralized navigation config
   const getBreadcrumbs = (): BreadcrumbItem[] => {
@@ -37,15 +46,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       const itemId = searchParams.get("itemId") || "";
 
       let itemLabel: string | null = null;
-      if (itemId) {
-        try {
-          const items = storageService.getItems();
-          const match = items.find((item) => item.id === itemId);
-          if (match) {
-            itemLabel = match.name;
-          }
-        } catch {
-          // Ignore storage errors and fall back to generic breadcrumbs
+      if (itemId && inventoryItemsResponse?.data) {
+        const match = inventoryItemsResponse.data.find(
+          (item) => item._id === itemId
+        );
+        if (match) {
+          itemLabel = match.name;
         }
       }
 

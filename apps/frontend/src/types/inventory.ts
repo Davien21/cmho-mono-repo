@@ -1,7 +1,3 @@
-// InventoryCategory is derived from INVENTORY_CATEGORIES keys in inventory-defaults.ts
-
-import { INVENTORY_CATEGORIES } from "@/lib/inventory-defaults";
-
 export interface UnitLevel {
   id: string;
   name: string;
@@ -9,8 +5,9 @@ export interface UnitLevel {
   quantity?: number | string; // Runtime field for conversion factor (user input)
 }
 
-// Derive the InventoryCategory from the keys of INVENTORY_CATEGORIES
-export type InventoryCategory = keyof typeof INVENTORY_CATEGORIES;
+// InventoryCategory represents a human-readable category name, e.g. "Drug"
+// This is now backend-driven (via `inventory_categories`) rather than hard-coded.
+export type InventoryCategory = string;
 
 export type InventoryStatus = "draft" | "ready";
 
@@ -37,4 +34,6 @@ export interface InventoryItem {
   lowStockValue?: number;
   status: InventoryStatus;
   stocks?: StockEntry[];
+  currentStockInBaseUnits?: number;
+  earliestExpiryDate?: string | null;
 }

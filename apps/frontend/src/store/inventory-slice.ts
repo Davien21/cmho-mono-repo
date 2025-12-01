@@ -8,10 +8,86 @@ export interface IInventoryUnitDefinitionDto {
   plural: string;
 }
 
+export interface IInventoryCategoryUnitPresetDto {
+  _id: string;
+  name: string;
+  plural: string;
+}
+
 export interface IInventoryCategoryDto {
   _id: string;
   name: string;
+  /**
+   * IDs of unit presets associated with this category.
+   * Always present as string ids in the API response.
+   */
   unitPresetIds?: string[];
+  /**
+   * Populated unit preset documents for this category.
+   * Available when the backend populates `unitPresetIds`.
+   */
+  unitPresets?: IInventoryCategoryUnitPresetDto[];
+}
+
+export type SupplierStatus = "active" | "disabled" | "deleted";
+
+export interface ISupplierDto {
+  _id: string;
+  name: string;
+  contact?: {
+    phone?: string;
+    address?: string;
+  };
+  status: SupplierStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type InventorySetupStatus = "draft" | "ready";
+
+export type InventoryItemStatus = "active" | "disabled" | "deleted";
+
+export interface IInventoryItemUnitDto {
+  id: string;
+  name: string;
+  plural: string;
+  presetId?: string;
+  quantity?: number;
+}
+
+export interface IInventoryItemDto {
+  _id: string;
+  name: string;
+  category: string;
+  units: IInventoryItemUnitDto[];
+  lowStockValue?: number;
+  setupStatus: InventorySetupStatus;
+  status: InventoryItemStatus;
+  currentStockInBaseUnits?: number;
+  earliestExpiryDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type StockOperationType = "add" | "reduce";
+
+export interface IStockSupplierSnapshotDto {
+  supplierId: string;
+  name: string;
+}
+
+export interface IStockEntryDto {
+  _id: string;
+  inventoryItemId: string;
+  operationType: StockOperationType;
+  supplier: IStockSupplierSnapshotDto | null;
+  costPrice: number;
+  sellingPrice: number;
+  expiryDate: string;
+  quantityInBaseUnits: number;
+  createdBy: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ICreateInventoryUnitRequest {
@@ -19,7 +95,8 @@ export interface ICreateInventoryUnitRequest {
   plural: string;
 }
 
-export interface IUpdateInventoryUnitRequest extends ICreateInventoryUnitRequest {
+export interface IUpdateInventoryUnitRequest
+  extends ICreateInventoryUnitRequest {
   id: string;
 }
 
@@ -31,6 +108,56 @@ export interface ICreateInventoryCategoryRequest {
 export interface IUpdateInventoryCategoryRequest
   extends ICreateInventoryCategoryRequest {
   id: string;
+}
+
+export interface ICreateSupplierRequest {
+  name: string;
+  contact?: {
+    phone?: string;
+    address?: string;
+  };
+  status?: SupplierStatus;
+}
+
+export interface IUpdateSupplierRequest
+  extends Partial<ICreateSupplierRequest> {
+  id: string;
+}
+
+export interface ICreateInventoryItemRequest {
+  name: string;
+  category: string;
+  units: IInventoryItemUnitDto[];
+  lowStockValue?: number;
+  setupStatus: InventorySetupStatus;
+  status: InventoryItemStatus;
+  currentStockInBaseUnits?: number;
+}
+
+export interface IUpdateInventoryItemRequest
+  extends Partial<ICreateInventoryItemRequest> {
+  id: string;
+}
+
+export interface ICreateStockEntryRequest {
+  inventoryItemId: string;
+  operationType: StockOperationType;
+  supplier: {
+    supplierId: string;
+    name: string;
+  } | null;
+  costPrice: number;
+  sellingPrice: number;
+  expiryDate: string;
+  quantityInBaseUnits: number;
+}
+
+export interface IGetStockEntriesQuery {
+  inventoryItemId?: string;
+  operationType?: StockOperationType;
+  page?: number;
+  limit?: number;
+  sort?: "asc" | "desc";
 }
 
 export const inventoryApi = baseApi.injectEndpoints({
@@ -54,7 +181,10 @@ export const inventoryApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [TagTypes.INVENTORY_UNITS, TagTypes.INVENTORY_CATEGORIES],
+      invalidatesTags: [
+        TagTypes.INVENTORY_UNITS,
+        TagTypes.INVENTORY_CATEGORIES,
+      ],
     }),
     updateInventoryUnit: builder.mutation<
       IAPIResponse<IInventoryUnitDefinitionDto | null>,
@@ -65,14 +195,20 @@ export const inventoryApi = baseApi.injectEndpoints({
         method: "PUT",
         body,
       }),
-      invalidatesTags: [TagTypes.INVENTORY_UNITS, TagTypes.INVENTORY_CATEGORIES],
+      invalidatesTags: [
+        TagTypes.INVENTORY_UNITS,
+        TagTypes.INVENTORY_CATEGORIES,
+      ],
     }),
     deleteInventoryUnit: builder.mutation<IAPIResponse<null>, string>({
       query: (id) => ({
         url: `/inventory/units/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [TagTypes.INVENTORY_UNITS, TagTypes.INVENTORY_CATEGORIES],
+      invalidatesTags: [
+        TagTypes.INVENTORY_UNITS,
+        TagTypes.INVENTORY_CATEGORIES,
+      ],
     }),
 
     getInventoryCategories: builder.query<
@@ -114,6 +250,111 @@ export const inventoryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [TagTypes.INVENTORY_CATEGORIES],
     }),
+
+    getSuppliers: builder.query<IAPIResponse<ISupplierDto[]>, void>({
+      query: () => ({
+        url: "/inventory/suppliers",
+        method: "GET",
+      }),
+      providesTags: [TagTypes.SUPPLIERS],
+    }),
+    createSupplier: builder.mutation<
+      IAPIResponse<ISupplierDto>,
+      ICreateSupplierRequest
+    >({
+      query: (body) => ({
+        url: "/inventory/suppliers",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [TagTypes.SUPPLIERS],
+    }),
+    updateSupplier: builder.mutation<
+      IAPIResponse<ISupplierDto | null>,
+      IUpdateSupplierRequest
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/inventory/suppliers/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: [TagTypes.SUPPLIERS],
+    }),
+    deleteSupplier: builder.mutation<IAPIResponse<null>, string>({
+      query: (id) => ({
+        url: `/inventory/suppliers/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [TagTypes.SUPPLIERS],
+    }),
+
+    getInventoryItems: builder.query<IAPIResponse<IInventoryItemDto[]>, void>({
+      query: () => ({
+        url: "/inventory/items",
+        method: "GET",
+        params: {
+          sort: "desc",
+          limit: 100,
+        },
+      }),
+      providesTags: [TagTypes.INVENTORY_ITEMS],
+    }),
+    createInventoryItem: builder.mutation<
+      IAPIResponse<IInventoryItemDto>,
+      ICreateInventoryItemRequest
+    >({
+      query: (body) => ({
+        url: "/inventory/items",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [TagTypes.INVENTORY_ITEMS],
+    }),
+    updateInventoryItem: builder.mutation<
+      IAPIResponse<IInventoryItemDto | null>,
+      IUpdateInventoryItemRequest
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/inventory/items/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: [TagTypes.INVENTORY_ITEMS],
+    }),
+    deleteInventoryItem: builder.mutation<IAPIResponse<null>, string>({
+      query: (id) => ({
+        url: `/inventory/items/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [TagTypes.INVENTORY_ITEMS],
+    }),
+
+    getStockEntries: builder.query<
+      IAPIResponse<IStockEntryDto[]>,
+      IGetStockEntriesQuery | void
+    >({
+      query: (params) => ({
+        url: "/inventory/stock-entries",
+        method: "GET",
+        params: params
+          ? {
+              ...params,
+            }
+          : undefined,
+      }),
+      providesTags: [TagTypes.STOCK_ENTRIES],
+    }),
+    createStockEntry: builder.mutation<
+      IAPIResponse<IStockEntryDto>,
+      ICreateStockEntryRequest
+    >({
+      query: (body) => ({
+        url: "/inventory/stock-entries",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [TagTypes.STOCK_ENTRIES, TagTypes.INVENTORY_ITEMS],
+    }),
   }),
 });
 
@@ -126,6 +367,14 @@ export const {
   useCreateInventoryCategoryMutation,
   useUpdateInventoryCategoryMutation,
   useDeleteInventoryCategoryMutation,
+  useGetSuppliersQuery,
+  useCreateSupplierMutation,
+  useUpdateSupplierMutation,
+  useDeleteSupplierMutation,
+  useGetInventoryItemsQuery,
+  useCreateInventoryItemMutation,
+  useUpdateInventoryItemMutation,
+  useDeleteInventoryItemMutation,
+  useGetStockEntriesQuery,
+  useCreateStockEntryMutation,
 } = inventoryApi;
-
-
