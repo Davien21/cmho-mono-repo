@@ -1,0 +1,16 @@
+node_modules
+dist
+build
+.turbo
+*.log
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+coverage
+.next
+.nuxt
+.vscode
+.idea
+*.min.js
+*.min.css
+
