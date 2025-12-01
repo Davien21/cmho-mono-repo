@@ -16,6 +16,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import ProtectedRoute from "./ProtectedRoute";
+import { storageService } from "@/lib/inventory-storage";
 import { useLocation, Link } from "react-router-dom";
 
 type BreadcrumbItem = {
@@ -29,6 +30,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   // Get breadcrumbs for current route from centralized navigation config
   const getBreadcrumbs = (): BreadcrumbItem[] => {
     const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+
+    // Special handling for inventory stock overview + filtered-by-item routes
+    if (pathname === "/stock" || pathname === "/inventory/stock") {
+      const itemId = searchParams.get("itemId") || "";
+
+      let itemLabel: string | null = null;
+      if (itemId) {
+        try {
+          const items = storageService.getItems();
+          const match = items.find((item) => item.id === itemId);
+          if (match) {
+            itemLabel = match.name;
+          }
+        } catch {
+          // Ignore storage errors and fall back to generic breadcrumbs
+        }
+      }
+
+      const baseCrumbs: BreadcrumbItem[] = [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Stock", url: "/stock" },
+      ];
+
+      if (itemLabel) {
+        baseCrumbs.push({ label: itemLabel, url: null });
+      }
+
+      return baseCrumbs;
+    }
 
     // Check all navigation items from both nav groups
     const allNavItems = [

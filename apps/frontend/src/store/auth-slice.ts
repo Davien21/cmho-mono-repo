@@ -5,7 +5,10 @@ import { TagTypes } from "@/store/tags";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<IAPIResponse<void>, { password: string }>({
+    login: builder.mutation<
+      IAPIResponse<void>,
+      { email: string; password: string }
+    >({
       query: (body) => ({
         url: "/auth/login",
         method: "POST",

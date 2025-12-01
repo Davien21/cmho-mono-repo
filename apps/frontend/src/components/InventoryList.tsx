@@ -6,6 +6,7 @@ import {
   PackagePlus,
   Edit2,
   Trash2,
+  PackageOpen,
 } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -17,12 +18,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { formatUnitName } from "@/lib/inventory-defaults";
+import { InventoryQtyLevelBadge } from "@/components/InventoryQtyLevelBadge";
 
 interface InventoryListProps {
   items: InventoryItem[];
   onUpdateStock: (item: InventoryItem) => void;
   onEdit: (item: InventoryItem) => void;
   onDelete: (item: InventoryItem) => void;
+  onViewStockEntries: (item: InventoryItem) => void;
 }
 
 type DisplayMode = "full" | "skipOne" | "baseOnly";
@@ -32,6 +36,7 @@ export function InventoryList({
   onUpdateStock,
   onEdit,
   onDelete,
+  onViewStockEntries,
 }: InventoryListProps) {
   const [search, setSearch] = useState("");
   // Track display mode per item
@@ -54,11 +59,15 @@ export function InventoryList({
     );
   };
 
-  const getBaseUnitName = (item: InventoryItem): string => {
+  const getBaseUnitName = (
+    item: InventoryItem,
+    quantity: number = 2
+  ): string => {
     const units = item.units || [];
     // Base unit is the last unit in the array
     const baseUnit = units.length > 0 ? units[units.length - 1] : null;
-    return baseUnit?.name || "units";
+    if (!baseUnit) return "units";
+    return formatUnitName(baseUnit, quantity);
   };
 
   const getSortedUnits = (units: UnitLevel[]) => {
@@ -71,11 +80,11 @@ export function InventoryList({
     totalInBaseUnits: number,
     mode: DisplayMode
   ): string => {
-    if (totalInBaseUnits === 0) return `0 ${getBaseUnitName(item)}`;
+    if (totalInBaseUnits === 0) return `0 ${getBaseUnitName(item, 0)}`;
 
     const units = item.units || [];
     if (units.length === 0)
-      return `${totalInBaseUnits} ${getBaseUnitName(item)}`;
+      return `${totalInBaseUnits} ${getBaseUnitName(item, totalInBaseUnits)}`;
 
     const sortedUnits = getSortedUnits(units);
     // Base unit is the last unit in the array
@@ -83,7 +92,9 @@ export function InventoryList({
 
     // Mode C: Base unit only
     if (mode === "baseOnly") {
-      return `${totalInBaseUnits} ${baseUnit?.name || "units"}`;
+      return `${totalInBaseUnits} ${
+        baseUnit ? formatUnitName(baseUnit, totalInBaseUnits) : "units"
+      }`;
     }
 
     // Calculate unit multipliers (how many base units each unit represents)
@@ -92,7 +103,12 @@ export function InventoryList({
       // Multiply all child unit quantities (units that come after this one)
       let multiplier = 1;
       for (let i = unitIndex + 1; i < sortedUnits.length; i++) {
-        multiplier *= Number(sortedUnits[i].quantity) || 1;
+        const qty = sortedUnits[i].quantity;
+        const numQty = typeof qty === "string" ? parseFloat(qty) : Number(qty);
+        // Only multiply if quantity is a valid number > 0
+        if (!isNaN(numQty) && numQty > 0) {
+          multiplier *= numQty;
+        }
       }
       unitMultipliers.set(unit.id, multiplier);
     });
@@ -106,14 +122,14 @@ export function InventoryList({
 
     // Convert to the representation
     let remaining = totalInBaseUnits;
-    const result: { name: string; quantity: number }[] = [];
+    const result: { unit: UnitLevel; quantity: number }[] = [];
 
     unitsToUse.forEach((unit) => {
       const multiplier = unitMultipliers.get(unit.id) || 1;
       if (multiplier > 1) {
         const quantity = Math.floor(remaining / multiplier);
         if (quantity > 0) {
-          result.push({ name: unit.name, quantity });
+          result.push({ unit, quantity });
           remaining -= quantity * multiplier;
         }
       }
@@ -121,10 +137,12 @@ export function InventoryList({
 
     // Add remaining base units
     if (remaining > 0 && baseUnit) {
-      result.push({ name: baseUnit.name, quantity: remaining });
+      result.push({ unit: baseUnit, quantity: remaining });
     }
 
-    return result.map((r) => `${r.quantity} ${r.name}`).join(", ");
+    return result
+      .map((r) => `${r.quantity} ${formatUnitName(r.unit, r.quantity)}`)
+      .join(", ");
   };
 
   const toggleDisplayMode = (itemId: string) => {
@@ -154,6 +172,45 @@ export function InventoryList({
     const total = getTotalStock(item);
     const mode = getDisplayMode(item.id);
     return convertBaseUnitsToRepresentation(item, total, mode);
+  };
+
+  const isLowStock = (item: InventoryItem): boolean => {
+    if (!item.lowStockValue) return false;
+    const currentStock = getTotalStock(item);
+    return currentStock <= item.lowStockValue;
+  };
+
+  const getEarliestExpiry = (item: InventoryItem): string | null => {
+    if (!item.stocks || item.stocks.length === 0) return null;
+
+    const earliestDate = item.stocks.reduce((earliest, stock) => {
+      const stockDate = new Date(stock.expiryDate);
+      return stockDate < earliest ? stockDate : earliest;
+    }, new Date(item.stocks[0].expiryDate));
+
+    return earliestDate.toISOString().split("T")[0];
+  };
+
+  const isExpiringSoon = (item: InventoryItem): boolean => {
+    const earliestExpiry = getEarliestExpiry(item);
+    if (!earliestExpiry) return false;
+
+    const expiryDate = new Date(earliestExpiry);
+    const today = new Date();
+    const threeMonthsFromNow = new Date();
+    threeMonthsFromNow.setMonth(today.getMonth() + 3);
+
+    return expiryDate <= threeMonthsFromNow;
+  };
+
+  const formatExpiryDate = (dateString: string | null): string => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   return (
@@ -191,7 +248,7 @@ export function InventoryList({
                     <div>
                       <h3 className="font-medium text-gray-900">{item.name}</h3>
                       <p className="text-sm text-gray-600 mt-1">
-                        {item.inventoryType}
+                        {item.inventoryCategory}
                       </p>
                     </div>
                     <Badge
@@ -207,16 +264,28 @@ export function InventoryList({
                       {item.status}
                     </Badge>
                   </div>
-                  <div className="mb-3">
+                  <div className="mb-3 space-y-1">
                     <p className="text-sm text-gray-500">
                       Stock:{" "}
-                      <span
-                        className="font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                      <InventoryQtyLevelBadge
+                        low={isLowStock(item)}
                         onClick={() => toggleDisplayMode(item.id)}
                         title="Click to toggle display format"
                       >
                         {getFormattedStock(item)}
-                      </span>
+                      </InventoryQtyLevelBadge>
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Earliest Expiry:{" "}
+                      <Badge
+                        className={
+                          isExpiringSoon(item)
+                            ? "bg-red-100 text-red-800 hover:bg-red-200"
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                        }
+                      >
+                        {formatExpiryDate(getEarliestExpiry(item))}
+                      </Badge>
                     </p>
                   </div>
                   <div className="flex justify-end">
@@ -229,7 +298,13 @@ export function InventoryList({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onUpdateStock(item)}>
                           <PackagePlus className="mr-2 h-4 w-4" />
-                          Add Stock
+                          Update Stock
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onViewStockEntries(item)}
+                        >
+                          <PackageOpen className="mr-2 h-4 w-4" />
+                          View Stock Changes
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onEdit(item)}>
                           <Edit2 className="mr-2 h-4 w-4" />
@@ -265,6 +340,9 @@ export function InventoryList({
                     Stock Left
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Earliest Expiry
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -282,17 +360,28 @@ export function InventoryList({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-600">
-                        {item.inventoryType}
+                        {item.inventoryCategory}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div
-                        className="text-sm text-gray-900 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                      <InventoryQtyLevelBadge
+                        low={isLowStock(item)}
                         onClick={() => toggleDisplayMode(item.id)}
                         title="Click to toggle display format"
                       >
                         {getFormattedStock(item)}
-                      </div>
+                      </InventoryQtyLevelBadge>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Badge
+                        className={
+                          isExpiringSoon(item)
+                            ? "bg-red-100 text-red-800 hover:bg-red-200"
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                        }
+                      >
+                        {formatExpiryDate(getEarliestExpiry(item))}
+                      </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge
@@ -321,7 +410,13 @@ export function InventoryList({
                               onClick={() => onUpdateStock(item)}
                             >
                               <PackagePlus className="mr-2 h-4 w-4" />
-                              Add Stock
+                              Update Stock
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => onViewStockEntries(item)}
+                            >
+                              <PackageOpen className="mr-2 h-4 w-4" />
+                              View Stock Changes
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onEdit(item)}>
                               <Edit2 className="mr-2 h-4 w-4" />
