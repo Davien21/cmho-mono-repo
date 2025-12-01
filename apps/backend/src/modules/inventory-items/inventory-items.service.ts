@@ -1,5 +1,5 @@
 import InventoryItem from "./inventory-items.model";
-import { IInventoryItem } from "./inventory-items.types";
+import { IInventoryItem, IInventoryItemRequest } from "./inventory-items.types";
 
 class InventoryItemsService {
   async list({
@@ -32,10 +32,24 @@ class InventoryItemsService {
       .limit(limit)
       .skip(skip);
   }
+
+  async create(data: IInventoryItemRequest): Promise<IInventoryItem> {
+    return InventoryItem.create(data);
+  }
+
+  async update(
+    id: string,
+    data: Partial<IInventoryItemRequest>
+  ): Promise<IInventoryItem | null> {
+    return InventoryItem.findByIdAndUpdate(id, data, { new: true });
+  }
+
+  async delete(id: string): Promise<IInventoryItem | null> {
+    return InventoryItem.findByIdAndDelete(id);
+  }
 }
 
 const inventoryItemsService = new InventoryItemsService();
 
 export default inventoryItemsService;
-
 

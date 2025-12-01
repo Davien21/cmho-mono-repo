@@ -7,6 +7,7 @@ import Admin from "../src/modules/admins/admins.model";
 import { AdminRole } from "../src/modules/admins/admins.types";
 import InventoryUnit from "../src/modules/inventory-units/inventory-units.model";
 import InventoryCategory from "../src/modules/inventory-categories/inventory-categories.model";
+import Supplier from "../src/modules/suppliers/suppliers.model";
 
 const SUPER_ADMIN_EMAIL = "chidiebereekennia@gmail.com";
 const SUPER_ADMIN_PASSWORD = "1234";
@@ -40,6 +41,14 @@ const INVENTORY_CATEGORY_SEEDS = [
     name: "Consumable",
     unitNames: ["Piece"],
   },
+] as const;
+
+const SUPPLIER_SEEDS = [
+  { name: "MedSupply Nigeria Ltd" },
+  { name: "PharmaCare Distributors" },
+  { name: "HealthLine Logistics" },
+  { name: "Global Medical Supplies" },
+  { name: "Unity Pharmaceuticals" },
 ] as const;
 
 async function seedSuperAdmin() {
@@ -118,14 +127,31 @@ async function seedInventoryPresets() {
   }
 }
 
+async function seedSuppliers() {
+  for (const seed of SUPPLIER_SEEDS) {
+    const existing = await Supplier.findOne({ name: seed.name });
+
+    if (existing) {
+      continue;
+    }
+
+    await Supplier.create({
+      name: seed.name,
+    });
+
+    logger.info(`Seeded supplier "${seed.name}"`);
+  }
+}
+
 async function runSeeds() {
   await mongoose.connect(env.DATABASE_URL);
 
   try {
     await seedSuperAdmin();
     await seedInventoryPresets();
+    await seedSuppliers();
   } catch (error) {
-    logger.error("Error running seed script", error);
+    logger.error(`Error running seed script: ${error}`);
     throw error;
   } finally {
     await mongoose.disconnect();
