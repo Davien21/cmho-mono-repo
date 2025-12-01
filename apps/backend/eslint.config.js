@@ -26,6 +26,7 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-console': 'off', // Allow console in backend for logging
       'no-debugger': 'error',
+      'prefer-const': 'off',
     },
   }
 );
