@@ -1,6 +1,8 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
+import { AdminRole, IAdmin } from "../modules/admins/admins.types";
+import { AuthTokenPayload } from "../modules/auth/auth.service";
 
 interface ITokenOptions {
   length: number;
@@ -26,13 +28,33 @@ const generateSignUpToken = () => {
   return newToken;
 };
 
-const generateAuthToken = (user: any) => {
-  let dataToSign = { _id: user._id, email: user.email };
-  return jwt.sign({ ...dataToSign }, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+const generateAuthToken = (
+  user: Pick<IAdmin, "_id" | "email" | "isSuperAdmin" | "roles">
+): string => {
+  const payload: AuthTokenPayload = {
+    _id: String(user._id),
+    email: user.email,
+    isSuperAdmin: user.isSuperAdmin,
+    roles: user.roles,
+  };
+
+  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: "1d" });
 };
 
-const generateAdminToken = () => {
-  return jwt.sign({ _id: "Admin" }, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+const generateAdminToken = (options?: {
+  _id?: string;
+  isSuperAdmin?: boolean;
+  roles?: AdminRole[];
+}): string => {
+  const { _id = "Admin", isSuperAdmin = true, roles = [] } = options || {};
+
+  const payload: AuthTokenPayload = {
+    _id,
+    isSuperAdmin,
+    roles,
+  };
+
+  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: "1d" });
 };
 
 const generateRandomString = (length = 64) =>

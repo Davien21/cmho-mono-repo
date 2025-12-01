@@ -4,23 +4,43 @@ import { UnAuthorizedError } from "../../config/errors";
 import { env } from "../../config/env";
 
 import { successResponse } from "../../utils/response";
-import { generateAdminToken } from "../../utils/token";
+import { generateAuthToken } from "../../utils/token";
 import { JWT_COOKIE_NAME } from "../../utils/cookie-names";
 
 import authService from "./auth.service";
+import adminService from "../admins/admins.service";
+import { IAdminLogin } from "../admins/admins.types";
 
 class AuthController {
   async login(req: Request, res: Response) {
-    const { password } = req.body;
-    const isValidPassword = await authService.validatePassword(password);
+    const credentials = req.body as IAdminLogin;
 
-    if (!isValidPassword) throw new UnAuthorizedError("Invalid Password");
+    const admin = await adminService.findByEmail(credentials.email);
 
-    const jwt = generateAdminToken();
+    if (!admin)
+      throw new UnAuthorizedError("Invalid Email or Password");
+
+    const isValidPassword = await authService.validatePassword(
+      credentials.password,
+      admin.passwordHash
+    );
+
+    if (!isValidPassword)
+      throw new UnAuthorizedError("Invalid Email or Password");
+
+    const jwt = generateAuthToken({
+      _id: admin._id,
+      email: admin.email,
+      isSuperAdmin: admin.isSuperAdmin,
+      roles: admin.roles,
+    });
+
+    const adminObject = admin.toObject();
+    const { passwordHash, __v, ...safeAdmin } = adminObject;
 
     res.cookie(JWT_COOKIE_NAME, jwt, env.COOKIE_CONFIG);
 
-    res.send(successResponse("User login successful"));
+    res.send(successResponse("Admin login successful", safeAdmin));
   }
 
   async logout(_: Request, res: Response) {
