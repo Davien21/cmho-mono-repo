@@ -55,27 +55,18 @@ export function hydrateUnits(units: readonly UnitLevel[]): UnitLevel[] {
 }
 
 export function getDefaultUnits(type: InventoryCategory): UnitLevel[] {
-  return hydrateUnits(INVENTORY_CATEGORIES[type].units);
+  const categories = INVENTORY_CATEGORIES as Record<
+    string,
+    { id: string; name: string; units: readonly UnitLevel[] }
+  >;
+
+  const category = categories[type];
+  if (!category) return [];
+
+  return hydrateUnits(category.units);
 }
 
 // Extract all unique unit names from INVENTORY_UNITS
 export function getPackageUnitNames(): string[] {
   return Object.values(INVENTORY_UNITS).map((unit) => unit.name);
-}
-
-/**
- * Returns the appropriate unit name (singular or plural) based on quantity
- * @param unit - The unit object containing name and plural properties
- * @param quantity - The quantity to check (number or string)
- * @returns The singular name if quantity is 1, otherwise the plural name
- */
-export function formatUnitName(
-  unit: UnitLevel | { name: string; plural: string },
-  quantity: number | string
-): string {
-  const numQuantity =
-    typeof quantity === "string" ? parseFloat(quantity) : quantity;
-
-  // Use plural if quantity is not exactly 1 (including 0, negative, or any value != 1)
-  return numQuantity === 1 ? unit.name : unit.plural;
 }

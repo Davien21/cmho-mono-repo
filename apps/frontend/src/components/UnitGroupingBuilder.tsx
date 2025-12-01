@@ -9,18 +9,28 @@ import {
 } from "./ui/context-menu";
 import { useCallback } from "react";
 import { UnitDropdown } from "./UnitDropDown";
-import { getPackageUnitNames } from "@/lib/inventory-defaults";
 
 interface UnitGroupingBuilderProps {
   units: UnitLevel[];
   onChange: (units: UnitLevel[]) => void;
-  initialUnits?: UnitLevel[];
+  /**
+   * The original preset units for this item/category.
+   * Used solely for the "Reset" action so we can always go back
+   * to the initial configuration regardless of user edits.
+   */
+  initialUnits: UnitLevel[];
+  /**
+   * All available unit names that can be selected in the builder.
+   * Typically derived from the inventory units presets API.
+   */
+  availableUnitNames: string[];
 }
 
 export function UnitGroupingBuilder({
   units,
   onChange,
-  initialUnits = [],
+  initialUnits,
+  availableUnitNames,
 }: UnitGroupingBuilderProps) {
   const addLevel = () => {
     const newUnit: UnitLevel = {
@@ -61,7 +71,7 @@ export function UnitGroupingBuilder({
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium">Packaging Structure</h3>
           <div className="flex items-center gap-2">
@@ -98,7 +108,7 @@ export function UnitGroupingBuilder({
                       1
                     </span>
                     <UnitDropdown
-                      units={PREDEFINED_UNITS}
+                      units={availableUnitNames}
                       unitId={rootUnit.id}
                       value={rootUnit?.name || ""}
                       className="w-24 text-sm border-0 bg-transparent py-1.5 pr-3 pl-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-offset-0 shadow-none"
@@ -140,7 +150,7 @@ export function UnitGroupingBuilder({
                           </span>
 
                           <UnitDropdown
-                            units={PREDEFINED_UNITS}
+                            units={availableUnitNames}
                             unitId={unit.id}
                             value={unit.name || ""}
                             className="w-24 text-sm border-0 bg-transparent py-1.5 pr-3 pl-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-offset-0 shadow-none"
@@ -166,5 +176,3 @@ export function UnitGroupingBuilder({
     </div>
   );
 }
-
-const PREDEFINED_UNITS = getPackageUnitNames();

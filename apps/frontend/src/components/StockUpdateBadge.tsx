@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { UnitLevel } from "@/types/inventory";
-import { formatUnitName } from "@/lib/inventory-defaults";
+import { formatUnitName } from "@/lib/utils";
 
 type DisplayMode = "full" | "skipOne" | "baseOnly";
 

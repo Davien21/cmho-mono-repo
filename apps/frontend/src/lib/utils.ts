@@ -1,7 +1,7 @@
-import { RTKQueryAPIError } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as yup from "yup";
+import { UnitLevel } from "@/types/inventory";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -90,3 +90,20 @@ export const formatDate = (date: string | Date | null) => {
 export const duplicateArray = <T>(array: T[], times: number): T[] => {
   return Array.from({ length: times }, () => [...array]).flat();
 };
+
+/**
+ * Returns the appropriate unit name (singular or plural) based on quantity
+ * @param unit - The unit object containing name and plural properties
+ * @param quantity - The quantity to check (number or string)
+ * @returns The singular name if quantity is 1, otherwise the plural name
+ */
+export function formatUnitName(
+  unit: UnitLevel | { name: string; plural: string },
+  quantity: number | string
+): string {
+  const numQuantity =
+    typeof quantity === "string" ? parseFloat(quantity) : quantity;
+
+  // Use plural if quantity is not exactly 1 (including 0, negative, or any value != 1)
+  return numQuantity === 1 ? unit.name : unit.plural;
+}
