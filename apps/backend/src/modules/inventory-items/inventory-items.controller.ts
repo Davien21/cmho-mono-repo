@@ -5,7 +5,7 @@ import { GetInventoryItemsQuerySchema } from "./inventory-items.validators";
 import { IInventoryItemRequest } from "./inventory-items.types";
 
 export async function getInventoryItems(
-  req: Request<{}, {}, {}, GetInventoryItemsQuerySchema>,
+  req: Request<Record<string, never>, Record<string, never>, Record<string, never>, GetInventoryItemsQuerySchema>,
   res: Response
 ) {
   try {

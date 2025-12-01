@@ -14,16 +14,16 @@ const generateToken = ({ length, range, prefix }: ITokenOptions) => {
   prefix = prefix || "";
   let token = "";
   for (let i = 0; i < length; i++) {
-    let randomIndex = Math.floor(Math.random() * range.length);
+    const randomIndex = Math.floor(Math.random() * range.length);
     token += range[randomIndex];
   }
   return prefix + token;
 };
 
 const generateSignUpToken = () => {
-  let range = Array.from(Array(10).keys());
-  let tokenOptions = { length: 5, range, prefix: "SZ-" };
-  let newToken = generateToken(tokenOptions);
+  const range = Array.from(Array(10).keys());
+  const tokenOptions = { length: 5, range, prefix: "SZ-" };
+  const newToken = generateToken(tokenOptions);
 
   return newToken;
 };

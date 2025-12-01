@@ -9,7 +9,8 @@ export const logFormat = printf(
       if ("error" in message) message = message.error;
       else message = JSON.stringify(message);
     }
-    message = String(message).replace(/[[\d]+m/g, "");
+    // eslint-disable-next-line no-control-regex
+    message = String(message).replace(/\u001b\[[\d]+m/g, "");
     return `${timestamp}\n[${label}] ${level}:\n${stack || message}\n`;
   }
 );
