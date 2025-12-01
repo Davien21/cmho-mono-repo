@@ -1,7 +1,11 @@
 import { defineConfig, loadEnv } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
 
-const { publicVars } = loadEnv({ prefixes: ["VITE_"] });
+// Load environment variables - use PUBLIC_ prefix for client-side variables
+const { publicVars } = loadEnv({
+  prefixes: ["PUBLIC_"],
+  mode: process.env.NODE_ENV || "production",
+});
 
 export default defineConfig({
   plugins: [pluginReact()],
@@ -24,5 +28,3 @@ export default defineConfig({
     historyApiFallback: true,
   },
 });
-
-
