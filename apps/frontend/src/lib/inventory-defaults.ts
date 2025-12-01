@@ -1,7 +1,16 @@
-import { UnitLevel, InventoryType } from "@/types/inventory";
+import { UnitLevel, InventoryCategory } from "@/types/inventory";
+
+// Suppliers
+export const SUPPLIERS = [
+  { name: "MedSupply Nigeria Ltd" },
+  { name: "PharmaCare Distributors" },
+  { name: "HealthLine Logistics" },
+  { name: "Global Medical Supplies" },
+  { name: "Unity Pharmaceuticals" },
+] as const;
 
 // All unique units extracted from INVENTORY_CATEGORIES
-export const PACKAGE_UNITS = {
+export const INVENTORY_UNITS = {
   pack: { id: "pack", name: "Pack", plural: "Packs" },
   card: { id: "card", name: "Card", plural: "Cards" },
   tablet: { id: "tablet", name: "Tablet", plural: "Tablets" },
@@ -13,27 +22,27 @@ export const INVENTORY_CATEGORIES = {
   Drug: {
     id: "drug",
     name: "Drug",
-    units: [PACKAGE_UNITS.pack, PACKAGE_UNITS.card, PACKAGE_UNITS.tablet],
+    units: [INVENTORY_UNITS.pack, INVENTORY_UNITS.card, INVENTORY_UNITS.tablet],
   },
   Injection: {
     id: "injection",
     name: "Injection",
-    units: [PACKAGE_UNITS.pack, PACKAGE_UNITS.bottle],
+    units: [INVENTORY_UNITS.pack, INVENTORY_UNITS.bottle],
   },
   Syrup: {
     id: "syrup",
     name: "Syrup",
-    units: [PACKAGE_UNITS.bottle],
+    units: [INVENTORY_UNITS.bottle],
   },
-  Water: {
+  Bottle: {
     id: "bottle",
     name: "Bottle",
-    units: [PACKAGE_UNITS.bottle],
+    units: [INVENTORY_UNITS.bottle],
   },
   Consumable: {
     id: "consumable",
     name: "Consumable",
-    units: [PACKAGE_UNITS.piece],
+    units: [INVENTORY_UNITS.piece],
   },
 } as const satisfies Record<
   string,
@@ -42,17 +51,31 @@ export const INVENTORY_CATEGORIES = {
 
 // Hydrate preset units with runtime fields (quantity)
 export function hydrateUnits(units: readonly UnitLevel[]): UnitLevel[] {
-  return units.map((unit) => ({
-    ...unit,
-    quantity: "",
-  }));
+  return units.map((unit) => ({ ...unit, quantity: "" }));
 }
 
-export function getDefaultUnits(type: InventoryType): UnitLevel[] {
+export function getDefaultUnits(type: InventoryCategory): UnitLevel[] {
   return hydrateUnits(INVENTORY_CATEGORIES[type].units);
 }
 
-// Extract all unique unit names from PACKAGE_UNITS
+// Extract all unique unit names from INVENTORY_UNITS
 export function getPackageUnitNames(): string[] {
-  return Object.values(PACKAGE_UNITS).map((unit) => unit.name);
+  return Object.values(INVENTORY_UNITS).map((unit) => unit.name);
+}
+
+/**
+ * Returns the appropriate unit name (singular or plural) based on quantity
+ * @param unit - The unit object containing name and plural properties
+ * @param quantity - The quantity to check (number or string)
+ * @returns The singular name if quantity is 1, otherwise the plural name
+ */
+export function formatUnitName(
+  unit: UnitLevel | { name: string; plural: string },
+  quantity: number | string
+): string {
+  const numQuantity =
+    typeof quantity === "string" ? parseFloat(quantity) : quantity;
+
+  // Use plural if quantity is not exactly 1 (including 0, negative, or any value != 1)
+  return numQuantity === 1 ? unit.name : unit.plural;
 }

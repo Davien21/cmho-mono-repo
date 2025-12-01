@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Card } from "./ui/card";
-import { UnitGroupingBuilder } from "./UnitGroupingBuilder";
+} from "../ui/select";
+import { Card } from "../ui/card";
+import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
 import {
   InventoryItem,
-  InventoryType,
+  InventoryCategory,
   InventoryStatus,
   UnitLevel,
 } from "@/types/inventory";
@@ -24,13 +24,13 @@ import {
 } from "@/lib/inventory-defaults";
 import { storageService } from "@/lib/inventory-storage";
 
-interface AddInventoryFormProps {
+interface AddInventoryModalProps {
   onClose: () => void;
   onSave: (item: InventoryItem) => void;
 }
 
-export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
-  const [inventoryType, setInventoryType] = useState<InventoryType>("Drug");
+export function AddInventoryModal({ onClose, onSave }: AddInventoryModalProps) {
+  const [inventoryCategory, setInventoryCategory] = useState<InventoryCategory>("Drug");
   const [name, setName] = useState("");
 
   // Initialize units synchronously with defaults to prevent UI flash
@@ -41,6 +41,7 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
   const [units, setUnits] = useState<UnitLevel[]>(getInitialUnits);
   const [initialUnits, setInitialUnits] =
     useState<UnitLevel[]>(getInitialUnits);
+  const [lowStockValue, setLowStockValue] = useState<string>("");
   const [status, setStatus] = useState<InventoryStatus>("ready");
 
   const getBaseUnit = (): UnitLevel | undefined => {
@@ -49,10 +50,10 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
   };
 
   useEffect(() => {
-    const defaultUnits = getDefaultUnits(inventoryType);
+    const defaultUnits = getDefaultUnits(inventoryCategory);
     setUnits(defaultUnits);
     setInitialUnits(defaultUnits);
-  }, [inventoryType]);
+  }, [inventoryCategory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,8 +75,9 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
       name,
       description: "",
       category: "",
-      inventoryType,
+      inventoryCategory,
       units,
+      lowStockValue: lowStockValue ? parseFloat(lowStockValue) : undefined,
       status,
       stocks: [],
     };
@@ -138,8 +140,8 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
               <div className="space-y-2">
                 <Label htmlFor="type">Category</Label>
                 <Select
-                  value={inventoryType}
-                  onValueChange={(v) => setInventoryType(v as InventoryType)}
+                  value={inventoryCategory}
+                  onValueChange={(v) => setInventoryCategory(v as InventoryCategory)}
                 >
                   <SelectTrigger id="type">
                     <SelectValue />
@@ -164,6 +166,23 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="lowStockValue">Low Stock Value</Label>
+            <Input
+              id="lowStockValue"
+              type="number"
+              value={lowStockValue}
+              onChange={(e) => setLowStockValue(e.target.value)}
+              placeholder="Enter minimum stock threshold"
+              className="text-base"
+              min="0"
+              step="1"
+            />
+            <p className="text-xs text-muted-foreground">
+              Alert when stock falls below this value (in base units)
+            </p>
+          </div>
+
           <div className="flex gap-3 justify-end pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
@@ -177,3 +196,4 @@ export function AddInventoryForm({ onClose, onSave }: AddInventoryFormProps) {
     </div>
   );
 }
+

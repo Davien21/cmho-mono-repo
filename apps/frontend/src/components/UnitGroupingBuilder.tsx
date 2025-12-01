@@ -27,6 +27,7 @@ export function UnitGroupingBuilder({
       id: crypto.randomUUID(),
       name: "",
       quantity: "",
+      plural: "",
     };
     onChange([...units, newUnit]);
   };

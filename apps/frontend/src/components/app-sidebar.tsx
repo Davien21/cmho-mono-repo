@@ -5,6 +5,8 @@ import {
   ArrowRightLeft,
   Wallet,
   Package,
+  History,
+  Settings,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -61,6 +63,24 @@ export const navigationConfig = {
       icon: Package,
       breadcrumbs: [{ label: "Inventory", url: "/inventory" }],
     },
+    {
+      title: "Settings",
+      url: "/inventory/settings",
+      icon: Settings,
+      breadcrumbs: [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Settings", url: "/inventory/settings" },
+      ],
+    },
+    {
+      title: "Stock",
+      url: "/stock",
+      icon: History,
+      breadcrumbs: [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Stock", url: "/stock" },
+      ],
+    },
   ],
   // Additional routes not in sidebar navigation
   additionalRoutes: [
@@ -82,14 +102,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
 
+  const isInventoryPath =
+    location.pathname.startsWith("/inventory") ||
+    location.pathname.startsWith("/stock");
+
   const currentApp =
-    data.apps.find((app) => location.pathname.startsWith(app.path)) ||
+    (isInventoryPath
+      ? data.apps.find((app) => app.name === "Inventory Manager")
+      : data.apps.find((app) => location.pathname.startsWith(app.path))) ||
     data.apps[0];
 
   // Determine which nav items to show based on current app
-  const navItems = location.pathname.startsWith("/inventory")
-    ? data.inventoryNav
-    : data.salaryNav;
+  const navItems = isInventoryPath ? data.inventoryNav : data.salaryNav;
 
   const handleLogout = async () => {
     try {

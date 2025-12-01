@@ -15,5 +15,7 @@ export const baseApi = createApi({
     TagTypes.DASHBOARD_STATS,
     TagTypes.TRANSFER,
     TagTypes.AUTH,
+    TagTypes.INVENTORY_UNITS,
+    TagTypes.INVENTORY_CATEGORIES,
   ],
 });

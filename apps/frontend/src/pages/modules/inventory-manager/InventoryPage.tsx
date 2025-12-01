@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AddInventoryForm } from "@/components/AddInventoryForm";
+import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
-import { AddStockModal } from "@/components/modals/AddStockModal";
+import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
 import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
 import { InventoryItem } from "@/types/inventory";
 import { storageService } from "@/lib/inventory-storage";
@@ -15,6 +16,7 @@ export default function InventoryPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showStockModal, setShowStockModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadedItems = storageService.getItems();
@@ -56,6 +58,10 @@ export default function InventoryPage() {
     }
   };
 
+  const handleViewStockEntries = (item: InventoryItem) => {
+    navigate(`/inventory/stock?itemId=${encodeURIComponent(item.id)}`);
+  };
+
   return (
     <Layout>
       <div className="flex flex-col gap-4 sm:gap-6">
@@ -83,10 +89,11 @@ export default function InventoryPage() {
           onUpdateStock={handleUpdateStock}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onViewStockEntries={handleViewStockEntries}
         />
 
         {showAddForm && (
-          <AddInventoryForm
+          <AddInventoryModal
             onClose={() => setShowAddForm(false)}
             onSave={handleSaveItem}
           />
@@ -104,7 +111,7 @@ export default function InventoryPage() {
         )}
 
         {showStockModal && selectedItem && (
-          <AddStockModal
+          <UpdateStockModal
             inventoryItemId={selectedItem.id}
             onClose={() => {
               setShowStockModal(false);
