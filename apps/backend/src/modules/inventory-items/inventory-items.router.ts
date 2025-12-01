@@ -4,8 +4,17 @@ const router = express.Router();
 import { authenticate, hasRole } from "../../middlewares/authentication";
 import { AdminRole } from "../admins/admins.types";
 import validator from "../../middlewares/validator";
-import { getInventoryItems } from "./inventory-items.controller";
-import { getInventoryItemsSchema } from "./inventory-items.validators";
+import {
+  createInventoryItem,
+  deleteInventoryItem,
+  getInventoryItems,
+  updateInventoryItem,
+} from "./inventory-items.controller";
+import {
+  createInventoryItemSchema,
+  getInventoryItemsSchema,
+  updateInventoryItemSchema,
+} from "./inventory-items.validators";
 
 router.get(
   "/inventory/items",
@@ -15,6 +24,32 @@ router.get(
     validator(getInventoryItemsSchema, "query"),
   ],
   getInventoryItems
+);
+
+router.post(
+  "/inventory/items",
+  [
+    authenticate,
+    hasRole(AdminRole.INVENTORY_MANAGER),
+    validator(createInventoryItemSchema),
+  ],
+  createInventoryItem
+);
+
+router.put(
+  "/inventory/items/:id",
+  [
+    authenticate,
+    hasRole(AdminRole.INVENTORY_MANAGER),
+    validator(updateInventoryItemSchema),
+  ],
+  updateInventoryItem
+);
+
+router.delete(
+  "/inventory/items/:id",
+  [authenticate, hasRole(AdminRole.INVENTORY_MANAGER)],
+  deleteInventoryItem
 );
 
 export default router;

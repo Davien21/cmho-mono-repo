@@ -38,6 +38,7 @@ export interface IInventoryItemBase {
   status: InventoryStatus;
   createdBy: ObjectId;
   currentStockInBaseUnits?: number;
+  earliestExpiryDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
