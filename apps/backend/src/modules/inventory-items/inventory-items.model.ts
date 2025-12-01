@@ -42,6 +42,10 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
       required: false,
       default: 0,
     },
+    earliestExpiryDate: {
+      type: Date,
+      required: false,
+    },
   },
   {
     timestamps: true,
