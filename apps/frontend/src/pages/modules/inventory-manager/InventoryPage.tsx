@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,27 +7,41 @@ import { InventoryList } from "@/components/InventoryList";
 import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
 import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
 import { InventoryItem } from "@/types/inventory";
-import { storageService } from "@/lib/inventory-storage";
 import Layout from "@/components/Layout";
+import {
+  IInventoryItemDto,
+  useGetInventoryItemsQuery,
+} from "@/store/inventory-slice";
 
 export default function InventoryPage() {
-  const [items, setItems] = useState<InventoryItem[]>([]);
+  const { data, isLoading } = useGetInventoryItemsQuery();
+
+  const items: InventoryItem[] = useMemo(() => {
+    const dtos: IInventoryItemDto[] = data?.data || [];
+    return dtos.map((dto) => ({
+      id: dto._id,
+      name: dto.name,
+      description: "",
+      category: dto.category,
+      inventoryCategory: dto.category,
+      units: (dto.units || []).map((u) => ({
+        id: u.id,
+        name: u.name,
+        plural: u.plural,
+        quantity: u.quantity,
+      })),
+      lowStockValue: dto.lowStockValue,
+      status: dto.setupStatus,
+      stocks: [],
+      currentStockInBaseUnits: dto.currentStockInBaseUnits,
+      earliestExpiryDate: dto.earliestExpiryDate ?? null,
+    }));
+  }, [data]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showStockModal, setShowStockModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const loadedItems = storageService.getItems();
-    setItems(loadedItems);
-  }, []);
-
-  const handleSaveItem = (item: InventoryItem) => {
-    storageService.saveItem(item);
-    setItems([...storageService.getItems()]);
-    setShowAddForm(false);
-  };
 
   const handleUpdateStock = (item: InventoryItem) => {
     setSelectedItem(item);
@@ -39,23 +53,11 @@ export default function InventoryPage() {
     setShowEditModal(true);
   };
 
-  const handleEditSaved = () => {
-    setItems([...storageService.getItems()]);
-    setShowEditModal(false);
-    setSelectedItem(null);
-  };
-
-  const handleStockSaved = () => {
-    setItems([...storageService.getItems()]);
-    setShowStockModal(false);
-    setSelectedItem(null);
-  };
-
   const handleDelete = (item: InventoryItem) => {
-    if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
-      storageService.deleteItem(item.id);
-      setItems([...storageService.getItems()]);
-    }
+    // Delete will be handled once wired to backend mutation
+    window.alert(
+      `Delete for "${item.name}" will be available once wired to backend mutation.`
+    );
   };
 
   const handleViewStockEntries = (item: InventoryItem) => {
@@ -84,19 +86,22 @@ export default function InventoryPage() {
           </Button>
         </div>
 
-        <InventoryList
-          items={items}
-          onUpdateStock={handleUpdateStock}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onViewStockEntries={handleViewStockEntries}
-        />
+        {isLoading ? (
+          <div className="border rounded-lg p-12 text-center text-muted-foreground">
+            Loading inventory items...
+          </div>
+        ) : (
+          <InventoryList
+            items={items}
+            onUpdateStock={handleUpdateStock}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onViewStockEntries={handleViewStockEntries}
+          />
+        )}
 
         {showAddForm && (
-          <AddInventoryModal
-            onClose={() => setShowAddForm(false)}
-            onSave={handleSaveItem}
-          />
+          <AddInventoryModal onClose={() => setShowAddForm(false)} />
         )}
 
         {showEditModal && selectedItem && (
@@ -106,18 +111,16 @@ export default function InventoryPage() {
               setShowEditModal(false);
               setSelectedItem(null);
             }}
-            onSave={handleEditSaved}
           />
         )}
 
         {showStockModal && selectedItem && (
           <UpdateStockModal
-            inventoryItemId={selectedItem.id}
+            inventoryItem={selectedItem}
             onClose={() => {
               setShowStockModal(false);
               setSelectedItem(null);
             }}
-            onSave={handleStockSaved}
           />
         )}
       </div>

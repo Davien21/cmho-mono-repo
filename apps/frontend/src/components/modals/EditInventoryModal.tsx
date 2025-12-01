@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -18,47 +21,81 @@ import {
   InventoryStatus,
   UnitLevel,
 } from "@/types/inventory";
-import { INVENTORY_CATEGORIES } from "@/lib/inventory-defaults";
-import { storageService } from "@/lib/inventory-storage";
+import {
+  IInventoryUnitDefinitionDto,
+  useGetInventoryItemsQuery,
+  useGetInventoryUnitsQuery,
+  useUpdateInventoryItemMutation,
+} from "@/store/inventory-slice";
+import { InventoryCategorySelect } from "@/components/InventoryCategorySelect";
+import { getRTKQueryErrorMessage } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface EditInventoryModalProps {
   item: InventoryItem;
   onClose: () => void;
-  onSave: (item: InventoryItem) => void;
 }
 
-export function EditInventoryModal({
-  item,
-  onClose,
-  onSave,
-}: EditInventoryModalProps) {
-  const [inventoryCategory, setInventoryCategory] = useState<InventoryCategory>(
-    item.inventoryCategory
-  );
-  const [name, setName] = useState(item.name);
+const editInventoryItemSchema = yup.object({
+  name: yup.string().trim().required("Name is required"),
+  inventoryCategory: yup.string().trim().required("Category is required"),
+  lowStockValue: yup
+    .string()
+    .optional()
+    .test(
+      "is-number",
+      "Low stock value must be a non-negative number",
+      (value) => {
+        if (!value) return true;
+        const parsed = parseFloat(value);
+        return !Number.isNaN(parsed) && parsed >= 0;
+      }
+    ),
+  setupStatus: yup
+    .mixed<InventoryStatus>()
+    .oneOf(["draft", "ready"])
+    .required(),
+});
+
+type EditInventoryFormValues = yup.InferType<typeof editInventoryItemSchema>;
+
+export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
   const [units, setUnits] = useState<UnitLevel[]>(item.units || []);
   const [initialUnits] = useState<UnitLevel[]>(item.units || []);
-  const [lowStockValue, setLowStockValue] = useState<string>(
-    item.lowStockValue !== undefined ? String(item.lowStockValue) : ""
-  );
-  const [status, setStatus] = useState<InventoryStatus>(item.status);
+
+  const { refetch } = useGetInventoryItemsQuery();
+  const { data: unitsResponse } = useGetInventoryUnitsQuery();
+  const unitsPresets: IInventoryUnitDefinitionDto[] = unitsResponse?.data || [];
+
+  const unitNames: string[] = unitsPresets.map((u) => u.name);
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<EditInventoryFormValues>({
+    resolver: yupResolver(editInventoryItemSchema),
+    defaultValues: {
+      name: item.name,
+      inventoryCategory: item.inventoryCategory,
+      lowStockValue:
+        item.lowStockValue !== undefined ? String(item.lowStockValue) : "",
+      setupStatus: item.status,
+    },
+  });
 
   const getBaseUnit = (): UnitLevel | undefined => {
     // Base unit is the last unit in the array
     return units.length > 0 ? units[units.length - 1] : undefined;
   };
 
-  // Update initial units when inventory type changes
-  useEffect(() => {
-    // We don't auto-reset units on type change in edit mode
-    // User can manually modify them if needed
-  }, [inventoryCategory]);
+  const [updateInventoryItem, { isLoading: isUpdating }] =
+    useUpdateInventoryItemMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!name.trim() || units.length === 0) {
-      alert("Please fill in all required fields");
+  const onSubmit = async (values: EditInventoryFormValues) => {
+    if (units.length === 0) {
+      alert("Please define at least one unit");
       return;
     }
 
@@ -69,47 +106,70 @@ export function EditInventoryModal({
       return;
     }
 
-    const updatedItem: InventoryItem = {
-      ...item,
-      name,
-      inventoryCategory,
-      units,
-      lowStockValue: lowStockValue ? parseFloat(lowStockValue) : undefined,
-      status,
-    };
+    try {
+      await updateInventoryItem({
+        id: item.id,
+        name: values.name.trim(),
+        category: values.inventoryCategory as InventoryCategory,
+        units: units.map((u) => ({
+          id: u.id,
+          name: u.name,
+          plural: u.plural,
+          quantity:
+            typeof u.quantity === "string"
+              ? parseFloat(u.quantity) || undefined
+              : u.quantity,
+        })),
+        lowStockValue: values.lowStockValue
+          ? parseFloat(values.lowStockValue)
+          : undefined,
+        setupStatus: values.setupStatus,
+      }).unwrap();
 
-    // Save to local storage
-    storageService.saveItem(updatedItem);
-
-    onSave(updatedItem);
-    onClose();
+      await refetch();
+      toast.success("Inventory item updated successfully");
+      onClose();
+    } catch (error: unknown) {
+      const message =
+        getRTKQueryErrorMessage(error) ||
+        "Failed to update inventory item. Please try again.";
+      toast.error(message);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-[550px] max-h-[90vh] overflow-y-auto">
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
           <div className="flex items-center justify-between pb-4">
             <h2 className="text-2xl font-bold">Edit Inventory Item</h2>
             <div className="flex items-center gap-3">
-              <Select
-                value={status}
-                onValueChange={(value) => setStatus(value as InventoryStatus)}
-              >
-                <SelectTrigger
-                  className={`w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
-                    status === "ready"
-                      ? "bg-green-100 text-green-800 hover:bg-green-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="ready">Ready</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="setupStatus"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) =>
+                      field.onChange(value as InventoryStatus)
+                    }
+                  >
+                    <SelectTrigger
+                      className={`w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
+                        field.value === "ready"
+                          ? "bg-green-100 text-green-800 hover:bg-green-200"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="ready">Ready</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               <Button
                 type="button"
                 variant="ghost"
@@ -127,32 +187,31 @@ export function EditInventoryModal({
                 <Label htmlFor="name">Name *</Label>
                 <Input
                   id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  {...register("name")}
                   placeholder="e.g., Paracetamol 500mg"
                   className="text-base"
                 />
+                {errors.name?.message && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="type">Category</Label>
-                <Select
-                  value={inventoryCategory}
-                  onValueChange={(v) =>
-                    setInventoryCategory(v as InventoryCategory)
-                  }
-                >
-                  <SelectTrigger id="type">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(INVENTORY_CATEGORIES).map((category) => (
-                      <SelectItem key={category.id} value={category.name}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="edit-inventory-category">Category</Label>
+                <Controller
+                  name="inventoryCategory"
+                  control={control}
+                  render={({ field }) => (
+                    <InventoryCategorySelect
+                      id="edit-inventory-category"
+                      value={field.value}
+                      onChange={(v) => field.onChange(v as InventoryCategory)}
+                      errorMessage={errors.inventoryCategory?.message}
+                    />
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -162,6 +221,7 @@ export function EditInventoryModal({
               units={units}
               onChange={setUnits}
               initialUnits={initialUnits}
+              availableUnitNames={unitNames}
             />
           </div>
 
@@ -170,13 +230,17 @@ export function EditInventoryModal({
             <Input
               id="lowStockValue"
               type="number"
-              value={lowStockValue}
-              onChange={(e) => setLowStockValue(e.target.value)}
+              {...register("lowStockValue")}
               placeholder="Enter minimum stock threshold"
               className="text-base"
               min="0"
               step="1"
             />
+            {errors.lowStockValue?.message && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.lowStockValue.message}
+              </p>
+            )}
             <p className="text-xs text-muted-foreground">
               Alert when stock falls below this value (in base units)
             </p>
@@ -186,8 +250,12 @@ export function EditInventoryModal({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-gray-900 hover:bg-gray-800">
-              Save Changes
+            <Button
+              type="submit"
+              className="bg-gray-900 hover:bg-gray-800"
+              disabled={isUpdating || isSubmitting}
+            >
+              {isUpdating || isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>
