@@ -9,6 +9,33 @@ alwaysApply: false
 
 When creating pull requests, Cursor should follow this systematic approach to ensure consistency and completeness.
 
+## Step 0: Branch Setup
+
+Before committing changes or creating a PR, always work from a fresh branch off `main`:
+
+1. **Switch to `main` and pull latest changes**
+
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+2. **Decide on a branch name**
+
+   - Base it on the type of work and a short description.
+   - Examples:
+     - `feature/add-inventory-system`
+     - `fix/auth-token-expiry`
+     - `refactor/payment-components`
+
+3. **Create and switch to the new branch**
+
+   ```bash
+   git checkout -b feature/add-inventory-system
+   ```
+
+4. Make your changes on this branch, then continue with **Step 1: Commit Management**.
+
 ## Step 1: Commit Management
 
 Before creating a PR, ensure all changes are properly committed following `commits.mdc` rules:
@@ -229,18 +256,21 @@ Only if automated creation is not possible:
 
 1. User says "commit my changes and create a PR" (optionally with issue link)
 2. **Check user's prompt for any GitHub issue links** (e.g., `#123`, `https://github.com/owner/repo/issues/123`, or "closes #123")
-3. Run `git status` to check for changes
-4. Analyze changes and group them logically
-5. Stage and commit related changes together using commits.mdc format
-6. Run `pnpm lint` to check code quality
-7. Fix any linting errors if present
-8. Push branch to remote
-9. Extract repository owner and name from git remote URL
-10. Analyze commits to understand what was implemented
-11. Generate PR description following template, **using the issue link from prompt if provided**
-12. Use `mcp_github_create_pull_request` to create the PR
-13. Extract PR URL and number from the MCP response
-14. Provide user with clickable markdown link to the created PR
+3. Switch to `main` and pull latest changes (`git checkout main`, then `git pull origin main`)
+4. Decide on a descriptive feature branch name (e.g., `feature/add-inventory-system`, `fix/auth-token-expiry`)
+5. Create and switch to the new branch with `git checkout -b <branch-name>`
+6. Run `git status` to check for changes
+7. Analyze changes and group them logically
+8. Stage and commit related changes together using commits.mdc format
+9. Run `pnpm lint` to check code quality
+10. Fix any linting errors if present
+11. Push branch to remote (e.g., `git push -u origin <branch-name>`)
+12. Extract repository owner and name from git remote URL
+13. Analyze commits to understand what was implemented
+14. Generate PR description following template, **using the issue link from prompt if provided**
+15. Use `mcp_github_create_pull_request` to create the PR
+16. Extract PR URL and number from the MCP response
+17. Provide user with clickable markdown link to the created PR
 
 ## Important Notes
 
