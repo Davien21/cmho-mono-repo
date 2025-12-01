@@ -1,17 +1,12 @@
-import InventoryUnit from "./inventory-units.model";
-import {
-  IInventoryUnitDefinition,
-  IInventoryUnitDefinitionRequest,
-} from "./inventory-units.types";
+import InventoryUnit from './inventory-units.model';
+import { IInventoryUnitDefinition, IInventoryUnitDefinitionRequest } from './inventory-units.types';
 
 class InventoryUnitsService {
   list() {
     return InventoryUnit.find().sort({ name: 1 });
   }
 
-  create(
-    data: IInventoryUnitDefinitionRequest
-  ): Promise<IInventoryUnitDefinition> {
+  create(data: IInventoryUnitDefinitionRequest): Promise<IInventoryUnitDefinition> {
     return InventoryUnit.create(data);
   }
 

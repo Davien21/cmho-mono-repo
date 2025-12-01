@@ -39,7 +39,7 @@ PAYSTACK_SECRET_KEY=sk_test_your_secret_key_here
 
 ```typescript
 // Raw body middleware for webhook endpoints (must come before express.json)
-app.use("/api/v1/webhooks", express.raw({ type: "application/json" }));
+app.use('/api/v1/webhooks', express.raw({ type: 'application/json' }));
 ```
 
 This ensures that webhook requests preserve the raw body buffer needed for HMAC signature verification, while other endpoints continue to use parsed JSON.
@@ -212,9 +212,9 @@ All incoming webhooks are verified using HMAC SHA512 signature verification:
 
 ```typescript
 const hash = crypto
-  .createHmac("sha512", PAYSTACK_SECRET_KEY)
+  .createHmac('sha512', PAYSTACK_SECRET_KEY)
   .update(JSON.stringify(requestBody))
-  .digest("hex");
+  .digest('hex');
 ```
 
 ### Best Practices
@@ -251,13 +251,11 @@ Use the `/webhooks/stats` endpoint to monitor:
 ### Common Issues
 
 1. **Webhook Not Triggered**
-
    - Check Paystack dashboard webhook configuration
    - Verify webhook URL is accessible
    - Check if events are properly selected
 
 2. **Signature Validation Failed**
-
    - Verify `PAYSTACK_SECRET_KEY` is correct
    - Ensure the raw body middleware is configured: `app.use("/api/v1/webhooks", express.raw({ type: "application/json" }))`
    - Check if request body is being modified by other middleware
@@ -265,7 +263,6 @@ Use the `/webhooks/stats` endpoint to monitor:
    - Verify the raw body middleware comes before `express.json()` middleware
 
 3. **Transaction Not Found**
-
    - Verify transaction was created with correct Paystack reference
    - Check if reference format matches Paystack's format
 

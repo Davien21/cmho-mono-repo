@@ -1,18 +1,18 @@
-import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { PackageOpen } from "lucide-react";
+import { useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { PackageOpen } from 'lucide-react';
 
-import Layout from "@/components/Layout";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { InventoryItem, StockEntry } from "@/types/inventory";
+import Layout from '@/components/Layout';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { InventoryItem, StockEntry } from '@/types/inventory';
 import {
   IInventoryItemDto,
   IStockEntryDto,
   useGetInventoryItemsQuery,
   useGetStockEntriesQuery,
-} from "@/store/inventory-slice";
-import { StockUpdateBadge } from "@/components/StockUpdateBadge";
+} from '@/store/inventory-slice';
+import { StockUpdateBadge } from '@/components/StockUpdateBadge';
 
 export default function StockEntriesPage() {
   const { itemId } = useParams<{ itemId: string }>();
@@ -28,7 +28,7 @@ export default function StockEntriesPage() {
     return dtos.map((dto) => ({
       id: dto._id,
       name: dto.name,
-      description: "",
+      description: '',
       category: dto.category,
       inventoryCategory: dto.category,
       units: (dto.units || []).map((u) => ({
@@ -63,19 +63,14 @@ export default function StockEntriesPage() {
         sellingPrice: entry.sellingPrice,
         expiryDate: entry.expiryDate.toString(),
         quantityInBaseUnits: entry.quantityInBaseUnits,
-        createdAt: entry.createdAt
-          ? entry.createdAt.toString()
-          : new Date().toISOString(),
+        createdAt: entry.createdAt ? entry.createdAt.toString() : new Date().toISOString(),
         performedBy: entry.createdBy,
       }))
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [stockEntriesResponse]);
 
   const handleBack = () => {
-    navigate("/inventory");
+    navigate('/inventory');
   };
 
   return (
@@ -84,18 +79,14 @@ export default function StockEntriesPage() {
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Stock Changes</h2>
           <p className="mt-1 text-sm text-gray-600">
-            {item
-              ? `Viewing stock changes for "${item.name}".`
-              : "Viewing stock changes."}
+            {item ? `Viewing stock changes for "${item.name}".` : 'Viewing stock changes.'}
           </p>
         </div>
 
         {!item ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <PackageOpen className="mb-3 h-10 w-10 text-muted-foreground" />
-            <p className="text-base font-medium text-foreground">
-              Inventory item not found
-            </p>
+            <p className="text-base font-medium text-foreground">Inventory item not found</p>
             <p className="mt-1 text-sm text-muted-foreground">
               The requested inventory item could not be located.
             </p>
@@ -106,9 +97,7 @@ export default function StockEntriesPage() {
         ) : sortedEntries.length === 0 ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <PackageOpen className="mb-3 h-10 w-10 text-muted-foreground" />
-            <p className="text-base font-medium text-foreground">
-              No stock changes yet
-            </p>
+            <p className="text-base font-medium text-foreground">No stock changes yet</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Use the inventory actions to add stock for this item.
             </p>
@@ -157,7 +146,7 @@ export default function StockEntriesPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                        {entry.performedBy || "Admin"}
+                        {entry.performedBy || 'Admin'}
                       </td>
                     </tr>
                   ))}
@@ -197,9 +186,7 @@ export default function StockEntriesPage() {
                     </div>
                     <div>
                       <p className="text-muted-foreground">Performed by</p>
-                      <p className="font-medium text-foreground">
-                        {entry.performedBy || "Admin"}
-                      </p>
+                      <p className="font-medium text-foreground">{entry.performedBy || 'Admin'}</p>
                     </div>
                   </div>
                 </div>
@@ -219,11 +206,7 @@ export default function StockEntriesPage() {
                   {formatDateTime(selectedEntry.createdAt)}
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedEntry(null)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setSelectedEntry(null)}>
                 Close
               </Button>
             </div>
@@ -245,7 +228,7 @@ export default function StockEntriesPage() {
                 <span className="text-muted-foreground">Cost Price</span>
                 <span className="font-medium">
                   ₦
-                  {selectedEntry.costPrice.toLocaleString("en-NG", {
+                  {selectedEntry.costPrice.toLocaleString('en-NG', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -255,7 +238,7 @@ export default function StockEntriesPage() {
                 <span className="text-muted-foreground">Selling Price</span>
                 <span className="font-medium">
                   ₦
-                  {selectedEntry.sellingPrice.toLocaleString("en-NG", {
+                  {selectedEntry.sellingPrice.toLocaleString('en-NG', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -276,11 +259,11 @@ export default function StockEntriesPage() {
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return date.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };

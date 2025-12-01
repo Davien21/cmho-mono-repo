@@ -1,9 +1,5 @@
-import mongoose from "mongoose";
-import {
-  ITransaction,
-  TransactionStatus,
-  PaystackMeta,
-} from "./transactions.types";
+import mongoose from 'mongoose';
+import { ITransaction, TransactionStatus, PaystackMeta } from './transactions.types';
 
 const { Schema, model } = mongoose;
 
@@ -40,12 +36,12 @@ export const transactionSchema = new Schema<ITransaction>(
     },
     transfer: {
       type: Schema.Types.ObjectId,
-      ref: "Transfer",
+      ref: 'Transfer',
       required: true,
     },
     employee: {
       type: Schema.Types.ObjectId,
-      ref: "Employee",
+      ref: 'Employee',
       required: true,
     },
     paystackTxReference: {
@@ -69,7 +65,4 @@ export const transactionSchema = new Schema<ITransaction>(
   }
 );
 
-export const Transaction = model<ITransaction>(
-  "Transaction",
-  transactionSchema
-);
+export const Transaction = model<ITransaction>('Transaction', transactionSchema);

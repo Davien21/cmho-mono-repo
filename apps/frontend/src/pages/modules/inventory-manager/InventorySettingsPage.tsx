@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { toast } from "sonner";
-import Layout from "@/components/Layout";
-import SegmentedControl from "@/SegmentedControl";
+import { useState } from 'react';
+import { toast } from 'sonner';
+import Layout from '@/components/Layout';
+import SegmentedControl from '@/SegmentedControl';
 import {
   useGetInventoryUnitsQuery,
   useCreateInventoryUnitMutation,
@@ -12,60 +12,46 @@ import {
   useUpdateSupplierMutation,
   ISupplierDto,
   SupplierStatus,
-} from "@/store/inventory-slice";
+} from '@/store/inventory-slice';
 import {
   UnitsSection,
   AddUnitModal,
   AddUnitFormValues,
-} from "@/features/inventory-settings/InventorySettingsPage/units";
+} from '@/features/inventory-settings/InventorySettingsPage/units';
 import {
   CategoriesSection,
   AddCategoryModal,
   AddCategoryFormValues,
-} from "@/features/inventory-settings/InventorySettingsPage/categories";
+} from '@/features/inventory-settings/InventorySettingsPage/categories';
 import {
   SuppliersSection,
   SupplierModal,
   SupplierFormValues,
-} from "@/features/inventory-settings/InventorySettingsPage/suppliers";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Package, Tags, Truck } from "lucide-react";
-import { getRTKQueryErrorMessage } from "@/lib/utils";
+} from '@/features/inventory-settings/InventorySettingsPage/suppliers';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Package, Tags, Truck } from 'lucide-react';
+import { getRTKQueryErrorMessage } from '@/lib/utils';
 export default function InventorySettingsPage() {
   const { data: unitsSummary } = useGetInventoryUnitsQuery();
   const { data: categoriesSummary } = useGetInventoryCategoriesQuery();
   const { data: suppliersSummary } = useGetSuppliersQuery();
-  const [createUnit, { isLoading: isCreatingUnit }] =
-    useCreateInventoryUnitMutation();
-  const [createCategory, { isLoading: isCreatingCategory }] =
-    useCreateInventoryCategoryMutation();
-  const [createSupplier, { isLoading: isCreatingSupplier }] =
-    useCreateSupplierMutation();
-  const [updateSupplier, { isLoading: isUpdatingSupplier }] =
-    useUpdateSupplierMutation();
+  const [createUnit, { isLoading: isCreatingUnit }] = useCreateInventoryUnitMutation();
+  const [createCategory, { isLoading: isCreatingCategory }] = useCreateInventoryCategoryMutation();
+  const [createSupplier, { isLoading: isCreatingSupplier }] = useCreateSupplierMutation();
+  const [updateSupplier, { isLoading: isUpdatingSupplier }] = useUpdateSupplierMutation();
 
   const unitsCount = unitsSummary?.data?.length ?? 0;
   const categoriesCount = categoriesSummary?.data?.length ?? 0;
   const suppliersCount = suppliersSummary?.data?.length ?? 0;
 
-  const [activeSection, setActiveSection] = useState<
-    "Units" | "Categories" | "Suppliers"
-  >("Units");
+  const [activeSection, setActiveSection] = useState<'Units' | 'Categories' | 'Suppliers'>('Units');
 
   const [isAddUnitOpen, setIsAddUnitOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isAddSupplierOpen, setIsAddSupplierOpen] = useState(false);
-  const [editingSupplier, setEditingSupplier] = useState<ISupplierDto | null>(
-    null
-  );
+  const [editingSupplier, setEditingSupplier] = useState<ISupplierDto | null>(null);
 
   const handleCloseAddUnit = () => {
     setIsAddUnitOpen(false);
@@ -77,12 +63,10 @@ export default function InventorySettingsPage() {
         name: values.name.trim(),
         plural: values.plural.trim(),
       }).unwrap();
-      toast.success("Unit added successfully");
+      toast.success('Unit added successfully');
       handleCloseAddUnit();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to add unit. Please try again.";
+      const message = getRTKQueryErrorMessage(error) || 'Failed to add unit. Please try again.';
       toast.error(message);
     }
   };
@@ -96,12 +80,10 @@ export default function InventorySettingsPage() {
       await createCategory({
         name: values.name.trim(),
       }).unwrap();
-      toast.success("Category added successfully");
+      toast.success('Category added successfully');
       handleCloseAddCategory();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to add category. Please try again.";
+      const message = getRTKQueryErrorMessage(error) || 'Failed to add category. Please try again.';
       toast.error(message);
     }
   };
@@ -121,14 +103,12 @@ export default function InventorySettingsPage() {
                 address: values.address?.trim() || undefined,
               }
             : undefined,
-        status: (values.status ?? "active") as SupplierStatus,
+        status: (values.status ?? 'active') as SupplierStatus,
       }).unwrap();
-      toast.success("Supplier added successfully");
+      toast.success('Supplier added successfully');
       handleCloseAddSupplier();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to add supplier. Please try again.";
+      const message = getRTKQueryErrorMessage(error) || 'Failed to add supplier. Please try again.';
       toast.error(message);
     }
   };
@@ -150,14 +130,13 @@ export default function InventorySettingsPage() {
                 address: values.address?.trim() || undefined,
               }
             : undefined,
-        status: (values.status ?? "active") as SupplierStatus,
+        status: (values.status ?? 'active') as SupplierStatus,
       }).unwrap();
-      toast.success("Supplier updated successfully");
+      toast.success('Supplier updated successfully');
       handleCloseEditSupplier();
     } catch (error: unknown) {
       const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update supplier. Please try again.";
+        getRTKQueryErrorMessage(error) || 'Failed to update supplier. Please try again.';
       toast.error(message);
     }
   };
@@ -166,9 +145,7 @@ export default function InventorySettingsPage() {
     <Layout>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-            Inventory settings
-          </h1>
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Inventory settings</h1>
           <p className="text-sm text-muted-foreground">
             Configure settings that are used across your inventory.
           </p>
@@ -181,16 +158,16 @@ export default function InventorySettingsPage() {
               value={activeSection}
               onChange={(value) =>
                 setActiveSection(
-                  value === "Categories"
-                    ? "Categories"
-                    : value === "Suppliers"
-                    ? "Suppliers"
-                    : "Units"
+                  value === 'Categories'
+                    ? 'Categories'
+                    : value === 'Suppliers'
+                      ? 'Suppliers'
+                      : 'Units'
                 )
               }
               options={[
                 {
-                  id: "Units",
+                  id: 'Units',
                   content: (
                     <div className="flex items-center gap-2">
                       <span>Units</span>
@@ -201,7 +178,7 @@ export default function InventorySettingsPage() {
                   ),
                 },
                 {
-                  id: "Categories",
+                  id: 'Categories',
                   content: (
                     <div className="flex items-center gap-2">
                       <span>Categories</span>
@@ -212,7 +189,7 @@ export default function InventorySettingsPage() {
                   ),
                 },
                 {
-                  id: "Suppliers",
+                  id: 'Suppliers',
                   content: (
                     <div className="flex items-center gap-2">
                       <span>Suppliers</span>
@@ -229,7 +206,7 @@ export default function InventorySettingsPage() {
           <Card
             id="inventory-units-section"
             variant="plain"
-            className={activeSection === "Units" ? "" : "hidden"}
+            className={activeSection === 'Units' ? '' : 'hidden'}
           >
             <CardHeader className="pb-3 border-b bg-muted/40">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -242,11 +219,7 @@ export default function InventorySettingsPage() {
                     Start with the base units you stock and sell with.
                   </CardDescription>
                 </div>
-                <Button
-                  size="sm"
-                  className="mt-1 sm:mt-0"
-                  onClick={() => setIsAddUnitOpen(true)}
-                >
+                <Button size="sm" className="mt-1 sm:mt-0" onClick={() => setIsAddUnitOpen(true)}>
                   Add unit
                 </Button>
               </div>
@@ -266,7 +239,7 @@ export default function InventorySettingsPage() {
           <Card
             id="inventory-categories-section"
             variant="plain"
-            className={activeSection === "Categories" ? "" : "hidden"}
+            className={activeSection === 'Categories' ? '' : 'hidden'}
           >
             <CardHeader className="pb-3 border-b bg-muted/40">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -303,7 +276,7 @@ export default function InventorySettingsPage() {
           <Card
             id="inventory-suppliers-section"
             variant="plain"
-            className={activeSection === "Suppliers" ? "" : "hidden"}
+            className={activeSection === 'Suppliers' ? '' : 'hidden'}
           >
             <CardHeader className="pb-3 border-b bg-muted/40">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -312,9 +285,7 @@ export default function InventorySettingsPage() {
                     <Truck className="h-4 w-4 text-primary" />
                     Suppliers
                   </CardTitle>
-                  <CardDescription>
-                    Manage the suppliers you purchase stock from.
-                  </CardDescription>
+                  <CardDescription>Manage the suppliers you purchase stock from.</CardDescription>
                 </div>
                 <Button
                   size="sm"

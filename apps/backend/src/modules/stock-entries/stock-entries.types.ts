@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export type ObjectId = mongoose.Types.ObjectId;
 
-export type StockOperationType = "add" | "reduce";
+export type StockOperationType = 'add' | 'reduce';
 
 export interface IStockSupplierSnapshot {
   supplierId: ObjectId;
@@ -24,7 +24,4 @@ export interface IStockEntry {
 }
 
 // Shape used for request bodies (client-provided data)
-export type StockEntryRequest = Omit<
-  IStockEntry,
-  "_id" | "createdBy" | "createdAt" | "updatedAt"
->;
+export type StockEntryRequest = Omit<IStockEntry, '_id' | 'createdBy' | 'createdAt' | 'updatedAt'>;

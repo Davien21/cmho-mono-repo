@@ -1,8 +1,8 @@
-import { Plus } from "lucide-react";
-import Layout from "@/components/Layout";
-import { RecentEmployeesTable } from "@/components/tables/RecentEmployeesTable";
-import { AddEmployeeButton } from "@/components/AddEmployeeButton";
-import { DashboardStats } from "@/components/DashboardStats";
+import { Plus } from 'lucide-react';
+import Layout from '@/components/Layout';
+import { RecentEmployeesTable } from '@/components/tables/RecentEmployeesTable';
+import { AddEmployeeButton } from '@/components/AddEmployeeButton';
+import { DashboardStats } from '@/components/DashboardStats';
 
 export default function DashboardPage() {
   return (

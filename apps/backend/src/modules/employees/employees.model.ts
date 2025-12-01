@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { IEmployee } from "./employees.types";
+import mongoose from 'mongoose';
+import { IEmployee } from './employees.types';
 
 const { Schema, model } = mongoose;
 
@@ -29,4 +29,4 @@ const employeeSchema = new Schema<IEmployee>(
   { timestamps: true }
 );
 
-export default model<IEmployee>("Employee", employeeSchema);
+export default model<IEmployee>('Employee', employeeSchema);

@@ -1,5 +1,5 @@
-import Supplier from "./suppliers.model";
-import { ISupplier, SupplierRequest } from "./suppliers.types";
+import Supplier from './suppliers.model';
+import { ISupplier, SupplierRequest } from './suppliers.types';
 
 class SuppliersService {
   list() {
@@ -10,10 +10,7 @@ class SuppliersService {
     return Supplier.create(data);
   }
 
-  update(
-    id: string,
-    data: Partial<SupplierRequest>
-  ): Promise<ISupplier | null> {
+  update(id: string, data: Partial<SupplierRequest>): Promise<ISupplier | null> {
     return Supplier.findByIdAndUpdate(id, data, { new: true });
   }
 

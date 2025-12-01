@@ -1,9 +1,9 @@
 ---
 name: Feature request
 about: Suggest an idea or improvement for this project
-title: ""
-labels: "enhancement"
-assignees: ""
+title: ''
+labels: 'enhancement'
+assignees: ''
 ---
 
 <!--
@@ -32,5 +32,3 @@ Please fill out the sections below as completely as possible.
 ## Additional context
 
 <!-- Any other context, mockups, technical notes, or references. -->
-
-

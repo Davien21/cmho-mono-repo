@@ -1,17 +1,14 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
-import { InventoryList } from "@/components/InventoryList";
-import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
-import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
-import { InventoryItem } from "@/types/inventory";
-import Layout from "@/components/Layout";
-import {
-  IInventoryItemDto,
-  useGetInventoryItemsQuery,
-} from "@/store/inventory-slice";
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AddInventoryModal } from '@/components/modals/AddInventoryModal';
+import { InventoryList } from '@/components/InventoryList';
+import { UpdateStockModal } from '@/components/modals/UpdateStockModal';
+import { EditInventoryModal } from '@/components/modals/EditInventoryModal';
+import { InventoryItem } from '@/types/inventory';
+import Layout from '@/components/Layout';
+import { IInventoryItemDto, useGetInventoryItemsQuery } from '@/store/inventory-slice';
 
 export default function InventoryPage() {
   const { data, isLoading } = useGetInventoryItemsQuery();
@@ -21,7 +18,7 @@ export default function InventoryPage() {
     return dtos.map((dto) => ({
       id: dto._id,
       name: dto.name,
-      description: "",
+      description: '',
       category: dto.category,
       inventoryCategory: dto.category,
       units: (dto.units || []).map((u) => ({
@@ -55,9 +52,7 @@ export default function InventoryPage() {
 
   const handleDelete = (item: InventoryItem) => {
     // Delete will be handled once wired to backend mutation
-    window.alert(
-      `Delete for "${item.name}" will be available once wired to backend mutation.`
-    );
+    window.alert(`Delete for "${item.name}" will be available once wired to backend mutation.`);
   };
 
   const handleViewStockEntries = (item: InventoryItem) => {
@@ -68,16 +63,14 @@ export default function InventoryPage() {
     <Layout>
       <div className="flex flex-col gap-4 sm:gap-6">
         <div>
-          <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            Manage the hospital inventory
-          </p>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Manage the hospital inventory</p>
         </div>
 
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">
             Inventory Items
             <span className="ml-2 text-sm font-normal text-gray-500">
-              ({items.length} {items.length === 1 ? "item" : "items"})
+              ({items.length} {items.length === 1 ? 'item' : 'items'})
             </span>
           </h2>
           <Button onClick={() => setShowAddForm(true)} size="lg">
@@ -100,9 +93,7 @@ export default function InventoryPage() {
           />
         )}
 
-        {showAddForm && (
-          <AddInventoryModal onClose={() => setShowAddForm(false)} />
-        )}
+        {showAddForm && <AddInventoryModal onClose={() => setShowAddForm(false)} />}
 
         {showEditModal && selectedItem && (
           <EditInventoryModal

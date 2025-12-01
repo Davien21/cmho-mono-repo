@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { Lock, LogIn } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Lock, LogIn } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-import { useLoginMutation } from "@/store/auth-slice";
-import { toast } from "sonner";
-import { getRTKQueryErrorMessage } from "@/lib/utils";
+import { useLoginMutation } from '@/store/auth-slice';
+import { toast } from 'sonner';
+import { getRTKQueryErrorMessage } from '@/lib/utils';
 
 export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {
@@ -18,12 +18,12 @@ export default function LoginPage() {
 
       await login({ email, password }).unwrap();
 
-      navigate("/");
+      navigate('/');
     } catch (error) {
       const errorMessage = getRTKQueryErrorMessage(error);
       if (errorMessage) return toast.error(errorMessage);
 
-      toast.error("Failed to login");
+      toast.error('Failed to login');
     }
   };
 
@@ -34,9 +34,7 @@ export default function LoginPage() {
           <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
             <Lock className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-            CMHO Portal
-          </h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">CMHO Portal</h1>
           <p className="text-gray-600 text-sm sm:text-base">
             Enter your admin email and password to continue
           </p>
@@ -45,10 +43,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
@@ -63,10 +58,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <input

@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
-import { IEmployeeWithBank } from "../employees/employees.types";
-import { ITransfer } from "../transfers/transfers.types";
+import mongoose from 'mongoose';
+import { IEmployeeWithBank } from '../employees/employees.types';
+import { ITransfer } from '../transfers/transfers.types';
 
 export type ObjectId = mongoose.Types.ObjectId;
 
 export enum TransactionStatus {
-  PENDING = "pending",
-  SUCCESS = "success",
-  FAILED = "failed",
-  REVERSED = "reversed",
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+  REVERSED = 'reversed',
 }
 
 export interface PaystackMeta {

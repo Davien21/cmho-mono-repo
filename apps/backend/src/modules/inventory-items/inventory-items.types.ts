@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export type ObjectId = mongoose.Types.ObjectId;
 
-export type InventorySetupStatus = "draft" | "ready";
+export type InventorySetupStatus = 'draft' | 'ready';
 
-export type InventoryStatus = "active" | "disabled" | "deleted";
+export type InventoryStatus = 'active' | 'disabled' | 'deleted';
 
 // ---- Units ----
 
@@ -43,17 +43,15 @@ export interface IInventoryItemBase {
   updatedAt?: Date;
 }
 
-export interface IInventoryItemDraft
-  extends Omit<IInventoryItemBase, "status"> {
-  setupStatus: "draft";
+export interface IInventoryItemDraft extends Omit<IInventoryItemBase, 'status'> {
+  setupStatus: 'draft';
   status: InventoryStatus;
   units: IInventoryUnitDraft[];
   lowStockValue?: number;
 }
 
-export interface IInventoryItemReady
-  extends Omit<IInventoryItemBase, "status"> {
-  setupStatus: "ready";
+export interface IInventoryItemReady extends Omit<IInventoryItemBase, 'status'> {
+  setupStatus: 'ready';
   status: InventoryStatus;
   units: IInventoryUnitReady[];
   lowStockValue: number;
@@ -65,5 +63,5 @@ export type IInventoryItem = IInventoryItemDraft | IInventoryItemReady;
 // Type used for request bodies (client-provided data) – server fills these
 export type IInventoryItemRequest = Omit<
   IInventoryItem,
-  "_id" | "createdBy" | "createdAt" | "updatedAt"
+  '_id' | 'createdBy' | 'createdAt' | 'updatedAt'
 >;

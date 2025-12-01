@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import * as React from 'react';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -9,12 +9,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type IValue = string | number;
 
@@ -34,9 +30,9 @@ export function SearchableSelect({
   options,
   value,
   onValueChange,
-  placeholder = "Select an option...",
-  searchPlaceholder = "Search...",
-  emptyText = "No options found.",
+  placeholder = 'Select an option...',
+  searchPlaceholder = 'Search...',
+  emptyText = 'No options found.',
   className,
   disabled = false,
   formError,
@@ -54,13 +50,11 @@ export function SearchableSelect({
             role="combobox"
             aria-expanded={open}
             className={cn(
-              "w-full justify-between font-normal px-3.5 py-5",
-              !value && "text-muted-foreground",
-              formError &&
-                "border-destructive ring-destructive/20 dark:ring-destructive/40",
+              'w-full justify-between font-normal px-3.5 py-5',
+              !value && 'text-muted-foreground',
+              formError && 'border-destructive ring-destructive/20 dark:ring-destructive/40',
               className,
-              open &&
-                "outline outline-2 outline-blue-500 outline-offset-4 ring-2 ring-blue-600"
+              open && 'outline outline-2 outline-blue-500 outline-offset-4 ring-2 ring-blue-600'
             )}
             disabled={disabled}
           >
@@ -71,7 +65,7 @@ export function SearchableSelect({
         <PopoverContent
           className="w-full p-0"
           align="start"
-          style={{ width: "var(--radix-popover-trigger-width)" }}
+          style={{ width: 'var(--radix-popover-trigger-width)' }}
         >
           <Command>
             <CommandInput placeholder={searchPlaceholder} className="h-9" />
@@ -92,8 +86,8 @@ export function SearchableSelect({
                     {option.label}
                     <Check
                       className={cn(
-                        "ml-auto h-4 w-4",
-                        value === option.value ? "opacity-100" : "opacity-0"
+                        'ml-auto h-4 w-4',
+                        value === option.value ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                   </CommandItem>
@@ -104,9 +98,7 @@ export function SearchableSelect({
         </PopoverContent>
       </Popover>
 
-      {formError && (
-        <span className="text-sm text-red-600 block">{formError}</span>
-      )}
+      {formError && <span className="text-sm text-red-600 block">{formError}</span>}
     </div>
   );
 }

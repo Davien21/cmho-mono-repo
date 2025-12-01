@@ -30,11 +30,11 @@ export interface PaystackBankDetails {
 
 // Transfer interfaces
 export interface TransferRecipient {
-  type: "nuban";
+  type: 'nuban';
   name: string;
   account_number: string;
   bank_code: string;
-  currency: "NGN";
+  currency: 'NGN';
 }
 
 export interface SingleTransferRequest {
@@ -98,11 +98,11 @@ export interface PaystackBulkTransferResponse {
 }
 
 export enum ESortOrder {
-  ASC = "asc",
-  DESC = "desc",
+  ASC = 'asc',
+  DESC = 'desc',
 }
 
 export enum ETransferType {
-  SINGLE = "single",
-  BULK = "bulk",
+  SINGLE = 'single',
+  BULK = 'bulk',
 }

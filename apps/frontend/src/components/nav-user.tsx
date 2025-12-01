@@ -1,20 +1,13 @@
-import {
-  LogOut,
-  User2,
-} from "lucide-react"
+import { LogOut, User2 } from 'lucide-react';
 
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 
 export function NavUser({
   onLogout,
   isLoggingOut,
 }: {
-  onLogout: () => void
-  isLoggingOut: boolean
+  onLogout: () => void;
+  isLoggingOut: boolean;
 }) {
   return (
     <SidebarMenu>
@@ -33,16 +26,11 @@ export function NavUser({
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
-        <SidebarMenuButton
-          onClick={onLogout}
-          disabled={isLoggingOut}
-          tooltip="Logout"
-        >
+        <SidebarMenuButton onClick={onLogout} disabled={isLoggingOut} tooltip="Logout">
           <LogOut />
           <span>Logout</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
-

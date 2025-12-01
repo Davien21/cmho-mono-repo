@@ -1,59 +1,42 @@
-import { useState, useEffect } from "react";
-import * as yup from "yup";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { X } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Card } from "../ui/card";
-import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
-import {
-  InventoryCategory,
-  InventoryStatus,
-  UnitLevel,
-} from "@/types/inventory";
-import { InventoryCategorySelect } from "@/components/InventoryCategorySelect";
+import { useState, useEffect } from 'react';
+import * as yup from 'yup';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { X } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Card } from '../ui/card';
+import { UnitGroupingBuilder } from '../UnitGroupingBuilder';
+import { InventoryCategory, InventoryStatus, UnitLevel } from '@/types/inventory';
+import { InventoryCategorySelect } from '@/components/InventoryCategorySelect';
 import {
   IInventoryCategoryDto,
   IInventoryUnitDefinitionDto,
   useCreateInventoryItemMutation,
   useGetInventoryCategoriesQuery,
   useGetInventoryUnitsQuery,
-} from "@/store/inventory-slice";
-import { getRTKQueryErrorMessage } from "@/lib/utils";
-import { toast } from "sonner";
+} from '@/store/inventory-slice';
+import { getRTKQueryErrorMessage } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface AddInventoryModalProps {
   onClose: () => void;
 }
 
 const inventoryItemSchema = yup.object({
-  name: yup.string().trim().required("Name is required"),
-  inventoryCategory: yup.string().trim().required("Category is required"),
+  name: yup.string().trim().required('Name is required'),
+  inventoryCategory: yup.string().trim().required('Category is required'),
   lowStockValue: yup
     .string()
     .optional()
-    .test(
-      "is-number",
-      "Low stock value must be a non-negative number",
-      (value) => {
-        if (!value) return true;
-        const parsed = parseFloat(value);
-        return !Number.isNaN(parsed) && parsed >= 0;
-      }
-    ),
-  setupStatus: yup
-    .mixed<InventoryStatus>()
-    .oneOf(["draft", "ready"])
-    .required(),
+    .test('is-number', 'Low stock value must be a non-negative number', (value) => {
+      if (!value) return true;
+      const parsed = parseFloat(value);
+      return !Number.isNaN(parsed) && parsed >= 0;
+    }),
+  setupStatus: yup.mixed<InventoryStatus>().oneOf(['draft', 'ready']).required(),
 });
 
 type InventoryItemFormValues = yup.InferType<typeof inventoryItemSchema>;
@@ -68,9 +51,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
 
   const unitNames: string[] = unitsPresets.map((u) => u.name);
 
-  const getDefaultUnitsForCategory = (
-    categoryName: InventoryCategory
-  ): UnitLevel[] => {
+  const getDefaultUnitsForCategory = (categoryName: InventoryCategory): UnitLevel[] => {
     const category = categories.find((c) => c.name === categoryName);
     if (!category) {
       return [];
@@ -82,7 +63,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
         id: u._id,
         name: u.name,
         plural: u.plural,
-        quantity: "",
+        quantity: '',
       }));
     }
 
@@ -99,7 +80,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
       id: u._id,
       name: u.name,
       plural: u.plural,
-      quantity: "",
+      quantity: '',
     }));
   };
 
@@ -108,8 +89,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
   };
 
   const [units, setUnits] = useState<UnitLevel[]>(getInitialUnits);
-  const [initialUnits, setInitialUnits] =
-    useState<UnitLevel[]>(getInitialUnits);
+  const [initialUnits, setInitialUnits] = useState<UnitLevel[]>(getInitialUnits);
   const {
     control,
     register,
@@ -120,14 +100,14 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
   } = useForm<InventoryItemFormValues>({
     resolver: yupResolver(inventoryItemSchema),
     defaultValues: {
-      name: "",
-      inventoryCategory: "",
-      lowStockValue: "",
-      setupStatus: "ready",
+      name: '',
+      inventoryCategory: '',
+      lowStockValue: '',
+      setupStatus: 'ready',
     },
   });
 
-  const inventoryCategory = watch("inventoryCategory");
+  const inventoryCategory = watch('inventoryCategory');
 
   const getBaseUnit = (): UnitLevel | undefined => {
     // Base unit is the last unit in the array
@@ -141,30 +121,28 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
 
       // If we have categories and no category has been chosen yet, default to the first one
       if (categories.length > 0) {
-        setValue("inventoryCategory", categories[0].name, {
+        setValue('inventoryCategory', categories[0].name, {
           shouldValidate: true,
         });
       }
       return;
     }
 
-    const defaultUnits = getDefaultUnitsForCategory(
-      inventoryCategory as InventoryCategory
-    );
+    const defaultUnits = getDefaultUnitsForCategory(inventoryCategory as InventoryCategory);
     setUnits(defaultUnits);
     setInitialUnits(defaultUnits);
   }, [inventoryCategory, categories, unitsPresets, setValue]);
 
   const onSubmit = async (values: InventoryItemFormValues) => {
     if (units.length === 0) {
-      alert("Please define at least one unit");
+      alert('Please define at least one unit');
       return;
     }
 
     const baseUnit = getBaseUnit();
 
     if (!baseUnit) {
-      alert("Please define at least one unit");
+      alert('Please define at least one unit');
       return;
     }
 
@@ -178,25 +156,20 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
           name: u.name,
           plural: u.plural,
           quantity:
-            typeof u.quantity === "string"
-              ? parseFloat(u.quantity) || undefined
-              : u.quantity,
+            typeof u.quantity === 'string' ? parseFloat(u.quantity) || undefined : u.quantity,
         })),
-        lowStockValue: values.lowStockValue
-          ? parseFloat(values.lowStockValue)
-          : undefined,
+        lowStockValue: values.lowStockValue ? parseFloat(values.lowStockValue) : undefined,
         setupStatus: values.setupStatus,
-        status: "active" as const,
+        status: 'active' as const,
         currentStockInBaseUnits: 0,
       };
 
       await createInventoryItem(payload).unwrap();
-      toast.success("Inventory item created successfully");
+      toast.success('Inventory item created successfully');
       onClose();
     } catch (error: unknown) {
       const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to create inventory item. Please try again.";
+        getRTKQueryErrorMessage(error) || 'Failed to create inventory item. Please try again.';
       toast.error(message);
     }
   };
@@ -214,15 +187,13 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
                 render={({ field }) => (
                   <Select
                     value={field.value}
-                    onValueChange={(value) =>
-                      field.onChange(value as InventoryStatus)
-                    }
+                    onValueChange={(value) => field.onChange(value as InventoryStatus)}
                   >
                     <SelectTrigger
                       className={`w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
-                        field.value === "ready"
-                          ? "bg-green-100 text-green-800 hover:bg-green-200"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        field.value === 'ready'
+                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
                       <SelectValue />
@@ -251,14 +222,12 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
                 <Label htmlFor="name">Name *</Label>
                 <Input
                   id="name"
-                  {...register("name")}
+                  {...register('name')}
                   placeholder="e.g., Paracetamol 500mg"
                   className="text-base"
                 />
                 {errors.name?.message && (
-                  <p className="text-xs text-destructive mt-1">
-                    {errors.name.message}
-                  </p>
+                  <p className="text-xs text-destructive mt-1">{errors.name.message}</p>
                 )}
               </div>
 
@@ -294,16 +263,14 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
             <Input
               id="lowStockValue"
               type="number"
-              {...register("lowStockValue")}
+              {...register('lowStockValue')}
               placeholder="Enter minimum stock threshold"
               className="text-base"
               min="0"
               step="1"
             />
             {errors.lowStockValue?.message && (
-              <p className="text-xs text-destructive mt-1">
-                {errors.lowStockValue.message}
-              </p>
+              <p className="text-xs text-destructive mt-1">{errors.lowStockValue.message}</p>
             )}
             <p className="text-xs text-muted-foreground">
               Alert when stock falls below this value (in base units)
@@ -314,12 +281,8 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              className="bg-gray-900 hover:bg-gray-800"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Saving..." : "Save Item"}
+            <Button type="submit" className="bg-gray-900 hover:bg-gray-800" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Item'}
             </Button>
           </div>
         </form>

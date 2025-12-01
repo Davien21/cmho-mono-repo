@@ -1,17 +1,14 @@
-import { IAPIResponse } from "@/types";
+import { IAPIResponse } from '@/types';
 
-import { baseApi } from "@/store/api-slice";
-import { TagTypes } from "@/store/tags";
+import { baseApi } from '@/store/api-slice';
+import { TagTypes } from '@/store/tags';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<
-      IAPIResponse<void>,
-      { email: string; password: string }
-    >({
+    login: builder.mutation<IAPIResponse<void>, { email: string; password: string }>({
       query: (body) => ({
-        url: "/auth/login",
-        method: "POST",
+        url: '/auth/login',
+        method: 'POST',
         body,
       }),
       invalidatesTags: [TagTypes.AUTH],
@@ -26,15 +23,15 @@ export const authApi = baseApi.injectEndpoints({
     }),
     verify: builder.query<IAPIResponse<void>, void>({
       query: () => ({
-        url: "/auth/verify",
-        method: "GET",
+        url: '/auth/verify',
+        method: 'GET',
       }),
       providesTags: [TagTypes.AUTH],
     }),
     logout: builder.mutation<IAPIResponse<void>, void>({
       query: () => ({
-        url: "/auth/logout",
-        method: "POST",
+        url: '/auth/logout',
+        method: 'POST',
       }),
       invalidatesTags: [TagTypes.AUTH],
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {

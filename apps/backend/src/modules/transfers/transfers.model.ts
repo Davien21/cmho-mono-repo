@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import { ITransfer } from "./transfers.types";
-import { ETransferType } from "../../lib/interfaces";
+import mongoose from 'mongoose';
+import { ITransfer } from './transfers.types';
+import { ETransferType } from '../../lib/interfaces';
 
 const { Schema, model } = mongoose;
 
@@ -27,4 +27,4 @@ const transferSchema = new Schema<ITransfer>(
   }
 );
 
-export const Transfer = model<ITransfer>("Transfer", transferSchema);
+export const Transfer = model<ITransfer>('Transfer', transferSchema);

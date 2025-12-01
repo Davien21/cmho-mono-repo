@@ -1,15 +1,15 @@
-import express from "express";
+import express from 'express';
 const router = express.Router();
 
-import { authenticate } from "../../middlewares/authentication";
-import { getTransactions } from "./transactions.controller";
-import validator from "../../middlewares/validator";
-import { getTransactionsSchema } from "./transactions.validators";
+import { authenticate } from '../../middlewares/authentication';
+import { getTransactions } from './transactions.controller';
+import validator from '../../middlewares/validator';
+import { getTransactionsSchema } from './transactions.validators';
 
 router.get(
-  "/transactions",
+  '/transactions',
   authenticate,
-  validator(getTransactionsSchema, "query"),
+  validator(getTransactionsSchema, 'query'),
   getTransactions
 );
 

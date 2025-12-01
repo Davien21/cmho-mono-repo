@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { IInventoryUnitDefinition } from "./inventory-units.types";
+import mongoose from 'mongoose';
+import { IInventoryUnitDefinition } from './inventory-units.types';
 
 const { Schema, model } = mongoose;
 
@@ -10,11 +10,8 @@ const inventoryUnitSchema = new Schema<IInventoryUnitDefinition>(
   },
   {
     timestamps: true,
-    collection: "inventory_units",
+    collection: 'inventory_units',
   }
 );
 
-export default model<IInventoryUnitDefinition>(
-  "InventoryUnit",
-  inventoryUnitSchema
-);
+export default model<IInventoryUnitDefinition>('InventoryUnit', inventoryUnitSchema);

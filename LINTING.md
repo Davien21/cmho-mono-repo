@@ -31,6 +31,7 @@ code --install-extension editorconfig.editorconfig
 ```
 
 The workspace settings (`.vscode/settings.json`) are configured to:
+
 - Format code on save using Prettier
 - Auto-fix ESLint issues on save
 - Use consistent editor settings (2 spaces, LF line endings, etc.)
@@ -38,6 +39,7 @@ The workspace settings (`.vscode/settings.json`) are configured to:
 ### 3. Other Editors
 
 For other editors, ensure you have:
+
 - **Prettier** installed and configured to use `.prettierrc`
 - **ESLint** installed and configured to use `eslint.config.js`
 - **EditorConfig** plugin to respect `.editorconfig`
@@ -105,6 +107,7 @@ pnpm format
 ## Pre-commit Hooks (Optional)
 
 Consider setting up pre-commit hooks using tools like:
+
 - [Husky](https://typicode.github.io/husky/)
 - [lint-staged](https://github.com/lint-staged/lint-staged)
 
@@ -142,4 +145,3 @@ The linting setup is designed to work seamlessly with CI/CD pipelines. You can a
 1. Check VS Code settings (`.vscode/settings.json`)
 2. Ensure Prettier extension is installed
 3. Verify `editor.formatOnSave` is set to `true`
-

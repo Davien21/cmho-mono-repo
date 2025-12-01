@@ -1,7 +1,7 @@
-import { Transfer } from "./transfers.model";
-import { ITransfer, TransferStatus } from "./transfers.types";
-import { ESortOrder } from "../../lib/interfaces";
-import mongoose from "mongoose";
+import { Transfer } from './transfers.model';
+import { ITransfer, TransferStatus } from './transfers.types';
+import { ESortOrder } from '../../lib/interfaces';
+import mongoose from 'mongoose';
 
 type ObjectId = mongoose.Types.ObjectId;
 
@@ -12,13 +12,13 @@ class TransfersService {
   /**
    * Store transfer in database
    */
-  async create(transferData: Omit<ITransfer, "_id">): Promise<ITransfer> {
+  async create(transferData: Omit<ITransfer, '_id'>): Promise<ITransfer> {
     return Transfer.create(transferData);
   }
 
   async update(
     id: string | ObjectId,
-    updateData: Partial<Omit<ITransfer, "_id">>
+    updateData: Partial<Omit<ITransfer, '_id'>>
   ): Promise<ITransfer | null> {
     return Transfer.findByIdAndUpdate(id, updateData, { new: true });
   }
@@ -93,20 +93,20 @@ class TransfersService {
         $group: {
           _id: null,
           totalTransfers: { $sum: 1 },
-          totalAmountInKobo: { $sum: "$amountInKobo" },
+          totalAmountInKobo: { $sum: '$amountInKobo' },
           successfulTransfers: {
             $sum: {
-              $cond: [{ $eq: ["$status", TransferStatus.SUCCESS] }, 1, 0],
+              $cond: [{ $eq: ['$status', TransferStatus.SUCCESS] }, 1, 0],
             },
           },
           failedTransfers: {
             $sum: {
-              $cond: [{ $eq: ["$status", TransferStatus.FAILED] }, 1, 0],
+              $cond: [{ $eq: ['$status', TransferStatus.FAILED] }, 1, 0],
             },
           },
           pendingTransfers: {
             $sum: {
-              $cond: [{ $eq: ["$status", TransferStatus.PENDING] }, 1, 0],
+              $cond: [{ $eq: ['$status', TransferStatus.PENDING] }, 1, 0],
             },
           },
         },

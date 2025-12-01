@@ -1,8 +1,8 @@
-import { IAPIResponse, ITransaction, IQueryMeta, ESortOrder } from "@/types";
+import { IAPIResponse, ITransaction, IQueryMeta, ESortOrder } from '@/types';
 
-import { baseApi } from "@/store/api-slice";
-import { TagTypes } from "./tags";
-import { buildQueryString } from "@/lib/utils";
+import { baseApi } from '@/store/api-slice';
+import { TagTypes } from './tags';
+import { buildQueryString } from '@/lib/utils';
 
 export interface IGetTransactionsParams {
   page?: number;
@@ -18,16 +18,13 @@ export interface ITransactionsResponse {
 
 export const transactionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getTransactions: builder.query<
-      IAPIResponse<ITransactionsResponse>,
-      IGetTransactionsParams
-    >({
+    getTransactions: builder.query<IAPIResponse<ITransactionsResponse>, IGetTransactionsParams>({
       query: (params) => {
         const queryString = buildQueryString(params);
 
         return {
           url: `/transactions?${queryString}`,
-          method: "GET",
+          method: 'GET',
         };
       },
       providesTags: [TagTypes.TRANSFER], // Using TRANSFER tag as transactions are related to transfers

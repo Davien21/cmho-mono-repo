@@ -1,20 +1,12 @@
-import { useState } from "react";
-import { Edit2, DollarSign } from "lucide-react";
-import { IEmployee } from "../../types";
-import { useModalContext } from "@/contexts/modal-context";
-import {
-  delay,
-  pluralizePhrase,
-  getRTKQueryErrorMessage,
-  formatDate,
-} from "@/lib/utils";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  useMultiplePaymentsMutation,
-  useSinglePaymentMutation,
-} from "@/store/transfers-slice";
+import { useState } from 'react';
+import { Edit2, DollarSign } from 'lucide-react';
+import { IEmployee } from '../../types';
+import { useModalContext } from '@/contexts/modal-context';
+import { delay, pluralizePhrase, getRTKQueryErrorMessage, formatDate } from '@/lib/utils';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useMultiplePaymentsMutation, useSinglePaymentMutation } from '@/store/transfers-slice';
 
 interface EmployeesTableProps {
   employees: IEmployee[];
@@ -33,24 +25,22 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
   };
 
   const handleEditEmployee = (employee: IEmployee) => {
-    openModal("confirmation-dialog", {
-      type: "info",
-      title: "Confirm Edit",
+    openModal('confirmation-dialog', {
+      type: 'info',
+      title: 'Confirm Edit',
       message: `Are you sure you want to edit ${employee.name}'s details?`,
       onConfirm: async () => {
-        openModal("update-employee", employee);
+        openModal('update-employee', employee);
         await delay(200);
-        closeModal("confirmation-dialog");
+        closeModal('confirmation-dialog');
       },
     });
   };
 
   const handlePayEmployee = async (employee: IEmployee) => {
-    closeModal("confirmation-dialog");
+    closeModal('confirmation-dialog');
 
-    const loadingMessage = `Paying ${employee.name} ${formatNaira(
-      employee.salary
-    )}`;
+    const loadingMessage = `Paying ${employee.name} ${formatNaira(employee.salary)}`;
     const toastId = toast.loading(loadingMessage);
     try {
       await singlePayment({ employeeIds: [employee._id] }).unwrap();
@@ -62,23 +52,23 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
       const errorMessage = getRTKQueryErrorMessage(error);
       if (errorMessage) return toast.error(errorMessage, { id: toastId });
 
-      toast.error("Failed to initiate salary payment", { id: toastId });
+      toast.error('Failed to initiate salary payment', { id: toastId });
     }
   };
 
   const handlePayMultipleEmployees = async (employees: IEmployee[]) => {
-    closeModal("confirmation-dialog");
+    closeModal('confirmation-dialog');
     const employeeIds = employees.map((emp) => emp._id);
 
     const loadingMessage = `Salary payment initiated for ${
       employees.length
-    } ${pluralizePhrase("employee", employees.length)}`;
+    } ${pluralizePhrase('employee', employees.length)}`;
 
     const toastId = toast.loading(loadingMessage);
     try {
       await multiplePayments({ employeeIds }).unwrap();
       const successMessage = `${employees.length} ${pluralizePhrase(
-        "employee has",
+        'employee has',
         employees.length
       )} been paid`;
       toast.success(successMessage, { id: toastId });
@@ -86,32 +76,30 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
       const errorMessage = getRTKQueryErrorMessage(error);
       if (errorMessage) return toast.error(errorMessage, { id: toastId });
 
-      toast.error("Failed to initiate salary payment", { id: toastId });
+      toast.error('Failed to initiate salary payment', { id: toastId });
     }
     setSelectedEmployees([]);
     setIsMultiSelect(false);
   };
 
   const openPaymentConfirmation = (employee: IEmployee) => {
-    openModal("confirmation-dialog", {
-      title: "Confirm Payment",
-      message: `Are you sure you want to pay ${employee.name} ${formatNaira(
-        employee.salary
-      )}?`,
+    openModal('confirmation-dialog', {
+      title: 'Confirm Payment',
+      message: `Are you sure you want to pay ${employee.name} ${formatNaira(employee.salary)}?`,
       onConfirm: async () => handlePayEmployee(employee),
-      type: "warning",
+      type: 'warning',
     });
   };
 
   const openMultiplePaymentsConfirmation = (employees: IEmployee[]) => {
-    openModal("confirmation-dialog", {
-      title: "Confirm Bulk Payment",
+    openModal('confirmation-dialog', {
+      title: 'Confirm Bulk Payment',
       message: `Are you sure you want to pay ${pluralizePhrase(
-        "this employee",
+        'this employee',
         employees.length
       )}?`,
       onConfirm: async () => handlePayMultipleEmployees(employees),
-      type: "warning",
+      type: 'warning',
     });
   };
 
@@ -153,11 +141,11 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
           }}
           className={`px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors order-1 sm:order-2 ${
             isMultiSelect
-              ? "bg-gray-600 hover:bg-gray-700 text-white"
-              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+              ? 'bg-gray-600 hover:bg-gray-700 text-white'
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
           }`}
         >
-          {isMultiSelect ? "Cancel" : "Multi Select"}
+          {isMultiSelect ? 'Cancel' : 'Multi Select'}
         </button>
       </div>
 
@@ -168,43 +156,27 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
             {employees.map((employee) => (
               <div
                 key={employee._id}
-                className={`p-4 ${
-                  isMultiSelect ? "cursor-pointer hover:bg-gray-50" : ""
-                }`}
-                onClick={
-                  isMultiSelect
-                    ? () => toggleEmployeeSelection(employee._id)
-                    : undefined
-                }
+                className={`p-4 ${isMultiSelect ? 'cursor-pointer hover:bg-gray-50' : ''}`}
+                onClick={isMultiSelect ? () => toggleEmployeeSelection(employee._id) : undefined}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     {isMultiSelect && (
                       <Checkbox
                         checked={selectedEmployees.includes(employee._id)}
-                        onCheckedChange={() =>
-                          toggleEmployeeSelection(employee._id)
-                        }
+                        onCheckedChange={() => toggleEmployeeSelection(employee._id)}
                       />
                     )}
                     <div>
-                      <h3 className="font-medium text-gray-900">
-                        {employee.name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {employee.position}
-                      </p>
+                      <h3 className="font-medium text-gray-900">{employee.name}</h3>
+                      <p className="text-sm text-gray-600">{employee.position}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900">
-                      {formatNaira(employee.salary)}
-                    </p>
+                    <p className="font-semibold text-gray-900">{formatNaira(employee.salary)}</p>
                     <p className="text-xs text-gray-500">
-                      Last paid:{" "}
-                      {employee.last_paid_on
-                        ? formatDate(employee.last_paid_on)
-                        : "Never"}
+                      Last paid:{' '}
+                      {employee.last_paid_on ? formatDate(employee.last_paid_on) : 'Never'}
                     </p>
                   </div>
                 </div>
@@ -269,34 +241,22 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
               {employees.map((employee) => (
                 <tr
                   key={employee._id}
-                  className={`hover:bg-gray-50 ${
-                    isMultiSelect ? "cursor-pointer" : ""
-                  }`}
-                  onClick={
-                    isMultiSelect
-                      ? () => toggleEmployeeSelection(employee._id)
-                      : undefined
-                  }
+                  className={`hover:bg-gray-50 ${isMultiSelect ? 'cursor-pointer' : ''}`}
+                  onClick={isMultiSelect ? () => toggleEmployeeSelection(employee._id) : undefined}
                 >
                   {isMultiSelect && (
                     <td className="px-6 py-4">
                       <Checkbox
                         checked={selectedEmployees.includes(employee._id)}
-                        onCheckedChange={() =>
-                          toggleEmployeeSelection(employee._id)
-                        }
+                        onCheckedChange={() => toggleEmployeeSelection(employee._id)}
                       />
                     </td>
                   )}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {employee.name}
-                    </div>
+                    <div className="text-sm font-medium text-gray-900">{employee.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600">
-                      {employee.position}
-                    </div>
+                    <div className="text-sm text-gray-600">{employee.position}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-semibold text-gray-900">
@@ -305,9 +265,7 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-600">
-                      {employee.last_paid_on
-                        ? formatDate(employee.last_paid_on)
-                        : "Never"}
+                      {employee.last_paid_on ? formatDate(employee.last_paid_on) : 'Never'}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

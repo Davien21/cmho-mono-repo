@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from "express";
-import * as Yup from "yup";
+import { NextFunction, Request, Response } from 'express';
+import * as Yup from 'yup';
 
-import { BadRequestError } from "../config/errors";
+import { BadRequestError } from '../config/errors';
 
 const validator = (
-  schema: Yup.AnySchema<any> | undefined,
-  source: "query" | "body" = "body"
+  schema: Yup.AnySchema<unknown> | undefined,
+  source: 'query' | 'body' = 'body'
 ) => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     if (!schema) return next();
@@ -13,8 +13,9 @@ const validator = (
     try {
       await schema.validate(req[source]);
       next();
-    } catch (error: any) {
-      throw new BadRequestError(error?.errors[0]);
+    } catch (error: unknown) {
+      const yupError = error as { errors?: string[] };
+      throw new BadRequestError(yupError?.errors?.[0] ?? 'Validation failed');
     }
   };
 };

@@ -1,14 +1,10 @@
-import { useModalContext } from "@/contexts/modal-context";
+import { useModalContext } from '@/contexts/modal-context';
 
-export const AddEmployeeButton = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const AddEmployeeButton = ({ children }: { children: React.ReactNode }) => {
   const { openModal } = useModalContext();
 
   const handleOpenAddEmployeeModal = () => {
-    openModal("employee-form", undefined);
+    openModal('employee-form', undefined);
   };
 
   return (

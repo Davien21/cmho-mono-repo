@@ -1,9 +1,9 @@
 ---
 name: Bug report
 about: Report something that is not working as expected
-title: ""
-labels: "bug"
-assignees: ""
+title: ''
+labels: 'bug'
+assignees: ''
 ---
 
 <!--
@@ -44,5 +44,3 @@ Please fill out the sections below as completely as possible.
 ## Additional context
 
 <!-- Any other context about the problem, potential cause, or related issues. -->
-
-

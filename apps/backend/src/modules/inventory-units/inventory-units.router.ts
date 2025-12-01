@@ -1,48 +1,37 @@
-import express from "express";
+import express from 'express';
 const router = express.Router();
 
-import { authenticate, hasRole } from "../../middlewares/authentication";
-import { AdminRole } from "../admins/admins.types";
-import validator from "../../middlewares/validator";
+import { authenticate, hasRole } from '../../middlewares/authentication';
+import { AdminRole } from '../admins/admins.types';
+import validator from '../../middlewares/validator';
 import {
   createInventoryUnit,
   deleteInventoryUnit,
   getInventoryUnits,
   updateInventoryUnit,
-} from "./inventory-units.controller";
-import {
-  createInventoryUnitSchema,
-  updateInventoryUnitSchema,
-} from "./inventory-units.validators";
+} from './inventory-units.controller';
+import { createInventoryUnitSchema, updateInventoryUnitSchema } from './inventory-units.validators';
 
-router.get("/inventory/units", [
+router.get('/inventory/units', [
   authenticate,
   hasRole(AdminRole.INVENTORY_MANAGER),
   getInventoryUnits,
 ]);
 
 router.post(
-  "/inventory/units",
-  [
-    authenticate,
-    hasRole(AdminRole.INVENTORY_MANAGER),
-    validator(createInventoryUnitSchema),
-  ],
+  '/inventory/units',
+  [authenticate, hasRole(AdminRole.INVENTORY_MANAGER), validator(createInventoryUnitSchema)],
   createInventoryUnit
 );
 
 router.put(
-  "/inventory/units/:id",
-  [
-    authenticate,
-    hasRole(AdminRole.INVENTORY_MANAGER),
-    validator(updateInventoryUnitSchema),
-  ],
+  '/inventory/units/:id',
+  [authenticate, hasRole(AdminRole.INVENTORY_MANAGER), validator(updateInventoryUnitSchema)],
   updateInventoryUnit
 );
 
 router.delete(
-  "/inventory/units/:id",
+  '/inventory/units/:id',
   [authenticate, hasRole(AdminRole.INVENTORY_MANAGER)],
   deleteInventoryUnit
 );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Search,
   Package,
@@ -7,19 +7,19 @@ import {
   Edit2,
   Trash2,
   PackageOpen,
-} from "lucide-react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { InventoryItem, UnitLevel } from "@/types/inventory";
+} from 'lucide-react';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { InventoryItem, UnitLevel } from '@/types/inventory';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { formatUnitName } from "@/lib/utils";
-import { InventoryQtyLevelBadge } from "@/components/InventoryQtyLevelBadge";
+} from './ui/dropdown-menu';
+import { formatUnitName } from '@/lib/utils';
+import { InventoryQtyLevelBadge } from '@/components/InventoryQtyLevelBadge';
 
 interface InventoryListProps {
   items: InventoryItem[];
@@ -29,7 +29,7 @@ interface InventoryListProps {
   onViewStockEntries: (item: InventoryItem) => void;
 }
 
-type DisplayMode = "full" | "skipOne" | "baseOnly";
+type DisplayMode = 'full' | 'skipOne' | 'baseOnly';
 
 export function InventoryList({
   items,
@@ -38,16 +38,12 @@ export function InventoryList({
   onDelete,
   onViewStockEntries,
 }: InventoryListProps) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   // Track display mode per item
-  const [displayModes, setDisplayModes] = useState<Map<string, DisplayMode>>(
-    new Map()
-  );
+  const [displayModes, setDisplayModes] = useState<Map<string, DisplayMode>>(new Map());
 
   const filteredItems = items.filter((item) => {
-    const matchesSearch = item.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
     return matchesSearch;
   });
 
@@ -55,14 +51,11 @@ export function InventoryList({
     return item.currentStockInBaseUnits ?? 0;
   };
 
-  const getBaseUnitName = (
-    item: InventoryItem,
-    quantity: number = 2
-  ): string => {
+  const getBaseUnitName = (item: InventoryItem, quantity: number = 2): string => {
     const units = item.units || [];
     // Base unit is the last unit in the array
     const baseUnit = units.length > 0 ? units[units.length - 1] : null;
-    if (!baseUnit) return "units";
+    if (!baseUnit) return 'units';
     return formatUnitName(baseUnit, quantity);
   };
 
@@ -79,17 +72,16 @@ export function InventoryList({
     if (totalInBaseUnits === 0) return `0 ${getBaseUnitName(item, 0)}`;
 
     const units = item.units || [];
-    if (units.length === 0)
-      return `${totalInBaseUnits} ${getBaseUnitName(item, totalInBaseUnits)}`;
+    if (units.length === 0) return `${totalInBaseUnits} ${getBaseUnitName(item, totalInBaseUnits)}`;
 
     const sortedUnits = getSortedUnits(units);
     // Base unit is the last unit in the array
     const baseUnit = units.length > 0 ? units[units.length - 1] : null;
 
     // Mode C: Base unit only
-    if (mode === "baseOnly") {
+    if (mode === 'baseOnly') {
       return `${totalInBaseUnits} ${
-        baseUnit ? formatUnitName(baseUnit, totalInBaseUnits) : "units"
+        baseUnit ? formatUnitName(baseUnit, totalInBaseUnits) : 'units'
       }`;
     }
 
@@ -100,7 +92,7 @@ export function InventoryList({
       let multiplier = 1;
       for (let i = unitIndex + 1; i < sortedUnits.length; i++) {
         const qty = sortedUnits[i].quantity;
-        const numQty = typeof qty === "string" ? parseFloat(qty) : Number(qty);
+        const numQty = typeof qty === 'string' ? parseFloat(qty) : Number(qty);
         // Only multiply if quantity is a valid number > 0
         if (!isNaN(numQty) && numQty > 0) {
           multiplier *= numQty;
@@ -111,7 +103,7 @@ export function InventoryList({
 
     // Get units to use based on mode
     let unitsToUse = [...sortedUnits];
-    if (mode === "skipOne" && sortedUnits.length > 1) {
+    if (mode === 'skipOne' && sortedUnits.length > 1) {
       // Skip the top-level unit (pack in the example)
       unitsToUse = sortedUnits.slice(1);
     }
@@ -136,23 +128,21 @@ export function InventoryList({
       result.push({ unit: baseUnit, quantity: remaining });
     }
 
-    return result
-      .map((r) => `${r.quantity} ${formatUnitName(r.unit, r.quantity)}`)
-      .join(", ");
+    return result.map((r) => `${r.quantity} ${formatUnitName(r.unit, r.quantity)}`).join(', ');
   };
 
   const toggleDisplayMode = (itemId: string) => {
     setDisplayModes((prev) => {
       const newModes = new Map(prev);
-      const current = newModes.get(itemId) || "full";
+      const current = newModes.get(itemId) || 'full';
       let next: DisplayMode;
 
-      if (current === "full") {
-        next = "skipOne";
-      } else if (current === "skipOne") {
-        next = "baseOnly";
+      if (current === 'full') {
+        next = 'skipOne';
+      } else if (current === 'skipOne') {
+        next = 'baseOnly';
       } else {
-        next = "full";
+        next = 'full';
       }
 
       newModes.set(itemId, next);
@@ -161,7 +151,7 @@ export function InventoryList({
   };
 
   const getDisplayMode = (itemId: string): DisplayMode => {
-    return displayModes.get(itemId) || "full";
+    return displayModes.get(itemId) || 'full';
   };
 
   const getFormattedStock = (item: InventoryItem): string => {
@@ -193,12 +183,12 @@ export function InventoryList({
   };
 
   const formatExpiryDate = (dateString: string | null): string => {
-    if (!dateString) return "N/A";
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     });
   };
 
@@ -221,8 +211,8 @@ export function InventoryList({
             <p className="text-lg font-medium mb-1">No items found</p>
             <p className="text-sm">
               {search
-                ? "Try adjusting your search"
-                : "Add your first inventory item to get started"}
+                ? 'Try adjusting your search'
+                : 'Add your first inventory item to get started'}
             </p>
           </div>
         </div>
@@ -236,18 +226,14 @@ export function InventoryList({
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h3 className="font-medium text-gray-900">{item.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {item.inventoryCategory}
-                      </p>
+                      <p className="text-sm text-gray-600 mt-1">{item.inventoryCategory}</p>
                     </div>
                     <Badge
-                      variant={
-                        item.status === "ready" ? "success" : "secondary"
-                      }
+                      variant={item.status === 'ready' ? 'success' : 'secondary'}
                       className={
-                        item.status === "ready"
-                          ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
+                        item.status === 'ready'
+                          ? 'bg-green-100 text-green-800 hover:bg-green-200 capitalize'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize'
                       }
                     >
                       {item.status}
@@ -255,7 +241,7 @@ export function InventoryList({
                   </div>
                   <div className="mb-3 space-y-1">
                     <p className="text-sm text-gray-500">
-                      Stock:{" "}
+                      Stock:{' '}
                       <InventoryQtyLevelBadge
                         low={isLowStock(item)}
                         onClick={() => toggleDisplayMode(item.id)}
@@ -265,12 +251,12 @@ export function InventoryList({
                       </InventoryQtyLevelBadge>
                     </p>
                     <p className="text-sm text-gray-500">
-                      Earliest Expiry:{" "}
+                      Earliest Expiry:{' '}
                       <Badge
                         className={
                           isExpiringSoon(item)
-                            ? "bg-red-100 text-red-800 hover:bg-red-200"
-                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                            ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                         }
                       >
                         {formatExpiryDate(getEarliestExpiry(item))}
@@ -289,9 +275,7 @@ export function InventoryList({
                           <PackagePlus className="mr-2 h-4 w-4" />
                           Update Stock
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onViewStockEntries(item)}
-                        >
+                        <DropdownMenuItem onClick={() => onViewStockEntries(item)}>
                           <PackageOpen className="mr-2 h-4 w-4" />
                           View Stock Changes
                         </DropdownMenuItem>
@@ -343,14 +327,10 @@ export function InventoryList({
                 {filteredItems.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {item.name}
-                      </div>
+                      <div className="text-sm font-medium text-gray-900">{item.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">
-                        {item.inventoryCategory}
-                      </div>
+                      <div className="text-sm text-gray-600">{item.inventoryCategory}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <InventoryQtyLevelBadge
@@ -365,8 +345,8 @@ export function InventoryList({
                       <Badge
                         className={
                           isExpiringSoon(item)
-                            ? "bg-red-100 text-red-800 hover:bg-red-200"
-                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                            ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                         }
                       >
                         {formatExpiryDate(getEarliestExpiry(item))}
@@ -374,13 +354,11 @@ export function InventoryList({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge
-                        variant={
-                          item.status === "ready" ? "success" : "secondary"
-                        }
+                        variant={item.status === 'ready' ? 'success' : 'secondary'}
                         className={
-                          item.status === "ready"
-                            ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
+                          item.status === 'ready'
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200 capitalize'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize'
                         }
                       >
                         {item.status}
@@ -395,15 +373,11 @@ export function InventoryList({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => onUpdateStock(item)}
-                            >
+                            <DropdownMenuItem onClick={() => onUpdateStock(item)}>
                               <PackagePlus className="mr-2 h-4 w-4" />
                               Update Stock
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => onViewStockEntries(item)}
-                            >
+                            <DropdownMenuItem onClick={() => onViewStockEntries(item)}>
                               <PackageOpen className="mr-2 h-4 w-4" />
                               View Stock Changes
                             </DropdownMenuItem>

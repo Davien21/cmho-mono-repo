@@ -1,27 +1,26 @@
-import * as React from "react";
-import { Input, InputProps } from "@/components/ui/input";
-import { useEffect } from "react";
+import * as React from 'react';
+import { Input, InputProps } from '@/components/ui/input';
+import { useEffect } from 'react';
 
-export interface MoneyInputProps
-  extends Omit<InputProps, "type" | "onChange" | "value"> {
+export interface MoneyInputProps extends Omit<InputProps, 'type' | 'onChange' | 'value'> {
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const formatMoney = (value: string) => {
-  const raw = value.replace(/,/g, "").replace(/[^\d]/g, "");
-  const formatted = new Intl.NumberFormat("en-NG").format(Number(raw || 0));
-  return raw === "" ? "" : formatted;
+  const raw = value.replace(/,/g, '').replace(/[^\d]/g, '');
+  const formatted = new Intl.NumberFormat('en-NG').format(Number(raw || 0));
+  return raw === '' ? '' : formatted;
 };
 
 export const parseCurrencyToRawNumber = (formatted: string) => {
-  return formatted.replace(/,/g, "");
+  return formatted.replace(/,/g, '');
 };
 
 export const MoneyInput = React.forwardRef<HTMLInputElement, MoneyInputProps>(
   ({ value, onChange, ...props }, ref) => {
     const [internalValue, setInternalValue] = React.useState(
-      value !== undefined ? formatMoney(String(value)) : ""
+      value !== undefined ? formatMoney(String(value)) : ''
     );
 
     useEffect(() => {
@@ -58,4 +57,4 @@ export const MoneyInput = React.forwardRef<HTMLInputElement, MoneyInputProps>(
   }
 );
 
-MoneyInput.displayName = "MoneyInput";
+MoneyInput.displayName = 'MoneyInput';

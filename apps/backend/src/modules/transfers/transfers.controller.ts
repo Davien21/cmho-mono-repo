@@ -1,26 +1,23 @@
-import { Request, Response } from "express";
-import { BadRequestError, NotFoundError } from "../../config/errors";
-import { successResponse } from "../../utils/response";
-import transfersService from "./transfers.service";
-import { ESortOrder, ETransferType } from "../../lib/interfaces";
-import { AxiosError } from "axios";
-import employeesService from "../employees/employees.service";
+import { Request, Response } from 'express';
+import { BadRequestError, NotFoundError } from '../../config/errors';
+import { successResponse } from '../../utils/response';
+import transfersService from './transfers.service';
+import { ESortOrder, ETransferType } from '../../lib/interfaces';
+import { AxiosError } from 'axios';
+import employeesService from '../employees/employees.service';
 
-import { TransferQuerySchema } from "./transfers.validation";
+import { TransferQuerySchema } from './transfers.validation';
 import {
   createTransferRequest,
   getErrMsgForEmployeesWithoutBank,
   getTotalTransferAmountInKobo,
-} from "../../utils/random";
-import { IEmployeeWithBank } from "../employees/employees.types";
-import {
-  ITransaction,
-  TransactionStatus,
-} from "../transactions/transactions.types";
-import { ITransfer } from "./transfers.types";
-import paystackClient from "../../lib/paystack";
-import mongoose from "mongoose";
-import transactionsService from "../transactions/transactions.service";
+} from '../../utils/random';
+import { IEmployeeWithBank } from '../employees/employees.types';
+import { ITransaction, TransactionStatus } from '../transactions/transactions.types';
+import { ITransfer } from './transfers.types';
+import paystackClient from '../../lib/paystack';
+import mongoose from 'mongoose';
+import transactionsService from '../transactions/transactions.service';
 
 const { Types } = mongoose;
 /**
@@ -34,26 +31,22 @@ export async function initiateSingleTransfer(req: Request, res: Response) {
 
     const employee = await employeesService.findById(employeeId).lean();
 
-    if (!employee) throw new NotFoundError("Employee not found");
+    if (!employee) throw new NotFoundError('Employee not found');
 
     if (!employee.bank) {
       throw new BadRequestError("Please add this employee's bank details");
     }
 
     if (!employee.paystack_recipient_code) {
-      throw new BadRequestError(
-        "Employee is missing a paystack recipient code"
-      );
+      throw new BadRequestError('Employee is missing a paystack recipient code');
     }
 
-    const transferDetails = createTransferRequest(
-      employee as IEmployeeWithBank
-    );
+    const transferDetails = createTransferRequest(employee as IEmployeeWithBank);
 
     await paystackClient.initiateTransfer(transferDetails);
 
     // Store transfer in database first
-    const transferRecord: Omit<ITransfer, "_id"> = {
+    const transferRecord: Omit<ITransfer, '_id'> = {
       amountInKobo: transferDetails.amountInKobo,
       type: ETransferType.SINGLE,
       transactionCount: 1,
@@ -61,7 +54,7 @@ export async function initiateSingleTransfer(req: Request, res: Response) {
 
     const storedTransfer = await transfersService.create(transferRecord);
     // Store transaction linked to the transfer
-    const transactionRecord: Omit<ITransaction, "_id"> = {
+    const transactionRecord: Omit<ITransaction, '_id'> = {
       amountInKobo: transferDetails.amountInKobo,
       transfer: storedTransfer._id,
       employee: employee._id,
@@ -78,7 +71,7 @@ export async function initiateSingleTransfer(req: Request, res: Response) {
       last_paid_on: new Date(),
     });
 
-    res.send(successResponse("Transfer initiated successfully"));
+    res.send(successResponse('Transfer initiated successfully'));
   } catch (error: unknown) {
     console.log(error);
     const axiosError = error as AxiosError<{ message: string; code: string }>;
@@ -89,11 +82,11 @@ export async function initiateSingleTransfer(req: Request, res: Response) {
 
     if (errorMessage) throw new BadRequestError(errorMessage);
 
-    if (errorCode === "insufficient_balance") {
-      throw new BadRequestError("Insufficient balance");
+    if (errorCode === 'insufficient_balance') {
+      throw new BadRequestError('Insufficient balance');
     }
 
-    throw new BadRequestError("Transfer initiation failed");
+    throw new BadRequestError('Transfer initiation failed');
   }
 }
 
@@ -111,9 +104,7 @@ export async function initiateBulkTransfers(req: Request, res: Response) {
 
     const filteredEmployees = employees as IEmployeeWithBank[];
 
-    const bulkTransferData = filteredEmployees.map((x) =>
-      createTransferRequest(x)
-    );
+    const bulkTransferData = filteredEmployees.map((x) => createTransferRequest(x));
 
     // Initiate bulk transfers with Paystack
     await paystackClient.initiateBulkTransfers(bulkTransferData);
@@ -121,7 +112,7 @@ export async function initiateBulkTransfers(req: Request, res: Response) {
     const totalAmountInKobo = getTotalTransferAmountInKobo(bulkTransferData);
 
     // Store transfer in database first
-    const transferRecord: Omit<ITransfer, "_id"> = {
+    const transferRecord: Omit<ITransfer, '_id'> = {
       amountInKobo: totalAmountInKobo,
       type: ETransferType.BULK,
       transactionCount: bulkTransferData.length,
@@ -147,7 +138,7 @@ export async function initiateBulkTransfers(req: Request, res: Response) {
       last_paid_on: new Date(),
     });
 
-    res.send(successResponse("Bulk payment initiated successfully"));
+    res.send(successResponse('Bulk payment initiated successfully'));
   } catch (error: unknown) {
     console.log(error);
     const axiosError = error as AxiosError<{ message: string; code: string }>;
@@ -159,13 +150,11 @@ export async function initiateBulkTransfers(req: Request, res: Response) {
 
     if (errorMessage) throw new BadRequestError(errorMessage);
 
-    if (errorCode === "insufficient_balance") {
-      throw new BadRequestError(
-        "Insufficient balance to complete bulk transfers"
-      );
+    if (errorCode === 'insufficient_balance') {
+      throw new BadRequestError('Insufficient balance to complete bulk transfers');
     }
 
-    throw new BadRequestError("Bulk transfer initiation failed");
+    throw new BadRequestError('Bulk transfer initiation failed');
   }
 }
 
@@ -177,16 +166,14 @@ export async function getTransactionsByTransferId(req: Request, res: Response) {
     const { transferId } = req.params;
 
     if (!transferId) {
-      throw new BadRequestError("Transfer ID is required");
+      throw new BadRequestError('Transfer ID is required');
     }
 
-    const result = await transactionsService.getTransactionsByTransferId(
-      transferId
-    );
+    const result = await transactionsService.getTransactionsByTransferId(transferId);
 
-    res.send(successResponse("Transactions retrieved successfully", result));
+    res.send(successResponse('Transactions retrieved successfully', result));
   } catch (error: unknown) {
-    throw new BadRequestError("Failed to retrieve transactions");
+    throw new BadRequestError('Failed to retrieve transactions');
   }
 }
 
@@ -194,15 +181,15 @@ export async function getTransactionsByTransferId(req: Request, res: Response) {
  * Get stored transfers from database with filtering, sorting, and pagination
  */
 export async function getStoredTransfers(
-  req: Request<Record<string, never>, Record<string, never>, Record<string, never>, TransferQuerySchema>,
+  req: Request<
+    Record<string, never>,
+    Record<string, never>,
+    Record<string, never>,
+    TransferQuerySchema
+  >,
   res: Response
 ) {
-  const {
-    page = "1",
-    limit = "10",
-    sort = ESortOrder.DESC,
-    status,
-  } = req.query;
+  const { page = '1', limit = '10', sort = ESortOrder.DESC, status } = req.query;
 
   console.log({ page, limit, sort, status });
 
@@ -213,7 +200,7 @@ export async function getStoredTransfers(
     status,
   });
 
-  res.send(successResponse("Transfers retrieved successfully", result));
+  res.send(successResponse('Transfers retrieved successfully', result));
 }
 
 /**
@@ -224,14 +211,12 @@ export async function getTransactionsOnTransfer(req: Request, res: Response) {
 
   const transfer = await transfersService.findById(transferId);
 
-  if (!transfer) throw new NotFoundError("Transfer not found");
+  if (!transfer) throw new NotFoundError('Transfer not found');
 
-  const transactions = await transactionsService.getTransactionsByTransferId(
-    transferId
-  );
+  const transactions = await transactionsService.getTransactionsByTransferId(transferId);
 
   res.send(
-    successResponse("Transactions retrieved successfully", {
+    successResponse('Transactions retrieved successfully', {
       ...transfer,
       transactions,
     })
@@ -244,7 +229,5 @@ export async function getTransactionsOnTransfer(req: Request, res: Response) {
 export async function getTransferStats(_req: Request, res: Response) {
   const result = await transfersService.getTransferStats();
 
-  res.send(
-    successResponse("Transfer statistics retrieved successfully", result)
-  );
+  res.send(successResponse('Transfer statistics retrieved successfully', result));
 }

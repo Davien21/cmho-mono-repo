@@ -1,11 +1,5 @@
-import * as React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import * as React from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface UnitDropdownProps {
   unitId: string;
@@ -17,26 +11,15 @@ interface UnitDropdownProps {
 }
 
 const UnitDropdown = React.memo(
-  ({
-    unitId,
-    value,
-    units = [],
-    className,
-    maxHeight = 180,
-    onSelect,
-  }: UnitDropdownProps) => {
+  ({ unitId, value, units = [], className, maxHeight = 180, onSelect }: UnitDropdownProps) => {
     return (
-      <Select
-        value={value}
-        onValueChange={(newValue) => onSelect(unitId, newValue)}
-      >
+      <Select value={value} onValueChange={(newValue) => onSelect(unitId, newValue)}>
         <SelectTrigger className={className}>
           <SelectValue placeholder="Pick unit" />
         </SelectTrigger>
         <SelectContent
           style={{
-            maxHeight:
-              typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight,
+            maxHeight: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
           }}
         >
           {units.map((unitName) => (
@@ -50,6 +33,6 @@ const UnitDropdown = React.memo(
   }
 );
 
-UnitDropdown.displayName = "UnitDropdown";
+UnitDropdown.displayName = 'UnitDropdown';
 
 export { UnitDropdown };

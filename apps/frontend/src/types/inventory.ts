@@ -9,12 +9,12 @@ export interface UnitLevel {
 // This is now backend-driven (via `inventory_categories`) rather than hard-coded.
 export type InventoryCategory = string;
 
-export type InventoryStatus = "draft" | "ready";
+export type InventoryStatus = 'draft' | 'ready';
 
 export interface StockEntry {
   id: string;
   inventoryItemId: string;
-  operationType: "add" | "reduce";
+  operationType: 'add' | 'reduce';
   supplier: string | null;
   costPrice: number;
   sellingPrice: number;

@@ -13,7 +13,7 @@ export interface BankAccount {
   accountNumber: string;
 }
 
-export type IConfirmationDialogType = "danger" | "warning" | "info";
+export type IConfirmationDialogType = 'danger' | 'warning' | 'info';
 
 export interface IConfirmationDialog {
   title: string;
@@ -50,7 +50,7 @@ export interface IAddEmployeeRequest {
   name: string;
   salary: number;
   position: string;
-  bank?: Omit<IUserBank, "account_name" | "bank_id">;
+  bank?: Omit<IUserBank, 'account_name' | 'bank_id'>;
 }
 
 export interface IUpdateEmployeeRequest extends IAddEmployeeRequest {
@@ -60,7 +60,7 @@ export interface IUpdateEmployeeRequest extends IAddEmployeeRequest {
 export interface IGetEmployeesParams {
   page?: number;
   limit?: number;
-  sort?: "asc" | "desc";
+  sort?: 'asc' | 'desc';
 }
 
 export interface IDashboardStats {
@@ -84,10 +84,10 @@ export interface ITransfer {
 }
 
 export enum ITransactionStatus {
-  PENDING = "pending",
-  SUCCESS = "success",
-  FAILED = "failed",
-  REVERSED = "reversed",
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+  REVERSED = 'reversed',
 }
 
 export interface ITransaction {
@@ -120,8 +120,8 @@ export interface ITransferResponse {
 }
 
 export enum ESortOrder {
-  ASC = "asc",
-  DESC = "desc",
+  ASC = 'asc',
+  DESC = 'desc',
 }
 
 export interface IGetTransfersParams {

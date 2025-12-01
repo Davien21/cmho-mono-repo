@@ -1,9 +1,9 @@
-import { Eye } from "lucide-react";
-import { formatDate, formatKobo } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
-import { EmptyPaymentsView } from "../EmptyPaymentsView";
-import { IAPIResponse, ITransferResponse } from "@/types";
+import { Eye } from 'lucide-react';
+import { formatDate, formatKobo } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyPaymentsView } from '../EmptyPaymentsView';
+import { IAPIResponse, ITransferResponse } from '@/types';
 
 interface GroupedPaymentsProps {
   data?: IAPIResponse<ITransferResponse>;
@@ -45,12 +45,8 @@ const GroupedPaymentsTable = ({
                       {formatKobo(transfer.amountInKobo)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">
-                    {formatDate(transfer.createdAt)}
-                  </p>
-                  <p className="text-sm text-blue-600">
-                    {transfer.transactionCount} payments
-                  </p>
+                  <p className="text-sm text-gray-600 mb-1">{formatDate(transfer.createdAt)}</p>
+                  <p className="text-sm text-blue-600">{transfer.transactionCount} payments</p>
                 </div>
                 <button
                   onClick={() => handleViewDetails(transfer._id)}

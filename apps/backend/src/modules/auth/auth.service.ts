@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { env } from "../../config/env";
-import { AdminRole } from "../admins/admins.types";
+import bcrypt from 'bcrypt';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { env } from '../../config/env';
+import { AdminRole } from '../admins/admins.types';
 
 export interface AuthTokenPayload extends JwtPayload {
   _id: string;
@@ -15,10 +15,7 @@ class AuthService {
     return jwt.verify(token, env.JWT_SECRET_KEY) as AuthTokenPayload;
   }
 
-  async validatePassword(
-    input: string,
-    passwordHash: string
-  ): Promise<boolean> {
+  async validatePassword(input: string, passwordHash: string): Promise<boolean> {
     if (!passwordHash) {
       return false;
     }

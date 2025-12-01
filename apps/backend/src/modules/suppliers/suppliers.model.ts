@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { ISupplier } from "./suppliers.types";
+import mongoose from 'mongoose';
+import { ISupplier } from './suppliers.types';
 
 const { Schema, model } = mongoose;
 
@@ -12,15 +12,15 @@ const supplierSchema = new Schema<ISupplier>(
     },
     status: {
       type: String,
-      enum: ["active", "disabled", "deleted"],
+      enum: ['active', 'disabled', 'deleted'],
       required: true,
-      default: "active",
+      default: 'active',
     },
   },
   {
     timestamps: true,
-    collection: "suppliers",
+    collection: 'suppliers',
   }
 );
 
-export default model<ISupplier>("Supplier", supplierSchema);
+export default model<ISupplier>('Supplier', supplierSchema);

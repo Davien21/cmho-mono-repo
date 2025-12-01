@@ -1,16 +1,10 @@
-import {
-  BankAccountVerificationResult,
-  SingleTransferRequest,
-} from "../lib/interfaces";
-import {
-  IEmployee,
-  IEmployeeWithBank,
-} from "../modules/employees/employees.types";
-import { generateRandomString } from "./token";
+import { BankAccountVerificationResult, SingleTransferRequest } from '../lib/interfaces';
+import { IEmployee, IEmployeeWithBank } from '../modules/employees/employees.types';
+import { generateRandomString } from './token';
 
 export const getCurrentMonth = () => {
-  return new Date().toLocaleString("default", {
-    month: "long",
+  return new Date().toLocaleString('default', {
+    month: 'long',
   });
 };
 
@@ -22,7 +16,7 @@ export const getErrMsgForEmployeesWithoutBank = (employees: IEmployee[]) => {
   const employeesWithoutBank = employees.filter((employee) => !employee.bank);
   if (employeesWithoutBank.length === 0) return null;
 
-  const names = employeesWithoutBank.map((x) => x.name).join(", ");
+  const names = employeesWithoutBank.map((x) => x.name).join(', ');
   return `Please add bank details to the following employees: ${names}`;
 };
 
@@ -42,9 +36,7 @@ export const formatBankDetails = (
   };
 };
 
-export const createTransferRequest = (
-  employee: IEmployeeWithBank
-): SingleTransferRequest => {
+export const createTransferRequest = (employee: IEmployeeWithBank): SingleTransferRequest => {
   const month = getCurrentMonth();
   const year = getCurrentYear();
 
@@ -54,8 +46,8 @@ export const createTransferRequest = (
       name: employee.name,
       account_number: employee.bank.account_number,
       bank_code: employee.bank.bank_code,
-      type: "nuban",
-      currency: "NGN",
+      type: 'nuban',
+      currency: 'NGN',
     },
     reason: `CMHO Salary for ${month}, ${year}`,
     reference: `CMHO_${Date.now()}_${generateRandomString(5)}`,
@@ -63,9 +55,7 @@ export const createTransferRequest = (
   };
 };
 
-export const getTotalTransferAmountInKobo = (
-  transfers: SingleTransferRequest[]
-) => {
+export const getTotalTransferAmountInKobo = (transfers: SingleTransferRequest[]) => {
   return transfers.reduce((acc, transfer) => acc + transfer.amountInKobo, 0);
 };
 

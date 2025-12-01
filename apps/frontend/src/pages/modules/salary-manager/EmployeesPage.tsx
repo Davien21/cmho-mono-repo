@@ -1,14 +1,14 @@
-import { Plus } from "lucide-react";
-import Layout from "@/components/Layout";
-import { useGetEmployeesQuery } from "@/store/employees-slice";
-import { Skeleton } from "@/components/ui/skeleton";
-import { NoEmployees } from "@/components/NoEmployees";
-import { AddEmployeeButton } from "@/components/AddEmployeeButton";
-import { EmployeesTable } from "@/components/tables/EmployeesTable";
+import { Plus } from 'lucide-react';
+import Layout from '@/components/Layout';
+import { useGetEmployeesQuery } from '@/store/employees-slice';
+import { Skeleton } from '@/components/ui/skeleton';
+import { NoEmployees } from '@/components/NoEmployees';
+import { AddEmployeeButton } from '@/components/AddEmployeeButton';
+import { EmployeesTable } from '@/components/tables/EmployeesTable';
 
 export default function EmployeesPage() {
   const { data: employeesResponse, isLoading } = useGetEmployeesQuery({
-    sort: "desc",
+    sort: 'desc',
   });
 
   const employees = employeesResponse?.data || [];
@@ -33,13 +33,7 @@ export default function EmployeesPage() {
         {isLoading ? (
           <TableSkeleton />
         ) : (
-          <>
-            {employees.length === 0 ? (
-              <NoEmployees />
-            ) : (
-              <EmployeesTable employees={employees} />
-            )}
-          </>
+          <>{employees.length === 0 ? <NoEmployees /> : <EmployeesTable employees={employees} />}</>
         )}
       </div>
     </Layout>

@@ -1,80 +1,76 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
-import { env } from "../src/config/env";
-import logger from "../src/config/logger";
-import Admin from "../src/modules/admins/admins.model";
-import { AdminRole } from "../src/modules/admins/admins.types";
-import InventoryUnit from "../src/modules/inventory-units/inventory-units.model";
-import InventoryCategory from "../src/modules/inventory-categories/inventory-categories.model";
-import Supplier from "../src/modules/suppliers/suppliers.model";
+import { env } from '../src/config/env';
+import logger from '../src/config/logger';
+import Admin from '../src/modules/admins/admins.model';
+import { AdminRole } from '../src/modules/admins/admins.types';
+import InventoryUnit from '../src/modules/inventory-units/inventory-units.model';
+import InventoryCategory from '../src/modules/inventory-categories/inventory-categories.model';
+import Supplier from '../src/modules/suppliers/suppliers.model';
 
-const SUPER_ADMIN_EMAIL = "chidiebereekennia@gmail.com";
-const SUPER_ADMIN_PASSWORD = "1234";
+const SUPER_ADMIN_EMAIL = 'chidiebereekennia@gmail.com';
+const SUPER_ADMIN_PASSWORD = '1234';
 
 const INVENTORY_UNIT_SEEDS = [
-  { name: "Pack", plural: "Packs" },
-  { name: "Card", plural: "Cards" },
-  { name: "Tablet", plural: "Tablets" },
-  { name: "Bottle", plural: "Bottles" },
-  { name: "Piece", plural: "Pieces" },
+  { name: 'Pack', plural: 'Packs' },
+  { name: 'Card', plural: 'Cards' },
+  { name: 'Tablet', plural: 'Tablets' },
+  { name: 'Bottle', plural: 'Bottles' },
+  { name: 'Piece', plural: 'Pieces' },
 ] as const;
 
 const INVENTORY_CATEGORY_SEEDS = [
   {
-    name: "Drug",
-    unitNames: ["Pack", "Card", "Tablet"],
+    name: 'Drug',
+    unitNames: ['Pack', 'Card', 'Tablet'],
   },
   {
-    name: "Injection",
-    unitNames: ["Pack", "Bottle"],
+    name: 'Injection',
+    unitNames: ['Pack', 'Bottle'],
   },
   {
-    name: "Syrup",
-    unitNames: ["Bottle"],
+    name: 'Syrup',
+    unitNames: ['Bottle'],
   },
   {
-    name: "Bottle",
-    unitNames: ["Bottle"],
+    name: 'Bottle',
+    unitNames: ['Bottle'],
   },
   {
-    name: "Consumable",
-    unitNames: ["Piece"],
+    name: 'Consumable',
+    unitNames: ['Piece'],
   },
 ] as const;
 
 const SUPPLIER_SEEDS = [
-  { name: "MedSupply Nigeria Ltd" },
-  { name: "PharmaCare Distributors" },
-  { name: "HealthLine Logistics" },
-  { name: "Global Medical Supplies" },
-  { name: "Unity Pharmaceuticals" },
+  { name: 'MedSupply Nigeria Ltd' },
+  { name: 'PharmaCare Distributors' },
+  { name: 'HealthLine Logistics' },
+  { name: 'Global Medical Supplies' },
+  { name: 'Unity Pharmaceuticals' },
 ] as const;
 
 async function seedSuperAdmin() {
   const existing = await Admin.findOne({ email: SUPER_ADMIN_EMAIL });
 
   if (existing) {
-    logger.info(
-      `Super admin already exists with email ${SUPER_ADMIN_EMAIL}, skipping creation.`
-    );
+    logger.info(`Super admin already exists with email ${SUPER_ADMIN_EMAIL}, skipping creation.`);
     return;
   }
 
   const passwordHash = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
 
   await Admin.create({
-    name: "Super Admin",
+    name: 'Super Admin',
     email: SUPER_ADMIN_EMAIL,
     passwordHash,
     isSuperAdmin: true,
     roles: [AdminRole.INVENTORY_MANAGER],
-    status: "active",
+    status: 'active',
   });
 
-  logger.info(
-    `Seeded super admin with email ${SUPER_ADMIN_EMAIL} and default password.`
-  );
+  logger.info(`Seeded super admin with email ${SUPER_ADMIN_EMAIL} and default password.`);
 }
 
 async function seedInventoryPresets() {

@@ -1,29 +1,23 @@
-import { useState, useEffect } from "react";
-import * as yup from "yup";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { X } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Card } from "../ui/card";
-import { Separator } from "../ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { InventoryItem, UnitLevel } from "@/types/inventory";
-import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
+import { useState, useEffect } from 'react';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { X } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Card } from '../ui/card';
+import { Separator } from '../ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { InventoryItem, UnitLevel } from '@/types/inventory';
+import { formatUnitName, getRTKQueryErrorMessage } from '@/lib/utils';
 import {
   useCreateStockEntryMutation,
   useGetInventoryItemsQuery,
   useGetStockEntriesQuery,
-} from "@/store/inventory-slice";
-import { toast } from "sonner";
-import { InventorySupplierSelect } from "@/components/InventorySupplierSelect";
+} from '@/store/inventory-slice';
+import { toast } from 'sonner';
+import { InventorySupplierSelect } from '@/components/InventorySupplierSelect';
 
 interface UpdateStockModalProps {
   inventoryItem: InventoryItem;
@@ -41,47 +35,39 @@ interface IProfit {
 }
 
 const updateStockSchema = yup.object({
-  expiryDate: yup.string().required("Expiry date is required"),
+  expiryDate: yup.string().required('Expiry date is required'),
   costPrice: yup
     .string()
-    .required("Cost price is required")
-    .test("is-valid-cost", "Cost price must be greater than 0", (value) => {
-      const parsed = parseFloat(value ?? "");
+    .required('Cost price is required')
+    .test('is-valid-cost', 'Cost price must be greater than 0', (value) => {
+      const parsed = parseFloat(value ?? '');
       return !Number.isNaN(parsed) && parsed > 0;
     }),
   sellingPrice: yup
     .string()
-    .required("Selling price is required")
-    .test(
-      "is-valid-selling",
-      "Selling price must be greater than 0",
-      (value) => {
-        const parsed = parseFloat(value ?? "");
-        return !Number.isNaN(parsed) && parsed > 0;
-      }
-    ),
+    .required('Selling price is required')
+    .test('is-valid-selling', 'Selling price must be greater than 0', (value) => {
+      const parsed = parseFloat(value ?? '');
+      return !Number.isNaN(parsed) && parsed > 0;
+    }),
 });
 
 type UpdateStockFormValues = yup.InferType<typeof updateStockSchema>;
 
 const getProfitText = (profit: IProfit): string => {
-  if (!profit.percent || !profit.amount) return "Unknown";
+  if (!profit.percent || !profit.amount) return 'Unknown';
   return `${profit.percent}% (₦${profit.amount})`;
 };
 
-export function UpdateStockModal({
-  inventoryItem,
-  onClose,
-}: UpdateStockModalProps) {
+export function UpdateStockModal({ inventoryItem, onClose }: UpdateStockModalProps) {
   const [localItem] = useState<InventoryItem | null>(inventoryItem);
-  const [operationType, setOperationType] = useState<"add" | "reduce">("add");
+  const [operationType, setOperationType] = useState<'add' | 'reduce'>('add');
   const [supplierId, setSupplierId] = useState<string | null>(null);
   const [supplierName, setSupplierName] = useState<string | null>(null);
   const [quantityInputs, setQuantityInputs] = useState<QuantityInput[]>([]);
   const { refetch: refetchItems } = useGetInventoryItemsQuery();
   const { refetch: refetchStockEntries } = useGetStockEntriesQuery();
-  const [createStockEntry, { isLoading: isCreatingStockEntry }] =
-    useCreateStockEntryMutation();
+  const [createStockEntry, { isLoading: isCreatingStockEntry }] = useCreateStockEntryMutation();
 
   const {
     register,
@@ -91,22 +77,20 @@ export function UpdateStockModal({
   } = useForm<UpdateStockFormValues>({
     resolver: yupResolver(updateStockSchema),
     defaultValues: {
-      expiryDate: "",
-      costPrice: "",
-      sellingPrice: "",
+      expiryDate: '',
+      costPrice: '',
+      sellingPrice: '',
     },
   });
 
-  const costPrice = watch("costPrice");
-  const sellingPrice = watch("sellingPrice");
+  const costPrice = watch('costPrice');
+  const sellingPrice = watch('sellingPrice');
 
   useEffect(() => {
     if (!localItem) return;
 
     const sortedUnits = getSortedUnits(localItem.units);
-    setQuantityInputs(
-      sortedUnits.map((unit) => ({ unitId: unit.id, value: "0" }))
-    );
+    setQuantityInputs(sortedUnits.map((unit) => ({ unitId: unit.id, value: '0' })));
   }, [localItem]);
 
   const getSortedUnits = (units: UnitLevel[]) => {
@@ -129,7 +113,7 @@ export function UpdateStockModal({
 
     units.forEach((unit, unitIndex) => {
       const input = quantityInputs.find((qi) => qi.unitId === unit.id);
-      const qty = parseFloat(input?.value || "0");
+      const qty = parseFloat(input?.value || '0');
 
       if (qty <= 0) return;
       // Calculate multiplier for this unit to base unit
@@ -146,15 +130,13 @@ export function UpdateStockModal({
   };
 
   const updateQuantityInput = (unitId: string, value: string) => {
-    setQuantityInputs((prev) =>
-      prev.map((qi) => (qi.unitId === unitId ? { ...qi, value } : qi))
-    );
+    setQuantityInputs((prev) => prev.map((qi) => (qi.unitId === unitId ? { ...qi, value } : qi)));
   };
 
   const calculateProfit = (): IProfit => {
     const cost = parseFloat(costPrice) || 0;
     const selling = parseFloat(sellingPrice) || 0;
-    if (cost === 0) return { percent: "0.0", amount: "0" };
+    if (cost === 0) return { percent: '0.0', amount: '0' };
     const profitAmount = selling - cost;
     const profitPercent = ((profitAmount / cost) * 100).toFixed(1);
     return {
@@ -169,18 +151,18 @@ export function UpdateStockModal({
 
   const onSubmit = async (values: UpdateStockFormValues) => {
     if (!localItem) {
-      alert("Inventory item not found");
+      alert('Inventory item not found');
       return;
     }
 
     const totalQuantity = calculateTotalInBaseUnits();
     if (totalQuantity <= 0) {
-      alert("Please enter a quantity greater than 0");
+      alert('Please enter a quantity greater than 0');
       return;
     }
 
     // Check if reducing stock would result in negative stock
-    if (operationType === "reduce") {
+    if (operationType === 'reduce') {
       const currentStock = getTotalStock(localItem);
       if (totalQuantity > currentStock) {
         alert(
@@ -195,7 +177,7 @@ export function UpdateStockModal({
         inventoryItemId: localItem.id,
         operationType,
         supplier:
-          operationType === "reduce" || !supplierId || !supplierName
+          operationType === 'reduce' || !supplierId || !supplierName
             ? null
             : {
                 supplierId,
@@ -204,22 +186,17 @@ export function UpdateStockModal({
         costPrice: parseFloat(values.costPrice),
         sellingPrice: parseFloat(values.sellingPrice),
         expiryDate: values.expiryDate,
-        quantityInBaseUnits:
-          operationType === "reduce" ? -totalQuantity : totalQuantity,
+        quantityInBaseUnits: operationType === 'reduce' ? -totalQuantity : totalQuantity,
       }).unwrap();
 
       await Promise.all([refetchItems(), refetchStockEntries()]);
 
       const successMessage =
-        operationType === "add"
-          ? "Stock added successfully"
-          : "Stock reduced successfully";
+        operationType === 'add' ? 'Stock added successfully' : 'Stock reduced successfully';
       toast.success(successMessage);
       onClose();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update stock. Please try again.";
+      const message = getRTKQueryErrorMessage(error) || 'Failed to update stock. Please try again.';
       toast.error(message);
     }
   };
@@ -239,18 +216,16 @@ export function UpdateStockModal({
           <div className="flex items-center justify-between pb-4">
             <div>
               <h2 className="text-2xl font-bold">Update Stock</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {inventoryItem.name}
-              </p>
+              <p className="text-sm text-muted-foreground mt-1">{inventoryItem.name}</p>
             </div>
             <div className="flex items-center gap-3">
               <Select
                 value={operationType}
                 onValueChange={(value) => {
-                  const op = value as "add" | "reduce";
+                  const op = value as 'add' | 'reduce';
                   setOperationType(op);
                   // Supplier is only relevant when adding stock, so clear it when reducing
-                  if (op === "reduce") {
+                  if (op === 'reduce') {
                     setSupplierId(null);
                     setSupplierName(null);
                   }
@@ -258,9 +233,9 @@ export function UpdateStockModal({
               >
                 <SelectTrigger
                   className={`w-[140px] h-9 text-sm font-medium border-0 shadow-none ${
-                    operationType === "add"
-                      ? "bg-green-100 text-green-800 hover:bg-green-200"
-                      : "bg-red-100 text-red-800 hover:bg-red-200"
+                    operationType === 'add'
+                      ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                      : 'bg-red-100 text-red-800 hover:bg-red-200'
                   }`}
                 >
                   <SelectValue />
@@ -289,7 +264,7 @@ export function UpdateStockModal({
                 <InventorySupplierSelect
                   id="inventory-supplier"
                   value={supplierId}
-                  disabled={operationType === "reduce"}
+                  disabled={operationType === 'reduce'}
                   onChange={(supplier) => {
                     setSupplierId(supplier?.id ?? null);
                     setSupplierName(supplier?.name ?? null);
@@ -299,16 +274,9 @@ export function UpdateStockModal({
 
               <div className="space-y-2">
                 <Label htmlFor="expiryDate">Expiry Date *</Label>
-                <Input
-                  id="expiryDate"
-                  type="date"
-                  {...register("expiryDate")}
-                  required
-                />
+                <Input id="expiryDate" type="date" {...register('expiryDate')} required />
                 {errors.expiryDate?.message && (
-                  <p className="text-xs text-destructive mt-1">
-                    {errors.expiryDate.message}
-                  </p>
+                  <p className="text-xs text-destructive mt-1">{errors.expiryDate.message}</p>
                 )}
               </div>
             </div>
@@ -318,50 +286,42 @@ export function UpdateStockModal({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="costPrice">
-                    Cost Price in ₦ (per{" "}
-                    {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                    Cost Price in ₦ (per {baseUnit ? formatUnitName(baseUnit, 1) : 'unit'}) *
                   </Label>
                   <Input
                     id="costPrice"
                     type="number"
                     step="0.01"
-                    {...register("costPrice")}
+                    {...register('costPrice')}
                     placeholder="0.00"
                     required
                   />
                   {errors.costPrice?.message && (
-                    <p className="text-xs text-destructive mt-1">
-                      {errors.costPrice.message}
-                    </p>
+                    <p className="text-xs text-destructive mt-1">{errors.costPrice.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="sellingPrice">
-                    Selling Price in ₦ (per{" "}
-                    {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                    Selling Price in ₦ (per {baseUnit ? formatUnitName(baseUnit, 1) : 'unit'}) *
                   </Label>
                   <Input
                     id="sellingPrice"
                     type="number"
                     step="0.01"
-                    {...register("sellingPrice")}
+                    {...register('sellingPrice')}
                     placeholder="0.00"
                     required
                   />
                   {errors.sellingPrice?.message && (
-                    <p className="text-xs text-destructive mt-1">
-                      {errors.sellingPrice.message}
-                    </p>
+                    <p className="text-xs text-destructive mt-1">{errors.sellingPrice.message}</p>
                   )}
                 </div>
               </div>
 
               <p className="text-sm text-muted-foreground">
                 <span className="">Profit: </span>
-                <span className="font-medium text-foreground">
-                  {getProfitText(profit)}
-                </span>
+                <span className="font-medium text-foreground">{getProfitText(profit)}</span>
               </p>
             </div>
 
@@ -371,10 +331,8 @@ export function UpdateStockModal({
 
               <div className="flex items-center gap-3 flex-wrap">
                 {sortedUnits.map((unit, idx) => {
-                  const input = quantityInputs.find(
-                    (qi) => qi.unitId === unit.id
-                  );
-                  const inputValue = input?.value || "0";
+                  const input = quantityInputs.find((qi) => qi.unitId === unit.id);
+                  const inputValue = input?.value || '0';
                   const displayName = formatUnitName(unit, inputValue);
 
                   return (
@@ -392,9 +350,7 @@ export function UpdateStockModal({
                           min="0"
                           placeholder="-"
                           value={inputValue}
-                          onChange={(e) =>
-                            updateQuantityInput(unit.id, e.target.value)
-                          }
+                          onChange={(e) => updateQuantityInput(unit.id, e.target.value)}
                           className="w-14 text-sm border-0 bg-transparent py-1.5 pl-3 pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                         />
                         <span className="text-sm pr-3 text-foreground font-medium">
@@ -408,10 +364,9 @@ export function UpdateStockModal({
 
               {totalInBaseUnits > 0 && baseUnit && (
                 <p className="text-sm text-muted-foreground">
-                  Total:{" "}
+                  Total:{' '}
                   <span className="font-medium text-foreground">
-                    {totalInBaseUnits}{" "}
-                    {formatUnitName(baseUnit, totalInBaseUnits)}
+                    {totalInBaseUnits} {formatUnitName(baseUnit, totalInBaseUnits)}
                   </span>
                 </p>
               )}
@@ -430,12 +385,12 @@ export function UpdateStockModal({
               disabled={isCreatingStockEntry || isFormSubmitting}
             >
               {isCreatingStockEntry || isFormSubmitting
-                ? operationType === "add"
-                  ? "Adding..."
-                  : "Reducing..."
-                : operationType === "add"
-                ? "Add Stock"
-                : "Reduce Stock"}
+                ? operationType === 'add'
+                  ? 'Adding...'
+                  : 'Reducing...'
+                : operationType === 'add'
+                  ? 'Add Stock'
+                  : 'Reduce Stock'}
             </Button>
           </div>
         </form>

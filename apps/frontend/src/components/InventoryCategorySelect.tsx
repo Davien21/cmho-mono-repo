@@ -1,14 +1,5 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import {
-  IInventoryCategoryDto,
-  useGetInventoryCategoriesQuery,
-} from "@/store/inventory-slice";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { IInventoryCategoryDto, useGetInventoryCategoriesQuery } from '@/store/inventory-slice';
 
 interface InventoryCategorySelectProps {
   id?: string;
@@ -23,7 +14,7 @@ export function InventoryCategorySelect({
   id,
   value,
   onChange,
-  placeholder = "Select a category",
+  placeholder = 'Select a category',
   disabled,
   errorMessage,
 }: InventoryCategorySelectProps) {
@@ -32,11 +23,7 @@ export function InventoryCategorySelect({
 
   return (
     <div className="space-y-1">
-      <Select
-        value={value}
-        onValueChange={onChange}
-        disabled={disabled || isLoading}
-      >
+      <Select value={value} onValueChange={onChange} disabled={disabled || isLoading}>
         <SelectTrigger id={id}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -62,9 +49,7 @@ export function InventoryCategorySelect({
           )}
         </SelectContent>
       </Select>
-      {errorMessage && (
-        <p className="text-xs text-destructive mt-1">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="text-xs text-destructive mt-1">{errorMessage}</p>}
     </div>
   );
 }

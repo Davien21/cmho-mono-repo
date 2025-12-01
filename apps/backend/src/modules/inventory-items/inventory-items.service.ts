@@ -1,5 +1,5 @@
-import InventoryItem from "./inventory-items.model";
-import { IInventoryItem, IInventoryItemRequest } from "./inventory-items.types";
+import InventoryItem from './inventory-items.model';
+import { IInventoryItem, IInventoryItemRequest } from './inventory-items.types';
 
 class InventoryItemsService {
   async list({
@@ -25,22 +25,16 @@ class InventoryItemsService {
     if (status) filter.status = status;
     if (setupStatus) filter.setupStatus = setupStatus;
     if (category) filter.category = category;
-    if (search) filter.name = { $regex: search, $options: "i" };
+    if (search) filter.name = { $regex: search, $options: 'i' };
 
-    return InventoryItem.find(filter)
-      .sort({ _id: sort })
-      .limit(limit)
-      .skip(skip);
+    return InventoryItem.find(filter).sort({ _id: sort }).limit(limit).skip(skip);
   }
 
   async create(data: IInventoryItemRequest): Promise<IInventoryItem> {
     return InventoryItem.create(data);
   }
 
-  async update(
-    id: string,
-    data: Partial<IInventoryItemRequest>
-  ): Promise<IInventoryItem | null> {
+  async update(id: string, data: Partial<IInventoryItemRequest>): Promise<IInventoryItem | null> {
     return InventoryItem.findByIdAndUpdate(id, data, { new: true });
   }
 
@@ -52,4 +46,3 @@ class InventoryItemsService {
 const inventoryItemsService = new InventoryItemsService();
 
 export default inventoryItemsService;
-

@@ -1,11 +1,11 @@
-import * as React from "react";
+import * as React from 'react';
 
-type Size = "mobile" | "tablet" | "desktop";
+type Size = 'mobile' | 'tablet' | 'desktop';
 
 const breakpoints: Record<Size, string> = {
-  mobile: "(max-width: 767px)",
-  tablet: "(min-width: 768px) and (max-width: 1023px)",
-  desktop: "(min-width: 1024px)",
+  mobile: '(max-width: 767px)',
+  tablet: '(min-width: 768px) and (max-width: 1023px)',
+  desktop: '(min-width: 1024px)',
 };
 
 type Matcher = Size | (string & {});
@@ -16,7 +16,7 @@ export function useMediaQuery(matcher: Matcher): boolean {
   }, [matcher]);
 
   const [matches, setMatches] = React.useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
+    if (typeof window === 'undefined') return false;
     return window.matchMedia(query).matches;
   });
 
@@ -24,11 +24,11 @@ export function useMediaQuery(matcher: Matcher): boolean {
     const mediaQueryList = window.matchMedia(query);
     const updateMatch = (e: MediaQueryListEvent) => setMatches(e.matches);
 
-    mediaQueryList.addEventListener("change", updateMatch);
+    mediaQueryList.addEventListener('change', updateMatch);
     setMatches(mediaQueryList.matches);
 
     return () => {
-      mediaQueryList.removeEventListener("change", updateMatch);
+      mediaQueryList.removeEventListener('change', updateMatch);
     };
   }, [query]);
 

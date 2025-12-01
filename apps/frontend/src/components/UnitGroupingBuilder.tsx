@@ -1,14 +1,14 @@
-import { Plus, Trash2, RotateCcw } from "lucide-react";
-import { Button } from "./ui/button";
-import { UnitLevel } from "@/types/inventory";
+import { Plus, Trash2, RotateCcw } from 'lucide-react';
+import { Button } from './ui/button';
+import { UnitLevel } from '@/types/inventory';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "./ui/context-menu";
-import { useCallback } from "react";
-import { UnitDropdown } from "./UnitDropDown";
+} from './ui/context-menu';
+import { useCallback } from 'react';
+import { UnitDropdown } from './UnitDropDown';
 
 interface UnitGroupingBuilderProps {
   units: UnitLevel[];
@@ -35,9 +35,9 @@ export function UnitGroupingBuilder({
   const addLevel = () => {
     const newUnit: UnitLevel = {
       id: crypto.randomUUID(),
-      name: "",
-      quantity: "",
-      plural: "",
+      name: '',
+      quantity: '',
+      plural: '',
     };
     onChange([...units, newUnit]);
   };
@@ -75,23 +75,11 @@ export function UnitGroupingBuilder({
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium">Packaging Structure</h3>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={resetUnits}
-              className="h-8"
-            >
+            <Button type="button" variant="outline" size="sm" onClick={resetUnits} className="h-8">
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={addLevel}
-              className="h-8"
-            >
+            <Button type="button" variant="outline" size="sm" onClick={addLevel} className="h-8">
               <Plus className="h-4 w-4 mr-2" />
               Add
             </Button>
@@ -104,13 +92,11 @@ export function UnitGroupingBuilder({
               <ContextMenu>
                 <ContextMenuTrigger>
                   <div className="flex items-center bg-neutral-100 rounded-md">
-                    <span className="text-sm pl-3 pr-2 text-muted-foreground font-medium">
-                      1
-                    </span>
+                    <span className="text-sm pl-3 pr-2 text-muted-foreground font-medium">1</span>
                     <UnitDropdown
                       units={availableUnitNames}
                       unitId={rootUnit.id}
-                      value={rootUnit?.name || ""}
+                      value={rootUnit?.name || ''}
                       className="w-24 text-sm border-0 bg-transparent py-1.5 pr-3 pl-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-offset-0 shadow-none"
                       maxHeight={180}
                       onSelect={handleUnitSelect}
@@ -138,21 +124,17 @@ export function UnitGroupingBuilder({
                           <input
                             type="text"
                             value={unit.quantity}
-                            onChange={(e) =>
-                              updateUnit(unit.id, { quantity: e.target.value })
-                            }
+                            onChange={(e) => updateUnit(unit.id, { quantity: e.target.value })}
                             placeholder="-"
                             className="w-8 text-sm border-0 bg-transparent py-1.5 pl-3 pr-1 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                           />
 
-                          <span className="text-muted-foreground mx-1.5 text-sm">
-                            ×
-                          </span>
+                          <span className="text-muted-foreground mx-1.5 text-sm">×</span>
 
                           <UnitDropdown
                             units={availableUnitNames}
                             unitId={unit.id}
-                            value={unit.name || ""}
+                            value={unit.name || ''}
                             className="w-24 text-sm border-0 bg-transparent py-1.5 pr-3 pl-1 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-offset-0 shadow-none"
                             maxHeight={180}
                             onSelect={handleUnitSelect}

@@ -1,21 +1,16 @@
-import { useMemo } from "react";
-import { useGetTransfersQuery } from "@/store/transfers-slice";
-import {
-  useGetTransactionsQuery,
-  ITransactionsResponse,
-} from "@/store/transactions-slice";
-import { ESortOrder, IAPIResponse, ITransferResponse } from "@/types";
+import { useMemo } from 'react';
+import { useGetTransfersQuery } from '@/store/transfers-slice';
+import { useGetTransactionsQuery, ITransactionsResponse } from '@/store/transactions-slice';
+import { ESortOrder, IAPIResponse, ITransferResponse } from '@/types';
 
-type ViewMode = "group" | "list";
+type ViewMode = 'group' | 'list';
 
 // Helper types for the hook return
 type GroupData = IAPIResponse<ITransferResponse> | undefined;
 type ListData = IAPIResponse<ITransactionsResponse> | undefined;
 
 // Conditional type to determine return data based on view mode
-type ActivePaymentsData<T extends ViewMode> = T extends "group"
-  ? GroupData
-  : ListData;
+type ActivePaymentsData<T extends ViewMode> = T extends 'group' ? GroupData : ListData;
 
 // Hook parameters interface
 interface UseActivePaymentsParams {
@@ -45,7 +40,7 @@ export function useActivePayments<T extends ViewMode>({
       sort: ESortOrder.DESC,
     },
     {
-      skip: viewMode !== "group",
+      skip: viewMode !== 'group',
     }
   );
 
@@ -58,13 +53,13 @@ export function useActivePayments<T extends ViewMode>({
       search: searchTerm || undefined,
     },
     {
-      skip: viewMode !== "list",
+      skip: viewMode !== 'list',
     }
   );
 
   // Return the appropriate query data based on view mode
   return useMemo(() => {
-    if (viewMode === "group") {
+    if (viewMode === 'group') {
       return {
         data: transfersQuery.data as ActivePaymentsData<T>,
         isLoading: transfersQuery.isLoading,

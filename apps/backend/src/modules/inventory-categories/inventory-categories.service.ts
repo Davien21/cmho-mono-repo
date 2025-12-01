@@ -1,10 +1,10 @@
-import InventoryCategory from "./inventory-categories.model";
+import InventoryCategory from './inventory-categories.model';
 import {
   IInventoryCategory,
   IInventoryCategoryRequest,
   IInventoryCategoryWithUnitPresetsPopulated,
   IInventoryCategoryUnitPresetPopulated,
-} from "./inventory-categories.types";
+} from './inventory-categories.types';
 
 class InventoryCategoriesService {
   list(): Promise<IInventoryCategoryWithUnitPresetsPopulated[]> {
@@ -13,7 +13,7 @@ class InventoryCategoriesService {
     // a string[] and we expose a separate `unitPresets` array.
     return InventoryCategory.find()
       .sort({ name: 1 })
-      .populate("unitPresetIds")
+      .populate('unitPresetIds')
       .lean()
       .then((categories: any[]): IInventoryCategoryWithUnitPresetsPopulated[] =>
         categories.map((rawCategory: any) => {
@@ -25,9 +25,7 @@ class InventoryCategoriesService {
           return {
             ...category,
             // Ensure unitPresetIds stays as an array of string ids
-            unitPresetIds: populatedPresets.map((preset) =>
-              preset._id.toString()
-            ),
+            unitPresetIds: populatedPresets.map((preset) => preset._id.toString()),
             // New populated field with basic unit info
             unitPresets: populatedPresets,
           };
@@ -39,10 +37,7 @@ class InventoryCategoriesService {
     return InventoryCategory.create(data);
   }
 
-  update(
-    id: string,
-    data: Partial<IInventoryCategoryRequest>
-  ): Promise<IInventoryCategory | null> {
+  update(id: string, data: Partial<IInventoryCategoryRequest>): Promise<IInventoryCategory | null> {
     return InventoryCategory.findByIdAndUpdate(id, data, { new: true });
   }
 

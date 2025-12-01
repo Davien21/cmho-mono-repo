@@ -1,25 +1,20 @@
 // update employee modal
-import { useEffect, useState } from "react";
-import {
-  useForm,
-  Controller,
-  useFormContext,
-  FormProvider,
-} from "react-hook-form";
-import { ArrowLeft, Building } from "lucide-react";
-import { ResponsiveDialog } from "@/components/ResponsiveDialog";
-import { useModalContext } from "@/contexts/modal-context";
-import { IBank } from "@/types";
-import { SearchableSelect } from "@/components/SearchableSelect";
-import { useGetBanksQuery } from "@/store/bank-slice";
-import { useUpdateEmployeeMutation } from "@/store/employees-slice";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Input } from "../ui/input";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { cn, getYupCurrencyValidator } from "@/lib/utils";
-import { MoneyInput } from "../MoneyInput";
+import { useEffect, useState } from 'react';
+import { useForm, Controller, useFormContext, FormProvider } from 'react-hook-form';
+import { ArrowLeft, Building } from 'lucide-react';
+import { ResponsiveDialog } from '@/components/ResponsiveDialog';
+import { useModalContext } from '@/contexts/modal-context';
+import { IBank } from '@/types';
+import { SearchableSelect } from '@/components/SearchableSelect';
+import { useGetBanksQuery } from '@/store/bank-slice';
+import { useUpdateEmployeeMutation } from '@/store/employees-slice';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { Input } from '../ui/input';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { cn, getYupCurrencyValidator } from '@/lib/utils';
+import { MoneyInput } from '../MoneyInput';
 
 interface IFormValues {
   name: string;
@@ -30,21 +25,21 @@ interface IFormValues {
 }
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required("Name is required"),
-  position: yup.string().required("Position is required"),
-  salary: getYupCurrencyValidator("Salary"),
-  bank_id: yup.number().required("Bank is required"),
-  account_number: yup.string().required("Account number is required"),
+  name: yup.string().required('Name is required'),
+  position: yup.string().required('Position is required'),
+  salary: getYupCurrencyValidator('Salary'),
+  bank_id: yup.number().required('Bank is required'),
+  account_number: yup.string().required('Account number is required'),
 });
 
 export const UpdateEmployeeModal = () => {
   const { modals, closeModal } = useModalContext();
-  const modal = modals["update-employee"] || { isOpen: false };
+  const modal = modals['update-employee'] || { isOpen: false };
 
   const [currentStep, setCurrentStep] = useState(1);
 
   const formMethods = useForm<IFormValues>({
-    mode: "onChange",
+    mode: 'onChange',
     resolver: yupResolver(validationSchema),
   });
 
@@ -62,14 +57,14 @@ export const UpdateEmployeeModal = () => {
   }, [modal.isOpen, modal.data, formMethods.reset]);
 
   const handleClose = () => {
-    closeModal("update-employee");
+    closeModal('update-employee');
     formMethods.reset();
     setCurrentStep(1);
   };
 
   return (
     <ResponsiveDialog.Root
-      key={modal.data?._id || "update-employee"}
+      key={modal.data?._id || 'update-employee'}
       open={modal.isOpen}
       onOpenChange={handleClose}
     >
@@ -83,17 +78,15 @@ export const UpdateEmployeeModal = () => {
                 disabled={currentStep === 1}
                 onClick={() => setCurrentStep(1)}
                 className={cn(
-                  "p-2 bg-gray-100 rounded-full transition-colors",
-                  currentStep === 1 && "cursor-not-allowed opacity-50",
-                  currentStep === 2 && "hover:bg-gray-200"
+                  'p-2 bg-gray-100 rounded-full transition-colors',
+                  currentStep === 1 && 'cursor-not-allowed opacity-50',
+                  currentStep === 2 && 'hover:bg-gray-200'
                 )}
               >
                 <ArrowLeft className="w-5 h-5 text-gray-500" />
               </button>
               <ResponsiveDialog.Title className="text-xl font-bold">
-                {currentStep === 1
-                  ? "Add Employee Details"
-                  : "Bank Account Details"}
+                {currentStep === 1 ? 'Add Employee Details' : 'Bank Account Details'}
               </ResponsiveDialog.Title>
             </div>
             <p className="text-sm text-gray-500">Step {currentStep} of 2</p>
@@ -106,10 +99,7 @@ export const UpdateEmployeeModal = () => {
                 style={{ transform: `translateX(-${(currentStep - 1) * 50}%)` }}
               >
                 <div className="w-full flex">
-                  <Step1Form
-                    onNext={() => setCurrentStep(2)}
-                    onClose={handleClose}
-                  />
+                  <Step1Form onNext={() => setCurrentStep(2)} onClose={handleClose} />
                 </div>
                 <div className="w-full flex">
                   <Step2Form onClose={handleClose} />
@@ -123,13 +113,7 @@ export const UpdateEmployeeModal = () => {
   );
 };
 
-const Step1Form = ({
-  onNext,
-  onClose,
-}: {
-  onNext: () => void;
-  onClose: () => void;
-}) => {
+const Step1Form = ({ onNext, onClose }: { onNext: () => void; onClose: () => void }) => {
   const {
     control,
     register,
@@ -138,7 +122,7 @@ const Step1Form = ({
   } = useFormContext<IFormValues>();
 
   const onSubmit = async () => {
-    const isValid = await trigger(["name", "position", "salary"]);
+    const isValid = await trigger(['name', 'position', 'salary']);
     if (isValid) onNext();
   };
 
@@ -146,13 +130,13 @@ const Step1Form = ({
     <form className="space-y-4 w-full p-2 mt-auto">
       <Input
         label="Full Name"
-        {...register("name")}
+        {...register('name')}
         placeholder={`Enter employee's full name`}
         formError={errors.name?.message}
       />
       <Input
         label="Position"
-        {...register("position")}
+        {...register('position')}
         placeholder={`Enter employee's position`}
         formError={errors.position?.message}
       />
@@ -170,12 +154,7 @@ const Step1Form = ({
         )}
       />
       <div className="flex gap-3 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onClose}
-          className="flex-1"
-        >
+        <Button type="button" variant="outline" onClick={onClose} className="flex-1">
           Cancel
         </Button>
         <Button type="button" className="flex-1" onClick={onSubmit}>
@@ -195,7 +174,7 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
   } = useFormContext<IFormValues>();
 
   const { modals } = useModalContext();
-  const modal = modals["update-employee"] || { isOpen: false };
+  const modal = modals['update-employee'] || { isOpen: false };
 
   const [updateEmployee, { isLoading: isAdding }] = useUpdateEmployeeMutation();
 
@@ -219,10 +198,10 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
       };
 
       await updateEmployee({ name, position, salary, id, bank }).unwrap();
-      toast.success("Employee updated successfully");
+      toast.success('Employee updated successfully');
       onClose();
     } catch (error: unknown) {
-      if (error && typeof error === "object" && "data" in error) {
+      if (error && typeof error === 'object' && 'data' in error) {
         const errorData = error.data as { message?: string };
         if (errorData?.message) toast.error(errorData.message);
       }
@@ -230,23 +209,16 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 w-full p-2 mt-auto"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full p-2 mt-auto">
       <div className="text-center mb-4">
         <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
           <Building className="w-6 h-6 text-blue-600" />
         </div>
-        <p className="text-sm text-gray-600">
-          Add bank details for salary payments
-        </p>
+        <p className="text-sm text-gray-600">Add bank details for salary payments</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Bank Name
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
         <Controller
           name="bank_id"
           control={control}
@@ -268,18 +240,13 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
 
       <Input
         label="Account Number"
-        {...register("account_number")}
+        {...register('account_number')}
         placeholder={`Enter employee's account number`}
         formError={errors.account_number?.message}
       />
 
       <div className="flex gap-3 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onClose}
-          className="flex-1"
-        >
+        <Button type="button" variant="outline" onClick={onClose} className="flex-1">
           Cancel
         </Button>
         <Button type="submit" className="flex-1" isLoading={loading}>

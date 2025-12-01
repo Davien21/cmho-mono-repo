@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 type SegmentedControlOption = {
   id: string;
@@ -13,11 +13,7 @@ interface SegmentedControlProps {
   options: SegmentedControlOption[];
 }
 
-export default function SegmentedControl({
-  value,
-  onChange,
-  options,
-}: SegmentedControlProps) {
+export default function SegmentedControl({ value, onChange, options }: SegmentedControlProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [sliderStyle, setSliderStyle] = useState<{
@@ -66,13 +62,11 @@ export default function SegmentedControl({
             }}
             onClick={() => onChange(option.id)}
             className={cn(
-              "relative z-10 flex items-center justify-center gap-2 rounded-md transition-colors duration-300 px-3 py-1.5 text-sm font-medium",
-              isActive ? "text-slate-900" : "text-slate-500"
+              'relative z-10 flex items-center justify-center gap-2 rounded-md transition-colors duration-300 px-3 py-1.5 text-sm font-medium',
+              isActive ? 'text-slate-900' : 'text-slate-500'
             )}
           >
-            {option.content ?? (
-              <span className="whitespace-nowrap">{option.label}</span>
-            )}
+            {option.content ?? <span className="whitespace-nowrap">{option.label}</span>}
           </button>
         );
       })}

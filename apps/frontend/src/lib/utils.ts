@@ -1,21 +1,20 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import * as yup from "yup";
-import { UnitLevel } from "@/types/inventory";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import * as yup from 'yup';
+import { UnitLevel } from '@/types/inventory';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const delay = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function getAxiosError(error: unknown) {
   const axiosError = error as { response?: { data?: { message?: string } } };
   const message = axiosError.response?.data?.message;
   if (!message) return;
 
-  if (message === "Resource not found") {
-    return "Something went wrong. Please try again or contact support";
+  if (message === 'Resource not found') {
+    return 'Something went wrong. Please try again or contact support';
   }
 
   return message;
@@ -47,27 +46,26 @@ export const getYupCurrencyValidator = (label: string) => {
     .typeError(`${label} must be a number`)
     .required(`${label} is required`)
     .transform((value, originalValue) => {
-      if (typeof originalValue === "string")
-        return Number(originalValue.replace(/,/g, ""));
+      if (typeof originalValue === 'string') return Number(originalValue.replace(/,/g, ''));
       return value;
     });
 };
 
 export const pluralize = (word: string, count: number) => {
   let plural = `${word}s`;
-  if (word === "this") plural = "these";
-  if (word === "has") plural = "have";
+  if (word === 'this') plural = 'these';
+  if (word === 'has') plural = 'have';
 
   return count === 1 ? word : plural;
 };
 
 export const pluralizePhrase = (phrase: string, count: number) => {
-  const words = phrase.split(" ");
+  const words = phrase.split(' ');
   const pluralizedWords = words.map((word) => {
-    if (word === "this") return "these";
+    if (word === 'this') return 'these';
     return count === 1 ? word : `${word}s`;
   });
-  return pluralizedWords.join(" ");
+  return pluralizedWords.join(' ');
 };
 
 export const getRTKQueryErrorMessage = (error: unknown): string | null => {
@@ -78,12 +76,12 @@ export const getRTKQueryErrorMessage = (error: unknown): string | null => {
 };
 
 export const formatDate = (date: string | Date | null) => {
-  if (!date) return "Invalid date";
+  if (!date) return 'Invalid date';
 
-  return new Date(date).toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+  return new Date(date).toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
   });
 };
 
@@ -101,8 +99,7 @@ export function formatUnitName(
   unit: UnitLevel | { name: string; plural: string },
   quantity: number | string
 ): string {
-  const numQuantity =
-    typeof quantity === "string" ? parseFloat(quantity) : quantity;
+  const numQuantity = typeof quantity === 'string' ? parseFloat(quantity) : quantity;
 
   // Use plural if quantity is not exactly 1 (including 0, negative, or any value != 1)
   return numQuantity === 1 ? unit.name : unit.plural;

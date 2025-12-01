@@ -1,30 +1,33 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from 'express';
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import logger from "../config/logger";
-import { errorResponse } from "../utils/response";
+import logger from '../config/logger';
+import { errorResponse } from '../utils/response';
 
-const errorNames = [
-  "CastError",
-  "ValidationError",
-  "SyntaxError",
-  "MongooseError",
-  "MongoError",
-];
+const errorNames = ['CastError', 'ValidationError', 'SyntaxError', 'MongooseError', 'MongoError'];
 
 const errorMiddleware = function (
-  error: any,
+  error: unknown,
   _req: Request,
   res: Response,
   _next: NextFunction
 ) {
-  const errorMessage = error.message ?? error;
+  const errorMessage = (error as { message?: string })?.message ?? String(error);
   // can log errors to a file or a service here
   logger.error(errorMessage);
 
-  if (error.isOperational) {
-    return res.status(error.statusCode).send(errorResponse(error.message));
+  const errorObj = error as {
+    isOperational?: boolean;
+    statusCode?: number;
+    message?: string;
+    name?: string;
+  };
+
+  if (errorObj.isOperational) {
+    return res
+      .status(errorObj.statusCode ?? 500)
+      .send(errorResponse(errorObj.message ?? 'An error occurred'));
   }
 
   if (error instanceof mongoose.Error.ValidationError) {
@@ -32,12 +35,15 @@ const errorMiddleware = function (
     return res.status(400).send(errorResponse(errorMessages[0]));
   }
 
-  if (errorNames.includes(error.name)) {
-    return res.status(400).send(errorResponse(error.message));
+  if (errorObj.name && errorNames.includes(errorObj.name)) {
+    return res.status(400).send(errorResponse(errorObj.message ?? 'Bad request'));
   }
 
-  if (typeof error !== "string" && !("message" in error)) {
-    return res.status(500).send(errorResponse("Unexpected response format"));
+  if (
+    typeof error !== 'string' &&
+    (typeof error !== 'object' || error === null || !('message' in error))
+  ) {
+    return res.status(500).send(errorResponse('Unexpected response format'));
   }
 
   // default to 500 server error

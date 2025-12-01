@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { IInventoryItem, IInventoryUnit } from "./inventory-items.types";
+import mongoose from 'mongoose';
+import { IInventoryItem, IInventoryUnit } from './inventory-items.types';
 
 const { Schema, model } = mongoose;
 
@@ -22,19 +22,19 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
     lowStockValue: { type: Number, required: false },
     setupStatus: {
       type: String,
-      enum: ["draft", "ready"],
+      enum: ['draft', 'ready'],
       required: true,
-      default: "draft",
+      default: 'draft',
     },
     status: {
       type: String,
-      enum: ["active", "disabled", "deleted"],
+      enum: ['active', 'disabled', 'deleted'],
       required: true,
-      default: "active",
+      default: 'active',
     },
     createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "Admin",
+      ref: 'Admin',
       required: true,
     },
     currentStockInBaseUnits: {
@@ -49,8 +49,8 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
   },
   {
     timestamps: true,
-    collection: "inventory_items",
+    collection: 'inventory_items',
   }
 );
 
-export default model<IInventoryItem>("InventoryItem", inventoryItemSchema);
+export default model<IInventoryItem>('InventoryItem', inventoryItemSchema);

@@ -63,7 +63,7 @@ export interface PaystackWebhookValidation {
 }
 
 export enum PaystackTransferEvents {
-  TRANSFER_SUCCESS = "transfer.success",
-  TRANSFER_FAILED = "transfer.failed",
-  TRANSFER_REVERSED = "transfer.reversed",
+  TRANSFER_SUCCESS = 'transfer.success',
+  TRANSFER_FAILED = 'transfer.failed',
+  TRANSFER_REVERSED = 'transfer.reversed',
 }

@@ -6,7 +6,7 @@ import {
   PaginationNext,
   PaginationPrevious,
   PaginationEllipsis,
-} from "@/components/ui/pagination";
+} from '@/components/ui/pagination';
 
 interface PaginationSectionProps {
   currentPage: number;
@@ -34,10 +34,7 @@ export const PaginationSection = ({
   }
 
   // Generate array of page numbers to display
-  const visiblePages = Array.from(
-    { length: endPage - startPage + 1 },
-    (_, i) => startPage + i
-  );
+  const visiblePages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 
   const showStartEllipsis = startPage > 2;
   const showEndEllipsis = endPage < totalPages - 1;
@@ -50,9 +47,7 @@ export const PaginationSection = ({
         <PaginationItem>
           <PaginationPrevious
             onClick={() => onPageChange(currentPage - 1)}
-            className={
-              !hasPrevPage ? "pointer-events-none opacity-50" : "cursor-pointer"
-            }
+            className={!hasPrevPage ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
           />
         </PaginationItem>
 
@@ -112,9 +107,7 @@ export const PaginationSection = ({
         <PaginationItem>
           <PaginationNext
             onClick={() => onPageChange(currentPage + 1)}
-            className={
-              !hasNextPage ? "pointer-events-none opacity-50" : "cursor-pointer"
-            }
+            className={!hasNextPage ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
           />
         </PaginationItem>
       </PaginationContent>

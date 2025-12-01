@@ -1,38 +1,37 @@
-import { Users, Wallet } from "lucide-react";
+import { Users, Wallet } from 'lucide-react';
 
-import { formatNaira } from "@/lib/utils";
-import { Calculator } from "lucide-react";
-import { useGetDashboardStatsQuery } from "@/store/dashboard-slice";
-import { Skeleton } from "./ui/skeleton";
+import { formatNaira } from '@/lib/utils';
+import { Calculator } from 'lucide-react';
+import { useGetDashboardStatsQuery } from '@/store/dashboard-slice';
+import { Skeleton } from './ui/skeleton';
 
 export const DashboardStats = () => {
   const { data: dashboardStats, isLoading } = useGetDashboardStatsQuery();
 
-  const { totalEmployees, totalMonthlySalaries, accountBalance } =
-    dashboardStats?.data || {
-      totalEmployees: 0,
-      totalMonthlySalaries: 0,
-      accountBalance: 0,
-    };
+  const { totalEmployees, totalMonthlySalaries, accountBalance } = dashboardStats?.data || {
+    totalEmployees: 0,
+    totalMonthlySalaries: 0,
+    accountBalance: 0,
+  };
 
   const stats = [
     {
-      name: "Total Employees",
+      name: 'Total Employees',
       value: totalEmployees,
       icon: Users,
-      color: "bg-blue-500",
+      color: 'bg-blue-500',
     },
     {
-      name: "Total Monthly Salaries",
+      name: 'Total Monthly Salaries',
       value: formatNaira(totalMonthlySalaries),
       icon: Calculator,
-      color: "bg-green-500",
+      color: 'bg-green-500',
     },
     {
-      name: "Account Balance",
+      name: 'Account Balance',
       value: formatNaira(accountBalance),
       icon: Wallet,
-      color: "bg-purple-500",
+      color: 'bg-purple-500',
     },
   ];
 
@@ -43,10 +42,7 @@ export const DashboardStats = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {stats.map((stat) => (
-            <div
-              key={stat.name}
-              className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border"
-            >
+            <div key={stat.name} className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border">
               <div className="flex items-center">
                 <div className={`${stat.color} p-2 sm:p-3 rounded-lg`}>
                   <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />

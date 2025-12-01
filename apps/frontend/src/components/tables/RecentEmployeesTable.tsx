@@ -1,11 +1,11 @@
-import { useGetEmployeesQuery } from "@/store/employees-slice";
-import { Skeleton } from "../ui/skeleton";
-import { formatNaira } from "@/lib/utils";
-import { NoEmployees } from "@/components/NoEmployees";
+import { useGetEmployeesQuery } from '@/store/employees-slice';
+import { Skeleton } from '../ui/skeleton';
+import { formatNaira } from '@/lib/utils';
+import { NoEmployees } from '@/components/NoEmployees';
 
 export const RecentEmployeesTable = () => {
   const { data: employeesResponse, isLoading } = useGetEmployeesQuery({
-    sort: "desc",
+    sort: 'desc',
   });
 
   if (isLoading) return <TableSkeleton />;
@@ -16,9 +16,7 @@ export const RecentEmployeesTable = () => {
       {employees.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm border">
           <div className="p-4 sm:p-6 border-b">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-              Recent Employees
-            </h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Recent Employees</h2>
           </div>
           <div className="divide-y">
             {employees.map((employee) => (
@@ -27,17 +25,11 @@ export const RecentEmployeesTable = () => {
                 className="p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0"
               >
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-medium text-gray-900 truncate">
-                    {employee.name}
-                  </h3>
-                  <p className="text-gray-600 text-sm truncate">
-                    {employee.position}
-                  </p>
+                  <h3 className="font-medium text-gray-900 truncate">{employee.name}</h3>
+                  <p className="text-gray-600 text-sm truncate">{employee.position}</p>
                 </div>
                 <div className="text-left sm:text-right">
-                  <p className="font-semibold text-gray-900">
-                    {formatNaira(employee.salary)}
-                  </p>
+                  <p className="font-semibold text-gray-900">{formatNaira(employee.salary)}</p>
                   <p className="text-sm text-gray-500">per month</p>
                 </div>
               </div>

@@ -1,19 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
-import Layout from "@/components/Layout";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { StockEntry, UnitLevel } from "@/types/inventory";
-import { StockUpdateBadge } from "@/components/StockUpdateBadge";
+import Layout from '@/components/Layout';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import { StockEntry, UnitLevel } from '@/types/inventory';
+import { StockUpdateBadge } from '@/components/StockUpdateBadge';
 import {
   IInventoryItemDto,
   IStockEntryDto,
   useGetInventoryItemsQuery,
   useGetStockEntriesQuery,
-} from "@/store/inventory-slice";
+} from '@/store/inventory-slice';
 
 type StockChangeRow = StockEntry & {
   itemName: string;
@@ -23,18 +23,18 @@ type StockChangeRow = StockEntry & {
 function formatDateTime(iso: string) {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return date.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
 export default function StockChangesPage() {
   const [searchParams] = useSearchParams();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [searchInitialized, setSearchInitialized] = useState(false);
   const [selectedRow, setSelectedRow] = useState<StockChangeRow | null>(null);
 
@@ -46,7 +46,7 @@ export default function StockChangesPage() {
     return dtos.map((dto) => ({
       id: dto._id,
       name: dto.name,
-      description: "",
+      description: '',
       category: dto.category,
       inventoryCategory: dto.category,
       units: (dto.units || []).map((u) => ({
@@ -62,7 +62,7 @@ export default function StockChangesPage() {
     }));
   }, [itemsResponse]);
 
-  const filterItemId = searchParams.get("itemId");
+  const filterItemId = searchParams.get('itemId');
 
   const filteredItem = useMemo(
     () => items.find((item) => item.id === filterItemId) ?? null,
@@ -78,7 +78,7 @@ export default function StockChangesPage() {
     } else if (!filterItemId && searchInitialized) {
       // When there's no item filter in the URL anymore (e.g. user clicked
       // the "Stock" breadcrumb to view all stock), clear the seeded search.
-      setSearch("");
+      setSearch('');
       setSearchInitialized(false);
     }
   }, [filteredItem, filterItemId, searchInitialized]);
@@ -92,9 +92,7 @@ export default function StockChangesPage() {
     const entries: IStockEntryDto[] = stockEntriesResponse?.data || [];
 
     const all: StockChangeRow[] = entries
-      .filter(
-        (entry) => !filterItemId || entry.inventoryItemId === filterItemId
-      )
+      .filter((entry) => !filterItemId || entry.inventoryItemId === filterItemId)
       .map((entry) => {
         const meta = itemById.get(entry.inventoryItemId);
         return {
@@ -106,19 +104,14 @@ export default function StockChangesPage() {
           sellingPrice: entry.sellingPrice,
           expiryDate: entry.expiryDate.toString(),
           quantityInBaseUnits: entry.quantityInBaseUnits,
-          createdAt: entry.createdAt
-            ? entry.createdAt.toString()
-            : new Date().toISOString(),
+          createdAt: entry.createdAt ? entry.createdAt.toString() : new Date().toISOString(),
           performedBy: entry.createdBy,
-          itemName: meta?.name ?? "Unknown item",
+          itemName: meta?.name ?? 'Unknown item',
           units: meta?.units || [],
         };
       });
 
-    return all.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    return all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [items, stockEntriesResponse, filterItemId]);
 
   const filteredRows: StockChangeRow[] = useMemo(() => {
@@ -126,7 +119,7 @@ export default function StockChangesPage() {
     if (!term) return rows;
     return rows.filter((row) => {
       const haystack = `${row.itemName} ${
-        row.performedBy || ""
+        row.performedBy || ''
       } ${formatDateTime(row.createdAt)}`.toLowerCase();
       return haystack.includes(term);
     });
@@ -141,7 +134,7 @@ export default function StockChangesPage() {
             <p className="mt-1 text-sm text-gray-600">
               {filteredItem
                 ? `All stock changes for "${filteredItem.name}".`
-                : "All stock changes across inventory items."}
+                : 'All stock changes across inventory items.'}
             </p>
           </div>
 
@@ -158,9 +151,7 @@ export default function StockChangesPage() {
 
         {rows.length === 0 ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
-            <p className="text-base font-medium text-foreground">
-              No stock changes yet
-            </p>
+            <p className="text-base font-medium text-foreground">No stock changes yet</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Use the inventory actions to add or reduce stock.
             </p>
@@ -222,7 +213,7 @@ export default function StockChangesPage() {
                           </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                          {row.performedBy || "Admin"}
+                          {row.performedBy || 'Admin'}
                         </td>
                       </tr>
                     ))
@@ -252,9 +243,7 @@ export default function StockChangesPage() {
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
                         <p className="text-muted-foreground">Item</p>
-                        <p className="font-medium text-foreground">
-                          {row.itemName}
-                        </p>
+                        <p className="font-medium text-foreground">{row.itemName}</p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Quantity</p>
@@ -274,15 +263,13 @@ export default function StockChangesPage() {
                       </div>
                       <div>
                         <p className="text-muted-foreground">Expiry Date</p>
-                        <p className="font-medium text-foreground">
-                          {row.expiryDate}
-                        </p>
+                        <p className="font-medium text-foreground">{row.expiryDate}</p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Cost Price</p>
                         <p className="font-medium text-foreground">
                           ₦
-                          {row.costPrice.toLocaleString("en-NG", {
+                          {row.costPrice.toLocaleString('en-NG', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -292,7 +279,7 @@ export default function StockChangesPage() {
                         <p className="text-muted-foreground">Selling Price</p>
                         <p className="font-medium text-foreground">
                           ₦
-                          {row.sellingPrice.toLocaleString("en-NG", {
+                          {row.sellingPrice.toLocaleString('en-NG', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -300,9 +287,7 @@ export default function StockChangesPage() {
                       </div>
                       <div>
                         <p className="text-muted-foreground">Performed by</p>
-                        <p className="font-medium text-foreground">
-                          {row.performedBy || "Admin"}
-                        </p>
+                        <p className="font-medium text-foreground">{row.performedBy || 'Admin'}</p>
                       </div>
                     </div>
                   </div>
@@ -323,11 +308,7 @@ export default function StockChangesPage() {
                   {formatDateTime(selectedRow.createdAt)}
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedRow(null)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setSelectedRow(null)}>
                 Close
               </Button>
             </div>
@@ -335,9 +316,7 @@ export default function StockChangesPage() {
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Item</span>
-                <span className="font-medium text-right">
-                  {selectedRow.itemName}
-                </span>
+                <span className="font-medium text-right">{selectedRow.itemName}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Quantity</span>
@@ -351,7 +330,7 @@ export default function StockChangesPage() {
                 <span className="text-muted-foreground">Cost Price</span>
                 <span className="font-medium">
                   ₦
-                  {selectedRow.costPrice.toLocaleString("en-NG", {
+                  {selectedRow.costPrice.toLocaleString('en-NG', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -361,7 +340,7 @@ export default function StockChangesPage() {
                 <span className="text-muted-foreground">Selling Price</span>
                 <span className="font-medium">
                   ₦
-                  {selectedRow.sellingPrice.toLocaleString("en-NG", {
+                  {selectedRow.sellingPrice.toLocaleString('en-NG', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -373,9 +352,7 @@ export default function StockChangesPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Performed by</span>
-                <span className="font-medium">
-                  {selectedRow.performedBy || "Admin"}
-                </span>
+                <span className="font-medium">{selectedRow.performedBy || 'Admin'}</span>
               </div>
             </div>
           </Card>

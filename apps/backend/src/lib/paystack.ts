@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from "axios";
-import { env } from "../config/env";
+import axios, { AxiosResponse } from 'axios';
+import { env } from '../config/env';
 import {
   IAPIResponse,
   PaystackTransferRecipient,
@@ -9,28 +9,29 @@ import {
   SingleTransferRequest,
   BankAccountVerificationResult,
   PaystackBankDetails,
-} from "./interfaces";
+} from './interfaces';
 
 const { PAYSTACK_SECRET_KEY } = env;
 
-const PAYSTACK_BASE_URL = "https://api.paystack.co";
+const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
 const paystackHeaders = {
   Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-  "Content-Type": "application/json",
+  'Content-Type': 'application/json',
 };
 
 class PaystackClient {
   /**
    * Create a transfer recipient
    */
-  async createTransferRecipient(
-    recipient: TransferRecipient
-  ): Promise<PaystackTransferRecipient> {
-    const response: AxiosResponse<IAPIResponse<PaystackTransferRecipient>> =
-      await axios.post(`${PAYSTACK_BASE_URL}/transferrecipient`, recipient, {
+  async createTransferRecipient(recipient: TransferRecipient): Promise<PaystackTransferRecipient> {
+    const response: AxiosResponse<IAPIResponse<PaystackTransferRecipient>> = await axios.post(
+      `${PAYSTACK_BASE_URL}/transferrecipient`,
+      recipient,
+      {
         headers: paystackHeaders,
-      });
+      }
+    );
 
     return response.data.data;
   }
@@ -38,21 +39,22 @@ class PaystackClient {
   /**
    * Initiate a single transfer
    */
-  async initiateTransfer(
-    transfer: SingleTransferRequest
-  ): Promise<PaystackTransferResponse> {
+  async initiateTransfer(transfer: SingleTransferRequest): Promise<PaystackTransferResponse> {
     const transferPayload = {
-      source: "balance",
+      source: 'balance',
       amount: transfer.amountInKobo,
       recipient: transfer.recipient_code,
       reason: transfer.reason,
       reference: transfer.reference,
     };
 
-    const response: AxiosResponse<IAPIResponse<PaystackTransferResponse>> =
-      await axios.post(`${PAYSTACK_BASE_URL}/transfer`, transferPayload, {
+    const response: AxiosResponse<IAPIResponse<PaystackTransferResponse>> = await axios.post(
+      `${PAYSTACK_BASE_URL}/transfer`,
+      transferPayload,
+      {
         headers: paystackHeaders,
-      });
+      }
+    );
 
     return response.data.data;
   }
@@ -76,18 +78,17 @@ class PaystackClient {
     );
 
     const bulkTransferPayload = {
-      source: "balance",
+      source: 'balance',
       transfers: transfersWithRecipients,
     };
 
-    const response: AxiosResponse<IAPIResponse<PaystackBulkTransferResponse>> =
-      await axios.post(
-        `${PAYSTACK_BASE_URL}/transfer/bulk`,
-        bulkTransferPayload,
-        {
-          headers: paystackHeaders,
-        }
-      );
+    const response: AxiosResponse<IAPIResponse<PaystackBulkTransferResponse>> = await axios.post(
+      `${PAYSTACK_BASE_URL}/transfer/bulk`,
+      bulkTransferPayload,
+      {
+        headers: paystackHeaders,
+      }
+    );
 
     return response.data.data;
   }
@@ -112,12 +113,13 @@ class PaystackClient {
    * Validate Bank account details
    */
   async validateBank(accountNumber: string, bankCode: string) {
-    const response = await axios.get<
-      AxiosResponse<BankAccountVerificationResult>
-    >("https://api.paystack.co/bank/resolve", {
-      params: { account_number: accountNumber, bank_code: bankCode },
-      headers: paystackHeaders,
-    });
+    const response = await axios.get<AxiosResponse<BankAccountVerificationResult>>(
+      'https://api.paystack.co/bank/resolve',
+      {
+        params: { account_number: accountNumber, bank_code: bankCode },
+        headers: paystackHeaders,
+      }
+    );
 
     return response.data.data;
   }
@@ -127,12 +129,12 @@ class PaystackClient {
    */
   async getNigerianBanks() {
     const response = await axios.get<IAPIResponse<PaystackBankDetails[]>>(
-      "https://api.paystack.co/bank",
+      'https://api.paystack.co/bank',
       {
-        params: { country: "nigeria", type: "nuban" },
+        params: { country: 'nigeria', type: 'nuban' },
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );

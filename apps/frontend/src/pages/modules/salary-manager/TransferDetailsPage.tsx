@@ -1,12 +1,10 @@
-import { useParams } from "react-router-dom";
-import { User, DollarSign, Calendar, Hash } from "lucide-react";
-import { useGetTransferDetailsQuery } from "@/store/transfers-slice";
-import { formatDate, formatKobo } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import Layout from "@/components/Layout";
-import PaymentsTable, {
-  PaymentsTableSkeleton,
-} from "@/components/tables/PaymentsTable";
+import { useParams } from 'react-router-dom';
+import { User, DollarSign, Calendar, Hash } from 'lucide-react';
+import { useGetTransferDetailsQuery } from '@/store/transfers-slice';
+import { formatDate, formatKobo } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import Layout from '@/components/Layout';
+import PaymentsTable, { PaymentsTableSkeleton } from '@/components/tables/PaymentsTable';
 
 const TransferDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,9 +29,7 @@ const TransferDetailsPage = () => {
             <div className="text-red-400 mb-4">
               <Hash className="w-12 h-12 mx-auto" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Transfer Not Found
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Transfer Not Found</h3>
             <p className="text-gray-600">
               The transfer you're looking for doesn't exist or has been removed.
             </p>
@@ -50,9 +46,7 @@ const TransferDetailsPage = () => {
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Payment Details
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">Payment Details</h1>
             </div>
           </div>
 
@@ -98,12 +92,8 @@ const TransferDetailsPage = () => {
         {/* Transactions Breakdown */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
           <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Payment Breakdown
-            </h2>
-            <p className="text-gray-600">
-              Individual salary payments within this transfer
-            </p>
+            <h2 className="text-lg font-semibold text-gray-900">Payment Breakdown</h2>
+            <p className="text-gray-600">Individual salary payments within this transfer</p>
           </div>
 
           <PaymentsTable transactions={transferDetails.transactions} />

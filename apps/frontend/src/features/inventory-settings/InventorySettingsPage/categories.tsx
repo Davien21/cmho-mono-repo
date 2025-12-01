@@ -1,35 +1,33 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { toast } from 'sonner';
 
-import { ActionPill } from "@/components/ActionPill";
-import { useModalContext } from "@/contexts/modal-context";
+import { ActionPill } from '@/components/ActionPill';
+import { useModalContext } from '@/contexts/modal-context';
 import {
   useGetInventoryCategoriesQuery,
   useUpdateInventoryCategoryMutation,
   useDeleteInventoryCategoryMutation,
   IInventoryCategoryDto,
-} from "@/store/inventory-slice";
-import { getRTKQueryErrorMessage } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ResponsiveDialog } from "@/components/ResponsiveDialog";
+} from '@/store/inventory-slice';
+import { getRTKQueryErrorMessage } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ResponsiveDialog } from '@/components/ResponsiveDialog';
 
 export const addCategorySchema = yup.object({
-  name: yup.string().trim().required("Name is required"),
+  name: yup.string().trim().required('Name is required'),
 });
 
 export type AddCategoryFormValues = yup.InferType<typeof addCategorySchema>;
 
 export function CategoriesSection() {
   const { data, isLoading } = useGetInventoryCategoriesQuery();
-  const [updateCategory, { isLoading: isUpdating }] =
-    useUpdateInventoryCategoryMutation();
-  const [deleteCategory, { isLoading: isDeleting }] =
-    useDeleteInventoryCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] = useUpdateInventoryCategoryMutation();
+  const [deleteCategory, { isLoading: isDeleting }] = useDeleteInventoryCategoryMutation();
   const { openModal, closeModal } = useModalContext();
 
   const categories: IInventoryCategoryDto[] = data?.data || [];
@@ -44,7 +42,7 @@ export function CategoriesSection() {
   } = useForm<AddCategoryFormValues>({
     resolver: yupResolver(addCategorySchema),
     defaultValues: {
-      name: "",
+      name: '',
     },
   });
 
@@ -62,36 +60,34 @@ export function CategoriesSection() {
         id: editingId,
         name: values.name.trim(),
       }).unwrap();
-      toast.success("Category updated successfully");
+      toast.success('Category updated successfully');
       setEditingId(null);
       reset();
     } catch (error: unknown) {
       const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update category. Please try again.";
+        getRTKQueryErrorMessage(error) || 'Failed to update category. Please try again.';
       toast.error(message);
     }
   };
 
   const handleDelete = (id: string, name: string) => {
-    openModal("confirmation-dialog", {
-      title: "Delete category",
+    openModal('confirmation-dialog', {
+      title: 'Delete category',
       message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
-      type: "danger",
+      type: 'danger',
       onConfirm: async () => {
         try {
           await deleteCategory(id).unwrap();
-          toast.success("Category deleted successfully");
+          toast.success('Category deleted successfully');
         } catch (error: unknown) {
           const message =
-            getRTKQueryErrorMessage(error) ||
-            "Failed to delete category. Please try again.";
+            getRTKQueryErrorMessage(error) || 'Failed to delete category. Please try again.';
           toast.error(message);
         } finally {
-          closeModal("confirmation-dialog");
+          closeModal('confirmation-dialog');
         }
       },
-      onCancel: () => closeModal("confirmation-dialog"),
+      onCancel: () => closeModal('confirmation-dialog'),
     });
   };
 
@@ -99,9 +95,7 @@ export function CategoriesSection() {
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">
         {isLoading && (
-          <div className="p-3 text-sm text-muted-foreground w-full">
-            Loading categories...
-          </div>
+          <div className="p-3 text-sm text-muted-foreground w-full">Loading categories...</div>
         )}
         {!isLoading && categories.length === 0 && (
           <div className="p-4 text-sm text-muted-foreground flex flex-col gap-1 w-full">
@@ -121,11 +115,9 @@ export function CategoriesSection() {
               className="inline-flex items-center bg-muted rounded-full px-3 py-2 gap-2"
               onSubmit={handleSubmit(handleSaveEdit)}
             >
-              <Input {...register("name")} className="h-8" />
+              <Input {...register('name')} className="h-8" />
               {errors.name?.message && (
-                <span className="text-[10px] text-destructive ml-2">
-                  {errors.name.message}
-                </span>
+                <span className="text-[10px] text-destructive ml-2">{errors.name.message}</span>
               )}
               <div className="flex gap-1 ml-2">
                 <Button
@@ -173,12 +165,7 @@ type AddCategoryModalProps = {
   isSubmitting: boolean;
 };
 
-export function AddCategoryModal({
-  open,
-  onClose,
-  onSubmit,
-  isSubmitting,
-}: AddCategoryModalProps) {
+export function AddCategoryModal({ open, onClose, onSubmit, isSubmitting }: AddCategoryModalProps) {
   const {
     register,
     handleSubmit,
@@ -187,7 +174,7 @@ export function AddCategoryModal({
   } = useForm<AddCategoryFormValues>({
     resolver: yupResolver(addCategorySchema),
     defaultValues: {
-      name: "",
+      name: '',
     },
   });
 
@@ -222,21 +209,12 @@ export function AddCategoryModal({
             </ResponsiveDialog.Description>
           </ResponsiveDialog.Header>
 
-          <form
-            onSubmit={handleSubmit(onCategoryFormSubmit)}
-            className="space-y-4 mt-4"
-          >
+          <form onSubmit={handleSubmit(onCategoryFormSubmit)} className="space-y-4 mt-4">
             <div className="space-y-1">
               <Label htmlFor="new-category-name">Name</Label>
-              <Input
-                id="new-category-name"
-                placeholder="e.g. Drug"
-                {...register("name")}
-              />
+              <Input id="new-category-name" placeholder="e.g. Drug" {...register('name')} />
               {errors.name?.message && (
-                <p className="text-xs text-destructive mt-1">
-                  {errors.name.message}
-                </p>
+                <p className="text-xs text-destructive mt-1">{errors.name.message}</p>
               )}
             </div>
 
@@ -245,7 +223,7 @@ export function AddCategoryModal({
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Adding..." : "Add category"}
+                {isSubmitting ? 'Adding...' : 'Add category'}
               </Button>
             </div>
           </form>
@@ -254,5 +232,3 @@ export function AddCategoryModal({
     </ResponsiveDialog.Root>
   );
 }
-
-

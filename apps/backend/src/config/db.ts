@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import { env } from "../config/env";
-import logger from "../config/logger";
+import mongoose from 'mongoose';
+import { env } from '../config/env';
+import logger from '../config/logger';
 
 const db = env.DATABASE_URL;
 
@@ -19,7 +19,7 @@ const closeDBConnection = () => {
   mongoose.connection
     .close(false)
     .then(() => {
-      logger.info("MongoDB connection closed.");
+      logger.info('MongoDB connection closed.');
       process.exit(0);
     })
     .catch((closeErr: Error) => {

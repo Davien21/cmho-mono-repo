@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { AdminRole, IAdmin } from "./admins.types";
+import mongoose from 'mongoose';
+import { AdminRole, IAdmin } from './admins.types';
 
 const { Schema, model } = mongoose;
 
@@ -23,15 +23,15 @@ const adminSchema = new Schema<IAdmin>(
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "deleted"],
+      enum: ['active', 'inactive', 'deleted'],
       required: true,
-      default: "active",
+      default: 'active',
     },
   },
   {
     timestamps: true,
-    collection: "admins",
+    collection: 'admins',
   }
 );
 
-export default model<IAdmin>("Admin", adminSchema);
+export default model<IAdmin>('Admin', adminSchema);

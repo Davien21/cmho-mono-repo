@@ -1,6 +1,6 @@
-import StockEntry from "./stock-entries.model";
-import { IStockEntry, StockEntryRequest } from "./stock-entries.types";
-import InventoryItem from "../inventory-items/inventory-items.model";
+import StockEntry from './stock-entries.model';
+import { IStockEntry, StockEntryRequest } from './stock-entries.types';
+import InventoryItem from '../inventory-items/inventory-items.model';
 
 class StockEntriesService {
   async list({
@@ -22,10 +22,7 @@ class StockEntriesService {
     if (inventoryItemId) filter.inventoryItemId = inventoryItemId;
     if (operationType) filter.operationType = operationType;
 
-    return StockEntry.find(filter)
-      .sort({ _id: sort })
-      .limit(limit)
-      .skip(skip);
+    return StockEntry.find(filter).sort({ _id: sort }).limit(limit).skip(skip);
   }
 
   async create(data: StockEntryRequest): Promise<IStockEntry> {
@@ -49,10 +46,7 @@ class StockEntriesService {
         }
         // 2) If the current earliestExpiryDate is already in the past,
         //    allow it to move forward to a later batch's expiry date.
-        else if (
-          earliestExpiryDate < now &&
-          entry.expiryDate > earliestExpiryDate
-        ) {
+        else if (earliestExpiryDate < now && entry.expiryDate > earliestExpiryDate) {
           earliestExpiryDate = entry.expiryDate;
         }
       }
@@ -69,4 +63,3 @@ class StockEntriesService {
 const stockEntriesService = new StockEntriesService();
 
 export default stockEntriesService;
-

@@ -1,11 +1,5 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { ISupplierDto, useGetSuppliersQuery } from "@/store/inventory-slice";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { ISupplierDto, useGetSuppliersQuery } from '@/store/inventory-slice';
 
 interface InventorySupplierSelectProps {
   id?: string;
@@ -20,15 +14,13 @@ export function InventorySupplierSelect({
   id,
   value,
   onChange,
-  placeholder = "Select a supplier",
+  placeholder = 'Select a supplier',
   disabled,
   errorMessage,
 }: InventorySupplierSelectProps) {
   const { data, isLoading, isError } = useGetSuppliersQuery();
 
-  const suppliers: ISupplierDto[] = (data?.data || []).filter(
-    (sup) => sup.status === "active"
-  );
+  const suppliers: ISupplierDto[] = (data?.data || []).filter((sup) => sup.status === 'active');
 
   const handleChange = (supplierId: string) => {
     const sup = suppliers.find((s) => s._id === supplierId) || null;
@@ -71,9 +63,7 @@ export function InventorySupplierSelect({
           )}
         </SelectContent>
       </Select>
-      {errorMessage && (
-        <p className="text-xs text-destructive mt-1">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="text-xs text-destructive mt-1">{errorMessage}</p>}
     </div>
   );
 }

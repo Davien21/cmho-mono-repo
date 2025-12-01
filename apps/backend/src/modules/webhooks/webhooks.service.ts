@@ -1,15 +1,11 @@
-import crypto from "crypto";
-import { Request } from "express";
-import { env } from "../../config/env";
-import logger from "../../config/logger";
-import { PaystackWebhookEvent, PaystackTransferEvents } from "./webhooks.types";
-import transactionsService from "../transactions/transactions.service";
-import { TransactionStatus } from "../transactions/transactions.types";
-import {
-  BadRequestError,
-  DuplicateError,
-  NotFoundError,
-} from "../../config/errors";
+import crypto from 'crypto';
+import { Request } from 'express';
+import { env } from '../../config/env';
+import logger from '../../config/logger';
+import { PaystackWebhookEvent, PaystackTransferEvents } from './webhooks.types';
+import transactionsService from '../transactions/transactions.service';
+import { TransactionStatus } from '../transactions/transactions.types';
+import { BadRequestError, DuplicateError, NotFoundError } from '../../config/errors';
 
 class WebhooksService {
   /**
@@ -18,17 +14,13 @@ class WebhooksService {
   validateWebhookSignature(req: Request) {
     const rawBody = req.body as Buffer;
 
-    const hash = crypto
-      .createHmac("sha512", env.PAYSTACK_SECRET_KEY)
-      .update(rawBody)
-      .digest("hex");
+    const hash = crypto.createHmac('sha512', env.PAYSTACK_SECRET_KEY).update(rawBody).digest('hex');
 
-    const signature = req.headers["x-paystack-signature"] as string;
+    const signature = req.headers['x-paystack-signature'] as string;
 
-    if (!signature) throw new BadRequestError("Missing webhook signature");
+    if (!signature) throw new BadRequestError('Missing webhook signature');
 
-    if (hash !== signature)
-      throw new BadRequestError("Invalid webhook signature");
+    if (hash !== signature) throw new BadRequestError('Invalid webhook signature');
   }
 
   /**
@@ -40,7 +32,7 @@ class WebhooksService {
       return JSON.parse(rawBody.toString()) as PaystackWebhookEvent;
     } catch (error) {
       logger.error(`Failed to parse webhook event: ${error}`);
-      throw new Error("Invalid webhook payload");
+      throw new Error('Invalid webhook payload');
     }
   }
 
@@ -51,14 +43,12 @@ class WebhooksService {
     const { event: eventType, data } = event;
     const { reference, reason } = data;
 
-    const transaction = await transactionsService.findByPaystackReference(
-      reference
-    );
+    const transaction = await transactionsService.findByPaystackReference(reference);
 
-    if (!transaction) throw new NotFoundError("Transaction not found");
+    if (!transaction) throw new NotFoundError('Transaction not found');
 
     const hasProcessed = transaction.paystackMeta.webhookProcessed;
-    if (hasProcessed) throw new DuplicateError("Transaction is processed");
+    if (hasProcessed) throw new DuplicateError('Transaction is processed');
 
     let transactionStatus: TransactionStatus;
     let failureReason: string | undefined;
@@ -71,12 +61,12 @@ class WebhooksService {
 
       case PaystackTransferEvents.TRANSFER_FAILED:
         transactionStatus = TransactionStatus.FAILED;
-        failureReason = reason || data.message || "Transfer failed";
+        failureReason = reason || data.message || 'Transfer failed';
         break;
 
       case PaystackTransferEvents.TRANSFER_REVERSED:
         transactionStatus = TransactionStatus.REVERSED;
-        failureReason = reason || data.message || "Transfer reversed";
+        failureReason = reason || data.message || 'Transfer reversed';
         break;
 
       default:
@@ -86,11 +76,7 @@ class WebhooksService {
 
     // Update transaction status
 
-    await transactionsService.updateTransactionStatus(
-      reference,
-      transactionStatus,
-      failureReason
-    );
+    await transactionsService.updateTransactionStatus(reference, transactionStatus, failureReason);
   }
 
   /**

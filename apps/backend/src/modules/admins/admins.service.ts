@@ -1,6 +1,6 @@
-import { Document } from "mongoose";
-import Admin from "./admins.model";
-import { IAdmin } from "./admins.types";
+import { Document } from 'mongoose';
+import Admin from './admins.model';
+import { IAdmin } from './admins.types';
 
 type AdminDocument = IAdmin & Document;
 
@@ -11,5 +11,3 @@ class AdminService {
 }
 
 export default new AdminService();
-
-

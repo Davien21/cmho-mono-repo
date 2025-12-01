@@ -1,7 +1,7 @@
-import Employee from "./employees.model";
-import { IEmployee } from "./employees.types";
+import Employee from './employees.model';
+import { IEmployee } from './employees.types';
 
-import { Document, Query } from "mongoose";
+import { Document, Query } from 'mongoose';
 
 class EmployeeService {
   async getEmployeeStats() {
@@ -10,7 +10,7 @@ class EmployeeService {
         $group: {
           _id: null,
           totalEmployees: { $sum: 1 },
-          totalMonthlySalaries: { $sum: "$salary" },
+          totalMonthlySalaries: { $sum: '$salary' },
         },
       },
       {
@@ -39,7 +39,7 @@ class EmployeeService {
     return Employee.find().sort({ _id: sort }).limit(limit).skip(skip);
   }
 
-  create(employee: Omit<IEmployee, "_id">) {
+  create(employee: Omit<IEmployee, '_id'>) {
     return Employee.create(employee);
   }
 
@@ -51,11 +51,11 @@ class EmployeeService {
     return Employee.find({ _id: { $in: ids } });
   }
 
-  update(id: any, updateQuery: Partial<Omit<IEmployee, "_id">>) {
+  update(id: any, updateQuery: Partial<Omit<IEmployee, '_id'>>) {
     return Employee.findByIdAndUpdate(id, updateQuery, { new: true });
   }
 
-  updateMany(ids: string[], updateQuery: Partial<Omit<IEmployee, "_id">>) {
+  updateMany(ids: string[], updateQuery: Partial<Omit<IEmployee, '_id'>>) {
     return Employee.updateMany({ _id: { $in: ids } }, updateQuery, {
       new: true,
     });
@@ -66,7 +66,7 @@ class EmployeeService {
   }
 
   getBankDetails(employeeId: string) {
-    return Employee.findOne({ _id: employeeId }).select("bank");
+    return Employee.findOne({ _id: employeeId }).select('bank');
   }
 }
 

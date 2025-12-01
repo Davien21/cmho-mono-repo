@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-import EditIcon from "@/icons/EditIcon";
-import { ReactNode } from "react";
+import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
+import EditIcon from '@/icons/EditIcon';
+import { ReactNode } from 'react';
 
 interface ActionPillProps {
   label: ReactNode;
@@ -25,17 +25,14 @@ export function ActionPill({
       className={cn(
         // Compact chip similar to the sample: light border, subtle background,
         // text with a simple "X" remove icon.
-        "inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm",
+        'inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm',
         className
       )}
     >
       <button
         type="button"
         onClick={onClickLabel}
-        className={cn(
-          "text-slate-900 font-medium",
-          onClickLabel && "hover:text-slate-950"
-        )}
+        className={cn('text-slate-900 font-medium', onClickLabel && 'hover:text-slate-950')}
       >
         {label}
       </button>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -7,78 +7,78 @@ import {
   Package,
   History,
   Settings,
-} from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+} from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
-import { AppSwitcher } from "@/components/app-switcher";
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
+import { AppSwitcher } from '@/components/app-switcher';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import { useLogoutMutation } from "@/store/auth-slice";
+} from '@/components/ui/sidebar';
+import { useLogoutMutation } from '@/store/auth-slice';
 
 // Centralized navigation configuration with breadcrumb support
 export const navigationConfig = {
   apps: [
     {
-      name: "Salary Manager",
-      path: "/salary",
+      name: 'Salary Manager',
+      path: '/salary',
       icon: Wallet,
     },
     {
-      name: "Inventory Manager",
-      path: "/inventory",
+      name: 'Inventory Manager',
+      path: '/inventory',
       icon: Package,
     },
   ],
   salaryNav: [
     {
-      title: "Salaries",
-      url: "/salary",
+      title: 'Salaries',
+      url: '/salary',
       icon: LayoutDashboard,
-      breadcrumbs: [{ label: "Salaries", url: "/salary" }],
+      breadcrumbs: [{ label: 'Salaries', url: '/salary' }],
     },
     {
-      title: "Employees",
-      url: "/salary/employees",
+      title: 'Employees',
+      url: '/salary/employees',
       icon: Users,
-      breadcrumbs: [{ label: "Employees", url: "/salary/employees" }],
+      breadcrumbs: [{ label: 'Employees', url: '/salary/employees' }],
     },
     {
-      title: "Payments",
-      url: "/salary/payments",
+      title: 'Payments',
+      url: '/salary/payments',
       icon: ArrowRightLeft,
-      breadcrumbs: [{ label: "Payment History", url: "/salary/payments" }],
+      breadcrumbs: [{ label: 'Payment History', url: '/salary/payments' }],
     },
   ],
   inventoryNav: [
     {
-      title: "Home",
-      url: "/inventory",
+      title: 'Home',
+      url: '/inventory',
       icon: Package,
-      breadcrumbs: [{ label: "Inventory", url: "/inventory" }],
+      breadcrumbs: [{ label: 'Inventory', url: '/inventory' }],
     },
     {
-      title: "Settings",
-      url: "/inventory/settings",
+      title: 'Settings',
+      url: '/inventory/settings',
       icon: Settings,
       breadcrumbs: [
-        { label: "Inventory", url: "/inventory" },
-        { label: "Settings", url: "/inventory/settings" },
+        { label: 'Inventory', url: '/inventory' },
+        { label: 'Settings', url: '/inventory/settings' },
       ],
     },
     {
-      title: "Stock",
-      url: "/stock",
+      title: 'Stock',
+      url: '/stock',
       icon: History,
       breadcrumbs: [
-        { label: "Inventory", url: "/inventory" },
-        { label: "Stock", url: "/stock" },
+        { label: 'Inventory', url: '/inventory' },
+        { label: 'Stock', url: '/stock' },
       ],
     },
   ],
@@ -87,8 +87,8 @@ export const navigationConfig = {
     {
       pattern: /^\/salary\/payments\/[^/]+$/,
       breadcrumbs: [
-        { label: "Payment History", url: "/salary/payments" },
-        { label: "Transfer Details", url: null }, // null means current page, not clickable
+        { label: 'Payment History', url: '/salary/payments' },
+        { label: 'Transfer Details', url: null }, // null means current page, not clickable
       ],
     },
   ],
@@ -103,14 +103,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   const isInventoryPath =
-    location.pathname.startsWith("/inventory") ||
-    location.pathname.startsWith("/stock");
+    location.pathname.startsWith('/inventory') || location.pathname.startsWith('/stock');
 
   const currentApp =
     (isInventoryPath
-      ? data.apps.find((app) => app.name === "Inventory Manager")
-      : data.apps.find((app) => location.pathname.startsWith(app.path))) ||
-    data.apps[0];
+      ? data.apps.find((app) => app.name === 'Inventory Manager')
+      : data.apps.find((app) => location.pathname.startsWith(app.path))) || data.apps[0];
 
   // Determine which nav items to show based on current app
   const navItems = isInventoryPath ? data.inventoryNav : data.salaryNav;
@@ -118,7 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      navigate("/login");
+      navigate('/login');
     } catch (error) {
       console.error(error);
     }

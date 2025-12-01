@@ -1,34 +1,34 @@
-import { AlertTriangle, Info } from "lucide-react";
-import type { IConfirmationDialog } from "@/types";
-import { ResponsiveDialog } from "@/components/ResponsiveDialog";
-import { useModalContext } from "@/contexts/modal-context";
+import { AlertTriangle, Info } from 'lucide-react';
+import type { IConfirmationDialog } from '@/types';
+import { ResponsiveDialog } from '@/components/ResponsiveDialog';
+import { useModalContext } from '@/contexts/modal-context';
 
-const getIcon = (type: IConfirmationDialog["type"]) => {
-  if (type === "danger") {
+const getIcon = (type: IConfirmationDialog['type']) => {
+  if (type === 'danger') {
     return <AlertTriangle className="w-6 h-6 text-red-600" />;
-  } else if (type === "warning") {
+  } else if (type === 'warning') {
     return <AlertTriangle className="w-6 h-6 text-amber-600" />;
   } else {
     return <Info className="w-6 h-6 text-blue-600" />;
   }
 };
 
-const getButtonColors = (type: IConfirmationDialog["type"]) => {
-  if (type === "danger") {
-    return "bg-red-600 hover:bg-red-700";
-  } else if (type === "warning") {
-    return "bg-amber-600 hover:bg-amber-700";
+const getButtonColors = (type: IConfirmationDialog['type']) => {
+  if (type === 'danger') {
+    return 'bg-red-600 hover:bg-red-700';
+  } else if (type === 'warning') {
+    return 'bg-amber-600 hover:bg-amber-700';
   } else {
-    return "bg-blue-600 hover:bg-blue-700";
+    return 'bg-blue-600 hover:bg-blue-700';
   }
 };
 
 export default function ConfirmationDialog() {
   const { modals, closeModal } = useModalContext();
-  const modal = modals["confirmation-dialog"] || { isOpen: false };
+  const modal = modals['confirmation-dialog'] || { isOpen: false };
 
   const handleClose = () => {
-    closeModal("confirmation-dialog");
+    closeModal('confirmation-dialog');
   };
 
   const { title, message, onConfirm, onCancel, type } = modal?.data || {};

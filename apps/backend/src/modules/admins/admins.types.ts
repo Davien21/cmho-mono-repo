@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export type ObjectId = mongoose.Types.ObjectId;
 
-export type AdminStatus = "active" | "inactive" | "deleted";
+export type AdminStatus = 'active' | 'inactive' | 'deleted';
 
 export enum AdminRole {
-  INVENTORY_MANAGER = "INVENTORY_MANAGER",
+  INVENTORY_MANAGER = 'INVENTORY_MANAGER',
 }
 
 export interface IAdmin {

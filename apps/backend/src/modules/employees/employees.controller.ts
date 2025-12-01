@@ -1,33 +1,35 @@
-import { Request, Response } from "express";
-import employeeService from "./employees.service";
-import { errorResponse, successResponse } from "../../utils/response";
-import banksService from "../banks/banks.service";
-import { IEmployee, IEmployeeBank } from "./employees.types";
-import {
-  BankAccountVerificationResult,
-  PaystackTransferRecipient,
-} from "../../lib/interfaces";
-import { GetEmployeesQuerySchema } from "./employees.validators";
-import paystackClient from "../../lib/paystack";
-import { formatBankDetails } from "../../utils/random";
-import { NotFoundError } from "../../config/errors";
+import { Request, Response } from 'express';
+import employeeService from './employees.service';
+import { errorResponse, successResponse } from '../../utils/response';
+import banksService from '../banks/banks.service';
+import { IEmployee, IEmployeeBank } from './employees.types';
+import { PaystackTransferRecipient } from '../../lib/interfaces';
+import { GetEmployeesQuerySchema } from './employees.validators';
+import paystackClient from '../../lib/paystack';
+import { formatBankDetails } from '../../utils/random';
+import { NotFoundError } from '../../config/errors';
 
 export async function getEmployees(
-  req: Request<Record<string, never>, Record<string, never>, Record<string, never>, GetEmployeesQuerySchema>,
+  req: Request<
+    Record<string, never>,
+    Record<string, never>,
+    Record<string, never>,
+    GetEmployeesQuerySchema
+  >,
   res: Response
 ) {
   try {
-    const { sort = "asc", limit = "10", page = "1" } = req.query;
+    const { sort = 'asc', limit = '10', page = '1' } = req.query;
 
     const employees = await employeeService.getEmployees({
-      sort: sort === "desc" ? -1 : 1,
+      sort: sort === 'desc' ? -1 : 1,
       limit: parseInt(limit),
       page: parseInt(page),
     });
 
-    res.send(successResponse("Employees fetched successfully", employees));
-  } catch (error) {
-    res.status(500).send(errorResponse("Failed to fetch employees"));
+    res.send(successResponse('Employees fetched successfully', employees));
+  } catch (_error) {
+    res.status(500).send(errorResponse('Failed to fetch employees'));
   }
 }
 
@@ -46,11 +48,11 @@ export async function createEmployee(req: Request, res: Response) {
 
     // Create Paystack recipient
     paystackRecipient = await paystackClient.createTransferRecipient({
-      type: "nuban",
+      type: 'nuban',
       name,
       account_number: bank.account_number,
       bank_code: bank.bank_code,
-      currency: "NGN",
+      currency: 'NGN',
     });
   }
 
@@ -63,7 +65,7 @@ export async function createEmployee(req: Request, res: Response) {
     bank,
     paystack_recipient_code,
   });
-  res.send(successResponse("Employee created successfully", employee));
+  res.send(successResponse('Employee created successfully', employee));
 }
 
 export async function updateEmployee(req: Request, res: Response) {
@@ -73,7 +75,7 @@ export async function updateEmployee(req: Request, res: Response) {
   let bank: IEmployeeBank | null = null;
 
   const employee = await employeeService.findById(id).lean();
-  if (!employee) throw new NotFoundError("Employee not found");
+  if (!employee) throw new NotFoundError('Employee not found');
 
   if (bankDetails && !employee.bank) {
     const bankVerificationData = await banksService.validateBank(
@@ -85,11 +87,11 @@ export async function updateEmployee(req: Request, res: Response) {
 
     // Create Paystack recipient
     paystackRecipient = await paystackClient.createTransferRecipient({
-      type: "nuban",
+      type: 'nuban',
       name,
       account_number: bank.account_number,
       bank_code: bank.bank_code,
-      currency: "NGN",
+      currency: 'NGN',
     });
   }
 
@@ -103,5 +105,5 @@ export async function updateEmployee(req: Request, res: Response) {
     paystack_recipient_code: recipient_code || employee.paystack_recipient_code,
   });
 
-  res.send(successResponse("Employee updated successfully"));
+  res.send(successResponse('Employee updated successfully'));
 }

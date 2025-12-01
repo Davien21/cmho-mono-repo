@@ -1,7 +1,7 @@
 // modal context
-import { IEmployee } from "@/types";
-import { IConfirmationDialog, IAddEmployeeRequest } from "@/types";
-import { createContext, useState, useContext, ReactNode, useMemo } from "react";
+import { IEmployee } from '@/types';
+import { IConfirmationDialog, IAddEmployeeRequest } from '@/types';
+import { createContext, useState, useContext, ReactNode, useMemo } from 'react';
 
 // Types for specific modal data
 type SignUpModalData = undefined;
@@ -10,20 +10,17 @@ type UpdateEmployeeModalData = IEmployee;
 type ConfirmationDialogData = IConfirmationDialog;
 
 export type ModalDataMap = {
-  "sign-up": SignUpModalData;
-  "employee-form": AddEmployeeModalData;
-  "confirmation-dialog": ConfirmationDialogData;
-  "update-employee": UpdateEmployeeModalData;
+  'sign-up': SignUpModalData;
+  'employee-form': AddEmployeeModalData;
+  'confirmation-dialog': ConfirmationDialogData;
+  'update-employee': UpdateEmployeeModalData;
 };
 
 type ModalState<T> = { isOpen: boolean; data?: T };
 
 // Generalized Modal Context Type
 type ModalContextType = {
-  openModal: <K extends keyof ModalDataMap>(
-    name: K,
-    data: ModalDataMap[K]
-  ) => void;
+  openModal: <K extends keyof ModalDataMap>(name: K, data: ModalDataMap[K]) => void;
   closeModal: (name: keyof ModalDataMap) => void;
   modals: {
     [K in keyof ModalDataMap]?: ModalState<ModalDataMap[K]>;
@@ -33,12 +30,9 @@ type ModalContextType = {
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
-  const [modals, setModals] = useState<ModalContextType["modals"]>({});
+  const [modals, setModals] = useState<ModalContextType['modals']>({});
 
-  const openModal = <K extends keyof ModalDataMap>(
-    name: K,
-    data: ModalDataMap[K]
-  ) => {
+  const openModal = <K extends keyof ModalDataMap>(name: K, data: ModalDataMap[K]) => {
     setModals((prev) => ({ ...prev, [name]: { isOpen: true, data } }));
   };
 
@@ -58,17 +52,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     [modals]
   );
 
-  return (
-    <ModalContext.Provider value={contextValue}>
-      {children}
-    </ModalContext.Provider>
-  );
+  return <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>;
 };
 
 export const useModalContext = () => {
   const context = useContext(ModalContext);
   if (!context) {
-    throw new Error("useModalContext must be used within a ModalProvider");
+    throw new Error('useModalContext must be used within a ModalProvider');
   }
   return context;
 };

@@ -1,16 +1,16 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from 'react-router-dom';
 
-import NotFoundPage from "@/pages/modules/salary-manager/NotFoundPage";
-import EmployeesPage from "@/pages/modules/salary-manager/EmployeesPage";
-import DashboardPage from "@/pages/modules/salary-manager/DashboardPage";
-import LoginPage from "@/pages/LoginPage";
-import PaymentHistoryPage from "@/pages/modules/salary-manager/PaymentHistoryPage";
-import TransferDetailsPage from "@/pages/modules/salary-manager/TransferDetailsPage";
-import AppSelectionPage from "@/pages/AppSelectionPage";
-import InventoryPage from "@/pages/modules/inventory-manager/InventoryPage";
-import InventorySettingsPage from "@/pages/modules/inventory-manager/InventorySettingsPage";
-import StockEntriesPage from "@/pages/modules/inventory-manager/StockEntriesPage";
-import StockChangesPage from "@/pages/modules/inventory-manager/StockChangesPage";
+import NotFoundPage from '@/pages/modules/salary-manager/NotFoundPage';
+import EmployeesPage from '@/pages/modules/salary-manager/EmployeesPage';
+import DashboardPage from '@/pages/modules/salary-manager/DashboardPage';
+import LoginPage from '@/pages/LoginPage';
+import PaymentHistoryPage from '@/pages/modules/salary-manager/PaymentHistoryPage';
+import TransferDetailsPage from '@/pages/modules/salary-manager/TransferDetailsPage';
+import AppSelectionPage from '@/pages/AppSelectionPage';
+import InventoryPage from '@/pages/modules/inventory-manager/InventoryPage';
+import InventorySettingsPage from '@/pages/modules/inventory-manager/InventorySettingsPage';
+import StockEntriesPage from '@/pages/modules/inventory-manager/StockEntriesPage';
+import StockChangesPage from '@/pages/modules/inventory-manager/StockChangesPage';
 
 export const AppRoutes = () => {
   return (

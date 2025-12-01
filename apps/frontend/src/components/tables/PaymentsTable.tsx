@@ -1,7 +1,7 @@
-import { User } from "lucide-react";
-import { formatDate, formatKobo } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { User } from 'lucide-react';
+import { formatDate, formatKobo } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Transaction {
   _id: string;
@@ -19,20 +19,17 @@ interface PaymentsTableProps {
   isLoading?: boolean;
 }
 
-const PaymentsTable = ({
-  transactions,
-  isLoading = false,
-}: PaymentsTableProps) => {
+const PaymentsTable = ({ transactions, isLoading = false }: PaymentsTableProps) => {
   const getStatusVariant = (status: string) => {
     switch (status) {
-      case "success":
-        return "success";
-      case "pending":
-        return "warning";
-      case "failed":
-        return "danger";
+      case 'success':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'failed':
+        return 'danger';
       default:
-        return "secondary";
+        return 'secondary';
     }
   };
 
@@ -46,12 +43,8 @@ const PaymentsTable = ({
         <div className="text-gray-400 mb-4">
           <User className="w-12 h-12 mx-auto" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          No transactions found
-        </h3>
-        <p className="text-gray-600">
-          This transfer doesn't contain any individual transactions.
-        </p>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">No transactions found</h3>
+        <p className="text-gray-600">This transfer doesn't contain any individual transactions.</p>
       </div>
     );
   }
@@ -72,16 +65,11 @@ const PaymentsTable = ({
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">
-                        {employee?.name || "Unknown Employee"}
+                        {employee?.name || 'Unknown Employee'}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        {employee?.position || "N/A"}
-                      </p>
+                      <p className="text-sm text-gray-600">{employee?.position || 'N/A'}</p>
                     </div>
-                    <Badge
-                      variant={getStatusVariant(transaction.status)}
-                      className="text-xs"
-                    >
+                    <Badge variant={getStatusVariant(transaction.status)} className="text-xs">
                       {transaction.status.toUpperCase()}
                     </Badge>
                   </div>
@@ -89,9 +77,7 @@ const PaymentsTable = ({
                     <p className="text-lg font-bold text-green-600">
                       {formatKobo(transaction.amountInKobo)}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(transaction.createdAt)}
-                    </p>
+                    <p className="text-sm text-gray-500">{formatDate(transaction.createdAt)}</p>
                   </div>
                 </div>
               </div>
@@ -131,11 +117,9 @@ const PaymentsTable = ({
                       </div>
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {employee?.name || "Unknown Employee"}
+                          {employee?.name || 'Unknown Employee'}
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {employee?.position || "N/A"}
-                        </div>
+                        <div className="text-sm text-gray-500">{employee?.position || 'N/A'}</div>
                       </div>
                     </div>
                   </td>
@@ -143,10 +127,7 @@ const PaymentsTable = ({
                     {formatKobo(transaction.amountInKobo)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Badge
-                      variant={getStatusVariant(transaction.status)}
-                      className="text-xs"
-                    >
+                    <Badge variant={getStatusVariant(transaction.status)} className="text-xs">
                       {transaction.status.toUpperCase()}
                     </Badge>
                   </td>

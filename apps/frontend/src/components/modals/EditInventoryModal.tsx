@@ -1,35 +1,24 @@
-import { useState } from "react";
-import * as yup from "yup";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { X } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Card } from "../ui/card";
-import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
-import {
-  InventoryItem,
-  InventoryCategory,
-  InventoryStatus,
-  UnitLevel,
-} from "@/types/inventory";
+import { useState } from 'react';
+import * as yup from 'yup';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { X } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Card } from '../ui/card';
+import { UnitGroupingBuilder } from '../UnitGroupingBuilder';
+import { InventoryItem, InventoryCategory, InventoryStatus, UnitLevel } from '@/types/inventory';
 import {
   IInventoryUnitDefinitionDto,
   useGetInventoryItemsQuery,
   useGetInventoryUnitsQuery,
   useUpdateInventoryItemMutation,
-} from "@/store/inventory-slice";
-import { InventoryCategorySelect } from "@/components/InventoryCategorySelect";
-import { getRTKQueryErrorMessage } from "@/lib/utils";
-import { toast } from "sonner";
+} from '@/store/inventory-slice';
+import { InventoryCategorySelect } from '@/components/InventoryCategorySelect';
+import { getRTKQueryErrorMessage } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface EditInventoryModalProps {
   item: InventoryItem;
@@ -37,24 +26,17 @@ interface EditInventoryModalProps {
 }
 
 const editInventoryItemSchema = yup.object({
-  name: yup.string().trim().required("Name is required"),
-  inventoryCategory: yup.string().trim().required("Category is required"),
+  name: yup.string().trim().required('Name is required'),
+  inventoryCategory: yup.string().trim().required('Category is required'),
   lowStockValue: yup
     .string()
     .optional()
-    .test(
-      "is-number",
-      "Low stock value must be a non-negative number",
-      (value) => {
-        if (!value) return true;
-        const parsed = parseFloat(value);
-        return !Number.isNaN(parsed) && parsed >= 0;
-      }
-    ),
-  setupStatus: yup
-    .mixed<InventoryStatus>()
-    .oneOf(["draft", "ready"])
-    .required(),
+    .test('is-number', 'Low stock value must be a non-negative number', (value) => {
+      if (!value) return true;
+      const parsed = parseFloat(value);
+      return !Number.isNaN(parsed) && parsed >= 0;
+    }),
+  setupStatus: yup.mixed<InventoryStatus>().oneOf(['draft', 'ready']).required(),
 });
 
 type EditInventoryFormValues = yup.InferType<typeof editInventoryItemSchema>;
@@ -79,8 +61,7 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
     defaultValues: {
       name: item.name,
       inventoryCategory: item.inventoryCategory,
-      lowStockValue:
-        item.lowStockValue !== undefined ? String(item.lowStockValue) : "",
+      lowStockValue: item.lowStockValue !== undefined ? String(item.lowStockValue) : '',
       setupStatus: item.status,
     },
   });
@@ -90,19 +71,18 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
     return units.length > 0 ? units[units.length - 1] : undefined;
   };
 
-  const [updateInventoryItem, { isLoading: isUpdating }] =
-    useUpdateInventoryItemMutation();
+  const [updateInventoryItem, { isLoading: isUpdating }] = useUpdateInventoryItemMutation();
 
   const onSubmit = async (values: EditInventoryFormValues) => {
     if (units.length === 0) {
-      alert("Please define at least one unit");
+      alert('Please define at least one unit');
       return;
     }
 
     const baseUnit = getBaseUnit();
 
     if (!baseUnit) {
-      alert("Please define at least one unit");
+      alert('Please define at least one unit');
       return;
     }
 
@@ -116,23 +96,18 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
           name: u.name,
           plural: u.plural,
           quantity:
-            typeof u.quantity === "string"
-              ? parseFloat(u.quantity) || undefined
-              : u.quantity,
+            typeof u.quantity === 'string' ? parseFloat(u.quantity) || undefined : u.quantity,
         })),
-        lowStockValue: values.lowStockValue
-          ? parseFloat(values.lowStockValue)
-          : undefined,
+        lowStockValue: values.lowStockValue ? parseFloat(values.lowStockValue) : undefined,
         setupStatus: values.setupStatus,
       }).unwrap();
 
       await refetch();
-      toast.success("Inventory item updated successfully");
+      toast.success('Inventory item updated successfully');
       onClose();
     } catch (error: unknown) {
       const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update inventory item. Please try again.";
+        getRTKQueryErrorMessage(error) || 'Failed to update inventory item. Please try again.';
       toast.error(message);
     }
   };
@@ -150,15 +125,13 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
                 render={({ field }) => (
                   <Select
                     value={field.value}
-                    onValueChange={(value) =>
-                      field.onChange(value as InventoryStatus)
-                    }
+                    onValueChange={(value) => field.onChange(value as InventoryStatus)}
                   >
                     <SelectTrigger
                       className={`w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
-                        field.value === "ready"
-                          ? "bg-green-100 text-green-800 hover:bg-green-200"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        field.value === 'ready'
+                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
                       <SelectValue />
@@ -187,14 +160,12 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
                 <Label htmlFor="name">Name *</Label>
                 <Input
                   id="name"
-                  {...register("name")}
+                  {...register('name')}
                   placeholder="e.g., Paracetamol 500mg"
                   className="text-base"
                 />
                 {errors.name?.message && (
-                  <p className="text-xs text-destructive mt-1">
-                    {errors.name.message}
-                  </p>
+                  <p className="text-xs text-destructive mt-1">{errors.name.message}</p>
                 )}
               </div>
 
@@ -230,16 +201,14 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
             <Input
               id="lowStockValue"
               type="number"
-              {...register("lowStockValue")}
+              {...register('lowStockValue')}
               placeholder="Enter minimum stock threshold"
               className="text-base"
               min="0"
               step="1"
             />
             {errors.lowStockValue?.message && (
-              <p className="text-xs text-destructive mt-1">
-                {errors.lowStockValue.message}
-              </p>
+              <p className="text-xs text-destructive mt-1">{errors.lowStockValue.message}</p>
             )}
             <p className="text-xs text-muted-foreground">
               Alert when stock falls below this value (in base units)
@@ -255,7 +224,7 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
               className="bg-gray-900 hover:bg-gray-800"
               disabled={isUpdating || isSubmitting}
             >
-              {isUpdating || isSubmitting ? "Saving..." : "Save Changes"}
+              {isUpdating || isSubmitting ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </form>

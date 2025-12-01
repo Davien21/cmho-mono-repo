@@ -1,8 +1,5 @@
-import express from "express";
-import {
-  handlePaystackWebhook,
-  testWebhookEndpoint,
-} from "./webhooks.controller";
+import express from 'express';
+import { handlePaystackWebhook, testWebhookEndpoint } from './webhooks.controller';
 
 const router = express.Router();
 
@@ -11,13 +8,13 @@ const router = express.Router();
  * @desc Handle Paystack webhook events
  * @access Public (Paystack calls this endpoint)
  */
-router.post("/webhooks/paystack", handlePaystackWebhook);
+router.post('/webhooks/paystack', handlePaystackWebhook);
 
 /**
  * @route GET /webhooks/paystack/test
  * @desc Test webhook endpoint
  * @access Public
  */
-router.get("/webhooks/paystack/test", testWebhookEndpoint);
+router.get('/webhooks/paystack/test', testWebhookEndpoint);
 
 export default router;

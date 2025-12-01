@@ -21,7 +21,6 @@ Before committing changes or creating a PR, always work from a fresh branch off 
    ```
 
 2. **Decide on a branch name**
-
    - Base it on the type of work and a short description.
    - Examples:
      - `feature/add-inventory-system`
@@ -90,13 +89,11 @@ Use the `.github/pull_request_template.md` structure and follow this format:
 ### PR Description Guidelines:
 
 1. **Description Section:**
-
    - Single paragraph explaining the overall feature/fix
    - Focus on the user-facing impact or business value
    - Keep it concise but informative
 
 2. **GitHub Issue:**
-
    - **IMPORTANT: Check the user's prompt for issue links first**
    - If an issue link is provided in the prompt (e.g., `https://github.com/{owner}/{repo}/issues/{number}` or `#123`), use it in the PR description
    - Extract issue links from various formats:
@@ -107,12 +104,10 @@ Use the `.github/pull_request_template.md` structure and follow this format:
    - If no issue link is provided in prompt, use "N/A"
 
 3. **Related PRs:**
-
    - Include links to related PRs if any
    - Use "N/A" if none
 
 4. **Changes Section:**
-
    - List concrete technical changes made
    - One bullet point per significant change
    - Avoid separating by frontend/backend/etc - keep flat list
@@ -156,7 +151,6 @@ Use the GitHub MCP tools to create the pull request automatically:
 1. **Ensure branch is pushed** to remote (use `git push -u origin branch-name`)
 
 2. **Extract repository information** from the git remote:
-
    - Parse `owner` and `repo` from the remote URL
    - Example: `https://github.com/owner/repo.git` → owner: `owner`, repo: `repo`
 
@@ -165,7 +159,6 @@ Use the GitHub MCP tools to create the pull request automatically:
 4. **Generate PR description** following the template format
 
 5. **Create PR using GitHub MCP:**
-
    - Use the `mcp_github_create_pull_request` tool
    - Parameters:
      - `owner`: Repository owner (from git remote)
@@ -176,7 +169,6 @@ Use the GitHub MCP tools to create the pull request automatically:
      - `body`: Generated PR description following template
 
 6. **Extract PR information** from the MCP response:
-
    - PR number
    - PR URL
    - PR ID

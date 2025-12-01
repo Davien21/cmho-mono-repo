@@ -1,6 +1,6 @@
-import { baseApi } from "@/store/api-slice";
-import { IAPIResponse } from "@/types";
-import { TagTypes } from "@/store/tags";
+import { baseApi } from '@/store/api-slice';
+import { IAPIResponse } from '@/types';
+import { TagTypes } from '@/store/tags';
 
 export interface IInventoryUnitDefinitionDto {
   _id: string;
@@ -29,7 +29,7 @@ export interface IInventoryCategoryDto {
   unitPresets?: IInventoryCategoryUnitPresetDto[];
 }
 
-export type SupplierStatus = "active" | "disabled" | "deleted";
+export type SupplierStatus = 'active' | 'disabled' | 'deleted';
 
 export interface ISupplierDto {
   _id: string;
@@ -43,9 +43,9 @@ export interface ISupplierDto {
   updatedAt?: string;
 }
 
-export type InventorySetupStatus = "draft" | "ready";
+export type InventorySetupStatus = 'draft' | 'ready';
 
-export type InventoryItemStatus = "active" | "disabled" | "deleted";
+export type InventoryItemStatus = 'active' | 'disabled' | 'deleted';
 
 export interface IInventoryItemUnitDto {
   id: string;
@@ -69,7 +69,7 @@ export interface IInventoryItemDto {
   updatedAt?: string;
 }
 
-export type StockOperationType = "add" | "reduce";
+export type StockOperationType = 'add' | 'reduce';
 
 export interface IStockSupplierSnapshotDto {
   supplierId: string;
@@ -95,8 +95,7 @@ export interface ICreateInventoryUnitRequest {
   plural: string;
 }
 
-export interface IUpdateInventoryUnitRequest
-  extends ICreateInventoryUnitRequest {
+export interface IUpdateInventoryUnitRequest extends ICreateInventoryUnitRequest {
   id: string;
 }
 
@@ -105,8 +104,7 @@ export interface ICreateInventoryCategoryRequest {
   unitPresetIds?: string[];
 }
 
-export interface IUpdateInventoryCategoryRequest
-  extends ICreateInventoryCategoryRequest {
+export interface IUpdateInventoryCategoryRequest extends ICreateInventoryCategoryRequest {
   id: string;
 }
 
@@ -119,8 +117,7 @@ export interface ICreateSupplierRequest {
   status?: SupplierStatus;
 }
 
-export interface IUpdateSupplierRequest
-  extends Partial<ICreateSupplierRequest> {
+export interface IUpdateSupplierRequest extends Partial<ICreateSupplierRequest> {
   id: string;
 }
 
@@ -134,8 +131,7 @@ export interface ICreateInventoryItemRequest {
   currentStockInBaseUnits?: number;
 }
 
-export interface IUpdateInventoryItemRequest
-  extends Partial<ICreateInventoryItemRequest> {
+export interface IUpdateInventoryItemRequest extends Partial<ICreateInventoryItemRequest> {
   id: string;
 }
 
@@ -157,18 +153,15 @@ export interface IGetStockEntriesQuery {
   operationType?: StockOperationType;
   page?: number;
   limit?: number;
-  sort?: "asc" | "desc";
+  sort?: 'asc' | 'desc';
 }
 
 export const inventoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getInventoryUnits: builder.query<
-      IAPIResponse<IInventoryUnitDefinitionDto[]>,
-      void
-    >({
+    getInventoryUnits: builder.query<IAPIResponse<IInventoryUnitDefinitionDto[]>, void>({
       query: () => ({
-        url: "/inventory/units",
-        method: "GET",
+        url: '/inventory/units',
+        method: 'GET',
       }),
       providesTags: [TagTypes.INVENTORY_UNITS],
     }),
@@ -177,14 +170,11 @@ export const inventoryApi = baseApi.injectEndpoints({
       ICreateInventoryUnitRequest
     >({
       query: (body) => ({
-        url: "/inventory/units",
-        method: "POST",
+        url: '/inventory/units',
+        method: 'POST',
         body,
       }),
-      invalidatesTags: [
-        TagTypes.INVENTORY_UNITS,
-        TagTypes.INVENTORY_CATEGORIES,
-      ],
+      invalidatesTags: [TagTypes.INVENTORY_UNITS, TagTypes.INVENTORY_CATEGORIES],
     }),
     updateInventoryUnit: builder.mutation<
       IAPIResponse<IInventoryUnitDefinitionDto | null>,
@@ -192,32 +182,23 @@ export const inventoryApi = baseApi.injectEndpoints({
     >({
       query: ({ id, ...body }) => ({
         url: `/inventory/units/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body,
       }),
-      invalidatesTags: [
-        TagTypes.INVENTORY_UNITS,
-        TagTypes.INVENTORY_CATEGORIES,
-      ],
+      invalidatesTags: [TagTypes.INVENTORY_UNITS, TagTypes.INVENTORY_CATEGORIES],
     }),
     deleteInventoryUnit: builder.mutation<IAPIResponse<null>, string>({
       query: (id) => ({
         url: `/inventory/units/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: [
-        TagTypes.INVENTORY_UNITS,
-        TagTypes.INVENTORY_CATEGORIES,
-      ],
+      invalidatesTags: [TagTypes.INVENTORY_UNITS, TagTypes.INVENTORY_CATEGORIES],
     }),
 
-    getInventoryCategories: builder.query<
-      IAPIResponse<IInventoryCategoryDto[]>,
-      void
-    >({
+    getInventoryCategories: builder.query<IAPIResponse<IInventoryCategoryDto[]>, void>({
       query: () => ({
-        url: "/inventory/categories",
-        method: "GET",
+        url: '/inventory/categories',
+        method: 'GET',
       }),
       providesTags: [TagTypes.INVENTORY_CATEGORIES],
     }),
@@ -226,8 +207,8 @@ export const inventoryApi = baseApi.injectEndpoints({
       ICreateInventoryCategoryRequest
     >({
       query: (body) => ({
-        url: "/inventory/categories",
-        method: "POST",
+        url: '/inventory/categories',
+        method: 'POST',
         body,
       }),
       invalidatesTags: [TagTypes.INVENTORY_CATEGORIES],
@@ -238,7 +219,7 @@ export const inventoryApi = baseApi.injectEndpoints({
     >({
       query: ({ id, ...body }) => ({
         url: `/inventory/categories/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body,
       }),
       invalidatesTags: [TagTypes.INVENTORY_CATEGORIES],
@@ -246,36 +227,30 @@ export const inventoryApi = baseApi.injectEndpoints({
     deleteInventoryCategory: builder.mutation<IAPIResponse<null>, string>({
       query: (id) => ({
         url: `/inventory/categories/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
       invalidatesTags: [TagTypes.INVENTORY_CATEGORIES],
     }),
 
     getSuppliers: builder.query<IAPIResponse<ISupplierDto[]>, void>({
       query: () => ({
-        url: "/inventory/suppliers",
-        method: "GET",
+        url: '/inventory/suppliers',
+        method: 'GET',
       }),
       providesTags: [TagTypes.SUPPLIERS],
     }),
-    createSupplier: builder.mutation<
-      IAPIResponse<ISupplierDto>,
-      ICreateSupplierRequest
-    >({
+    createSupplier: builder.mutation<IAPIResponse<ISupplierDto>, ICreateSupplierRequest>({
       query: (body) => ({
-        url: "/inventory/suppliers",
-        method: "POST",
+        url: '/inventory/suppliers',
+        method: 'POST',
         body,
       }),
       invalidatesTags: [TagTypes.SUPPLIERS],
     }),
-    updateSupplier: builder.mutation<
-      IAPIResponse<ISupplierDto | null>,
-      IUpdateSupplierRequest
-    >({
+    updateSupplier: builder.mutation<IAPIResponse<ISupplierDto | null>, IUpdateSupplierRequest>({
       query: ({ id, ...body }) => ({
         url: `/inventory/suppliers/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body,
       }),
       invalidatesTags: [TagTypes.SUPPLIERS],
@@ -283,17 +258,17 @@ export const inventoryApi = baseApi.injectEndpoints({
     deleteSupplier: builder.mutation<IAPIResponse<null>, string>({
       query: (id) => ({
         url: `/inventory/suppliers/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
       invalidatesTags: [TagTypes.SUPPLIERS],
     }),
 
     getInventoryItems: builder.query<IAPIResponse<IInventoryItemDto[]>, void>({
       query: () => ({
-        url: "/inventory/items",
-        method: "GET",
+        url: '/inventory/items',
+        method: 'GET',
         params: {
-          sort: "desc",
+          sort: 'desc',
           limit: 100,
         },
       }),
@@ -304,8 +279,8 @@ export const inventoryApi = baseApi.injectEndpoints({
       ICreateInventoryItemRequest
     >({
       query: (body) => ({
-        url: "/inventory/items",
-        method: "POST",
+        url: '/inventory/items',
+        method: 'POST',
         body,
       }),
       invalidatesTags: [TagTypes.INVENTORY_ITEMS],
@@ -316,7 +291,7 @@ export const inventoryApi = baseApi.injectEndpoints({
     >({
       query: ({ id, ...body }) => ({
         url: `/inventory/items/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body,
       }),
       invalidatesTags: [TagTypes.INVENTORY_ITEMS],
@@ -324,18 +299,15 @@ export const inventoryApi = baseApi.injectEndpoints({
     deleteInventoryItem: builder.mutation<IAPIResponse<null>, string>({
       query: (id) => ({
         url: `/inventory/items/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
       invalidatesTags: [TagTypes.INVENTORY_ITEMS],
     }),
 
-    getStockEntries: builder.query<
-      IAPIResponse<IStockEntryDto[]>,
-      IGetStockEntriesQuery | void
-    >({
+    getStockEntries: builder.query<IAPIResponse<IStockEntryDto[]>, IGetStockEntriesQuery | void>({
       query: (params) => ({
-        url: "/inventory/stock-entries",
-        method: "GET",
+        url: '/inventory/stock-entries',
+        method: 'GET',
         params: params
           ? {
               ...params,
@@ -344,13 +316,10 @@ export const inventoryApi = baseApi.injectEndpoints({
       }),
       providesTags: [TagTypes.STOCK_ENTRIES],
     }),
-    createStockEntry: builder.mutation<
-      IAPIResponse<IStockEntryDto>,
-      ICreateStockEntryRequest
-    >({
+    createStockEntry: builder.mutation<IAPIResponse<IStockEntryDto>, ICreateStockEntryRequest>({
       query: (body) => ({
-        url: "/inventory/stock-entries",
-        method: "POST",
+        url: '/inventory/stock-entries',
+        method: 'POST',
         body,
       }),
       invalidatesTags: [TagTypes.STOCK_ENTRIES, TagTypes.INVENTORY_ITEMS],

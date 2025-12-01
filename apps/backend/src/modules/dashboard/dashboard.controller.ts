@@ -1,16 +1,16 @@
-import { successResponse } from "../../utils/response";
-import { Request, Response } from "express";
+import { successResponse } from '../../utils/response';
+import { Request, Response } from 'express';
 
-import employeeService from "../employees/employees.service";
-import { BadRequestError } from "../../config/errors";
-import { AxiosError } from "axios";
-import paystackClient from "../../lib/paystack";
+import employeeService from '../employees/employees.service';
+import { BadRequestError } from '../../config/errors';
+import { AxiosError } from 'axios';
+import paystackClient from '../../lib/paystack';
 
 export async function getDashboardStats(_req: Request, res: Response) {
   const employeeStats = await employeeService.getEmployeeStats();
   const balances = await paystackClient.getAccountBalances();
   const nairaBalance = (
-    balances.find((b) => b.currency === "NGN") || {
+    balances.find((b) => b.currency === 'NGN') || {
       balance: 0,
     }
   ).balance;
@@ -19,7 +19,7 @@ export async function getDashboardStats(_req: Request, res: Response) {
 
   const result = { ...employeeStats, accountBalance: balanceInNaira };
 
-  res.send(successResponse("Dashboard stats fetched successfully", result));
+  res.send(successResponse('Dashboard stats fetched successfully', result));
 }
 
 /**
@@ -32,7 +32,7 @@ export async function getAccountBalance(_req: Request, res: Response) {
 
     const result = { accountBalance: balanceInNaira };
 
-    res.send(successResponse("Account balance retrieved successfully", result));
+    res.send(successResponse('Account balance retrieved successfully', result));
   } catch (error: unknown) {
     const axiosError = error as AxiosError<{ message: string }>;
 
@@ -40,6 +40,6 @@ export async function getAccountBalance(_req: Request, res: Response) {
       throw new BadRequestError(axiosError.response.data.message);
     }
 
-    throw new BadRequestError("Failed to retrieve account balance");
+    throw new BadRequestError('Failed to retrieve account balance');
   }
 }

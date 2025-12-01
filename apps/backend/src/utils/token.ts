@@ -1,8 +1,8 @@
-import crypto from "crypto";
-import jwt from "jsonwebtoken";
-import { env } from "../config/env";
-import { AdminRole, IAdmin } from "../modules/admins/admins.types";
-import { AuthTokenPayload } from "../modules/auth/auth.service";
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { env } from '../config/env';
+import { AdminRole, IAdmin } from '../modules/admins/admins.types';
+import { AuthTokenPayload } from '../modules/auth/auth.service';
 
 interface ITokenOptions {
   length: number;
@@ -11,8 +11,8 @@ interface ITokenOptions {
 }
 
 const generateToken = ({ length, range, prefix }: ITokenOptions) => {
-  prefix = prefix || "";
-  let token = "";
+  prefix = prefix || '';
+  let token = '';
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * range.length);
     token += range[randomIndex];
@@ -22,14 +22,14 @@ const generateToken = ({ length, range, prefix }: ITokenOptions) => {
 
 const generateSignUpToken = () => {
   const range = Array.from(Array(10).keys());
-  const tokenOptions = { length: 5, range, prefix: "SZ-" };
+  const tokenOptions = { length: 5, range, prefix: 'SZ-' };
   const newToken = generateToken(tokenOptions);
 
   return newToken;
 };
 
 const generateAuthToken = (
-  user: Pick<IAdmin, "_id" | "email" | "isSuperAdmin" | "roles">
+  user: Pick<IAdmin, '_id' | 'email' | 'isSuperAdmin' | 'roles'>
 ): string => {
   const payload: AuthTokenPayload = {
     _id: String(user._id),
@@ -38,7 +38,7 @@ const generateAuthToken = (
     roles: user.roles,
   };
 
-  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: '1d' });
 };
 
 const generateAdminToken = (options?: {
@@ -46,7 +46,7 @@ const generateAdminToken = (options?: {
   isSuperAdmin?: boolean;
   roles?: AdminRole[];
 }): string => {
-  const { _id = "Admin", isSuperAdmin = true, roles = [] } = options || {};
+  const { _id = 'Admin', isSuperAdmin = true, roles = [] } = options || {};
 
   const payload: AuthTokenPayload = {
     _id,
@@ -54,22 +54,22 @@ const generateAdminToken = (options?: {
     roles,
   };
 
-  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: '1d' });
 };
 
 const generateRandomString = (length = 64) =>
   [...crypto.getRandomValues(new Uint8Array(length))]
-    .map((x) => x.toString(16).padStart(2, "0"))
-    .join("");
+    .map((x) => x.toString(16).padStart(2, '0'))
+    .join('');
 
 const generateSha256 = async (plainText: string) => {
   const encoder = new TextEncoder();
   const data = encoder.encode(plainText);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   return btoa(String.fromCharCode(...new Uint8Array(hashBuffer)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 };
 
 export {

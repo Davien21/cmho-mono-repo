@@ -1,6 +1,6 @@
-import { AddEmployeeModal } from "@/components/modals/AddEmployeeModal";
-import ConfirmationDialog from "@/components/modals/ConfirmationDialog";
-import { UpdateEmployeeModal } from "@/components/modals/UpdateEmployeeModal";
+import { AddEmployeeModal } from '@/components/modals/AddEmployeeModal';
+import ConfirmationDialog from '@/components/modals/ConfirmationDialog';
+import { UpdateEmployeeModal } from '@/components/modals/UpdateEmployeeModal';
 export const Modals = () => {
   return (
     <>

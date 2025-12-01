@@ -140,7 +140,6 @@ For each approved PR group, follow these steps in order:
    ```
 
    Branch naming convention:
-
    - Features: `feature/short-descriptive-name`
    - Fixes: `fix/short-descriptive-name`
    - Refactors: `refactor/short-descriptive-name`
@@ -167,7 +166,6 @@ git add path/to/file3.ts
 Follow the `commits.mdc` rules:
 
 1. **Create logical commits** within this PR if needed:
-
    - Group related changes together
    - Use format: `--{TYPE}: {description}`
    - Examples:
@@ -207,7 +205,6 @@ Now follow **ALL steps** from `.cursor/commands/create-pr.md`:
 1. **Extract repository information** from git remote
 2. **Get current branch name** for PR title
 3. **Generate PR description** following the template:
-
    - Description section
    - GitHub Issue (check user's original prompt for issue links)
    - Related PRs

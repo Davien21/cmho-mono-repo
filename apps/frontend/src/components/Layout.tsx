@@ -1,6 +1,6 @@
 // Layout component with sidebar navigation
-import * as React from "react";
-import { AppSidebar, navigationConfig } from "@/components/app-sidebar";
+import * as React from 'react';
+import { AppSidebar, navigationConfig } from '@/components/app-sidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,20 +8,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   BreadcrumbLink,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import ProtectedRoute from "./ProtectedRoute";
-import { useLocation, Link } from "react-router-dom";
+} from '@/components/ui/breadcrumb';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import ProtectedRoute from './ProtectedRoute';
+import { useLocation, Link } from 'react-router-dom';
 import {
   useGetInventoryCategoriesQuery,
   useGetInventoryItemsQuery,
   useGetInventoryUnitsQuery,
-} from "@/store/inventory-slice";
+} from '@/store/inventory-slice';
 
 type BreadcrumbItem = {
   label: string;
@@ -42,22 +38,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const searchParams = new URLSearchParams(location.search);
 
     // Special handling for inventory stock overview + filtered-by-item routes
-    if (pathname === "/stock" || pathname === "/inventory/stock") {
-      const itemId = searchParams.get("itemId") || "";
+    if (pathname === '/stock' || pathname === '/inventory/stock') {
+      const itemId = searchParams.get('itemId') || '';
 
       let itemLabel: string | null = null;
       if (itemId && inventoryItemsResponse?.data) {
-        const match = inventoryItemsResponse.data.find(
-          (item) => item._id === itemId
-        );
+        const match = inventoryItemsResponse.data.find((item) => item._id === itemId);
         if (match) {
           itemLabel = match.name;
         }
       }
 
       const baseCrumbs: BreadcrumbItem[] = [
-        { label: "Inventory", url: "/inventory" },
-        { label: "Stock", url: "/stock" },
+        { label: 'Inventory', url: '/inventory' },
+        { label: 'Stock', url: '/stock' },
       ];
 
       if (itemLabel) {
@@ -68,10 +62,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
 
     // Check all navigation items from both nav groups
-    const allNavItems = [
-      ...navigationConfig.salaryNav,
-      ...navigationConfig.inventoryNav,
-    ];
+    const allNavItems = [...navigationConfig.salaryNav, ...navigationConfig.inventoryNav];
 
     // Find exact match first
     const matchedNav = allNavItems.find((item) => item.url === pathname);
@@ -88,7 +79,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
 
     // Default fallback
-    return [{ label: "CMHO", url: null }];
+    return [{ label: 'CMHO', url: null }];
   };
 
   const breadcrumbs = getBreadcrumbs();

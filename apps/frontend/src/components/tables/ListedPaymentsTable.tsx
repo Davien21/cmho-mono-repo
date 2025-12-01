@@ -1,9 +1,7 @@
-import PaymentsTable, {
-  PaymentsTableSkeleton,
-} from "@/components/tables/PaymentsTable";
-import { EmptyPaymentsView } from "../EmptyPaymentsView";
-import { IAPIResponse } from "@/types";
-import { ITransactionsResponse } from "@/store/transactions-slice";
+import PaymentsTable, { PaymentsTableSkeleton } from '@/components/tables/PaymentsTable';
+import { EmptyPaymentsView } from '../EmptyPaymentsView';
+import { IAPIResponse } from '@/types';
+import { ITransactionsResponse } from '@/store/transactions-slice';
 
 interface ListedPaymentsProps {
   data?: IAPIResponse<ITransactionsResponse>;

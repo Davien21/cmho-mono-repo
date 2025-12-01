@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import { successResponse } from "../../utils/response";
-import { BadRequestError } from "../../config/errors";
-import logger from "../../config/logger";
-import webhooksService from "./webhooks.service";
+import { Request, Response } from 'express';
+import { successResponse } from '../../utils/response';
+import { BadRequestError } from '../../config/errors';
+import logger from '../../config/logger';
+import webhooksService from './webhooks.service';
 
 /**
  * Handle Paystack webhook events
@@ -17,7 +17,7 @@ export async function handlePaystackWebhook(req: Request, res: Response) {
   await webhooksService.processWebhook(event);
 
   // Return success response
-  res.send(successResponse("Webhook processed successfully"));
+  res.send(successResponse('Webhook processed successfully'));
 }
 
 /**
@@ -26,13 +26,13 @@ export async function handlePaystackWebhook(req: Request, res: Response) {
 export async function testWebhookEndpoint(req: Request, res: Response) {
   try {
     res.json(
-      successResponse("Webhook endpoint is working", {
+      successResponse('Webhook endpoint is working', {
         timestamp: new Date().toISOString(),
-        endpoint: "/webhooks/paystack",
+        endpoint: '/webhooks/paystack',
       })
     );
   } catch (error) {
     logger.error(`Webhook test failed: ${error}`);
-    throw new BadRequestError("Webhook test failed");
+    throw new BadRequestError('Webhook test failed');
   }
 }

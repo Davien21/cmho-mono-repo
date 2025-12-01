@@ -1,19 +1,18 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Badge } from "@/components/ui/badge";
-import { UnitLevel } from "@/types/inventory";
-import { formatUnitName } from "@/lib/utils";
+import { Badge } from '@/components/ui/badge';
+import { UnitLevel } from '@/types/inventory';
+import { formatUnitName } from '@/lib/utils';
 
-type DisplayMode = "full" | "skipOne" | "baseOnly";
+type DisplayMode = 'full' | 'skipOne' | 'baseOnly';
 
-interface StockUpdateBadgeProps
-  extends Omit<React.ComponentProps<typeof Badge>, "children"> {
+interface StockUpdateBadgeProps extends Omit<React.ComponentProps<typeof Badge>, 'children'> {
   units: UnitLevel[];
   /**
    * Quantity in base units. Can be negative; component will show +/-.
    */
   quantityInBaseUnits: number;
-  operationType: "add" | "reduce";
+  operationType: 'add' | 'reduce';
 }
 
 export function StockUpdateBadge({
@@ -23,11 +22,11 @@ export function StockUpdateBadge({
   className,
   ...props
 }: StockUpdateBadgeProps) {
-  const [displayMode, setDisplayMode] = useState<DisplayMode>("full");
+  const [displayMode, setDisplayMode] = useState<DisplayMode>('full');
 
   const getBaseUnitName = (allUnits: UnitLevel[], quantity: number = 2) => {
     const baseUnit = allUnits.length > 0 ? allUnits[allUnits.length - 1] : null;
-    if (!baseUnit) return "units";
+    if (!baseUnit) return 'units';
     return formatUnitName(baseUnit, quantity);
   };
 
@@ -39,16 +38,13 @@ export function StockUpdateBadge({
     if (totalInBaseUnits === 0) return `0 ${getBaseUnitName(allUnits, 0)}`;
 
     if (allUnits.length === 0)
-      return `${totalInBaseUnits} ${getBaseUnitName(
-        allUnits,
-        totalInBaseUnits
-      )}`;
+      return `${totalInBaseUnits} ${getBaseUnitName(allUnits, totalInBaseUnits)}`;
 
     const baseUnit = allUnits.length > 0 ? allUnits[allUnits.length - 1] : null;
 
-    if (mode === "baseOnly") {
+    if (mode === 'baseOnly') {
       return `${totalInBaseUnits} ${
-        baseUnit ? formatUnitName(baseUnit, totalInBaseUnits) : "units"
+        baseUnit ? formatUnitName(baseUnit, totalInBaseUnits) : 'units'
       }`;
     }
 
@@ -59,7 +55,7 @@ export function StockUpdateBadge({
       let multiplier = 1;
       for (let i = unitIndex + 1; i < sortedUnits.length; i++) {
         const qty = sortedUnits[i].quantity;
-        const numQty = typeof qty === "string" ? parseFloat(qty) : Number(qty);
+        const numQty = typeof qty === 'string' ? parseFloat(qty) : Number(qty);
         if (!isNaN(numQty) && numQty > 0) {
           multiplier *= numQty;
         }
@@ -68,7 +64,7 @@ export function StockUpdateBadge({
     });
 
     let unitsToUse = [...sortedUnits];
-    if (mode === "skipOne" && sortedUnits.length > 1) {
+    if (mode === 'skipOne' && sortedUnits.length > 1) {
       unitsToUse = sortedUnits.slice(1);
     }
 
@@ -90,36 +86,30 @@ export function StockUpdateBadge({
       result.push({ unit: baseUnit, quantity: remaining });
     }
 
-    return result
-      .map((r) => `${r.quantity} ${formatUnitName(r.unit, r.quantity)}`)
-      .join(", ");
+    return result.map((r) => `${r.quantity} ${formatUnitName(r.unit, r.quantity)}`).join(', ');
   };
 
   const toggleDisplayMode = () => {
     setDisplayMode((current) => {
-      if (current === "full") return "skipOne";
-      if (current === "skipOne") return "baseOnly";
-      return "full";
+      if (current === 'full') return 'skipOne';
+      if (current === 'skipOne') return 'baseOnly';
+      return 'full';
     });
   };
 
   const absoluteQuantity = Math.abs(quantityInBaseUnits);
-  const formattedQuantity = convertBaseUnitsToRepresentation(
-    units,
-    absoluteQuantity,
-    displayMode
-  );
+  const formattedQuantity = convertBaseUnitsToRepresentation(units, absoluteQuantity, displayMode);
 
-  const prefix = operationType === "add" ? "+" : "-";
+  const prefix = operationType === 'add' ? '+' : '-';
 
   const colorClass =
-    operationType === "add"
-      ? "bg-green-100 text-green-800 hover:bg-green-200"
-      : "bg-red-100 text-red-800 hover:bg-red-200";
+    operationType === 'add'
+      ? 'bg-green-100 text-green-800 hover:bg-green-200'
+      : 'bg-red-100 text-red-800 hover:bg-red-200';
 
   return (
     <Badge
-      className={`${colorClass} cursor-pointer ${className ?? ""}`}
+      className={`${colorClass} cursor-pointer ${className ?? ''}`}
       title="Click to toggle display format"
       onClick={(e) => {
         toggleDisplayMode();
