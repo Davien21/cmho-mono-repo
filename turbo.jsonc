@@ -1,7 +1,7 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalEnv": [],
+  "globalEnv": ["PUBLIC_API_BASE_URL", "VITE_API_BASE_URL"],
   "tasks": {
     "dev": {
       "cache": false,
