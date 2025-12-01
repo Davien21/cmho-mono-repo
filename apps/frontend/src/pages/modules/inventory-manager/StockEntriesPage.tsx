@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PackageOpen } from "lucide-react";
 
@@ -6,30 +6,73 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { InventoryItem, StockEntry } from "@/types/inventory";
-import { storageService } from "@/lib/inventory-storage";
+import {
+  IInventoryItemDto,
+  IStockEntryDto,
+  useGetInventoryItemsQuery,
+  useGetStockEntriesQuery,
+} from "@/store/inventory-slice";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
 
 export default function StockEntriesPage() {
   const { itemId } = useParams<{ itemId: string }>();
   const navigate = useNavigate();
 
-  const [item, setItem] = useState<InventoryItem | null>(null);
+  const { data: itemsResponse } = useGetInventoryItemsQuery();
+  const { data: stockEntriesResponse } = useGetStockEntriesQuery(
+    itemId ? { inventoryItemId: itemId } : undefined
+  );
+
+  const items: InventoryItem[] = useMemo(() => {
+    const dtos: IInventoryItemDto[] = itemsResponse?.data || [];
+    return dtos.map((dto) => ({
+      id: dto._id,
+      name: dto.name,
+      description: "",
+      category: dto.category,
+      inventoryCategory: dto.category,
+      units: (dto.units || []).map((u) => ({
+        id: u.id,
+        name: u.name,
+        plural: u.plural,
+        quantity: u.quantity,
+      })),
+      lowStockValue: dto.lowStockValue,
+      status: dto.setupStatus,
+      stocks: [],
+      currentStockInBaseUnits: dto.currentStockInBaseUnits,
+    }));
+  }, [itemsResponse]);
+
+  const item: InventoryItem | null = useMemo(
+    () => items.find((i) => i.id === itemId) ?? null,
+    [items, itemId]
+  );
+
   const [selectedEntry, setSelectedEntry] = useState<StockEntry | null>(null);
 
-  useEffect(() => {
-    if (!itemId) return;
-    const items = storageService.getItems();
-    const found = items.find((i) => i.id === itemId) ?? null;
-    setItem(found);
-  }, [itemId]);
-
   const sortedEntries: StockEntry[] = useMemo(() => {
-    if (!item?.stocks) return [];
-    return [...item.stocks].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  }, [item]);
+    const entries: IStockEntryDto[] = stockEntriesResponse?.data || [];
+    return entries
+      .map<StockEntry>((entry) => ({
+        id: entry._id,
+        inventoryItemId: entry.inventoryItemId,
+        operationType: entry.operationType,
+        supplier: entry.supplier?.name ?? null,
+        costPrice: entry.costPrice,
+        sellingPrice: entry.sellingPrice,
+        expiryDate: entry.expiryDate.toString(),
+        quantityInBaseUnits: entry.quantityInBaseUnits,
+        createdAt: entry.createdAt
+          ? entry.createdAt.toString()
+          : new Date().toISOString(),
+        performedBy: entry.createdBy,
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+  }, [stockEntriesResponse]);
 
   const handleBack = () => {
     navigate("/inventory");

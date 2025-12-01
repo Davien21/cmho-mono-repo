@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import { ActionPill } from "@/components/ActionPill";
 import { useModalContext } from "@/contexts/modal-context";
@@ -12,9 +16,16 @@ import {
   useCreateInventoryCategoryMutation,
   useUpdateInventoryCategoryMutation,
   useDeleteInventoryCategoryMutation,
+  useGetSuppliersQuery,
+  useCreateSupplierMutation,
+  useUpdateSupplierMutation,
+  useDeleteSupplierMutation,
   IInventoryUnitDefinitionDto,
   IInventoryCategoryDto,
+  ISupplierDto,
+  SupplierStatus,
 } from "@/store/inventory-slice";
+import { getRTKQueryErrorMessage } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -26,8 +37,45 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Package, Tags } from "lucide-react";
+import { Package, Tags, Truck, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const addUnitSchema = yup.object({
+  name: yup.string().trim().required("Name is required"),
+  plural: yup.string().trim().required("Plural is required"),
+});
+
+type AddUnitFormValues = yup.InferType<typeof addUnitSchema>;
+
+const addCategorySchema = yup.object({
+  name: yup.string().trim().required("Name is required"),
+});
+type AddCategoryFormValues = yup.InferType<typeof addCategorySchema>;
+
+const supplierSchema = yup.object({
+  name: yup.string().trim().required("Name is required"),
+  phone: yup.string().trim().optional(),
+  address: yup.string().trim().optional(),
+  status: yup
+    .mixed<SupplierStatus>()
+    .oneOf(["active", "disabled"])
+    .default("active"),
+});
+
+type SupplierFormValues = yup.InferType<typeof supplierSchema>;
 
 function UnitsSection() {
   const { data, isLoading } = useGetInventoryUnitsQuery();
@@ -38,27 +86,47 @@ function UnitsSection() {
   const { openModal, closeModal } = useModalContext();
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState("");
-  const [editingPlural, setEditingPlural] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<AddUnitFormValues>({
+    resolver: yupResolver(addUnitSchema),
+    defaultValues: {
+      name: "",
+      plural: "",
+    },
+  });
 
   const units: IInventoryUnitDefinitionDto[] = data?.data || [];
 
   const startEdit = (unit: IInventoryUnitDefinitionDto) => {
     setEditingId(unit._id);
-    setEditingName(unit.name);
-    setEditingPlural(unit.plural);
+    reset({
+      name: unit.name,
+      plural: unit.plural,
+    });
   };
 
-  const handleSaveEdit = async () => {
-    if (!editingId || !editingName.trim() || !editingPlural.trim()) return;
-    await updateUnit({
-      id: editingId,
-      name: editingName.trim(),
-      plural: editingPlural.trim(),
-    }).unwrap();
-    setEditingId(null);
-    setEditingName("");
-    setEditingPlural("");
+  const handleSaveEdit = async (values: AddUnitFormValues) => {
+    if (!editingId) return;
+    try {
+      await updateUnit({
+        id: editingId,
+        name: values.name.trim(),
+        plural: values.plural.trim(),
+      }).unwrap();
+      toast.success("Unit updated successfully");
+      setEditingId(null);
+      reset();
+    } catch (error: unknown) {
+      const message =
+        getRTKQueryErrorMessage(error) ||
+        "Failed to update unit. Please try again.";
+      toast.error(message);
+    }
   };
 
   const handleDelete = (id: string, name: string) => {
@@ -67,8 +135,17 @@ function UnitsSection() {
       message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
       type: "danger",
       onConfirm: async () => {
-        await deleteUnit(id).unwrap();
-        closeModal("confirmation-dialog");
+        try {
+          await deleteUnit(id).unwrap();
+          toast.success("Unit deleted successfully");
+        } catch (error: unknown) {
+          const message =
+            getRTKQueryErrorMessage(error) ||
+            "Failed to delete unit. Please try again.";
+          toast.error(message);
+        } finally {
+          closeModal("confirmation-dialog");
+        }
       },
       onCancel: () => closeModal("confirmation-dialog"),
     });
@@ -93,44 +170,55 @@ function UnitsSection() {
         {units.map((unit) => {
           const isEditing = editingId === unit._id;
           return isEditing ? (
-            <div
+            <form
               key={unit._id}
               className="inline-flex items-center bg-muted rounded-full px-3 py-2 gap-2"
+              onSubmit={handleSubmit(handleSaveEdit)}
             >
               <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   aria-label="Unit name"
-                  value={editingName}
-                  onChange={(e) => setEditingName(e.target.value)}
+                  {...register("name")}
                   className="h-8"
                 />
                 <Input
                   aria-label="Unit plural"
-                  value={editingPlural}
-                  onChange={(e) => setEditingPlural(e.target.value)}
+                  {...register("plural")}
                   className="h-8"
                 />
               </div>
+              {(errors.name?.message || errors.plural?.message) && (
+                <div className="flex flex-col text-[10px] text-destructive ml-2">
+                  {errors.name?.message && <span>{errors.name.message}</span>}
+                  {errors.plural?.message && (
+                    <span>{errors.plural.message}</span>
+                  )}
+                </div>
+              )}
               <div className="flex gap-1 ml-2">
                 <Button
+                  type="submit"
                   size="sm"
                   variant="outline"
-                  onClick={handleSaveEdit}
                   disabled={isUpdating}
                   className="h-8 px-3 text-xs"
                 >
                   Save
                 </Button>
                 <Button
+                  type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => setEditingId(null)}
+                  onClick={() => {
+                    setEditingId(null);
+                    reset();
+                  }}
                   className="h-8 px-3 text-xs"
                 >
                   Cancel
                 </Button>
               </div>
-            </div>
+            </form>
           ) : (
             <ActionPill
               key={unit._id}
@@ -157,21 +245,42 @@ function CategoriesSection() {
   const categories: IInventoryCategoryDto[] = data?.data || [];
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<AddCategoryFormValues>({
+    resolver: yupResolver(addCategorySchema),
+    defaultValues: {
+      name: "",
+    },
+  });
 
   const startEdit = (category: IInventoryCategoryDto) => {
     setEditingId(category._id);
-    setEditingName(category.name);
+    reset({
+      name: category.name,
+    });
   };
 
-  const handleSaveEdit = async () => {
-    if (!editingId || !editingName.trim()) return;
-    await updateCategory({
-      id: editingId,
-      name: editingName.trim(),
-    }).unwrap();
-    setEditingId(null);
-    setEditingName("");
+  const handleSaveEdit = async (values: AddCategoryFormValues) => {
+    if (!editingId) return;
+    try {
+      await updateCategory({
+        id: editingId,
+        name: values.name.trim(),
+      }).unwrap();
+      toast.success("Category updated successfully");
+      setEditingId(null);
+      reset();
+    } catch (error: unknown) {
+      const message =
+        getRTKQueryErrorMessage(error) ||
+        "Failed to update category. Please try again.";
+      toast.error(message);
+    }
   };
 
   const handleDelete = (id: string, name: string) => {
@@ -180,8 +289,17 @@ function CategoriesSection() {
       message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
       type: "danger",
       onConfirm: async () => {
-        await deleteCategory(id).unwrap();
-        closeModal("confirmation-dialog");
+        try {
+          await deleteCategory(id).unwrap();
+          toast.success("Category deleted successfully");
+        } catch (error: unknown) {
+          const message =
+            getRTKQueryErrorMessage(error) ||
+            "Failed to delete category. Please try again.";
+          toast.error(message);
+        } finally {
+          closeModal("confirmation-dialog");
+        }
       },
       onCancel: () => closeModal("confirmation-dialog"),
     });
@@ -208,35 +326,41 @@ function CategoriesSection() {
           const isEditing = editingId === category._id;
 
           return isEditing ? (
-            <div
+            <form
               key={category._id}
               className="inline-flex items-center bg-muted rounded-full px-3 py-2 gap-2"
+              onSubmit={handleSubmit(handleSaveEdit)}
             >
-              <Input
-                value={editingName}
-                onChange={(e) => setEditingName(e.target.value)}
-                className="h-8"
-              />
+              <Input {...register("name")} className="h-8" />
+              {errors.name?.message && (
+                <span className="text-[10px] text-destructive ml-2">
+                  {errors.name.message}
+                </span>
+              )}
               <div className="flex gap-1 ml-2">
                 <Button
+                  type="submit"
                   size="sm"
                   variant="outline"
-                  onClick={handleSaveEdit}
                   disabled={isUpdating}
                   className="h-8 px-3 text-xs"
                 >
                   Save
                 </Button>
                 <Button
+                  type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => setEditingId(null)}
+                  onClick={() => {
+                    setEditingId(null);
+                    reset();
+                  }}
                   className="h-8 px-3 text-xs"
                 >
                   Cancel
                 </Button>
               </div>
-            </div>
+            </form>
           ) : (
             <ActionPill
               key={category._id}
@@ -255,53 +379,124 @@ function CategoriesSection() {
 export default function InventorySettingsPage() {
   const { data: unitsSummary } = useGetInventoryUnitsQuery();
   const { data: categoriesSummary } = useGetInventoryCategoriesQuery();
+  const { data: suppliersSummary } = useGetSuppliersQuery();
   const [createUnit, { isLoading: isCreatingUnit }] =
     useCreateInventoryUnitMutation();
   const [createCategory, { isLoading: isCreatingCategory }] =
     useCreateInventoryCategoryMutation();
+  const [createSupplier, { isLoading: isCreatingSupplier }] =
+    useCreateSupplierMutation();
+  const [updateSupplier, { isLoading: isUpdatingSupplier }] =
+    useUpdateSupplierMutation();
 
   const unitsCount = unitsSummary?.data?.length ?? 0;
   const categoriesCount = categoriesSummary?.data?.length ?? 0;
+  const suppliersCount = suppliersSummary?.data?.length ?? 0;
 
-  const [activeSection, setActiveSection] = useState<"Units" | "Categories">(
-    "Units"
-  );
+  const [activeSection, setActiveSection] = useState<
+    "Units" | "Categories" | "Suppliers"
+  >("Units");
 
   const [isAddUnitOpen, setIsAddUnitOpen] = useState(false);
-  const [newUnitName, setNewUnitName] = useState("");
-  const [newUnitPlural, setNewUnitPlural] = useState("");
-
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
+  const [isAddSupplierOpen, setIsAddSupplierOpen] = useState(false);
+  const [editingSupplier, setEditingSupplier] = useState<ISupplierDto | null>(
+    null
+  );
 
   const handleCloseAddUnit = () => {
     setIsAddUnitOpen(false);
-    setNewUnitName("");
-    setNewUnitPlural("");
   };
 
-  const handleCreateUnit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!newUnitName.trim() || !newUnitPlural.trim()) return;
-    await createUnit({
-      name: newUnitName.trim(),
-      plural: newUnitPlural.trim(),
-    }).unwrap();
-    handleCloseAddUnit();
+  const handleCreateUnit = async (values: AddUnitFormValues) => {
+    try {
+      await createUnit({
+        name: values.name.trim(),
+        plural: values.plural.trim(),
+      }).unwrap();
+      toast.success("Unit added successfully");
+      handleCloseAddUnit();
+    } catch (error: unknown) {
+      const message =
+        getRTKQueryErrorMessage(error) ||
+        "Failed to add unit. Please try again.";
+      toast.error(message);
+    }
   };
 
   const handleCloseAddCategory = () => {
     setIsAddCategoryOpen(false);
-    setNewCategoryName("");
   };
 
-  const handleCreateCategory = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!newCategoryName.trim()) return;
-    await createCategory({
-      name: newCategoryName.trim(),
-    }).unwrap();
-    handleCloseAddCategory();
+  const handleCreateCategory = async (values: AddCategoryFormValues) => {
+    try {
+      await createCategory({
+        name: values.name.trim(),
+      }).unwrap();
+      toast.success("Category added successfully");
+      handleCloseAddCategory();
+    } catch (error: unknown) {
+      const message =
+        getRTKQueryErrorMessage(error) ||
+        "Failed to add category. Please try again.";
+      toast.error(message);
+    }
+  };
+
+  const handleCloseAddSupplier = () => {
+    setIsAddSupplierOpen(false);
+  };
+
+  const handleCreateSupplier = async (values: SupplierFormValues) => {
+    try {
+      await createSupplier({
+        name: values.name.trim(),
+        contact:
+          values.phone || values.address
+            ? {
+                phone: values.phone?.trim() || undefined,
+                address: values.address?.trim() || undefined,
+              }
+            : undefined,
+        status: (values.status ?? "active") as SupplierStatus,
+      }).unwrap();
+      toast.success("Supplier added successfully");
+      handleCloseAddSupplier();
+    } catch (error: unknown) {
+      const message =
+        getRTKQueryErrorMessage(error) ||
+        "Failed to add supplier. Please try again.";
+      toast.error(message);
+    }
+  };
+
+  const handleCloseEditSupplier = () => {
+    setEditingSupplier(null);
+  };
+
+  const handleUpdateSupplierSubmit = async (values: SupplierFormValues) => {
+    if (!editingSupplier) return;
+    try {
+      await updateSupplier({
+        id: editingSupplier._id,
+        name: values.name.trim(),
+        contact:
+          values.phone || values.address
+            ? {
+                phone: values.phone?.trim() || undefined,
+                address: values.address?.trim() || undefined,
+              }
+            : undefined,
+        status: (values.status ?? "active") as SupplierStatus,
+      }).unwrap();
+      toast.success("Supplier updated successfully");
+      handleCloseEditSupplier();
+    } catch (error: unknown) {
+      const message =
+        getRTKQueryErrorMessage(error) ||
+        "Failed to update supplier. Please try again.";
+      toast.error(message);
+    }
   };
 
   return (
@@ -323,7 +518,11 @@ export default function InventorySettingsPage() {
               value={activeSection}
               onChange={(value) =>
                 setActiveSection(
-                  value === "Categories" ? "Categories" : "Units"
+                  value === "Categories"
+                    ? "Categories"
+                    : value === "Suppliers"
+                    ? "Suppliers"
+                    : "Units"
                 )
               }
               options={[
@@ -345,6 +544,17 @@ export default function InventorySettingsPage() {
                       <span>Categories</span>
                       <Badge className="text-[11px] font-medium px-2 py-0 h-5 rounded-full bg-slate-100 text-slate-700">
                         {categoriesCount}
+                      </Badge>
+                    </div>
+                  ),
+                },
+                {
+                  id: "Suppliers",
+                  content: (
+                    <div className="flex items-center gap-2">
+                      <span>Suppliers</span>
+                      <Badge className="text-[11px] font-medium px-2 py-0 h-5 rounded-full bg-slate-100 text-slate-700">
+                        {suppliersCount}
                       </Badge>
                     </div>
                   ),
@@ -386,10 +596,6 @@ export default function InventorySettingsPage() {
           <AddUnitModal
             open={isAddUnitOpen}
             onClose={handleCloseAddUnit}
-            name={newUnitName}
-            plural={newUnitPlural}
-            onNameChange={setNewUnitName}
-            onPluralChange={setNewUnitPlural}
             onSubmit={handleCreateUnit}
             isSubmitting={isCreatingUnit}
           />
@@ -427,10 +633,55 @@ export default function InventorySettingsPage() {
           <AddCategoryModal
             open={isAddCategoryOpen}
             onClose={handleCloseAddCategory}
-            name={newCategoryName}
-            onNameChange={setNewCategoryName}
             onSubmit={handleCreateCategory}
             isSubmitting={isCreatingCategory}
+          />
+
+          <Card
+            id="inventory-suppliers-section"
+            variant="plain"
+            className={activeSection === "Suppliers" ? "" : "hidden"}
+          >
+            <CardHeader className="pb-3 border-b bg-muted/40">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                    <Truck className="h-4 w-4 text-primary" />
+                    Suppliers
+                  </CardTitle>
+                  <CardDescription>
+                    Manage the suppliers you purchase stock from.
+                  </CardDescription>
+                </div>
+                <Button
+                  size="sm"
+                  className="mt-1 sm:mt-0"
+                  onClick={() => setIsAddSupplierOpen(true)}
+                >
+                  Add supplier
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <SuppliersSection onEditSupplier={setEditingSupplier} />
+            </CardContent>
+          </Card>
+
+          <SupplierModal
+            open={isAddSupplierOpen}
+            onClose={handleCloseAddSupplier}
+            onSubmit={handleCreateSupplier}
+            isSubmitting={isCreatingSupplier}
+            mode="create"
+          />
+
+          <SupplierModal
+            open={!!editingSupplier}
+            onClose={handleCloseEditSupplier}
+            onSubmit={handleUpdateSupplierSubmit}
+            isSubmitting={isUpdatingSupplier}
+            mode="edit"
+            initialSupplier={editingSupplier}
           />
         </div>
       </div>
@@ -441,30 +692,45 @@ export default function InventorySettingsPage() {
 type AddUnitModalProps = {
   open: boolean;
   onClose: () => void;
-  name: string;
-  plural: string;
-  onNameChange: (value: string) => void;
-  onPluralChange: (value: string) => void;
-  onSubmit: (e?: React.FormEvent) => void;
+  onSubmit: (values: AddUnitFormValues) => Promise<void> | void;
   isSubmitting: boolean;
 };
 
 function AddUnitModal({
   open,
   onClose,
-  name,
-  plural,
-  onNameChange,
-  onPluralChange,
   onSubmit,
   isSubmitting,
 }: AddUnitModalProps) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<AddUnitFormValues>({
+    resolver: yupResolver(addUnitSchema),
+    defaultValues: {
+      name: "",
+      plural: "",
+    },
+  });
+
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
+  const onUnitFormSubmit = async (values: AddUnitFormValues) => {
+    await onSubmit(values);
+    reset();
+  };
+
   return (
     <ResponsiveDialog.Root
       open={open}
       onOpenChange={(nextOpen) => {
         if (!nextOpen) {
-          onClose();
+          handleClose();
         }
       }}
     >
@@ -481,10 +747,7 @@ function AddUnitModal({
           </ResponsiveDialog.Header>
 
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSubmit(e);
-            }}
+            onSubmit={handleSubmit(onUnitFormSubmit)}
             className="space-y-4 mt-4"
           >
             <div className="space-y-1">
@@ -492,29 +755,402 @@ function AddUnitModal({
               <Input
                 id="new-unit-name"
                 placeholder="e.g. Pack"
-                value={name}
-                onChange={(e) => onNameChange(e.target.value)}
+                {...register("name")}
               />
+              {errors.name?.message && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="new-unit-plural">Plural</Label>
               <Input
                 id="new-unit-plural"
                 placeholder="e.g. Packs"
-                value={plural}
-                onChange={(e) => onPluralChange(e.target.value)}
+                {...register("plural")}
               />
+              {errors.plural?.message && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.plural.message}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting || !name.trim() || !plural.trim()}
-              >
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Adding..." : "Add unit"}
+              </Button>
+            </div>
+          </form>
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog.Portal>
+    </ResponsiveDialog.Root>
+  );
+}
+
+type SuppliersSectionProps = {
+  onEditSupplier: (supplier: ISupplierDto | null) => void;
+};
+
+function SuppliersSection({ onEditSupplier }: SuppliersSectionProps) {
+  const { data, isLoading } = useGetSuppliersQuery();
+  const [deleteSupplier, { isLoading: isDeleting }] = useDeleteSupplierMutation();
+  const { openModal, closeModal } = useModalContext();
+
+  const suppliers: ISupplierDto[] = data?.data || [];
+
+  const handleDelete = (supplier: ISupplierDto) => {
+    openModal("confirmation-dialog", {
+      title: "Delete supplier",
+      message: `Are you sure you want to delete "${supplier.name}"? This action cannot be undone.`,
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          await deleteSupplier(supplier._id).unwrap();
+          toast.success("Supplier deleted successfully");
+        } catch (error: unknown) {
+          const message =
+            getRTKQueryErrorMessage(error) ||
+            "Failed to delete supplier. Please try again.";
+          toast.error(message);
+        } finally {
+          closeModal("confirmation-dialog");
+        }
+      },
+      onCancel: () => closeModal("confirmation-dialog"),
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-4 text-sm text-muted-foreground w-full">
+        Loading suppliers...
+      </div>
+    );
+  }
+
+  if (!isLoading && suppliers.length === 0) {
+    return (
+      <div className="p-4 text-sm text-muted-foreground flex flex-col gap-1 w-full">
+        <span className="font-medium">No suppliers yet</span>
+        <span>
+          Add suppliers you buy from so you can reference them in stock entries.
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Desktop table view */}
+      <div className="hidden sm:block overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Phone
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Address
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {suppliers.map((supplier) => (
+              <tr key={supplier._id} className="hover:bg-gray-50">
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  {supplier.name}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                  {supplier.contact?.phone || "—"}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 max-w-xs">
+                  <span className="line-clamp-2">
+                    {supplier.contact?.address || "—"}
+                  </span>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm">
+                  <Badge
+                    className={
+                      supplier.status === "active"
+                        ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
+                    }
+                  >
+                    {supplier.status}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => onEditSupplier(supplier)}
+                        >
+                          <Edit2 className="mr-2 h-4 w-4" />
+                          Edit supplier
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(supplier)}
+                          className="text-red-600 focus:text-red-600"
+                          disabled={isDeleting}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete supplier
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile stacked view */}
+      <div className="space-y-3 sm:hidden">
+        {suppliers.map((supplier) => (
+          <div
+            key={supplier._id}
+            className="border rounded-lg p-3 bg-white flex flex-col gap-2"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="font-medium text-sm text-gray-900">
+                  {supplier.name}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {supplier.contact?.phone || "No phone"}
+                </p>
+                {supplier.contact?.address && (
+                  <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                    {supplier.contact.address}
+                  </p>
+                )}
+              </div>
+              <Badge
+                className={
+                  supplier.status === "active"
+                    ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
+                }
+              >
+                {supplier.status}
+              </Badge>
+            </div>
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onEditSupplier(supplier)}>
+                    <Edit2 className="mr-2 h-4 w-4" />
+                    Edit supplier
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleDelete(supplier)}
+                    className="text-red-600 focus:text-red-600"
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete supplier
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type SupplierModalProps = {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (values: SupplierFormValues) => Promise<void> | void;
+  isSubmitting: boolean;
+  mode: "create" | "edit";
+  initialSupplier?: ISupplierDto | null;
+};
+
+function SupplierModal({
+  open,
+  onClose,
+  onSubmit,
+  isSubmitting,
+  mode,
+  initialSupplier,
+}: SupplierModalProps) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<SupplierFormValues>({
+    resolver: yupResolver(supplierSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      address: "",
+      status: "active",
+    },
+  });
+
+  useEffect(() => {
+    if (open) {
+      if (initialSupplier) {
+        reset({
+          name: initialSupplier.name,
+          phone: initialSupplier.contact?.phone || "",
+          address: initialSupplier.contact?.address || "",
+          status:
+            initialSupplier.status === "deleted"
+              ? "disabled"
+              : initialSupplier.status,
+        });
+      } else {
+        reset({
+          name: "",
+          phone: "",
+          address: "",
+          status: "active",
+        });
+      }
+    }
+  }, [open, initialSupplier, reset]);
+
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
+  const onFormSubmit = async (values: SupplierFormValues) => {
+    await onSubmit(values);
+  };
+
+  return (
+    <ResponsiveDialog.Root
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          handleClose();
+        }
+      }}
+    >
+      <ResponsiveDialog.Portal>
+        <ResponsiveDialog.Overlay />
+        <ResponsiveDialog.Content className="max-w-md w-full">
+          <ResponsiveDialog.Header>
+            <ResponsiveDialog.Title className="text-lg font-semibold">
+              {mode === "create" ? "Add supplier" : "Edit supplier"}
+            </ResponsiveDialog.Title>
+            <ResponsiveDialog.Description>
+              {mode === "create"
+                ? "Add a new supplier with their contact details."
+                : "Update this supplier's details."}
+            </ResponsiveDialog.Description>
+          </ResponsiveDialog.Header>
+
+          <form
+            onSubmit={handleSubmit(onFormSubmit)}
+            className="space-y-4 mt-4"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="supplier-name">Name</Label>
+                <Input
+                  id="supplier-name"
+                  placeholder="e.g. ABC Pharmaceuticals"
+                  {...register("name")}
+                />
+                {errors.name?.message && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="supplier-phone">Phone</Label>
+                <Input
+                  id="supplier-phone"
+                  placeholder="e.g. 0803 000 0000"
+                  {...register("phone")}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="supplier-address">Address</Label>
+              <Input
+                id="supplier-address"
+                placeholder="e.g. 12 Main Street, Lagos"
+                {...register("address")}
+              />
+            </div>
+
+            {mode === "edit" && (
+              <div className="space-y-1">
+                <Label htmlFor="supplier-status">Status</Label>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={(value) =>
+                        field.onChange(value as SupplierStatus)
+                      }
+                    >
+                      <SelectTrigger id="supplier-status">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="disabled">Disabled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting
+                  ? mode === "create"
+                    ? "Adding..."
+                    : "Saving..."
+                  : mode === "create"
+                  ? "Add supplier"
+                  : "Save changes"}
               </Button>
             </div>
           </form>
@@ -527,26 +1163,44 @@ function AddUnitModal({
 type AddCategoryModalProps = {
   open: boolean;
   onClose: () => void;
-  name: string;
-  onNameChange: (value: string) => void;
-  onSubmit: (e?: React.FormEvent) => void;
+  onSubmit: (values: AddCategoryFormValues) => Promise<void> | void;
   isSubmitting: boolean;
 };
 
 function AddCategoryModal({
   open,
   onClose,
-  name,
-  onNameChange,
   onSubmit,
   isSubmitting,
 }: AddCategoryModalProps) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<AddCategoryFormValues>({
+    resolver: yupResolver(addCategorySchema),
+    defaultValues: {
+      name: "",
+    },
+  });
+
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
+  const onCategoryFormSubmit = async (values: AddCategoryFormValues) => {
+    await onSubmit(values);
+    reset();
+  };
+
   return (
     <ResponsiveDialog.Root
       open={open}
       onOpenChange={(nextOpen) => {
         if (!nextOpen) {
-          onClose();
+          handleClose();
         }
       }}
     >
@@ -563,10 +1217,7 @@ function AddCategoryModal({
           </ResponsiveDialog.Header>
 
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSubmit(e);
-            }}
+            onSubmit={handleSubmit(onCategoryFormSubmit)}
             className="space-y-4 mt-4"
           >
             <div className="space-y-1">
@@ -574,16 +1225,20 @@ function AddCategoryModal({
               <Input
                 id="new-category-name"
                 placeholder="e.g. Drug"
-                value={name}
-                onChange={(e) => onNameChange(e.target.value)}
+                {...register("name")}
               />
+              {errors.name?.message && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting || !name.trim()}>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Adding..." : "Add category"}
               </Button>
             </div>

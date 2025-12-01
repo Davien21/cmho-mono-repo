@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { formatUnitName } from "@/lib/inventory-defaults";
+import { formatUnitName } from "@/lib/utils";
 import { InventoryQtyLevelBadge } from "@/components/InventoryQtyLevelBadge";
 
 interface InventoryListProps {
@@ -52,11 +52,7 @@ export function InventoryList({
   });
 
   const getTotalStock = (item: InventoryItem): number => {
-    if (!item.stocks || item.stocks.length === 0) return 0;
-    return item.stocks.reduce(
-      (sum, stock) => sum + stock.quantityInBaseUnits,
-      0
-    );
+    return item.currentStockInBaseUnits ?? 0;
   };
 
   const getBaseUnitName = (
@@ -181,14 +177,7 @@ export function InventoryList({
   };
 
   const getEarliestExpiry = (item: InventoryItem): string | null => {
-    if (!item.stocks || item.stocks.length === 0) return null;
-
-    const earliestDate = item.stocks.reduce((earliest, stock) => {
-      const stockDate = new Date(stock.expiryDate);
-      return stockDate < earliest ? stockDate : earliest;
-    }, new Date(item.stocks[0].expiryDate));
-
-    return earliestDate.toISOString().split("T")[0];
+    return item.earliestExpiryDate ?? null;
   };
 
   const isExpiringSoon = (item: InventoryItem): boolean => {
