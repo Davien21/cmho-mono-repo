@@ -1,11 +1,23 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Package, Wallet, ArrowRight, LogOut } from "lucide-react";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import { useLogoutMutation } from "@/store/auth-slice";
+import { useLogoutMutation, useVerifyQuery } from "@/store/auth-slice";
+import PageLoader from "@/components/PageLoader";
 
 export default function AppSelectionPage() {
   const navigate = useNavigate();
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
+  const { isLoading, isError, isSuccess } = useVerifyQuery();
+
+  useEffect(() => {
+    if (!isLoading && isError) {
+      navigate("/login", { replace: true });
+    }
+  }, [isLoading, isError, navigate]);
+
+  if (isLoading) return <PageLoader />;
+  if (isError) return null; // Will redirect in useEffect
+  if (!isSuccess) return null;
 
   const apps = [
     {
@@ -44,8 +56,7 @@ export default function AppSelectionPage() {
   };
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 relative">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 relative">
         <div className="max-w-7xl mx-auto relative">
           {/* Logout button - top right */}
           <div className="absolute top-6 right-6">
@@ -139,6 +150,5 @@ export default function AppSelectionPage() {
           </div>
         </div>
       </div>
-    </ProtectedRoute>
   );
 }

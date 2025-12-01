@@ -8,9 +8,30 @@ importers:
 
   .:
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.11.1
+        version: 9.29.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.7.0
+        version: 8.34.1(@typescript-eslint/parser@8.34.1(eslint@9.29.0(jiti@2.6.1))(typescript@5.8.3))(eslint@9.29.0(jiti@2.6.1))(typescript@5.8.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.7.0
+        version: 8.34.1(eslint@9.29.0(jiti@2.6.1))(typescript@5.8.3)
+      eslint:
+        specifier: ^9.11.1
+        version: 9.29.0(jiti@2.6.1)
+      globals:
+        specifier: ^15.9.0
+        version: 15.15.0
+      prettier:
+        specifier: ^3.4.2
+        version: 3.7.3
       turbo:
         specifier: ^2.5.3
         version: 2.5.4
+      typescript-eslint:
+        specifier: ^8.7.0
+        version: 8.34.1(eslint@9.29.0(jiti@2.6.1))(typescript@5.8.3)
 
   apps/backend:
     dependencies:
@@ -72,6 +93,9 @@ importers:
         specifier: ^3.25.20
         version: 3.25.67
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.11.1
+        version: 9.29.0
       '@types/bcrypt':
         specifier: ^5.0.0
         version: 5.0.2
@@ -111,9 +135,21 @@ importers:
       dotenv:
         specifier: ^16.0.3
         version: 16.5.0
+      eslint:
+        specifier: ^9.11.1
+        version: 9.29.0(jiti@2.6.1)
+      globals:
+        specifier: ^15.9.0
+        version: 15.15.0
+      prettier:
+        specifier: ^3.4.2
+        version: 3.7.3
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
+      typescript-eslint:
+        specifier: ^8.7.0
+        version: 8.34.1(eslint@9.29.0(jiti@2.6.1))(typescript@5.8.3)
 
   apps/frontend:
     dependencies:
@@ -361,6 +397,9 @@ importers:
       postcss:
         specifier: ^8.4.47
         version: 8.5.6
+      prettier:
+        specifier: ^3.4.2
+        version: 3.7.3
       tailwindcss:
         specifier: ^3.4.13
         version: 3.4.17
@@ -3955,6 +3994,11 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  prettier@3.7.3:
+    resolution: {integrity: sha512-QgODejq9K3OzoBbuyobZlUhznP5SKwPqp+6Q6xw6o8gnhr4O85L2U915iM2IDcfF2NPXVaM9zlo9tdwipnYwzg==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   process-warning@1.0.0:
     resolution: {integrity: sha512-du4wfLyj4yCZq1VupnVSZmRsPJsNuxoDQFdCFHLaYiEbFBD7QE0a+I4D7hOxrVnh78QE/YipFAj9lXHiXocV+Q==}
@@ -9561,6 +9605,8 @@ snapshots:
   preact@10.26.9: {}
 
   prelude-ls@1.2.1: {}
+
+  prettier@3.7.3: {}
 
   process-warning@1.0.0: {}
 

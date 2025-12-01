@@ -1,20 +1,20 @@
-import "express-async-errors";
-import express, { NextFunction, Request, Response } from "express";
-import morgan from "morgan";
-import compression from "compression";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import helmet from "helmet";
-import mongoose from "mongoose";
+import 'express-async-errors';
+import express, { NextFunction, Request, Response } from 'express';
+import morgan from 'morgan';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import helmet from 'helmet';
+import mongoose from 'mongoose';
 
-import { NotFoundError } from "../src/config/errors";
-import errorMiddleware from "../src/middlewares/error";
-import routes from "../src/config/routes";
-import { env, parseEnv } from "../src/config/env";
-import logger from "../src/config/logger";
-import { openDBConnection, closeDBConnection } from "../src/config/db";
-import { CookieNames } from "./utils/cookie-names";
-import { extraHeaders } from "./middlewares/extra-headers";
+import { NotFoundError } from '../src/config/errors';
+import errorMiddleware from '../src/middlewares/error';
+import routes from '../src/config/routes';
+import { env, parseEnv } from '../src/config/env';
+import logger from '../src/config/logger';
+import { openDBConnection, closeDBConnection } from '../src/config/db';
+import { CookieNames } from './utils/cookie-names';
+import { extraHeaders } from './middlewares/extra-headers';
 
 const app = express();
 openDBConnection();
@@ -29,14 +29,14 @@ app.use(helmet()); // sets most basics
 // Add the rest manually
 app.use(extraHeaders);
 
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 
 const allowedOrigins = [
   env.CLIENT_URL,
-  "https://cmho.xyz",
-  "https://www.cmho.xyz",
-  "https://salary.cmho.xyz",
-  "https://cmho-salary-manager-app.vercel.app",
+  'https://cmho.xyz',
+  'https://www.cmho.xyz',
+  'https://salary.cmho.xyz',
+  'https://cmho-salary-manager-app.vercel.app',
 ];
 
 app.use(
@@ -44,34 +44,34 @@ app.use(
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
-      } else callback(new Error("Not allowed by CORS"));
+      } else callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
     allowedHeaders: [
       ...CookieNames,
-      "Origin",
-      "X-Requested-With",
-      "Content-Type",
-      "Accept",
-      "Authorization",
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
     ],
-    methods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   })
 );
 
-// @ts-ignore
+// @ts-expect-error - compression types issue
 app.use(compression());
 
 // Raw body middleware for webhook endpoints (must come before express.json)
-app.use("/api/v1/webhooks", express.raw({ type: "application/json" }));
+app.use('/api/v1/webhooks', express.raw({ type: 'application/json' }));
 
-app.use(express.json({ limit: "1mb", type: "application/json" }));
+app.use(express.json({ limit: '1mb', type: 'application/json' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/ping", (_, res) => res.send(`Live`));
-app.use("/api/v1/ping", (_req, res) => res.send(`Live`));
-app.use("/api/v1", routes);
+app.use('/ping', (_, res) => res.send(`Live`));
+app.use('/api/v1/ping', (_req, res) => res.send(`Live`));
+app.use('/api/v1', routes);
 
 // 404 and Error Handling
 app.use((_req: Request, _res: Response, next: NextFunction) => {
@@ -96,7 +96,7 @@ const gracefulShutdown = (signal: NodeJS.Signals) => {
   });
 };
 
-process.on("SIGINT", gracefulShutdown);
-process.on("SIGTERM", gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
 
 export default app;
