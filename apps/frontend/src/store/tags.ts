@@ -3,4 +3,6 @@ export enum TagTypes {
   DASHBOARD_STATS = "Dashboard_Stats",
   TRANSFER = "Transfers",
   AUTH = "Auth",
+  INVENTORY_UNITS = "Inventory_Units",
+  INVENTORY_CATEGORIES = "Inventory_Categories",
 }

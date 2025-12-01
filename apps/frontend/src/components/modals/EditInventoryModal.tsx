@@ -14,7 +14,7 @@ import { Card } from "../ui/card";
 import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
 import {
   InventoryItem,
-  InventoryType,
+  InventoryCategory,
   InventoryStatus,
   UnitLevel,
 } from "@/types/inventory";
@@ -32,12 +32,15 @@ export function EditInventoryModal({
   onClose,
   onSave,
 }: EditInventoryModalProps) {
-  const [inventoryType, setInventoryType] = useState<InventoryType>(
-    item.inventoryType
+  const [inventoryCategory, setInventoryCategory] = useState<InventoryCategory>(
+    item.inventoryCategory
   );
   const [name, setName] = useState(item.name);
   const [units, setUnits] = useState<UnitLevel[]>(item.units || []);
   const [initialUnits] = useState<UnitLevel[]>(item.units || []);
+  const [lowStockValue, setLowStockValue] = useState<string>(
+    item.lowStockValue !== undefined ? String(item.lowStockValue) : ""
+  );
   const [status, setStatus] = useState<InventoryStatus>(item.status);
 
   const getBaseUnit = (): UnitLevel | undefined => {
@@ -49,7 +52,7 @@ export function EditInventoryModal({
   useEffect(() => {
     // We don't auto-reset units on type change in edit mode
     // User can manually modify them if needed
-  }, [inventoryType]);
+  }, [inventoryCategory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,8 +72,9 @@ export function EditInventoryModal({
     const updatedItem: InventoryItem = {
       ...item,
       name,
-      inventoryType,
+      inventoryCategory,
       units,
+      lowStockValue: lowStockValue ? parseFloat(lowStockValue) : undefined,
       status,
     };
 
@@ -133,8 +137,10 @@ export function EditInventoryModal({
               <div className="space-y-2">
                 <Label htmlFor="type">Category</Label>
                 <Select
-                  value={inventoryType}
-                  onValueChange={(v) => setInventoryType(v as InventoryType)}
+                  value={inventoryCategory}
+                  onValueChange={(v) =>
+                    setInventoryCategory(v as InventoryCategory)
+                  }
                 >
                   <SelectTrigger id="type">
                     <SelectValue />
@@ -157,6 +163,23 @@ export function EditInventoryModal({
               onChange={setUnits}
               initialUnits={initialUnits}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="lowStockValue">Low Stock Value</Label>
+            <Input
+              id="lowStockValue"
+              type="number"
+              value={lowStockValue}
+              onChange={(e) => setLowStockValue(e.target.value)}
+              placeholder="Enter minimum stock threshold"
+              className="text-base"
+              min="0"
+              step="1"
+            />
+            <p className="text-xs text-muted-foreground">
+              Alert when stock falls below this value (in base units)
+            </p>
           </div>
 
           <div className="flex gap-3 justify-end pt-6 border-t">

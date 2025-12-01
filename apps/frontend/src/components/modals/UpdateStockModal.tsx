@@ -4,10 +4,19 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Card } from "../ui/card";
+import { Separator } from "../ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { storageService } from "@/lib/inventory-storage";
 import { InventoryItem, StockEntry, UnitLevel } from "@/types/inventory";
+import { formatUnitName, SUPPLIERS } from "@/lib/inventory-defaults";
 
-interface AddStockModalProps {
+interface UpdateStockModalProps {
   inventoryItemId: string;
   onClose: () => void;
   onSave: (stock: StockEntry) => void;
@@ -28,14 +37,16 @@ const getProfitText = (profit: IProfit): string => {
   return `${profit.percent}% (₦${profit.amount})`;
 };
 
-export function AddStockModal({
+export function UpdateStockModal({
   inventoryItemId,
   onClose,
   onSave,
-}: AddStockModalProps) {
+}: UpdateStockModalProps) {
   const [inventoryItem, setInventoryItem] = useState<InventoryItem | null>(
     null
   );
+  const [operationType, setOperationType] = useState<"add" | "reduce">("add");
+  const [supplier, setSupplier] = useState<string | null>(null);
   const [costPrice, setCostPrice] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
@@ -56,6 +67,10 @@ export function AddStockModal({
       if (latestStock) {
         setCostPrice(latestStock.costPrice.toString());
         setSellingPrice(latestStock.sellingPrice.toString());
+        // Pre-fill supplier if available
+        if (latestStock.supplier) {
+          setSupplier(latestStock.supplier);
+        }
       }
     }
   }, [inventoryItemId]);
@@ -114,6 +129,14 @@ export function AddStockModal({
     };
   };
 
+  const getTotalStock = (item: InventoryItem): number => {
+    if (!item.stocks || item.stocks.length === 0) return 0;
+    return item.stocks.reduce(
+      (sum, stock) => sum + stock.quantityInBaseUnits,
+      0
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -138,14 +161,29 @@ export function AddStockModal({
       return;
     }
 
+    // Check if reducing stock would result in negative stock
+    if (operationType === "reduce") {
+      const currentStock = getTotalStock(inventoryItem);
+      if (totalQuantity > currentStock) {
+        alert(
+          `Cannot reduce stock by ${totalQuantity} units. Current stock is only ${currentStock} units.`
+        );
+        return;
+      }
+    }
+
     const stockEntry: StockEntry = {
       id: crypto.randomUUID(),
       inventoryItemId: inventoryItem.id,
+      operationType,
+      supplier,
       costPrice: parseFloat(costPrice),
       sellingPrice: parseFloat(sellingPrice),
       expiryDate: expiryDate,
-      quantityInBaseUnits: totalQuantity,
+      quantityInBaseUnits:
+        operationType === "reduce" ? -totalQuantity : totalQuantity,
       createdAt: new Date().toISOString(),
+      performedBy: "Admin",
     };
 
     // Update the inventory item with the new stock
@@ -172,74 +210,141 @@ export function AddStockModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-[550px] max-h-[90vh] overflow-y-auto">
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6">
           <div className="flex items-center justify-between pb-4">
             <div>
-              <h2 className="text-2xl font-bold">Add Stock</h2>
+              <h2 className="text-2xl font-bold">Update Stock</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {inventoryItem.name}
               </p>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              className="h-8 w-8 p-0 bg-gray-100"
-              onClick={onClose}
-            >
-              <X className="h-5 w-5 text-gray-700" />
-            </Button>
+            <div className="flex items-center gap-3">
+              <Select
+                value={operationType}
+                onValueChange={(value) => {
+                  const op = value as "add" | "reduce";
+                  setOperationType(op);
+                  // Supplier is only relevant when adding stock, so clear it when reducing
+                  if (op === "reduce") {
+                    setSupplier(null);
+                  }
+                }}
+              >
+                <SelectTrigger
+                  className={`w-[140px] h-9 text-sm font-medium border-0 shadow-none ${
+                    operationType === "add"
+                      ? "bg-green-100 text-green-800 hover:bg-green-200"
+                      : "bg-red-100 text-red-800 hover:bg-red-200"
+                  }`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="add">Add Stock</SelectItem>
+                  <SelectItem value="reduce">Reduce Stock</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-8 w-8 p-0 bg-gray-100"
+                onClick={onClose}
+              >
+                <X className="h-5 w-5 text-gray-700" />
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-4">
-            {/* Pricing Section */}
+            {/* Supplier and Expiry Date */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="costPrice">
-                  Cost Price in ₦ (per {baseUnit?.name}) *
-                </Label>
-                <Input
-                  id="costPrice"
-                  type="number"
-                  step="0.01"
-                  value={costPrice}
-                  onChange={(e) => setCostPrice(e.target.value)}
-                  placeholder="0.00"
-                  required
-                />
+                <Label htmlFor="supplier">Supplier (Optional)</Label>
+                <Select
+                  value={supplier || undefined}
+                  onValueChange={setSupplier}
+                  disabled={operationType === "reduce"}
+                >
+                  <SelectTrigger id="supplier">
+                    <SelectValue placeholder="Select a supplier" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SUPPLIERS.map((sup) => (
+                      <SelectItem key={sup.name} value={sup.name}>
+                        {sup.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="sellingPrice">
-                  Selling Price in ₦ (per {baseUnit?.name}) *
-                </Label>
+                <Label htmlFor="expiryDate">Expiry Date *</Label>
                 <Input
-                  id="sellingPrice"
-                  type="number"
-                  step="0.01"
-                  value={sellingPrice}
-                  onChange={(e) => setSellingPrice(e.target.value)}
-                  placeholder="0.00"
+                  id="expiryDate"
+                  type="date"
+                  value={expiryDate}
+                  onChange={(e) => setExpiryDate(e.target.value)}
                   required
                 />
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground">
-              <span className="">Profit: </span>
-              <span className="font-medium text-foreground">
-                {getProfitText(profit)}
-              </span>
-            </p>
+            {/* Pricing Section */}
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="costPrice">
+                    Cost Price in ₦ (per{" "}
+                    {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                  </Label>
+                  <Input
+                    id="costPrice"
+                    type="number"
+                    step="0.01"
+                    value={costPrice}
+                    onChange={(e) => setCostPrice(e.target.value)}
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="sellingPrice">
+                    Selling Price in ₦ (per{" "}
+                    {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                  </Label>
+                  <Input
+                    id="sellingPrice"
+                    type="number"
+                    step="0.01"
+                    value={sellingPrice}
+                    onChange={(e) => setSellingPrice(e.target.value)}
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+              </div>
+
+              <p className="text-sm text-muted-foreground">
+                <span className="">Profit: </span>
+                <span className="font-medium text-foreground">
+                  {getProfitText(profit)}
+                </span>
+              </p>
+            </div>
 
             {/* Quantity Section */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">Quantity</Label>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Quantity *</Label>
 
               <div className="flex items-center gap-3 flex-wrap">
                 {sortedUnits.map((unit, idx) => {
                   const input = quantityInputs.find(
                     (qi) => qi.unitId === unit.id
                   );
+                  const inputValue = input?.value || "0";
+                  const displayName = formatUnitName(unit, inputValue);
 
                   return (
                     <div key={unit.id} className="flex items-center gap-3">
@@ -255,14 +360,14 @@ export function AddStockModal({
                           step="1"
                           min="0"
                           placeholder="-"
-                          value={input?.value}
+                          value={inputValue}
                           onChange={(e) =>
                             updateQuantityInput(unit.id, e.target.value)
                           }
                           className="w-14 text-sm border-0 bg-transparent py-1.5 pl-3 pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                         />
                         <span className="text-sm pr-3 text-foreground font-medium">
-                          {unit.name}
+                          {displayName}
                         </span>
                       </div>
                     </div>
@@ -274,31 +379,22 @@ export function AddStockModal({
                 <p className="text-sm text-muted-foreground">
                   Total:{" "}
                   <span className="font-medium text-foreground">
-                    {totalInBaseUnits} {baseUnit.name}
+                    {totalInBaseUnits}{" "}
+                    {formatUnitName(baseUnit, totalInBaseUnits)}
                   </span>
                 </p>
               )}
             </div>
-
-            {/* Expiry Date */}
-            <div className="space-y-2">
-              <Label htmlFor="expiryDate">Expiry Date *</Label>
-              <Input
-                id="expiryDate"
-                type="date"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                required
-              />
-            </div>
           </div>
 
-          <div className="flex gap-3 justify-end pt-6 border-t">
+          <Separator className="my-6" />
+
+          <div className="flex gap-3 justify-end">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button type="submit" className="bg-gray-900 hover:bg-gray-800">
-              Save
+              {operationType === "add" ? "Add" : "Reduce"} Stock
             </Button>
           </div>
         </form>
