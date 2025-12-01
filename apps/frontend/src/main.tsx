@@ -5,7 +5,12 @@ import App from "./App.tsx";
 import "./index.css";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element not found. Make sure index.html has a div with id='root'");
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     {/* <ThemeProvider defaultTheme="dark"> */}
     <App />

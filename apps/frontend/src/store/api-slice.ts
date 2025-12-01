@@ -6,7 +6,7 @@ import { TagTypes } from "@/store/tags";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: env.VITE_API_BASE_URL,
+    baseUrl: env.API_BASE_URL,
     credentials: "include",
   }),
   endpoints: () => ({}), // empty, will be extended
