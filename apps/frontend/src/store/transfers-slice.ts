@@ -1,6 +1,5 @@
 import {
   IAPIResponse,
-  ITransfer,
   IGetTransfersParams,
   ITransferResponse,
   ITransferDetails,
@@ -34,7 +33,7 @@ export const transferApi = baseApi.injectEndpoints({
       providesTags: [TagTypes.TRANSFER],
     }),
     singlePayment: builder.mutation<
-      IAPIResponse<any>,
+      IAPIResponse<unknown>,
       { employeeIds: string[] }
     >({
       query: (body) => {
@@ -47,7 +46,7 @@ export const transferApi = baseApi.injectEndpoints({
       invalidatesTags: [TagTypes.TRANSFER],
     }),
     multiplePayments: builder.mutation<
-      IAPIResponse<any>,
+      IAPIResponse<unknown>,
       { employeeIds: string[] }
     >({
       query: (body) => ({

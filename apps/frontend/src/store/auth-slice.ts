@@ -19,7 +19,7 @@ export const authApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(authApi.util.invalidateTags([TagTypes.AUTH]));
-        } catch (error) {
+        } catch {
           // Handle login error if needed
         }
       },
@@ -41,7 +41,7 @@ export const authApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(baseApi.util.resetApiState());
-        } catch (error) {
+        } catch {
           // Handle logout error if needed
         }
       },

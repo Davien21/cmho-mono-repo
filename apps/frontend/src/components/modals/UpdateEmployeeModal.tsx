@@ -190,7 +190,6 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
   const {
     control,
     register,
-    getValues,
     handleSubmit,
     formState: { errors },
   } = useFormContext<IFormValues>();
@@ -199,29 +198,11 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
   const modal = modals["update-employee"] || { isOpen: false };
 
   const [updateEmployee, { isLoading: isAdding }] = useUpdateEmployeeMutation();
-  const [isSkipping, setIsSkipping] = useState(false);
 
   const loading = isAdding;
 
   const { data: banksResponse } = useGetBanksQuery();
   const banks = banksResponse?.data || [];
-
-  const onSkip = async () => {
-    const id = modal.data?._id;
-    if (!id) return;
-
-    try {
-      setIsSkipping(true);
-      const { name, position, salary } = getValues();
-      await updateEmployee({ name, position, salary, id }).unwrap();
-      toast.success("Employee updated successfully");
-      onClose();
-    } catch {
-      toast.error("Failed to update employee");
-    } finally {
-      setIsSkipping(false);
-    }
-  };
 
   const onSubmit = async (data: IFormValues) => {
     const id = modal.data?._id;
@@ -240,8 +221,11 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
       await updateEmployee({ name, position, salary, id, bank }).unwrap();
       toast.success("Employee updated successfully");
       onClose();
-    } catch (error: any) {
-      if (error.data?.message) toast.error(error.data.message);
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "data" in error) {
+        const errorData = error.data as { message?: string };
+        if (errorData?.message) toast.error(errorData.message);
+      }
     }
   };
 

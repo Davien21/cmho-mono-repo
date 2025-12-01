@@ -1,9 +1,6 @@
 /// <reference types="vite/client" />
 
 // src/env.ts
-interface ImportMetaEnv {
-  readonly VITE_API_BASE_URL: string;
-}
 
 const env = {
   VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,

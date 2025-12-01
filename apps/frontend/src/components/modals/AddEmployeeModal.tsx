@@ -205,8 +205,11 @@ const Step2Form = ({ onClose }: { onClose: () => void }) => {
       await addEmployee({ name, position, salary, bank }).unwrap();
       toast.success("Employee added successfully");
       onClose();
-    } catch (error: any) {
-      if (error.data?.message) toast.error(error.data.message);
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "data" in error) {
+        const errorData = error.data as { message?: string };
+        if (errorData?.message) toast.error(errorData.message);
+      }
     }
   };
 

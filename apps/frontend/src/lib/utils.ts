@@ -9,9 +9,9 @@ export function cn(...inputs: ClassValue[]) {
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export function getAxiosError(error: any) {
-  const axiosError = error as any;
-  const message = axiosError.response?.data.message;
+export function getAxiosError(error: unknown) {
+  const axiosError = error as { response?: { data?: { message?: string } } };
+  const message = axiosError.response?.data?.message;
   if (!message) return;
 
   if (message === "Resource not found") {
@@ -21,7 +21,7 @@ export function getAxiosError(error: any) {
   return message;
 }
 
-export function buildQueryString(params: Record<string, any>): string {
+export function buildQueryString(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params)) {
@@ -70,7 +70,7 @@ export const pluralizePhrase = (phrase: string, count: number) => {
   return pluralizedWords.join(" ");
 };
 
-export const getRTKQueryErrorMessage = (error: any): string | null => {
+export const getRTKQueryErrorMessage = (error: unknown): string | null => {
   const errorMessage = error?.data?.message;
   if (errorMessage) return errorMessage;
 
