@@ -15,4 +15,17 @@ const openDBConnection = () => {
     });
 };
 
-export default openDBConnection;
+const closeDBConnection = () => {
+  mongoose.connection
+    .close(false)
+    .then(() => {
+      logger.info("MongoDB connection closed.");
+      process.exit(0);
+    })
+    .catch((closeErr: Error) => {
+      logger.error(`Error closing MongoDB connection: ${closeErr.message}`);
+      process.exit(1);
+    });
+};
+
+export { openDBConnection, closeDBConnection };
