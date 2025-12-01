@@ -1,0 +1,46 @@
+import { Request, Response } from "express";
+import suppliersService from "./suppliers.service";
+import { errorResponse, successResponse } from "../../utils/response";
+import { SupplierRequest } from "./suppliers.types";
+
+export async function getSuppliers(_req: Request, res: Response) {
+  try {
+    const suppliers = await suppliersService.list();
+    res.send(successResponse("Suppliers fetched successfully", suppliers));
+  } catch (error) {
+    res.status(500).send(errorResponse("Failed to fetch suppliers"));
+  }
+}
+
+export async function createSupplier(req: Request, res: Response) {
+  try {
+    const data = req.body as SupplierRequest;
+    const supplier = await suppliersService.create(data);
+    res.send(successResponse("Supplier created successfully", supplier));
+  } catch (error) {
+    res.status(500).send(errorResponse("Failed to create supplier"));
+  }
+}
+
+export async function updateSupplier(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const data = req.body as Partial<SupplierRequest>;
+
+    const supplier = await suppliersService.update(id, data);
+
+    res.send(successResponse("Supplier updated successfully", supplier));
+  } catch (error) {
+    res.status(500).send(errorResponse("Failed to update supplier"));
+  }
+}
+
+export async function deleteSupplier(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    await suppliersService.delete(id);
+    res.send(successResponse("Supplier deleted successfully"));
+  } catch (error) {
+    res.status(500).send(errorResponse("Failed to delete supplier"));
+  }
+}

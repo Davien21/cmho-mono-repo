@@ -1,8 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 
 import { UnAuthorizedError } from "../config/errors";
-import authService from "../modules/auth/auth.service";
+import authService, { AuthTokenPayload } from "../modules/auth/auth.service";
+import { AdminRole } from "../modules/admins/admins.types";
 import { JWT_COOKIE_NAME } from "../utils/cookie-names";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: AuthTokenPayload;
+    }
+  }
+}
 
 const authenticate = async function (
   req: Request,
@@ -14,7 +23,9 @@ const authenticate = async function (
 
   if (!authToken) throw new UnAuthorizedError();
   try {
-    authService.verifyAuthToken(authToken);
+    const decoded = authService.verifyAuthToken(authToken);
+    // Attach decoded token payload to the request for downstream middlewares/controllers.
+    req.user = decoded;
 
     next();
   } catch (error) {
@@ -26,4 +37,26 @@ const authenticate = async function (
   }
 };
 
-export { authenticate };
+const hasRole =
+  (...allowedRoles: AdminRole[]) =>
+  (req: Request, _res: Response, next: NextFunction) => {
+    const user = req.user;
+
+    if (user?.isSuperAdmin) {
+      return next();
+    }
+
+    const userRoles = user?.roles || [];
+
+    const isAuthorized =
+      Array.isArray(userRoles) &&
+      userRoles.some((role) => allowedRoles.includes(role));
+
+    if (!isAuthorized) {
+      throw new UnAuthorizedError();
+    }
+
+    next();
+  };
+
+export { authenticate, hasRole };
