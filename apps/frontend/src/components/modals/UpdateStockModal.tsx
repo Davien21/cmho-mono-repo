@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { InventoryItem, UnitLevel } from "@/types/inventory";
+import { InventoryItem } from "@/types/inventory";
 import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
 import {
   useCreateStockEntryMutation,
@@ -104,11 +104,11 @@ export function UpdateStockModal({
   const [createStockEntry, { isLoading: isCreatingStockEntry }] =
     useCreateStockEntryMutation();
 
-  const getInitialQuantity = (): QuantityInput[] => {
+  const getInitialQuantity = useCallback((): QuantityInput[] => {
     if (!localItem) return [];
     const sortedUnits = localItem.units;
     return sortedUnits.map((unit) => ({ unitId: unit.id, value: "0" }));
-  };
+  }, [localItem]);
 
   const {
     register,
@@ -129,7 +129,6 @@ export function UpdateStockModal({
 
   const costPrice = watch("costPrice");
   const sellingPrice = watch("sellingPrice");
-  const quantity = watch("quantity");
 
   // Reset quantity when localItem changes
   useEffect(() => {
@@ -141,7 +140,7 @@ export function UpdateStockModal({
       sellingPrice: "",
       quantity: initialQuantity,
     });
-  }, [localItem, reset]);
+  }, [localItem, reset, getInitialQuantity]);
 
   const getBaseUnit = () => {
     if (!localItem) return null;
@@ -251,15 +250,10 @@ export function UpdateStockModal({
     }
   };
 
-  if (!localItem) return <EmptyState />;
-
   const baseUnit = getBaseUnit();
-  const totalInBaseUnits = useMemo(
-    () => calculateTotalInBaseUnits((quantity || []) as QuantityInput[]),
-    [quantity, calculateTotalInBaseUnits]
-  );
-
   const profit = calculateProfit();
+
+  if (!localItem) return <EmptyState />;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">

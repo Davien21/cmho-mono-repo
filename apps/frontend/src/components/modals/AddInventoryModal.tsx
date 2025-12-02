@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -72,42 +72,43 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
 
   const unitNames: string[] = unitsPresets.map((u) => u.name);
 
-  const getDefaultUnitsForCategory = (
-    categoryName: InventoryCategory
-  ): UnitLevel[] => {
-    const category = categories.find((c) => c.name === categoryName);
-    if (!category) {
-      return [];
-    }
+  const getDefaultUnitsForCategory = useCallback(
+    (categoryName: InventoryCategory): UnitLevel[] => {
+      const category = categories.find((c) => c.name === categoryName);
+      if (!category) {
+        return [];
+      }
 
-    // Prefer populated unit presets if available from the API
-    if (category.unitPresets && category.unitPresets.length > 0) {
-      return category.unitPresets.map((u, index) => ({
+      // Prefer populated unit presets if available from the API
+      if (category.unitPresets && category.unitPresets.length > 0) {
+        return category.unitPresets.map((u, index) => ({
+          id: u._id,
+          name: u.name,
+          plural: u.plural,
+          // Top-level unit (first in array) defaults to 1, others default to undefined
+          quantity: index === 0 ? 1 : undefined,
+        }));
+      }
+
+      // Fallback to legacy behavior using unitPresetIds + unitsPresets list
+      if (!category.unitPresetIds || !category.unitPresetIds.length) {
+        return [];
+      }
+
+      const presetUnits = category.unitPresetIds
+        .map((id) => unitsPresets.find((u) => u._id === id))
+        .filter((u): u is IInventoryUnitDefinitionDto => Boolean(u));
+
+      return presetUnits.map((u, index) => ({
         id: u._id,
         name: u.name,
         plural: u.plural,
         // Top-level unit (first in array) defaults to 1, others default to undefined
         quantity: index === 0 ? 1 : undefined,
       }));
-    }
-
-    // Fallback to legacy behavior using unitPresetIds + unitsPresets list
-    if (!category.unitPresetIds || !category.unitPresetIds.length) {
-      return [];
-    }
-
-    const presetUnits = category.unitPresetIds
-      .map((id) => unitsPresets.find((u) => u._id === id))
-      .filter((u): u is IInventoryUnitDefinitionDto => Boolean(u));
-
-    return presetUnits.map((u, index) => ({
-      id: u._id,
-      name: u.name,
-      plural: u.plural,
-      // Top-level unit (first in array) defaults to 1, others default to undefined
-      quantity: index === 0 ? 1 : undefined,
-    }));
-  };
+    },
+    [categories, unitsPresets]
+  );
 
   const getInitialUnits = () => {
     return [] as UnitLevel[];
@@ -123,7 +124,6 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
     handleSubmit,
     watch,
     setValue,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<InventoryItemFormValues>({
     resolver: yupResolver(inventoryItemSchema),
@@ -140,10 +140,6 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
   const getBaseUnit = (): UnitLevel | undefined => {
     // Base unit is the last unit in the array
     return units.length > 0 ? units[units.length - 1] : undefined;
-  };
-
-  const getInitialLowStockValue = (): QuantityInput[] => {
-    return units.map((unit) => ({ unitId: unit.id, value: "0" }));
   };
 
   const calculateTotalInBaseUnits = useMemo(() => {
@@ -198,7 +194,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
       value: "0",
     }));
     setValue("lowStockValue", initialLowStock);
-  }, [inventoryCategory, categories, unitsPresets, setValue]);
+  }, [inventoryCategory, categories, unitsPresets, setValue, getDefaultUnitsForCategory]);
 
   const onSubmit = async (values: InventoryItemFormValues) => {
     if (units.length === 0) {
