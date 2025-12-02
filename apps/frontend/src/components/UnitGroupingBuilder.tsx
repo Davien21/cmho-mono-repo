@@ -9,11 +9,7 @@ import {
 } from "./ui/context-menu";
 import { useCallback } from "react";
 import { UnitDropdown } from "./UnitDropDown";
-
-interface UnitPreset {
-  name: string;
-  plural: string;
-}
+import { IInventoryUnitDefinitionDto } from "@/store/inventory-slice";
 
 interface UnitGroupingBuilderProps {
   units: UnitLevel[];
@@ -25,24 +21,20 @@ interface UnitGroupingBuilderProps {
    */
   initialUnits: UnitLevel[];
   /**
-   * All available unit names that can be selected in the builder.
-   * Typically derived from the inventory units presets API.
+   * Available unit presets with name and plural.
+   * Used to populate the unit dropdowns and auto-fill plurals when a unit is selected.
    */
-  availableUnitNames: string[];
-  /**
-   * Full unit presets with name and plural. Used to look up plural when a unit name is selected.
-   * If not provided, only availableUnitNames will be used.
-   */
-  availableUnitPresets?: UnitPreset[];
+  presets: IInventoryUnitDefinitionDto[];
 }
 
 export function UnitGroupingBuilder({
   units,
   onChange,
   initialUnits,
-  availableUnitNames,
-  availableUnitPresets,
+  presets,
 }: UnitGroupingBuilderProps) {
+  // Derive unit names from presets for the dropdown
+  const availableUnitNames = presets.map((p) => p.name);
   const addLevel = () => {
     const newUnit: UnitLevel = {
       id: crypto.randomUUID(),
@@ -66,15 +58,15 @@ export function UnitGroupingBuilder({
 
   const handleUnitSelect = useCallback(
     (unitId: string, value: string) => {
-      // Look up the plural from availableUnitPresets if available
-      const preset = availableUnitPresets?.find((p) => p.name === value);
+      // Look up the plural from presets
+      const preset = presets.find((p) => p.name === value);
       const updates: Partial<UnitLevel> = {
         name: value,
         ...(preset ? { plural: preset.plural } : {}),
       };
       updateUnit(unitId, updates);
     },
-    [updateUnit, availableUnitPresets]
+    [updateUnit, presets]
   );
 
   const removeUnit = (id: string) => {
@@ -153,16 +145,17 @@ export function UnitGroupingBuilder({
 
                         <div className="flex items-center bg-neutral-100 rounded-md">
                           <input
-                            type="number"
-                            min="1"
-                            step="1"
+                            type="tel"
                             value={unit.quantity ?? ""}
                             onChange={(e) => {
                               const value = e.target.value;
-                              const numValue = value === "" ? undefined : parseFloat(value);
+                              const numValue =
+                                value === "" ? undefined : parseFloat(value);
                               updateUnit(unit.id, {
                                 quantity:
-                                  numValue !== undefined && !isNaN(numValue) && numValue > 0
+                                  numValue !== undefined &&
+                                  !isNaN(numValue) &&
+                                  numValue > 0
                                     ? numValue
                                     : undefined,
                               });

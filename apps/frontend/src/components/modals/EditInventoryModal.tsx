@@ -67,8 +67,6 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
   const { data: unitsResponse } = useGetInventoryUnitsQuery();
   const unitsPresets: IInventoryUnitDefinitionDto[] = unitsResponse?.data || [];
 
-  const unitNames: string[] = unitsPresets.map((u) => u.name);
-
   const {
     control,
     register,
@@ -218,11 +216,7 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
               units={units}
               onChange={setUnits}
               initialUnits={initialUnits}
-              availableUnitNames={unitNames}
-              availableUnitPresets={unitsPresets.map((u) => ({
-                name: u.name,
-                plural: u.plural,
-              }))}
+              presets={unitsPresets}
             />
           </div>
 

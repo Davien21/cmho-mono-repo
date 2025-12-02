@@ -70,8 +70,6 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
 
   const categories: IInventoryCategoryDto[] = categoriesResponse?.data || [];
 
-  const unitNames: string[] = unitsPresets.map((u) => u.name);
-
   const getDefaultUnitsForCategory = useCallback(
     (categoryName: InventoryCategory): UnitLevel[] => {
       const category = categories.find((c) => c.name === categoryName);
@@ -194,7 +192,13 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
       value: "0",
     }));
     setValue("lowStockValue", initialLowStock);
-  }, [inventoryCategory, categories, unitsPresets, setValue, getDefaultUnitsForCategory]);
+  }, [
+    inventoryCategory,
+    categories,
+    unitsPresets,
+    setValue,
+    getDefaultUnitsForCategory,
+  ]);
 
   const onSubmit = async (values: InventoryItemFormValues) => {
     if (units.length === 0) {
@@ -331,11 +335,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
               units={units}
               onChange={setUnits}
               initialUnits={initialUnits}
-              availableUnitNames={unitNames}
-              availableUnitPresets={unitsPresets.map((u) => ({
-                name: u.name,
-                plural: u.plural,
-              }))}
+              presets={unitsPresets}
             />
           </div>
 
