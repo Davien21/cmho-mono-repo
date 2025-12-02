@@ -51,7 +51,11 @@ export const INVENTORY_CATEGORIES = {
 
 // Hydrate preset units with runtime fields (quantity)
 export function hydrateUnits(units: readonly UnitLevel[]): UnitLevel[] {
-  return units.map((unit) => ({ ...unit, quantity: "" }));
+  return units.map((unit, index) => ({
+    ...unit,
+    // Top-level unit (first in array) defaults to 1, others default to undefined
+    quantity: index === 0 ? 1 : undefined,
+  }));
 }
 
 export function getDefaultUnits(type: InventoryCategory): UnitLevel[] {

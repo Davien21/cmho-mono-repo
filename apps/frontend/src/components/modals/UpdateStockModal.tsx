@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,6 +24,7 @@ import {
 } from "@/store/inventory-slice";
 import { toast } from "sonner";
 import { InventorySupplierSelect } from "@/components/InventorySupplierSelect";
+import { UnitBasedInput } from "@/components/UnitBasedInput";
 
 interface UpdateStockModalProps {
   inventoryItem: InventoryItem;
@@ -60,6 +61,27 @@ const updateStockSchema = yup.object({
         return !Number.isNaN(parsed) && parsed > 0;
       }
     ),
+  quantity: yup
+    .array()
+    .of(
+      yup.object({
+        unitId: yup.string().required(),
+        value: yup.string().required(),
+      })
+    )
+    .test(
+      "has-quantity",
+      "Please enter a quantity greater than 0",
+      function (quantityInputs) {
+        if (!quantityInputs || quantityInputs.length === 0) return false;
+        // Check if at least one input has a value greater than 0
+        return quantityInputs.some((input) => {
+          const qty = parseFloat(input.value || "0");
+          return qty > 0;
+        });
+      }
+    )
+    .required("Quantity is required"),
 });
 
 type UpdateStockFormValues = yup.InferType<typeof updateStockSchema>;
@@ -77,16 +99,23 @@ export function UpdateStockModal({
   const [operationType, setOperationType] = useState<"add" | "reduce">("add");
   const [supplierId, setSupplierId] = useState<string | null>(null);
   const [supplierName, setSupplierName] = useState<string | null>(null);
-  const [quantityInputs, setQuantityInputs] = useState<QuantityInput[]>([]);
   const { refetch: refetchItems } = useGetInventoryItemsQuery();
   const { refetch: refetchStockEntries } = useGetStockEntriesQuery();
   const [createStockEntry, { isLoading: isCreatingStockEntry }] =
     useCreateStockEntryMutation();
 
+  const getInitialQuantity = (): QuantityInput[] => {
+    if (!localItem) return [];
+    const sortedUnits = localItem.units;
+    return sortedUnits.map((unit) => ({ unitId: unit.id, value: "0" }));
+  };
+
   const {
     register,
     handleSubmit,
     watch,
+    control,
+    reset,
     formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm<UpdateStockFormValues>({
     resolver: yupResolver(updateStockSchema),
@@ -94,25 +123,25 @@ export function UpdateStockModal({
       expiryDate: "",
       costPrice: "",
       sellingPrice: "",
+      quantity: getInitialQuantity(),
     },
   });
 
   const costPrice = watch("costPrice");
   const sellingPrice = watch("sellingPrice");
+  const quantity = watch("quantity");
 
+  // Reset quantity when localItem changes
   useEffect(() => {
     if (!localItem) return;
-
-    const sortedUnits = getSortedUnits(localItem.units);
-    setQuantityInputs(
-      sortedUnits.map((unit) => ({ unitId: unit.id, value: "0" }))
-    );
-  }, [localItem]);
-
-  const getSortedUnits = (units: UnitLevel[]) => {
-    // Units are already in the correct order in the array
-    return units;
-  };
+    const initialQuantity = getInitialQuantity();
+    reset({
+      expiryDate: "",
+      costPrice: "",
+      sellingPrice: "",
+      quantity: initialQuantity,
+    });
+  }, [localItem, reset]);
 
   const getBaseUnit = () => {
     if (!localItem) return null;
@@ -121,35 +150,31 @@ export function UpdateStockModal({
     return units.length > 0 ? units[units.length - 1] : null;
   };
 
-  const calculateTotalInBaseUnits = () => {
-    if (!localItem) return 0;
+  const calculateTotalInBaseUnits = useMemo(() => {
+    return (quantityInputs: QuantityInput[]) => {
+      if (!localItem) return 0;
 
-    const units = localItem.units;
-    let total = 0;
+      const units = localItem.units;
+      let total = 0;
 
-    units.forEach((unit, unitIndex) => {
-      const input = quantityInputs.find((qi) => qi.unitId === unit.id);
-      const qty = parseFloat(input?.value || "0");
+      units.forEach((unit, unitIndex) => {
+        const input = quantityInputs.find((qi) => qi.unitId === unit.id);
+        const qty = parseFloat(input?.value || "0");
 
-      if (qty <= 0) return;
-      // Calculate multiplier for this unit to base unit
-      // Multiply all child unit quantities (units that come after this one)
-      let multiplier = 1;
-      for (let i = unitIndex + 1; i < units.length; i++) {
-        multiplier *= Number(units[i].quantity) || 1;
-      }
+        if (qty <= 0) return;
+        // Calculate multiplier for this unit to base unit
+        // Multiply all child unit quantities (units that come after this one)
+        let multiplier = 1;
+        for (let i = unitIndex + 1; i < units.length; i++) {
+          multiplier *= units[i].quantity || 1;
+        }
 
-      total += qty * multiplier;
-    });
+        total += qty * multiplier;
+      });
 
-    return total;
-  };
-
-  const updateQuantityInput = (unitId: string, value: string) => {
-    setQuantityInputs((prev) =>
-      prev.map((qi) => (qi.unitId === unitId ? { ...qi, value } : qi))
-    );
-  };
+      return total;
+    };
+  }, [localItem]);
 
   const calculateProfit = (): IProfit => {
     const cost = parseFloat(costPrice) || 0;
@@ -173,9 +198,11 @@ export function UpdateStockModal({
       return;
     }
 
-    const totalQuantity = calculateTotalInBaseUnits();
+    const totalQuantity = calculateTotalInBaseUnits(
+      (values.quantity || []) as QuantityInput[]
+    );
     if (totalQuantity <= 0) {
-      alert("Please enter a quantity greater than 0");
+      toast.error("Please enter a quantity greater than 0");
       return;
     }
 
@@ -183,7 +210,7 @@ export function UpdateStockModal({
     if (operationType === "reduce") {
       const currentStock = getTotalStock(localItem);
       if (totalQuantity > currentStock) {
-        alert(
+        toast.error(
           `Cannot reduce stock by ${totalQuantity} units. Current stock is only ${currentStock} units.`
         );
         return;
@@ -227,8 +254,10 @@ export function UpdateStockModal({
   if (!localItem) return <EmptyState />;
 
   const baseUnit = getBaseUnit();
-  const sortedUnits = getSortedUnits(localItem.units);
-  const totalInBaseUnits = calculateTotalInBaseUnits();
+  const totalInBaseUnits = useMemo(
+    () => calculateTotalInBaseUnits((quantity || []) as QuantityInput[]),
+    [quantity, calculateTotalInBaseUnits]
+  );
 
   const profit = calculateProfit();
 
@@ -366,56 +395,12 @@ export function UpdateStockModal({
             </div>
 
             {/* Quantity Section */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Quantity *</Label>
-
-              <div className="flex items-center gap-3 flex-wrap">
-                {sortedUnits.map((unit, idx) => {
-                  const input = quantityInputs.find(
-                    (qi) => qi.unitId === unit.id
-                  );
-                  const inputValue = input?.value || "0";
-                  const displayName = formatUnitName(unit, inputValue);
-
-                  return (
-                    <div key={unit.id} className="flex items-center gap-3">
-                      {idx > 0 && (
-                        <span className="text-sm text-muted-foreground font-medium flex-shrink-0">
-                          +
-                        </span>
-                      )}
-
-                      <div className="flex items-center bg-neutral-100 rounded-md">
-                        <Input
-                          type="number"
-                          step="1"
-                          min="0"
-                          placeholder="-"
-                          value={inputValue}
-                          onChange={(e) =>
-                            updateQuantityInput(unit.id, e.target.value)
-                          }
-                          className="w-14 text-sm border-0 bg-transparent py-1.5 pl-3 pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
-                        />
-                        <span className="text-sm pr-3 text-foreground font-medium">
-                          {displayName}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {totalInBaseUnits > 0 && baseUnit && (
-                <p className="text-sm text-muted-foreground">
-                  Total:{" "}
-                  <span className="font-medium text-foreground">
-                    {totalInBaseUnits}{" "}
-                    {formatUnitName(baseUnit, totalInBaseUnits)}
-                  </span>
-                </p>
-              )}
-            </div>
+            <UnitBasedInput
+              control={control}
+              name="quantity"
+              units={localItem.units}
+              error={errors.quantity?.message}
+            />
           </div>
 
           <Separator className="my-6" />

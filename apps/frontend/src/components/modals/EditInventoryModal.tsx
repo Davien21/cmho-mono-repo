@@ -115,10 +115,7 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
           id: u.id,
           name: u.name,
           plural: u.plural,
-          quantity:
-            typeof u.quantity === "string"
-              ? parseFloat(u.quantity) || undefined
-              : u.quantity,
+          quantity: u.quantity,
         })),
         lowStockValue: values.lowStockValue
           ? parseFloat(values.lowStockValue)
@@ -222,6 +219,10 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
               onChange={setUnits}
               initialUnits={initialUnits}
               availableUnitNames={unitNames}
+              availableUnitPresets={unitsPresets.map((u) => ({
+                name: u.name,
+                plural: u.plural,
+              }))}
             />
           </div>
 

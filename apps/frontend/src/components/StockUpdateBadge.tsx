@@ -59,9 +59,8 @@ export function StockUpdateBadge({
       let multiplier = 1;
       for (let i = unitIndex + 1; i < sortedUnits.length; i++) {
         const qty = sortedUnits[i].quantity;
-        const numQty = typeof qty === "string" ? parseFloat(qty) : Number(qty);
-        if (!isNaN(numQty) && numQty > 0) {
-          multiplier *= numQty;
+        if (qty !== undefined && qty > 0) {
+          multiplier *= qty;
         }
       }
       unitMultipliers.set(unit.id, multiplier);

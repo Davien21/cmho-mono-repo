@@ -10,6 +10,11 @@ import {
 import { useCallback } from "react";
 import { UnitDropdown } from "./UnitDropDown";
 
+interface UnitPreset {
+  name: string;
+  plural: string;
+}
+
 interface UnitGroupingBuilderProps {
   units: UnitLevel[];
   onChange: (units: UnitLevel[]) => void;
@@ -24,6 +29,11 @@ interface UnitGroupingBuilderProps {
    * Typically derived from the inventory units presets API.
    */
   availableUnitNames: string[];
+  /**
+   * Full unit presets with name and plural. Used to look up plural when a unit name is selected.
+   * If not provided, only availableUnitNames will be used.
+   */
+  availableUnitPresets?: UnitPreset[];
 }
 
 export function UnitGroupingBuilder({
@@ -31,12 +41,13 @@ export function UnitGroupingBuilder({
   onChange,
   initialUnits,
   availableUnitNames,
+  availableUnitPresets,
 }: UnitGroupingBuilderProps) {
   const addLevel = () => {
     const newUnit: UnitLevel = {
       id: crypto.randomUUID(),
       name: "",
-      quantity: "",
+      quantity: undefined,
       plural: "",
     };
     onChange([...units, newUnit]);
@@ -55,9 +66,15 @@ export function UnitGroupingBuilder({
 
   const handleUnitSelect = useCallback(
     (unitId: string, value: string) => {
-      updateUnit(unitId, { name: value });
+      // Look up the plural from availableUnitPresets if available
+      const preset = availableUnitPresets?.find((p) => p.name === value);
+      const updates: Partial<UnitLevel> = {
+        name: value,
+        ...(preset ? { plural: preset.plural } : {}),
+      };
+      updateUnit(unitId, updates);
     },
-    [updateUnit]
+    [updateUnit, availableUnitPresets]
   );
 
   const removeUnit = (id: string) => {
@@ -136,11 +153,20 @@ export function UnitGroupingBuilder({
 
                         <div className="flex items-center bg-neutral-100 rounded-md">
                           <input
-                            type="text"
-                            value={unit.quantity}
-                            onChange={(e) =>
-                              updateUnit(unit.id, { quantity: e.target.value })
-                            }
+                            type="number"
+                            min="1"
+                            step="1"
+                            value={unit.quantity ?? ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              const numValue = value === "" ? undefined : parseFloat(value);
+                              updateUnit(unit.id, {
+                                quantity:
+                                  numValue !== undefined && !isNaN(numValue) && numValue > 0
+                                    ? numValue
+                                    : undefined,
+                              });
+                            }}
                             placeholder="-"
                             className="w-8 text-sm border-0 bg-transparent py-1.5 pl-3 pr-1 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                           />

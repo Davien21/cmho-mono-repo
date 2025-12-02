@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -30,26 +30,29 @@ import {
 } from "@/store/inventory-slice";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
+import { UnitBasedInput } from "@/components/UnitBasedInput";
 
 interface AddInventoryModalProps {
   onClose: () => void;
+}
+
+interface QuantityInput {
+  unitId: string;
+  value: string;
 }
 
 const inventoryItemSchema = yup.object({
   name: yup.string().trim().required("Name is required"),
   inventoryCategory: yup.string().trim().required("Category is required"),
   lowStockValue: yup
-    .string()
-    .optional()
-    .test(
-      "is-number",
-      "Low stock value must be a non-negative number",
-      (value) => {
-        if (!value) return true;
-        const parsed = parseFloat(value);
-        return !Number.isNaN(parsed) && parsed >= 0;
-      }
-    ),
+    .array()
+    .of(
+      yup.object({
+        unitId: yup.string().required(),
+        value: yup.string().required(),
+      })
+    )
+    .optional(),
   setupStatus: yup
     .mixed<InventoryStatus>()
     .oneOf(["draft", "ready"])
@@ -64,6 +67,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
   const [createInventoryItem] = useCreateInventoryItemMutation();
 
   const unitsPresets: IInventoryUnitDefinitionDto[] = unitsResponse?.data || [];
+
   const categories: IInventoryCategoryDto[] = categoriesResponse?.data || [];
 
   const unitNames: string[] = unitsPresets.map((u) => u.name);
@@ -78,11 +82,12 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
 
     // Prefer populated unit presets if available from the API
     if (category.unitPresets && category.unitPresets.length > 0) {
-      return category.unitPresets.map((u) => ({
+      return category.unitPresets.map((u, index) => ({
         id: u._id,
         name: u.name,
         plural: u.plural,
-        quantity: "",
+        // Top-level unit (first in array) defaults to 1, others default to undefined
+        quantity: index === 0 ? 1 : undefined,
       }));
     }
 
@@ -95,11 +100,12 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
       .map((id) => unitsPresets.find((u) => u._id === id))
       .filter((u): u is IInventoryUnitDefinitionDto => Boolean(u));
 
-    return presetUnits.map((u) => ({
+    return presetUnits.map((u, index) => ({
       id: u._id,
       name: u.name,
       plural: u.plural,
-      quantity: "",
+      // Top-level unit (first in array) defaults to 1, others default to undefined
+      quantity: index === 0 ? 1 : undefined,
     }));
   };
 
@@ -108,6 +114,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
   };
 
   const [units, setUnits] = useState<UnitLevel[]>(getInitialUnits);
+  console.log({ units, unitsPresets });
   const [initialUnits, setInitialUnits] =
     useState<UnitLevel[]>(getInitialUnits);
   const {
@@ -116,13 +123,14 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<InventoryItemFormValues>({
     resolver: yupResolver(inventoryItemSchema),
     defaultValues: {
       name: "",
       inventoryCategory: "",
-      lowStockValue: "",
+      lowStockValue: [],
       setupStatus: "ready",
     },
   });
@@ -134,10 +142,41 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
     return units.length > 0 ? units[units.length - 1] : undefined;
   };
 
+  const getInitialLowStockValue = (): QuantityInput[] => {
+    return units.map((unit) => ({ unitId: unit.id, value: "0" }));
+  };
+
+  const calculateTotalInBaseUnits = useMemo(() => {
+    return (quantityInputs: QuantityInput[]) => {
+      if (!units.length) return 0;
+
+      let total = 0;
+
+      units.forEach((unit, unitIndex) => {
+        const input = quantityInputs.find((qi) => qi.unitId === unit.id);
+        const qty = parseFloat(input?.value || "0");
+
+        if (qty <= 0) return;
+
+        // Calculate multiplier for this unit to base unit
+        // Multiply all child unit quantities (units that come after this one)
+        let multiplier = 1;
+        for (let i = unitIndex + 1; i < units.length; i++) {
+          multiplier *= units[i].quantity || 1;
+        }
+
+        total += qty * multiplier;
+      });
+
+      return total;
+    };
+  }, [units]);
+
   useEffect(() => {
     if (!inventoryCategory) {
       setUnits([]);
       setInitialUnits([]);
+      setValue("lowStockValue", []);
 
       // If we have categories and no category has been chosen yet, default to the first one
       if (categories.length > 0) {
@@ -153,6 +192,12 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
     );
     setUnits(defaultUnits);
     setInitialUnits(defaultUnits);
+    // Reset low stock value when units change
+    const initialLowStock = defaultUnits.map((unit) => ({
+      unitId: unit.id,
+      value: "0",
+    }));
+    setValue("lowStockValue", initialLowStock);
   }, [inventoryCategory, categories, unitsPresets, setValue]);
 
   const onSubmit = async (values: InventoryItemFormValues) => {
@@ -169,6 +214,13 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
     }
 
     try {
+      // Calculate low stock value in base units from quantity inputs
+      const lowStockValueInBaseUnits = values.lowStockValue
+        ? calculateTotalInBaseUnits(
+            (values.lowStockValue || []) as QuantityInput[]
+          )
+        : undefined;
+
       // Backend treats `category` as the inventory category name
       const payload = {
         name: values.name.trim(),
@@ -177,14 +229,12 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
           id: u.id,
           name: u.name,
           plural: u.plural,
-          quantity:
-            typeof u.quantity === "string"
-              ? parseFloat(u.quantity) || undefined
-              : u.quantity,
+          quantity: u.quantity,
         })),
-        lowStockValue: values.lowStockValue
-          ? parseFloat(values.lowStockValue)
-          : undefined,
+        lowStockValue:
+          lowStockValueInBaseUnits && lowStockValueInBaseUnits > 0
+            ? lowStockValueInBaseUnits
+            : undefined,
         setupStatus: values.setupStatus,
         status: "active" as const,
         currentStockInBaseUnits: 0,
@@ -286,29 +336,27 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
               onChange={setUnits}
               initialUnits={initialUnits}
               availableUnitNames={unitNames}
+              availableUnitPresets={unitsPresets.map((u) => ({
+                name: u.name,
+                plural: u.plural,
+              }))}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="lowStockValue">Low Stock Value</Label>
-            <Input
-              id="lowStockValue"
-              type="number"
-              {...register("lowStockValue")}
-              placeholder="Enter minimum stock threshold"
-              className="text-base"
-              min="0"
-              step="1"
-            />
-            {errors.lowStockValue?.message && (
-              <p className="text-xs text-destructive mt-1">
-                {errors.lowStockValue.message}
+          {units.length > 0 && (
+            <div className="space-y-2">
+              <UnitBasedInput
+                control={control}
+                name="lowStockValue"
+                units={units}
+                label="Low Stock Value (Optional)"
+                error={errors.lowStockValue?.message}
+              />
+              <p className="text-xs text-muted-foreground">
+                Alert when stock falls below this value
               </p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Alert when stock falls below this value (in base units)
-            </p>
-          </div>
+            </div>
+          )}
 
           <div className="flex gap-3 justify-end pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
