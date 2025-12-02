@@ -104,6 +104,15 @@ export function formatUnitName(
   const numQuantity =
     typeof quantity === "string" ? parseFloat(quantity) : quantity;
 
+  // Handle NaN or invalid numbers
+  if (Number.isNaN(numQuantity)) {
+    return unit.plural || unit.name || "";
+  }
+
   // Use plural if quantity is not exactly 1 (including 0, negative, or any value != 1)
-  return numQuantity === 1 ? unit.name : unit.plural;
+  // Fallback to singular if plural is empty or undefined
+  if (numQuantity === 1) {
+    return unit.name || "";
+  }
+  return (unit.plural && unit.plural.trim() !== "") ? unit.plural : (unit.name || "");
 }

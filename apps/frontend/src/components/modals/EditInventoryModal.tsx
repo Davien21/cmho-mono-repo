@@ -67,8 +67,6 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
   const { data: unitsResponse } = useGetInventoryUnitsQuery();
   const unitsPresets: IInventoryUnitDefinitionDto[] = unitsResponse?.data || [];
 
-  const unitNames: string[] = unitsPresets.map((u) => u.name);
-
   const {
     control,
     register,
@@ -115,10 +113,7 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
           id: u.id,
           name: u.name,
           plural: u.plural,
-          quantity:
-            typeof u.quantity === "string"
-              ? parseFloat(u.quantity) || undefined
-              : u.quantity,
+          quantity: u.quantity,
         })),
         lowStockValue: values.lowStockValue
           ? parseFloat(values.lowStockValue)
@@ -221,7 +216,7 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
               units={units}
               onChange={setUnits}
               initialUnits={initialUnits}
-              availableUnitNames={unitNames}
+              presets={unitsPresets}
             />
           </div>
 

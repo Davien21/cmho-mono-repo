@@ -2,7 +2,7 @@ export interface UnitLevel {
   id: string;
   name: string;
   plural: string; // Optional, used in presets
-  quantity?: number | string; // Runtime field for conversion factor (user input)
+  quantity?: number; // Runtime field for conversion factor (user input)
 }
 
 // InventoryCategory represents a human-readable category name, e.g. "Drug"
