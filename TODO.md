@@ -41,7 +41,27 @@
    - [ ] Ensure proper conversion to base units when saving
    - [ ] Test with different unit configurations
 
-6. **Explore and implement inventory item picture management**
+6. **Update lowStockValue yup schema to number and implement auto-conversion on blur**
+
+   - **Current state**: `lowStockValue` in AddInventoryModal uses yup array schema (array of `{unitId, value}` objects), but backend expects a number (in base units)
+   - **Goal**: Change yup schema to accept `lowStockValue` as a number and add auto-conversion logic
+   - **Auto-conversion behavior**: When user inputs values in different units (e.g., [1 pack] when 1 pack = 4 cards and 1 card = 5 tablets), automatically normalize on blur:
+     - Convert to base units and redistribute: [1 pack] → [0 cards] → [5 tablets] (1 pack = 4 cards = 20 tablets total)
+     - On blur from any input field, normalize all unit inputs to show the most compact representation
+   - **Question for Dr. Ubochi**: Validate if this auto-conversion behavior (forcing normalization) is better UX than letting users input whatever combination they want (e.g., [1 pack] + [2 cards] + [3 tablets] all at once)
+   - [ ] Consult with Dr. Ubochi on auto-conversion vs free-form input UX
+   - [ ] Update yup schema in AddInventoryModal to use `yup.number()` for `lowStockValue` instead of array
+   - [ ] Update yup schema in EditInventoryModal to use `yup.number()` for `lowStockValue` (currently uses string)
+   - [ ] Implement auto-conversion logic in UnitBasedInput component (or create wrapper) that:
+     - Calculates total in base units from current inputs
+     - Redistributes to show most compact representation (e.g., prefer higher units when possible)
+     - Triggers on blur event for each input field
+   - [ ] Handle edge cases (empty inputs, invalid values, zero values)
+   - [ ] Test conversion logic with various unit configurations (e.g., 1 pack = 4 cards, 1 card = 5 tablets)
+   - [ ] Ensure form submission converts unit inputs to base units number before sending to backend
+
+7. **Explore and implement inventory item picture management**
+
    - Currently, inventory items don't have pictures
    - Need to explore the best approach for adding and managing pictures
    - Goal: Make it easy and efficient (avoid one-at-a-time upload stress)
@@ -56,9 +76,29 @@
      - [ ] Plan for existing items (migration strategy, optional vs required)
    - [ ] Implement chosen solution
 
+8. **Determine if users should be allowed to modify packaging structure after category selection**
+
+   - **Current behavior**: When a user selects a category with predefined unit presets (packaging structure), the UnitGroupingBuilder component loads those presets
+   - **Question for Dr. Ubochi**: Should users be allowed to modify the packaging structure (units, quantities, relationships) even after selecting a category that has a defined structure?
+   - **Considerations**:
+     - **Option A (Locked)**: Once category is selected, unit structure is locked and cannot be modified
+       - Pros: Ensures consistency across items in same category, prevents errors, simpler UX
+       - Cons: Less flexibility, may need to create new categories for edge cases
+     - **Option B (Editable)**: Users can modify unit structure even after category selection
+       - Pros: More flexibility, handles edge cases without creating new categories
+       - Cons: Risk of inconsistency within same category, more complex validation, potential for errors
+     - **Option C (Hybrid)**: Allow modification but with warnings/confirmations, or allow only certain types of modifications
+   - [ ] Consult with Dr. Ubochi on whether packaging structure should be locked or editable after category selection
+   - [ ] Based on decision, implement appropriate UI/UX:
+     - [ ] If locked: Disable or hide UnitGroupingBuilder when category with presets is selected
+     - [ ] If editable: Ensure clear indication that structure can be modified, consider adding warnings
+     - [ ] If hybrid: Implement the chosen restrictions/warnings
+   - [ ] Update AddInventoryModal and EditInventoryModal accordingly
+   - [ ] Test with various category configurations
+
 ## Backend Features
 
-7. **Implement action tracking system**
+9. **Implement action tracking system**
    - Track every action that an admin takes on the platform
    - **Approach**: Explicit tracking in controllers/services (not middleware)
    - **Tracking rules**:
