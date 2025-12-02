@@ -24,7 +24,12 @@ export interface IStockEntry {
 }
 
 // Shape used for request bodies (client-provided data)
+// For reduce operations, costPrice, sellingPrice, and expiryDate are optional
 export type StockEntryRequest = Omit<
   IStockEntry,
   "_id" | "createdBy" | "createdAt" | "updatedAt"
->;
+> & {
+  costPrice?: number;
+  sellingPrice?: number;
+  expiryDate?: Date;
+};

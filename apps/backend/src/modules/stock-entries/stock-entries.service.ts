@@ -29,7 +29,17 @@ class StockEntriesService {
   }
 
   async create(data: StockEntryRequest): Promise<IStockEntry> {
-    const entry = await StockEntry.create(data);
+    // For reduce operations, set default values if not provided
+    const entryData: StockEntryRequest = {
+      ...data,
+      ...(data.operationType === "reduce" && {
+        costPrice: data.costPrice ?? 0,
+        sellingPrice: data.sellingPrice ?? 0,
+        expiryDate: data.expiryDate ?? new Date(),
+      }),
+    };
+
+    const entry = await StockEntry.create(entryData);
 
     // Incrementally update currentStockInBaseUnits and earliestExpiryDate
     const item = await InventoryItem.findById(entry.inventoryItemId);

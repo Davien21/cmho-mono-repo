@@ -31,13 +31,36 @@ export const createStockEntrySchema = yup
       .nullable()
       .optional()
       .label("Supplier"),
-    costPrice: yup.number().required().label("Cost price"),
-    sellingPrice: yup.number().required().label("Selling price"),
+    costPrice: yup
+      .number()
+      .when("operationType", {
+        is: "add",
+        then: (schema) => schema.required().label("Cost price"),
+        otherwise: (schema) => schema.optional().nullable().label("Cost price"),
+      }),
+    sellingPrice: yup
+      .number()
+      .when("operationType", {
+        is: "add",
+        then: (schema) => schema.required().label("Selling price"),
+        otherwise: (schema) => schema.optional().nullable().label("Selling price"),
+      }),
     expiryDate: yup
       .date()
-      .required()
-      .typeError("Expiry date must be a valid date")
-      .label("Expiry date"),
+      .when("operationType", {
+        is: "add",
+        then: (schema) =>
+          schema
+            .required()
+            .typeError("Expiry date must be a valid date")
+            .label("Expiry date"),
+        otherwise: (schema) =>
+          schema
+            .optional()
+            .nullable()
+            .typeError("Expiry date must be a valid date")
+            .label("Expiry date"),
+      }),
     quantityInBaseUnits: yup
       .number()
       .required()
