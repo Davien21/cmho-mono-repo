@@ -41,50 +41,73 @@ interface IProfit {
   amount: string;
 }
 
-const updateStockSchema = yup.object({
-  expiryDate: yup.string().required("Expiry date is required"),
-  costPrice: yup
-    .string()
-    .required("Cost price is required")
-    .test("is-valid-cost", "Cost price must be greater than 0", (value) => {
-      const parsed = parseFloat(value ?? "");
-      return !Number.isNaN(parsed) && parsed > 0;
+const createUpdateStockSchema = (operationType: "add" | "reduce") => {
+  return yup.object({
+    expiryDate: yup.string().when([], {
+      is: operationType === "add",
+      then: (schema) => schema.required("Expiry date is required"),
+      otherwise: (schema) => schema.optional(),
     }),
-  sellingPrice: yup
-    .string()
-    .required("Selling price is required")
-    .test(
-      "is-valid-selling",
-      "Selling price must be greater than 0",
-      (value) => {
-        const parsed = parseFloat(value ?? "");
-        return !Number.isNaN(parsed) && parsed > 0;
-      }
-    ),
-  quantity: yup
-    .array()
-    .of(
-      yup.object({
-        unitId: yup.string().required(),
-        value: yup.string().required(),
-      })
-    )
-    .test(
-      "has-quantity",
-      "Please enter a quantity greater than 0",
-      function (quantityInputs) {
-        if (!quantityInputs || quantityInputs.length === 0) return false;
-        // Check if at least one input has a value greater than 0
-        return quantityInputs.some((input) => {
-          const qty = parseFloat(input.value || "0");
-          return qty > 0;
-        });
-      }
-    )
-    .required("Quantity is required"),
-});
+    costPrice: yup.string().when([], {
+      is: operationType === "add",
+      then: (schema) =>
+        schema
+          .required("Cost price is required")
+          .test(
+            "is-valid-cost",
+            "Cost price must be greater than 0",
+            (value) => {
+              const parsed = parseFloat(value ?? "");
+              return !Number.isNaN(parsed) && parsed > 0;
+            }
+          ),
+      otherwise: (schema) => schema.optional(),
+    }),
+    sellingPrice: yup.string().when([], {
+      is: operationType === "add",
+      then: (schema) =>
+        schema
+          .required("Selling price is required")
+          .test(
+            "is-valid-selling",
+            "Selling price must be greater than 0",
+            (value) => {
+              const parsed = parseFloat(value ?? "");
+              return !Number.isNaN(parsed) && parsed > 0;
+            }
+          ),
+      otherwise: (schema) => schema.optional(),
+    }),
+    quantity: yup
+      .array()
+      .of(
+        yup.object({
+          unitId: yup.string().required(),
+          value: yup.string().required(),
+        })
+      )
+      .test(
+        "has-quantity",
+        "Please enter a quantity greater than 0",
+        function (quantityInputs) {
+          if (!quantityInputs || quantityInputs.length === 0) return false;
+          // Check if at least one input has a value greater than 0
+          return quantityInputs.some((input) => {
+            const qty = parseFloat(input.value || "0");
+            return qty > 0;
+          });
+        }
+      )
+      .required("Quantity is required"),
+  });
+};
 
-type UpdateStockFormValues = yup.InferType<typeof updateStockSchema>;
+type UpdateStockFormValues = {
+  expiryDate?: string;
+  costPrice?: string;
+  sellingPrice?: string;
+  quantity: QuantityInput[];
+};
 
 const getProfitText = (profit: IProfit): string => {
   if (!profit.percent || !profit.amount) return "Unknown";
@@ -110,6 +133,11 @@ export function UpdateStockModal({
     return sortedUnits.map((unit) => ({ unitId: unit.id, value: "0" }));
   }, [localItem]);
 
+  const schema = useMemo(
+    () => createUpdateStockSchema(operationType),
+    [operationType]
+  );
+
   const {
     register,
     handleSubmit,
@@ -118,7 +146,7 @@ export function UpdateStockModal({
     reset,
     formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm<UpdateStockFormValues>({
-    resolver: yupResolver(updateStockSchema),
+    resolver: yupResolver(schema) as any,
     defaultValues: {
       expiryDate: "",
       costPrice: "",
@@ -130,7 +158,7 @@ export function UpdateStockModal({
   const costPrice = watch("costPrice");
   const sellingPrice = watch("sellingPrice");
 
-  // Reset quantity when localItem changes
+  // Reset form when operation type or localItem changes
   useEffect(() => {
     if (!localItem) return;
     const initialQuantity = getInitialQuantity();
@@ -140,7 +168,7 @@ export function UpdateStockModal({
       sellingPrice: "",
       quantity: initialQuantity,
     });
-  }, [localItem, reset, getInitialQuantity]);
+  }, [localItem, operationType, reset, getInitialQuantity]);
 
   const getBaseUnit = () => {
     if (!localItem) return null;
@@ -227,9 +255,15 @@ export function UpdateStockModal({
                 supplierId,
                 name: supplierName,
               },
-        costPrice: parseFloat(values.costPrice),
-        sellingPrice: parseFloat(values.sellingPrice),
-        expiryDate: values.expiryDate,
+        costPrice:
+          operationType === "reduce"
+            ? undefined
+            : parseFloat(values.costPrice || "0"),
+        sellingPrice:
+          operationType === "reduce"
+            ? undefined
+            : parseFloat(values.sellingPrice || "0"),
+        expiryDate: operationType === "reduce" ? undefined : values.expiryDate,
         quantityInBaseUnits:
           operationType === "reduce" ? -totalQuantity : totalQuantity,
       }).unwrap();
@@ -252,12 +286,19 @@ export function UpdateStockModal({
 
   const baseUnit = getBaseUnit();
   const profit = calculateProfit();
+  const currentStock = getTotalStock(localItem);
+  const quantityValues = watch("quantity") || [];
+  const totalInBaseUnits = calculateTotalInBaseUnits(quantityValues);
 
   if (!localItem) return <EmptyState />;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-[550px] max-h-[90vh] overflow-y-auto">
+      <Card
+        className={`w-full max-w-[550px] max-h-[90vh] overflow-y-auto ${
+          operationType === "reduce" ? "border-red-200" : ""
+        }`}
+      >
         <form onSubmit={handleSubmit(onSubmit)} className="p-6">
           <div className="flex items-center justify-between pb-4">
             <div>
@@ -305,96 +346,143 @@ export function UpdateStockModal({
           </div>
 
           <div className="space-y-4">
-            {/* Supplier and Expiry Date */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="inventory-supplier">Supplier (Optional)</Label>
-                <InventorySupplierSelect
-                  id="inventory-supplier"
-                  value={supplierId}
-                  disabled={operationType === "reduce"}
-                  onChange={(supplier) => {
-                    setSupplierId(supplier?.id ?? null);
-                    setSupplierName(supplier?.name ?? null);
-                  }}
-                />
+            {/* Current Stock Display (prominent for reduce mode) */}
+            {operationType === "reduce" && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-red-900">
+                    Current Stock:
+                  </span>
+                  <span className="text-lg font-bold text-red-900">
+                    {currentStock}{" "}
+                    {baseUnit
+                      ? formatUnitName(baseUnit, currentStock)
+                      : "units"}
+                  </span>
+                </div>
               </div>
+            )}
 
-              <div className="space-y-2">
-                <Label htmlFor="expiryDate">Expiry Date *</Label>
-                <Input
-                  id="expiryDate"
-                  type="date"
-                  {...register("expiryDate")}
-                  required
-                />
-                {errors.expiryDate?.message && (
-                  <p className="text-xs text-destructive mt-1">
-                    {errors.expiryDate.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Pricing Section */}
-            <div className="space-y-3">
+            {/* Supplier and Expiry Date - Only show for Add */}
+            {operationType === "add" && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="costPrice">
-                    Cost Price in ₦ (per{" "}
-                    {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                  <Label htmlFor="inventory-supplier">
+                    Supplier (Optional)
                   </Label>
-                  <Input
-                    id="costPrice"
-                    type="number"
-                    step="0.01"
-                    {...register("costPrice")}
-                    placeholder="0.00"
-                    required
+                  <InventorySupplierSelect
+                    id="inventory-supplier"
+                    value={supplierId}
+                    onChange={(supplier) => {
+                      setSupplierId(supplier?.id ?? null);
+                      setSupplierName(supplier?.name ?? null);
+                    }}
                   />
-                  {errors.costPrice?.message && (
-                    <p className="text-xs text-destructive mt-1">
-                      {errors.costPrice.message}
-                    </p>
-                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sellingPrice">
-                    Selling Price in ₦ (per{" "}
-                    {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
-                  </Label>
+                  <Label htmlFor="expiryDate">Expiry Date *</Label>
                   <Input
-                    id="sellingPrice"
-                    type="number"
-                    step="0.01"
-                    {...register("sellingPrice")}
-                    placeholder="0.00"
+                    id="expiryDate"
+                    type="date"
+                    {...register("expiryDate")}
                     required
                   />
-                  {errors.sellingPrice?.message && (
+                  {errors.expiryDate?.message && (
                     <p className="text-xs text-destructive mt-1">
-                      {errors.sellingPrice.message}
+                      {errors.expiryDate.message}
                     </p>
                   )}
                 </div>
               </div>
+            )}
 
-              <p className="text-sm text-muted-foreground">
-                <span className="">Profit: </span>
-                <span className="font-medium text-foreground">
-                  {getProfitText(profit)}
-                </span>
-              </p>
-            </div>
+            {/* Pricing Section - Only show for Add */}
+            {operationType === "add" && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="costPrice">
+                      Cost Price in ₦ (per{" "}
+                      {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                    </Label>
+                    <Input
+                      id="costPrice"
+                      type="number"
+                      step="0.01"
+                      {...register("costPrice")}
+                      placeholder="0.00"
+                      required
+                    />
+                    {errors.costPrice?.message && (
+                      <p className="text-xs text-destructive mt-1">
+                        {errors.costPrice.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sellingPrice">
+                      Selling Price in ₦ (per{" "}
+                      {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                    </Label>
+                    <Input
+                      id="sellingPrice"
+                      type="number"
+                      step="0.01"
+                      {...register("sellingPrice")}
+                      placeholder="0.00"
+                      required
+                    />
+                    {errors.sellingPrice?.message && (
+                      <p className="text-xs text-destructive mt-1">
+                        {errors.sellingPrice.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  <span className="">Profit: </span>
+                  <span className="font-medium text-foreground">
+                    {getProfitText(profit)}
+                  </span>
+                </p>
+              </div>
+            )}
 
             {/* Quantity Section */}
-            <UnitBasedInput
-              control={control}
-              name="quantity"
-              units={localItem.units}
-              error={errors.quantity?.message}
-            />
+            <div className="space-y-2">
+              <UnitBasedInput
+                control={control}
+                name="quantity"
+                label="Quantity *"
+                units={localItem.units}
+                error={errors.quantity?.message}
+              />
+
+              {/* Warning for reduce operations */}
+              {operationType === "reduce" && totalInBaseUnits > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  After reduction:{" "}
+                  <span
+                    className={`font-medium ${
+                      currentStock - totalInBaseUnits < 0
+                        ? "text-destructive"
+                        : "text-foreground"
+                    }`}
+                  >
+                    {Math.max(0, currentStock - totalInBaseUnits)}{" "}
+                    {baseUnit
+                      ? formatUnitName(
+                          baseUnit,
+                          Math.max(0, currentStock - totalInBaseUnits)
+                        )
+                      : "units"}
+                  </span>
+                </p>
+              )}
+            </div>
           </div>
 
           <Separator className="my-6" />

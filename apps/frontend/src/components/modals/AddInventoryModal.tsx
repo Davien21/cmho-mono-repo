@@ -345,7 +345,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
                 control={control}
                 name="lowStockValue"
                 units={units}
-                label="Low Stock Value (Optional)"
+                label="Low Stock Value *"
                 error={errors.lowStockValue?.message}
               />
               <p className="text-xs text-muted-foreground">
