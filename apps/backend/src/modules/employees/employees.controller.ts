@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import employeeService from "./employees.service";
-import { errorResponse, successResponse } from "../../utils/response";
+import { successResponse } from "../../utils/response";
 import banksService from "../banks/banks.service";
 import { IEmployee, IEmployeeBank } from "./employees.types";
 import {
@@ -16,19 +16,15 @@ export async function getEmployees(
   req: Request<{}, {}, {}, GetEmployeesQuerySchema>,
   res: Response
 ) {
-  try {
-    const { sort = "asc", limit = "10", page = "1" } = req.query;
+  const { sort = "asc", limit = "10", page = "1" } = req.query;
 
-    const employees = await employeeService.getEmployees({
-      sort: sort === "desc" ? -1 : 1,
-      limit: parseInt(limit),
-      page: parseInt(page),
-    });
+  const employees = await employeeService.getEmployees({
+    sort: sort === "desc" ? -1 : 1,
+    limit: parseInt(limit),
+    page: parseInt(page),
+  });
 
-    res.send(successResponse("Employees fetched successfully", employees));
-  } catch (error) {
-    res.status(500).send(errorResponse("Failed to fetch employees"));
-  }
+  res.send(successResponse("Employees fetched successfully", employees));
 }
 
 export async function createEmployee(req: Request, res: Response) {

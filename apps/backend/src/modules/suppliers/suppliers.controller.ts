@@ -1,46 +1,30 @@
 import { Request, Response } from "express";
 import suppliersService from "./suppliers.service";
-import { errorResponse, successResponse } from "../../utils/response";
+import { successResponse } from "../../utils/response";
 import { SupplierRequest } from "./suppliers.types";
 
 export async function getSuppliers(_req: Request, res: Response) {
-  try {
-    const suppliers = await suppliersService.list();
-    res.send(successResponse("Suppliers fetched successfully", suppliers));
-  } catch (error) {
-    res.status(500).send(errorResponse("Failed to fetch suppliers"));
-  }
+  const suppliers = await suppliersService.list();
+  res.send(successResponse("Suppliers fetched successfully", suppliers));
 }
 
 export async function createSupplier(req: Request, res: Response) {
-  try {
-    const data = req.body as SupplierRequest;
-    const supplier = await suppliersService.create(data);
-    res.send(successResponse("Supplier created successfully", supplier));
-  } catch (error) {
-    res.status(500).send(errorResponse("Failed to create supplier"));
-  }
+  const data = req.body as SupplierRequest;
+  const supplier = await suppliersService.create(data);
+  res.send(successResponse("Supplier created successfully", supplier));
 }
 
 export async function updateSupplier(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-    const data = req.body as Partial<SupplierRequest>;
+  const { id } = req.params;
+  const data = req.body as Partial<SupplierRequest>;
 
-    const supplier = await suppliersService.update(id, data);
+  const supplier = await suppliersService.update(id, data);
 
-    res.send(successResponse("Supplier updated successfully", supplier));
-  } catch (error) {
-    res.status(500).send(errorResponse("Failed to update supplier"));
-  }
+  res.send(successResponse("Supplier updated successfully", supplier));
 }
 
 export async function deleteSupplier(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-    await suppliersService.delete(id);
-    res.send(successResponse("Supplier deleted successfully"));
-  } catch (error) {
-    res.status(500).send(errorResponse("Failed to delete supplier"));
-  }
+  const { id } = req.params;
+  await suppliersService.delete(id);
+  res.send(successResponse("Supplier deleted successfully"));
 }

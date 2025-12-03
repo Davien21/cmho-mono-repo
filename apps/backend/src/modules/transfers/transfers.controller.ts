@@ -173,21 +173,17 @@ export async function initiateBulkTransfers(req: Request, res: Response) {
  * Get transactions by transfer ID
  */
 export async function getTransactionsByTransferId(req: Request, res: Response) {
-  try {
-    const { transferId } = req.params;
+  const { transferId } = req.params;
 
-    if (!transferId) {
-      throw new BadRequestError("Transfer ID is required");
-    }
-
-    const result = await transactionsService.getTransactionsByTransferId(
-      transferId
-    );
-
-    res.send(successResponse("Transactions retrieved successfully", result));
-  } catch (error: unknown) {
-    throw new BadRequestError("Failed to retrieve transactions");
+  if (!transferId) {
+    throw new BadRequestError("Transfer ID is required");
   }
+
+  const result = await transactionsService.getTransactionsByTransferId(
+    transferId
+  );
+
+  res.send(successResponse("Transactions retrieved successfully", result));
 }
 
 /**

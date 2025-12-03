@@ -24,15 +24,10 @@ export async function handlePaystackWebhook(req: Request, res: Response) {
  * Test webhook endpoint (for development/testing)
  */
 export async function testWebhookEndpoint(req: Request, res: Response) {
-  try {
-    res.json(
-      successResponse("Webhook endpoint is working", {
-        timestamp: new Date().toISOString(),
-        endpoint: "/webhooks/paystack",
-      })
-    );
-  } catch (error) {
-    logger.error(`Webhook test failed: ${error}`);
-    throw new BadRequestError("Webhook test failed");
-  }
+  res.json(
+    successResponse("Webhook endpoint is working", {
+      timestamp: new Date().toISOString(),
+      endpoint: "/webhooks/paystack",
+    })
+  );
 }

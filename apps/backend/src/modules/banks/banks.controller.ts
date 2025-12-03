@@ -33,9 +33,12 @@ export async function getNigerianBanks(_req: Request, res: Response) {
 
     res.send(successResponse("Banks fetched successfully", nigerianBanks));
   } catch (error: unknown) {
-    const axiosError = error as AxiosError;
+    const axiosError = error as AxiosError<{ message: string }>;
 
-    console.error("Failed to fetch banks from Paystack:", axiosError.message);
-    res.send(successResponse("Failed to fetch banks from Paystack"));
+    if (axiosError?.response?.data?.message) {
+      throw new BadRequestError(axiosError.response.data.message);
+    }
+
+    throw new BadRequestError("Failed to fetch banks from Paystack");
   }
 }
