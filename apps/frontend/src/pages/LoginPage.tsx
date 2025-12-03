@@ -19,7 +19,7 @@ export default function LoginPage() {
       await login({ email, password }).unwrap();
 
       navigate("/");
-    } catch (error) {
+    } catch (error: unknown) {
       const errorMessage = getRTKQueryErrorMessage(error);
       if (errorMessage) return toast.error(errorMessage);
 

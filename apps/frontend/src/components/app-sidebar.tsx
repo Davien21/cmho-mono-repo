@@ -7,6 +7,10 @@ import {
   Package,
   History,
   Settings,
+  Ruler,
+  Tags,
+  Truck,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -70,6 +74,28 @@ export const navigationConfig = {
       breadcrumbs: [
         { label: "Inventory", url: "/inventory" },
         { label: "Settings", url: "/inventory/settings" },
+      ],
+      submenu: [
+        {
+          title: "Units",
+          url: "/inventory/settings?section=Units",
+          icon: Ruler,
+        },
+        {
+          title: "Categories",
+          url: "/inventory/settings?section=Categories",
+          icon: Tags,
+        },
+        {
+          title: "Suppliers",
+          url: "/inventory/settings?section=Suppliers",
+          icon: Truck,
+        },
+        {
+          title: "Gallery",
+          url: "/inventory/settings?section=Gallery",
+          icon: ImageIcon,
+        },
       ],
     },
     {

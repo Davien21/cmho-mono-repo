@@ -8,12 +8,16 @@ type SignUpModalData = undefined;
 type AddEmployeeModalData = IAddEmployeeRequest | undefined;
 type UpdateEmployeeModalData = IEmployee;
 type ConfirmationDialogData = IConfirmationDialog;
+type FailedUploadsModalData = {
+  failedFiles: Array<{ file: File; preview: string }>;
+};
 
 export type ModalDataMap = {
   "sign-up": SignUpModalData;
   "employee-form": AddEmployeeModalData;
   "confirmation-dialog": ConfirmationDialogData;
   "update-employee": UpdateEmployeeModalData;
+  "failed-uploads": FailedUploadsModalData;
 };
 
 type ModalState<T> = { isOpen: boolean; data?: T };

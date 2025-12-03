@@ -1,4 +1,4 @@
-import { AlertTriangle, Info } from "lucide-react";
+import { AlertTriangle, Info, Loader2 } from "lucide-react";
 import type { IConfirmationDialog } from "@/types";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { useModalContext } from "@/contexts/modal-context";
@@ -28,16 +28,27 @@ export default function ConfirmationDialog() {
   const modal = modals["confirmation-dialog"] || { isOpen: false };
 
   const handleClose = () => {
+    const { isLoading = false } = modal?.data || {};
+    // Prevent closing during loading
+    if (isLoading) return;
     closeModal("confirmation-dialog");
   };
 
-  const { title, message, onConfirm, onCancel, type } = modal?.data || {};
+  const { title, message, onConfirm, onCancel, type, isLoading = false } =
+    modal?.data || {};
 
   const icon = getIcon(type);
   const buttonColors = getButtonColors(type);
 
   return (
-    <ResponsiveDialog.Root open={modal.isOpen} onOpenChange={handleClose}>
+    <ResponsiveDialog.Root
+      open={modal.isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isLoading) {
+          handleClose();
+        }
+      }}
+    >
       <ResponsiveDialog.Portal>
         <ResponsiveDialog.Overlay />
         <ResponsiveDialog.Content className="max-w-sm w-full">
@@ -54,14 +65,17 @@ export default function ConfirmationDialog() {
           <ResponsiveDialog.Footer className="flex gap-3 mt-6">
             <button
               onClick={onCancel ?? handleClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className={`flex-1 px-4 py-2 text-white rounded-lg transition-colors font-medium ${buttonColors}`}
+              disabled={isLoading}
+              className={`flex-1 px-4 py-2 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${buttonColors}`}
             >
+              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               Confirm
             </button>
           </ResponsiveDialog.Footer>

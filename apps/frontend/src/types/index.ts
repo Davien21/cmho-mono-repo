@@ -21,6 +21,7 @@ export interface IConfirmationDialog {
   onConfirm: () => void;
   onCancel?: () => void;
   type?: IConfirmationDialogType;
+  isLoading?: boolean;
 }
 
 export interface IBank {
