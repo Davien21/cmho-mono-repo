@@ -20,12 +20,20 @@ const schema = z.object({
   PORT: z.coerce.number(),
   DATABASE_URL: z.string().includes("mongodb"),
   JWT_SECRET_KEY: z.string(),
+  // Cookie Config
   COOKIE_CONFIG: z.object({
     httpOnly: z.boolean(),
-    domain: z.string(),
+    domain: z.string().optional(),
     secure: z.boolean(),
     sameSite: z.enum(["strict", "lax", "none"]),
   }),
+  // Cloudinary Config
+  CLOUDINARY_CONFIG: z.object({
+    cloud_name: z.string(),
+    api_key: z.string(),
+    api_secret: z.string(),
+  }),
+  CLOUDINARY_FOLDER: z.string(),
   CLIENT_URL: z.string(),
   // Paystack Config
   PAYSTACK_SECRET_KEY: z.string(),
@@ -65,6 +73,13 @@ const common = {
   DATABASE_URL: process.env.DATABASE_URL,
   CLIENT_URL,
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+  // Cloudinary Config
+  CLOUDINARY_CONFIG: {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  },
+  // Cookie Config (default - will be overridden per environment)
   COOKIE_CONFIG: {
     httpOnly: false,
     domain: "localhost",
@@ -79,12 +94,23 @@ const common = {
 
 const development: z.infer<typeof schema> = {
   ...common,
+  CLOUDINARY_FOLDER: `${common.APP_NAME}_dev`,
   NODE_ENV: "development",
   DATABASE_URL: `mongodb://localhost:27017/${common.APP_NAME}`,
+  // Cookie Config for development - allows access from localhost and IP addresses
+  COOKIE_CONFIG: {
+    httpOnly: false,
+    // Omit domain to allow cookies on localhost and IP addresses 
+    domain: undefined,
+    secure: false,
+    // Use "lax" instead of "strict" to allow cookies when accessing via IP address
+    sameSite: "lax" as const,
+  },
 };
 
 const test: z.infer<typeof schema> = {
   ...common,
+  CLOUDINARY_FOLDER: `${common.APP_NAME}_test`,
   NODE_ENV: "test",
   DATABASE_URL: `mongodb://localhost:27017/${common.APP_NAME}_test`,
   PORT: 3002,
@@ -93,6 +119,7 @@ const test: z.infer<typeof schema> = {
 const production: z.infer<typeof schema> = {
   ...common,
   NODE_ENV: "production",
+  CLOUDINARY_FOLDER: `${common.APP_NAME}_prod`,
   CLIENT_URL,
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
   COOKIE_CONFIG: {
