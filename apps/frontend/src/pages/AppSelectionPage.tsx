@@ -45,8 +45,9 @@ export default function AppSelectionPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 relative">
       <div className="max-w-7xl mx-auto relative">
-        {/* Logout button - top right */}
-        <div className="absolute top-6 right-6">
+        {/* Header - CMHO on left, Logout on right */}
+        <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+          <h1 className="text-xl font-bold text-gray-900">CMHO</h1>
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
@@ -58,12 +59,7 @@ export default function AppSelectionPage() {
         </div>
 
         {/* Main content */}
-        <div className=" mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-24 sm:pb-16">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">Welcome to CMHO</h1>
-            <p className="text-gray-600 text-base sm:text-lg">Select an application to continue</p>
-          </div>
-
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-24 sm:pb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {apps.map((app) => {
               const Icon = app.icon;
@@ -94,20 +90,23 @@ export default function AppSelectionPage() {
                   onClick={() => handleAppSelect(app)}
                 >
                   <div className="flex flex-col h-full">
-                    <div
-                      className={`w-16 h-16 ${colors.bg} rounded-2xl flex items-center justify-center mb-6`}
-                    >
-                      <Icon className={`w-8 h-8 ${colors.text}`} />
+                    {/* Icon and name side by side */}
+                    <div className="flex items-center gap-4 mb-4">
+                      <div
+                        className={`w-16 h-16 ${colors.bg} rounded-2xl flex items-center justify-center flex-shrink-0`}
+                      >
+                        <Icon className={`w-8 h-8 ${colors.text}`} />
+                      </div>
+                      <h2
+                        className={`text-2xl font-bold ${
+                          app.available ? 'text-gray-900' : 'text-gray-500'
+                        }`}
+                      >
+                        {app.name}
+                      </h2>
                     </div>
 
-                    <h2
-                      className={`text-2xl font-bold mb-2 ${
-                        app.available ? 'text-gray-900' : 'text-gray-500'
-                      }`}
-                    >
-                      {app.name}
-                    </h2>
-
+                    {/* Description below */}
                     <p className="text-gray-600 mb-8 flex-grow text-sm">{app.description}</p>
 
                     {app.available ? (

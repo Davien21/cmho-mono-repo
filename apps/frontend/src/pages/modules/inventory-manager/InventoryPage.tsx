@@ -100,9 +100,10 @@ export default function InventoryPage() {
           />
         )}
 
-        {showAddForm && (
-          <AddInventoryModal onClose={() => setShowAddForm(false)} />
-        )}
+        <AddInventoryModal
+          open={showAddForm}
+          onOpenChange={setShowAddForm}
+        />
 
         {showEditModal && selectedItem && (
           <EditInventoryModal
