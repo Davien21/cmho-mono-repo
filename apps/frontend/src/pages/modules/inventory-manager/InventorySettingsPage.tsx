@@ -404,7 +404,8 @@ export default function InventorySettingsPage() {
                     Inventory Categories
                   </CardTitle>
                   <CardDescription>
-                    Group items so they&apos;re easier to browse and report on.
+                    Categories are simply the type of items that you stock up
+                    on.
                   </CardDescription>
                 </div>
                 <Button

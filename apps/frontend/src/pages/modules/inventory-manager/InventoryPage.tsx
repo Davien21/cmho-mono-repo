@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
 import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
@@ -73,17 +71,13 @@ export default function InventoryPage() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div>
           <h2 className="text-lg font-semibold text-gray-900">
             Inventory Items
             <span className="ml-2 text-sm font-normal text-gray-500">
               ({items.length} {items.length === 1 ? "item" : "items"})
             </span>
           </h2>
-          <Button onClick={() => setShowAddForm(true)} size="lg">
-            <Plus className="h-5 w-5 mr-2" />
-            Add Item
-          </Button>
         </div>
 
         {isLoading ? (
@@ -97,20 +91,21 @@ export default function InventoryPage() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onViewStockEntries={handleViewStockEntries}
+            onAddItem={() => setShowAddForm(true)}
           />
         )}
 
-        <AddInventoryModal
-          open={showAddForm}
-          onOpenChange={setShowAddForm}
-        />
+        <AddInventoryModal open={showAddForm} onOpenChange={setShowAddForm} />
 
-        {showEditModal && selectedItem && (
+        {selectedItem && (
           <EditInventoryModal
             item={selectedItem}
-            onClose={() => {
-              setShowEditModal(false);
-              setSelectedItem(null);
+            open={showEditModal}
+            onOpenChange={(open) => {
+              setShowEditModal(open);
+              if (!open) {
+                setSelectedItem(null);
+              }
             }}
           />
         )}

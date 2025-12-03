@@ -7,6 +7,7 @@ import {
   Edit2,
   Trash2,
   PackageOpen,
+  Plus,
 } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -27,6 +28,7 @@ interface InventoryListProps {
   onEdit: (item: InventoryItem) => void;
   onDelete: (item: InventoryItem) => void;
   onViewStockEntries: (item: InventoryItem) => void;
+  onAddItem: () => void;
 }
 
 type DisplayMode = "full" | "skipOne" | "baseOnly";
@@ -37,6 +39,7 @@ export function InventoryList({
   onEdit,
   onDelete,
   onViewStockEntries,
+  onAddItem,
 }: InventoryListProps) {
   const [search, setSearch] = useState("");
   // Track display mode per item
@@ -203,14 +206,20 @@ export function InventoryList({
 
   return (
     <div className="space-y-4">
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search items..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
+      <div className="flex items-center gap-3 justify-between">
+        <div className="relative flex-1 sm:max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search items..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Button onClick={onAddItem} className="sm:flex-shrink-0">
+          <Plus className="h-5 w-5 sm:mr-2" />
+          <span className="hidden sm:inline">Add Item</span>
+        </Button>
       </div>
 
       {filteredItems.length === 0 ? (
@@ -252,61 +261,63 @@ export function InventoryList({
                       {item.status}
                     </Badge>
                   </div>
-                  <div className="mb-3 space-y-1">
-                    <p className="text-sm text-gray-500">
-                      Stock:{" "}
-                      <InventoryQtyLevelBadge
-                        low={isLowStock(item)}
-                        onClick={() => toggleDisplayMode(item.id)}
-                        title="Click to toggle display format"
-                      >
-                        {getFormattedStock(item)}
-                      </InventoryQtyLevelBadge>
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Earliest Expiry:{" "}
-                      <Badge
-                        className={
-                          isExpiringSoon(item)
-                            ? "bg-red-100 text-red-800 hover:bg-red-200"
-                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                        }
-                      >
-                        {formatExpiryDate(getEarliestExpiry(item))}
-                      </Badge>
-                    </p>
-                  </div>
-                  <div className="flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onUpdateStock(item)}>
-                          <PackagePlus className="mr-2 h-4 w-4" />
-                          Update Stock
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onViewStockEntries(item)}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm text-gray-500">
+                        Stock:{" "}
+                        <InventoryQtyLevelBadge
+                          low={isLowStock(item)}
+                          onClick={() => toggleDisplayMode(item.id)}
+                          title="Click to toggle display format"
                         >
-                          <PackageOpen className="mr-2 h-4 w-4" />
-                          View Stock Changes
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onEdit(item)}>
-                          <Edit2 className="mr-2 h-4 w-4" />
-                          Edit Item
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onDelete(item)}
-                          className="text-red-600 focus:text-red-600"
+                          {getFormattedStock(item)}
+                        </InventoryQtyLevelBadge>
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Earliest Expiry:{" "}
+                        <Badge
+                          className={
+                            isExpiringSoon(item)
+                              ? "bg-red-100 text-red-800 hover:bg-red-200"
+                              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                          }
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Item
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          {formatExpiryDate(getEarliestExpiry(item))}
+                        </Badge>
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => onUpdateStock(item)}>
+                            <PackagePlus className="mr-2 h-4 w-4" />
+                            Update Stock
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onViewStockEntries(item)}
+                          >
+                            <PackageOpen className="mr-2 h-4 w-4" />
+                            View Stock Changes
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onEdit(item)}>
+                            <Edit2 className="mr-2 h-4 w-4" />
+                            Edit Item
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onDelete(item)}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete Item
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
               ))}

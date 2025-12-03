@@ -362,6 +362,7 @@ export function AddInventoryModal({
               <Button
                 type="button"
                 variant="outline"
+                size="lg"
                 onClick={handleClose}
                 className="w-full sm:w-auto"
               >
@@ -369,6 +370,7 @@ export function AddInventoryModal({
               </Button>
               <Button
                 type="submit"
+                size="lg"
                 className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800"
                 disabled={isSubmitting}
               >
