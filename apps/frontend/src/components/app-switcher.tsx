@@ -42,9 +42,9 @@ export function AppSwitcher({
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-blue-600 text-white">
                 <currentApp.icon className="size-4" />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-base leading-tight">
                 <span className="truncate font-semibold">CMHO</span>
-                <span className="truncate text-xs">{currentApp.name}</span>
+                <span className="truncate text-sm">{currentApp.name}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>

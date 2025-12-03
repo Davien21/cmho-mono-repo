@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useGetCurrentUserQuery } from "@/store/auth-slice"
 
 export function NavUser({
   onLogout,
@@ -16,6 +17,9 @@ export function NavUser({
   onLogout: () => void
   isLoggingOut: boolean
 }) {
+  const { data: userResponse, isLoading } = useGetCurrentUserQuery();
+  const user = userResponse?.data;
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -27,8 +31,12 @@ export function NavUser({
             <User2 className="size-4" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">Admin</span>
-            <span className="truncate text-xs">admin@cmho.com</span>
+            <span className="truncate font-semibold">
+              {isLoading ? "Loading..." : user?.name || "Admin"}
+            </span>
+            <span className="truncate text-xs">
+              {isLoading ? "..." : user?.email || "admin@cmho.com"}
+            </span>
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>
