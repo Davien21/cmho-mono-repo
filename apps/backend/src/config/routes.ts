@@ -13,6 +13,8 @@ import inventoryCategoriesRouter from "../modules/inventory-categories/inventory
 import inventoryItemsRouter from "../modules/inventory-items/inventory-items.router";
 import stockEntriesRouter from "../modules/stock-entries/stock-entries.router";
 import suppliersRouter from "../modules/suppliers/suppliers.router";
+import mediaRouter from "../modules/media/media.router";
+import galleryRouter from "../modules/gallery/gallery.router";
 
 router.use(authRouter);
 router.use(banksRouter);
@@ -26,5 +28,7 @@ router.use(inventoryCategoriesRouter);
 router.use(inventoryItemsRouter);
 router.use(stockEntriesRouter);
 router.use(suppliersRouter);
+router.use(mediaRouter);
+router.use(galleryRouter);
 
 export default router;
