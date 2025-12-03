@@ -9,7 +9,7 @@ export default function AppSelectionPage() {
   const apps = [
     {
       id: 'salary',
-      name: 'CMHO Salary',
+      name: 'CMHO Admin Manager',
       description: 'Manage employee salaries and payments',
       icon: Wallet,
       path: '/salary',

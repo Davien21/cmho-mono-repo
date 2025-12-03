@@ -11,6 +11,7 @@ import {
   Tags,
   Truck,
   Image as ImageIcon,
+  Shield,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -30,7 +31,7 @@ import { useLogoutMutation } from "@/store/auth-slice";
 export const navigationConfig = {
   apps: [
     {
-      name: "Salary Manager",
+      name: "Admin Manager",
       path: "/salary",
       icon: Wallet,
     },
@@ -58,6 +59,12 @@ export const navigationConfig = {
       url: "/salary/payments",
       icon: ArrowRightLeft,
       breadcrumbs: [{ label: "Payment History", url: "/salary/payments" }],
+    },
+    {
+      title: "Admins",
+      url: "/salary/admins",
+      icon: Shield,
+      breadcrumbs: [{ label: "Admins", url: "/salary/admins" }],
     },
   ],
   inventoryNav: [
