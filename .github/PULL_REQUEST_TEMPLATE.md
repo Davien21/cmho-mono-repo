@@ -1,4 +1,4 @@
-# Pull Request 
+# Pull Request
 
 ## :spiral_notepad: Description
 
@@ -6,7 +6,7 @@ Briefly describe what you did and provide any needed explanation, maybe add a gi
 
 ## :ticket: Github issue link
 
-https://github.com/Davien21/cmho-mono-repo/issues/1 
+https://github.com/Davien21/cmho-mono-repo/issues/1
 
 ## :pencil2: Changes
 
@@ -16,4 +16,3 @@ https://github.com/Davien21/cmho-mono-repo/issues/1
 ## :camera_flash: Screenshots
 
 jpeg.png
-

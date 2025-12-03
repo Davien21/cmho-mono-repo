@@ -30,7 +30,7 @@
    - [ ] Design better UI/UX for displaying item name
    - [ ] Implement improved item name presentation
 
-5. **Update low stock value input UX to match quantity input pattern**
+5. **Update low stock value input UX to match quantity input pattern** - ✅
 
    - Currently, low stock value uses a simple number input in AddInventoryModal and EditInventoryModal
    - Should match the quantity input UX pattern from UpdateStockModal (multiple unit inputs with "+" separators)
@@ -95,6 +95,28 @@
      - [ ] If hybrid: Implement the chosen restrictions/warnings
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
+
+9. **Fix unit and categories edit mode**
+
+   - Currently, units and categories use inline editing (forms appear directly in the list)
+   - This may have UX issues or inconsistencies compared to the supplier edit mode (which uses a modal)
+   - [ ] Review current inline edit implementation in UnitsSection and CategoriesSection
+   - [ ] Compare with supplier edit mode (modal-based) to determine best approach
+   - [ ] Fix any issues with the edit mode (validation, error handling, UX, etc.)
+   - [ ] Consider consistency: Should all three (units, categories, suppliers) use the same edit pattern?
+   - [ ] Test edit functionality thoroughly
+
+10. **Improve text and icon sizes for better readability and mobile usability**
+
+   - Text and icons should be larger and more readable, especially on mobile devices
+   - Larger touch targets make it easier to click/tap on mobile
+   - [ ] Review current text sizes across the application (especially in InventorySettingsPage and related components)
+   - [ ] Review icon sizes (lucide-react icons, custom icons, etc.)
+   - [ ] Increase font sizes for better readability on mobile
+   - [ ] Increase icon sizes to match larger text and provide better touch targets
+   - [ ] Ensure buttons and interactive elements have adequate padding for mobile tapping
+   - [ ] Test on mobile devices to verify improved usability
+   - [ ] Consider responsive sizing: larger on mobile, appropriate on desktop
 
 ## Backend Features
 
