@@ -20,5 +20,7 @@ export const baseApi = createApi({
     TagTypes.INVENTORY_ITEMS,
     TagTypes.STOCK_ENTRIES,
     TagTypes.SUPPLIERS,
+    TagTypes.MEDIA,
+    TagTypes.GALLERY,
   ],
 });

@@ -8,4 +8,6 @@ export enum TagTypes {
    INVENTORY_ITEMS = "Inventory_Items",
    STOCK_ENTRIES = "Stock_Entries",
   SUPPLIERS = "Suppliers",
+  MEDIA = "Media",
+  GALLERY = "Gallery",
 }
