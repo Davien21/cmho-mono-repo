@@ -120,8 +120,8 @@ export function UnitBasedInput<T extends FieldValues>({
                   const input = quantityInputs.find(
                     (qi) => qi.unitId === unit.id
                   );
-                  const inputValue = input?.value || "0";
-                  const displayName = formatUnitName(unit, inputValue);
+                  const inputValue = input?.value ?? "";
+                  const displayName = formatUnitName(unit, inputValue || "0");
 
                   return (
                     <div key={unit.id} className="flex items-center gap-3">

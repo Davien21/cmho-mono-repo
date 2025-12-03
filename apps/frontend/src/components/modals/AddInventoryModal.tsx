@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -13,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Card } from "../ui/card";
 import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
 import {
   InventoryCategory,
@@ -31,9 +29,11 @@ import {
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 import { UnitBasedInput } from "@/components/UnitBasedInput";
+import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 
 interface AddInventoryModalProps {
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 interface QuantityInput {
@@ -61,7 +61,13 @@ const inventoryItemSchema = yup.object({
 
 type InventoryItemFormValues = yup.InferType<typeof inventoryItemSchema>;
 
-export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
+export function AddInventoryModal({
+  open,
+  onOpenChange,
+}: AddInventoryModalProps) {
+  const handleClose = () => {
+    onOpenChange(false);
+  };
   const { data: unitsResponse } = useGetInventoryUnitsQuery();
   const { data: categoriesResponse } = useGetInventoryCategoriesQuery();
   const [createInventoryItem] = useCreateInventoryItemMutation();
@@ -242,7 +248,7 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
 
       await createInventoryItem(payload).unwrap();
       toast.success("Inventory item created successfully");
-      onClose();
+      handleClose();
     } catch (error: unknown) {
       const message =
         getRTKQueryErrorMessage(error) ||
@@ -252,122 +258,126 @@ export function AddInventoryModal({ onClose }: AddInventoryModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-[550px] max-h-[90vh] overflow-y-auto">
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-          <div className="flex items-center justify-between pb-4">
-            <h2 className="text-2xl font-bold">Create Inventory Item</h2>
-            <div className="flex items-center gap-3">
-              <Controller
-                name="setupStatus"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(value) =>
-                      field.onChange(value as InventoryStatus)
-                    }
-                  >
-                    <SelectTrigger
-                      className={`w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
-                        field.value === "ready"
-                          ? "bg-green-100 text-green-800 hover:bg-green-200"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="ready">Ready</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
+    <ResponsiveDialog.Root open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialog.Portal>
+        <ResponsiveDialog.Overlay />
+        <ResponsiveDialog.Content className="max-w-[550px] w-full max-h-[90vh] overflow-y-auto">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <ResponsiveDialog.Header className="px-0 xl:pr-10">
+              <div className="flex items-center justify-between gap-3">
+                <ResponsiveDialog.Title className="text-xl sm:text-2xl font-bold">
+                  Create Inventory Item
+                </ResponsiveDialog.Title>
+                <div className="flex items-center gap-3">
+                  <Controller
+                    name="setupStatus"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) =>
+                          field.onChange(value as InventoryStatus)
+                        }
+                      >
+                        <SelectTrigger
+                          className={`min-w-[90px] w-full sm:w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
+                            field.value === "ready"
+                              ? "bg-green-100 text-green-800 hover:bg-green-200"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="ready">Ready</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+              </div>
+            </ResponsiveDialog.Header>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name *</Label>
+                  <Input
+                    id="name"
+                    {...register("name")}
+                    placeholder="e.g., Paracetamol 500mg"
+                    className="text-base"
+                  />
+                  {errors.name?.message && (
+                    <p className="text-xs text-destructive mt-1">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="inventory-category">Category</Label>
+                  <Controller
+                    name="inventoryCategory"
+                    control={control}
+                    render={({ field }) => (
+                      <InventoryCategorySelect
+                        id="inventory-category"
+                        value={field.value}
+                        onChange={(v) => field.onChange(v as InventoryCategory)}
+                        errorMessage={errors.inventoryCategory?.message}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <UnitGroupingBuilder
+                units={units}
+                onChange={setUnits}
+                initialUnits={initialUnits}
+                presets={unitsPresets}
               />
+            </div>
+
+            {units.length > 0 && (
+              <div className="space-y-2">
+                <UnitBasedInput
+                  control={control}
+                  name="lowStockValue"
+                  units={units}
+                  label="Low Stock Value *"
+                  error={errors.lowStockValue?.message}
+                />
+                <p className="text-xs text-muted-foreground hidden md:block">
+                  We will alert you when stock falls below this value
+                </p>
+              </div>
+            )}
+
+            <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-6 border-t px-0">
               <Button
                 type="button"
-                variant="ghost"
-                className="h-8 w-8 p-0 bg-gray-100"
-                onClick={onClose}
+                variant="outline"
+                onClick={handleClose}
+                className="w-full sm:w-auto"
               >
-                <X className="h-5 w-5 text-gray-700" />
+                Cancel
               </Button>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
-                <Input
-                  id="name"
-                  {...register("name")}
-                  placeholder="e.g., Paracetamol 500mg"
-                  className="text-base"
-                />
-                {errors.name?.message && (
-                  <p className="text-xs text-destructive mt-1">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="inventory-category">Category</Label>
-                <Controller
-                  name="inventoryCategory"
-                  control={control}
-                  render={({ field }) => (
-                    <InventoryCategorySelect
-                      id="inventory-category"
-                      value={field.value}
-                      onChange={(v) => field.onChange(v as InventoryCategory)}
-                      errorMessage={errors.inventoryCategory?.message}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <UnitGroupingBuilder
-              units={units}
-              onChange={setUnits}
-              initialUnits={initialUnits}
-              presets={unitsPresets}
-            />
-          </div>
-
-          {units.length > 0 && (
-            <div className="space-y-2">
-              <UnitBasedInput
-                control={control}
-                name="lowStockValue"
-                units={units}
-                label="Low Stock Value *"
-                error={errors.lowStockValue?.message}
-              />
-              <p className="text-xs text-muted-foreground">
-                Alert when stock falls below this value
-              </p>
-            </div>
-          )}
-
-          <div className="flex gap-3 justify-end pt-6 border-t">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="bg-gray-900 hover:bg-gray-800"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Saving..." : "Save Item"}
-            </Button>
-          </div>
-        </form>
-      </Card>
-    </div>
+              <Button
+                type="submit"
+                className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Saving..." : "Save Item"}
+              </Button>
+            </ResponsiveDialog.Footer>
+          </form>
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog.Portal>
+    </ResponsiveDialog.Root>
   );
 }

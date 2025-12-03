@@ -237,7 +237,8 @@ export function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              Alert when stock falls below this value (in base units)
+              We will alert you when stock falls below this value (in base
+              units)
             </p>
           </div>
 
