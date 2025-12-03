@@ -10,4 +10,5 @@ export enum TagTypes {
   SUPPLIERS = "Suppliers",
   MEDIA = "Media",
   GALLERY = "Gallery",
+  ADMIN = "Admin",
 }

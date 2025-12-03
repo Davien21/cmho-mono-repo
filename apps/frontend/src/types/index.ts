@@ -130,3 +130,18 @@ export interface IGetTransfersParams {
   limit?: number;
   sort?: ESortOrder;
 }
+
+export enum AdminRole {
+  INVENTORY_MANAGER = "INVENTORY_MANAGER",
+}
+
+export interface IAdmin {
+  _id: string;
+  name: string;
+  email: string;
+  isSuperAdmin: boolean;
+  roles: string[];
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

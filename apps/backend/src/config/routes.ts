@@ -15,6 +15,7 @@ import stockEntriesRouter from "../modules/stock-entries/stock-entries.router";
 import suppliersRouter from "../modules/suppliers/suppliers.router";
 import mediaRouter from "../modules/media/media.router";
 import galleryRouter from "../modules/gallery/gallery.router";
+import adminsRouter from "../modules/admins/admins.router";
 
 router.use(authRouter);
 router.use(banksRouter);
@@ -30,5 +31,6 @@ router.use(stockEntriesRouter);
 router.use(suppliersRouter);
 router.use(mediaRouter);
 router.use(galleryRouter);
+router.use(adminsRouter);
 
 export default router;

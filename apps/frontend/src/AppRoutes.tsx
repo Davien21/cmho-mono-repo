@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import NotFoundPage from '@/pages/modules/salary-manager/NotFoundPage';
 import EmployeesPage from '@/pages/modules/salary-manager/EmployeesPage';
 import DashboardPage from '@/pages/modules/salary-manager/DashboardPage';
+import AdminsPage from '@/pages/modules/salary-manager/AdminsPage';
 import LoginPage from '@/pages/LoginPage';
 import PaymentHistoryPage from '@/pages/modules/salary-manager/PaymentHistoryPage';
 import TransferDetailsPage from '@/pages/modules/salary-manager/TransferDetailsPage';
@@ -29,6 +30,7 @@ export const AppRoutes = () => {
       <Route path="/salary/employees" element={<EmployeesPage />} />
       <Route path="/salary/payments" element={<PaymentHistoryPage />} />
       <Route path="/salary/payments/:id" element={<TransferDetailsPage />} />
+      <Route path="/salary/admins" element={<AdminsPage />} />
       <Route path="/inventory" element={<InventoryPage />} />
       <Route path="/inventory/settings" element={<InventorySettingsPage />} />
       <Route path="/inventory/stock" element={<StockChangesPage />} />

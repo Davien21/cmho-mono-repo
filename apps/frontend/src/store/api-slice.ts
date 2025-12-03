@@ -22,5 +22,6 @@ export const baseApi = createApi({
     TagTypes.SUPPLIERS,
     TagTypes.MEDIA,
     TagTypes.GALLERY,
+    TagTypes.ADMIN,
   ],
 });

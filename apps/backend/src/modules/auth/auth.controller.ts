@@ -17,8 +17,7 @@ class AuthController {
 
     const admin = await adminService.findByEmail(credentials.email);
 
-    if (!admin)
-      throw new UnAuthorizedError("Invalid Email or Password");
+    if (!admin) throw new UnAuthorizedError("Invalid Email or Password");
 
     const isValidPassword = await authService.validatePassword(
       credentials.password,
@@ -51,6 +50,25 @@ class AuthController {
 
   async verifyAccess(_req: Request, res: Response) {
     res.send(successResponse("User verified successfully"));
+  }
+
+  async getCurrentUser(req: Request, res: Response) {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      throw new UnAuthorizedError("User not authenticated");
+    }
+
+    const admin = await adminService.findById(userId);
+
+    if (!admin) {
+      throw new UnAuthorizedError("User not found");
+    }
+
+    const adminObject = admin.toObject();
+    const { passwordHash, __v, ...safeAdmin } = adminObject;
+
+    res.send(successResponse("User retrieved successfully", safeAdmin));
   }
 }
 
