@@ -102,7 +102,7 @@ const development: z.infer<typeof schema> = {
   // Cookie Config for development - allows access from localhost and IP addresses
   COOKIE_CONFIG: {
     httpOnly: false,
-    // Omit domain to allow cookies on localhost and IP addresses 
+    // Omit domain to allow cookies on localhost and IP addresses
     domain: undefined,
     secure: false,
     // Use "lax" instead of "strict" to allow cookies when accessing via IP address
