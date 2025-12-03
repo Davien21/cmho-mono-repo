@@ -8,17 +8,18 @@ interface Env {
   API_BASE_URL: string;
 }
 
-const env: Env = {
-  API_BASE_URL: import.meta.env.PUBLIC_API_BASE_URL || "",
+// Auto-detect API base URL based on current hostname in development
+// In production: use env variable
+const getApiBaseUrl = (): string => {
+  const hostname = window.location.hostname;
+  if (import.meta.env.DEV) return `http://${hostname}:3001/api/v1`;
+
+  return import.meta.env.PUBLIC_API_BASE_URL || "";
 };
 
-// Debug logging (only in development)
-if (import.meta.env.DEV || import.meta.env.MODE === "development") {
-  console.log("Environment variables:", {
-    API_BASE_URL: env.API_BASE_URL,
-    "import.meta.env": import.meta.env,
-  });
-}
+const env: Env = {
+  API_BASE_URL: getApiBaseUrl(),
+};
 
 // Validate required environment variables
 const requiredVars: (keyof Env)[] = ["API_BASE_URL"];

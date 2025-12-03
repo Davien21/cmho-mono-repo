@@ -5,7 +5,6 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
-import mongoose from "mongoose";
 
 import { NotFoundError } from "../src/config/errors";
 import errorMiddleware from "../src/middlewares/error";
