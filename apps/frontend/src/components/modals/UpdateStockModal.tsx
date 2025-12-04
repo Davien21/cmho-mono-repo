@@ -6,8 +6,6 @@ import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Card } from "../ui/card";
-import { Separator } from "../ui/separator";
 import {
   Select,
   SelectContent,
@@ -25,10 +23,13 @@ import {
 import { toast } from "sonner";
 import { InventorySupplierSelect } from "@/components/InventorySupplierSelect";
 import { UnitBasedInput } from "@/components/UnitBasedInput";
+import { ResponsiveDialog } from "@/components/ResponsiveDialog";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface UpdateStockModalProps {
   inventoryItem: InventoryItem;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 interface QuantityInput {
@@ -116,8 +117,10 @@ const getProfitText = (profit: IProfit): string => {
 
 export function UpdateStockModal({
   inventoryItem,
-  onClose,
+  open,
+  onOpenChange,
 }: UpdateStockModalProps) {
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const [localItem] = useState<InventoryItem | null>(inventoryItem);
   const [operationType, setOperationType] = useState<"add" | "reduce">("add");
   const [supplierId, setSupplierId] = useState<string | null>(null);
@@ -275,7 +278,7 @@ export function UpdateStockModal({
           ? "Stock added successfully"
           : "Stock reduced successfully";
       toast.success(successMessage);
-      onClose();
+      onOpenChange(false);
     } catch (error: unknown) {
       const message =
         getRTKQueryErrorMessage(error) ||
@@ -290,62 +293,73 @@ export function UpdateStockModal({
   const quantityValues = watch("quantity") || [];
   const totalInBaseUnits = calculateTotalInBaseUnits(quantityValues);
 
-  if (!localItem) return <EmptyState />;
+  if (!localItem) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card
-        className={`w-full max-w-[550px] max-h-[90vh] overflow-y-auto ${
-          operationType === "reduce" ? "border-red-200" : ""
-        }`}
-      >
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6">
-          <div className="flex items-center justify-between pb-4">
-            <div>
-              <h2 className="text-2xl font-bold">Update Stock</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {inventoryItem.name}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Select
-                value={operationType}
-                onValueChange={(value) => {
-                  const op = value as "add" | "reduce";
-                  setOperationType(op);
-                  // Supplier is only relevant when adding stock, so clear it when reducing
-                  if (op === "reduce") {
-                    setSupplierId(null);
-                    setSupplierName(null);
-                  }
-                }}
-              >
-                <SelectTrigger
-                  className={`w-[140px] h-9 text-sm font-medium border-0 shadow-none ${
-                    operationType === "add"
-                      ? "bg-green-100 text-green-800 hover:bg-green-200"
-                      : "bg-red-100 text-red-800 hover:bg-red-200"
-                  }`}
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="add">Add Stock</SelectItem>
-                  <SelectItem value="reduce">Reduce Stock</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                type="button"
-                variant="ghost"
-                className="h-8 w-8 p-0 bg-gray-100"
-                onClick={onClose}
-              >
-                <X className="h-5 w-5 text-gray-700" />
-              </Button>
-            </div>
-          </div>
+    <ResponsiveDialog.Root open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialog.Portal>
+        <ResponsiveDialog.Overlay />
+        <ResponsiveDialog.Content
+          className={`max-w-[550px] w-full max-h-[90vh] flex flex-col ${
+            operationType === "reduce" ? "border-red-200" : ""
+          }`}
+        >
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col flex-1 min-h-0"
+          >
+            <ResponsiveDialog.Header className="px-0 flex-shrink-0">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <ResponsiveDialog.Title className="text-2xl sm:text-2xl font-bold">
+                    Update Stock
+                  </ResponsiveDialog.Title>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {inventoryItem.name}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Select
+                    value={operationType}
+                    onValueChange={(value) => {
+                      const op = value as "add" | "reduce";
+                      setOperationType(op);
+                      // Supplier is only relevant when adding stock, so clear it when reducing
+                      if (op === "reduce") {
+                        setSupplierId(null);
+                        setSupplierName(null);
+                      }
+                    }}
+                  >
+                    <SelectTrigger
+                      className={`w-[140px] h-9 text-sm font-medium border-0 shadow-none ${
+                        operationType === "add"
+                          ? "bg-green-100 text-green-800 hover:bg-green-200"
+                          : "bg-red-100 text-red-800 hover:bg-red-200"
+                      }`}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="add">Add Stock</SelectItem>
+                      <SelectItem value="reduce">Reduce Stock</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <ResponsiveDialog.Close asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 bg-gray-100"
+                    >
+                      <X className="h-5 w-5 text-gray-700" />
+                    </Button>
+                  </ResponsiveDialog.Close>
+                </div>
+              </div>
+            </ResponsiveDialog.Header>
 
-          <div className="space-y-4">
+            <div className="flex-1 min-h-0 overflow-y-auto px-1">
+              <div className="space-y-4">
             {/* Current Stock Display (prominent for reduce mode) */}
             {operationType === "reduce" && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -483,40 +497,37 @@ export function UpdateStockModal({
                 </p>
               )}
             </div>
-          </div>
+              </div>
+            </div>
 
-          <Separator className="my-6" />
-
-          <div className="flex gap-3 justify-end">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="bg-gray-900 hover:bg-gray-800"
-              disabled={isCreatingStockEntry || isFormSubmitting}
-            >
-              {isCreatingStockEntry || isFormSubmitting
-                ? operationType === "add"
-                  ? "Adding..."
-                  : "Reducing..."
-                : operationType === "add"
-                ? "Add Stock"
-                : "Reduce Stock"}
-            </Button>
-          </div>
-        </form>
-      </Card>
-    </div>
+            <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-6 border-t px-0 flex-shrink-0">
+              <Button
+                type="button"
+                variant="outline"
+                size={isMobile ? "lg" : "default"}
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-gray-900 hover:bg-gray-800"
+                size={isMobile ? "lg" : "default"}
+                disabled={isCreatingStockEntry || isFormSubmitting}
+              >
+                {isCreatingStockEntry || isFormSubmitting
+                  ? operationType === "add"
+                    ? "Adding..."
+                    : "Reducing..."
+                  : operationType === "add"
+                  ? "Add Stock"
+                  : "Reduce Stock"}
+              </Button>
+            </ResponsiveDialog.Footer>
+          </form>
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog.Portal>
+    </ResponsiveDialog.Root>
   );
 }
 
-const EmptyState = () => {
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-md p-6">
-        <p className="text-center">Inventory item not found</p>
-      </Card>
-    </div>
-  );
-};
