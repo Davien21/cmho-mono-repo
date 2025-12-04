@@ -6,6 +6,10 @@ export interface IInventoryCategory {
   _id: ObjectId;
   name: string;
   unitPresetIds?: ObjectId[];
+  canBeSold?: boolean;
+  order?: number;
+  isDeleted?: boolean;
+  deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

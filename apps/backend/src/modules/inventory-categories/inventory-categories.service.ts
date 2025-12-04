@@ -8,11 +8,11 @@ import {
 
 class InventoryCategoriesService {
   list(): Promise<IInventoryCategoryWithUnitPresetsPopulated[]> {
-    // Return categories sorted by name with populated unit presets,
+    // Return categories sorted by order with populated unit presets,
     // while also normalizing the response so `unitPresetIds` remains
     // a string[] and we expose a separate `unitPresets` array.
-    return InventoryCategory.find()
-      .sort({ name: 1 })
+    return InventoryCategory.find({ isDeleted: { $ne: true } })
+      .sort({ order: 1, createdAt: -1 })
       .populate("unitPresetIds")
       .lean()
       .then((categories: any[]): IInventoryCategoryWithUnitPresetsPopulated[] =>
@@ -35,19 +35,45 @@ class InventoryCategoriesService {
       );
   }
 
-  create(data: IInventoryCategoryRequest): Promise<IInventoryCategory> {
-    return InventoryCategory.create(data);
+  async create(data: IInventoryCategoryRequest): Promise<IInventoryCategory> {
+    // Assign order based on count of non-deleted items
+    const order = await InventoryCategory.countDocuments({
+      isDeleted: { $ne: true },
+    });
+    return InventoryCategory.create({ ...data, order });
   }
 
   update(
     id: string,
     data: Partial<IInventoryCategoryRequest>
   ): Promise<IInventoryCategory | null> {
-    return InventoryCategory.findByIdAndUpdate(id, data, { new: true });
+    return InventoryCategory.findOneAndUpdate(
+      { _id: id, isDeleted: { $ne: true } },
+      data,
+      { new: true }
+    );
   }
 
   delete(id: string): Promise<IInventoryCategory | null> {
-    return InventoryCategory.findByIdAndDelete(id);
+    return InventoryCategory.findByIdAndUpdate(
+      id,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true }
+    );
+  }
+
+  reorder(categoryOrders: Array<{ id: string; order: number }>): Promise<void> {
+    // Single bulk update: Since we're updating ALL categories with new sequential orders (0, 1, 2, ...)
+    // and the frontend prevents concurrent updates, a single bulk write is sufficient.
+    // Each document update is atomic, and the operation completes in milliseconds.
+    const bulkOps = categoryOrders.map(({ id, order }) => ({
+      updateOne: {
+        filter: { _id: id },
+        update: { $set: { order } },
+      },
+    }));
+
+    return InventoryCategory.bulkWrite(bulkOps).then(() => undefined);
   }
 }
 

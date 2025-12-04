@@ -12,6 +12,14 @@ const inventoryCategorySchema = new Schema<IInventoryCategory>(
       required: false,
       default: [],
     },
+    canBeSold: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    order: { type: Number, required: false, default: 0 },
+    isDeleted: { type: Boolean, required: false, default: false },
+    deletedAt: { type: Date, required: false, default: null },
   },
   {
     timestamps: true,

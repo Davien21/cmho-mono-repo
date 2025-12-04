@@ -34,3 +34,11 @@ export async function deleteInventoryCategory(req: Request, res: Response) {
   await inventoryCategoriesService.delete(id);
   res.send(successResponse("Inventory category deleted successfully"));
 }
+
+export async function reorderInventoryCategories(req: Request, res: Response) {
+  const { categoryOrders } = req.body as {
+    categoryOrders: Array<{ id: string; order: number }>;
+  };
+  await inventoryCategoriesService.reorder(categoryOrders);
+  res.send(successResponse("Inventory categories reordered successfully"));
+}
