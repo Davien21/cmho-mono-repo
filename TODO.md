@@ -199,6 +199,54 @@
   - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/units.tsx` - Improve ReorderableUnitItem mobile experience
   - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/categories.tsx` - Improve ReorderableCategoryItem mobile experience
 
+17. **Better design the app selection UI**
+
+- **Current state**: AppSelectionPage has a basic design with two app cards in a grid layout
+- **Goal**: Improve the visual design, layout, and user experience of the app selection page
+- **Considerations**:
+  - [ ] Review current design and identify areas for improvement (spacing, typography, colors, animations)
+  - [ ] Consider modern design patterns for app selection/dashboard interfaces
+  - [ ] Improve visual hierarchy and information architecture
+  - [ ] Enhance hover states and interactions
+  - [ ] Ensure responsive design works well on all screen sizes
+  - [ ] Consider adding visual elements like illustrations, better gradients, or background patterns
+  - [ ] Improve accessibility (contrast, focus states, keyboard navigation)
+  - [ ] Consider adding app previews or additional context for each app
+- **Files to update**:
+  - `apps/frontend/src/pages/AppSelectionPage.tsx` - Redesign the app selection interface
+
+18. **Change action buttons everywhere to match the one in inventory table**
+
+- **Current state**: Different tables/components use inconsistent action button styles:
+  - InventoryList uses: `variant="outline"` with `className="h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50"` and `MoreHorizontal` icon
+  - AdminsTable uses: `variant="ghost"` with `className="h-8 w-8 p-0"` and `MoreVertical` icon
+  - EmployeesTable uses: Separate buttons (Edit and Pay) instead of dropdown menu
+  - SuppliersSection uses: `variant="ghost"` with `MoreVertical` icon
+- **Goal**: Standardize all action buttons to match the inventory table pattern for consistency across the application
+- **Reference pattern** (from InventoryList):
+  - Button: `variant="outline"` with `className="h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50"`
+  - Icon: `MoreHorizontal` (not `MoreVertical`)
+  - Dropdown menu items: `className="text-base sm:text-sm py-2.5 sm:py-2"`
+  - Icons in menu items: `className="mr-2 h-5 w-5 sm:h-4 sm:w-4"`
+- **Implementation requirements**:
+  - [ ] Update AdminsTable to use `variant="outline"` with proper styling and `MoreHorizontal` icon
+  - [ ] Update AdminsTable dropdown menu items to use responsive text sizing (`text-base sm:text-sm py-2.5 sm:py-2`)
+  - [ ] Update AdminsTable menu item icons to use responsive sizing (`h-5 w-5 sm:h-4 sm:w-4`)
+  - [ ] Convert EmployeesTable to use dropdown menu pattern (instead of separate buttons)
+  - [ ] Update EmployeesTable action button to match inventory table style
+  - [ ] Update SuppliersSection to use `variant="outline"` with proper styling and `MoreHorizontal` icon
+  - [ ] Check and update any other tables/components with action buttons (PaymentsTable, ListedPaymentsTable, GroupedPaymentsTable, RecentEmployeesTable, etc.)
+  - [ ] Ensure mobile views also use consistent styling
+  - [ ] Test all action buttons across different screen sizes
+- **Files to update**:
+  - `apps/frontend/src/components/tables/AdminsTable.tsx` - Update action button styling
+  - `apps/frontend/src/components/tables/EmployeesTable.tsx` - Convert to dropdown menu pattern
+  - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/suppliers.tsx` - Update action button styling
+  - `apps/frontend/src/components/tables/PaymentsTable.tsx` - Check and update if needed
+  - `apps/frontend/src/components/tables/ListedPaymentsTable.tsx` - Check and update if needed
+  - `apps/frontend/src/components/tables/GroupedPaymentsTable.tsx` - Check and update if needed
+  - `apps/frontend/src/components/tables/RecentEmployeesTable.tsx` - Check and update if needed
+
 ## Backend Features
 
 14. **Implement action tracking system**
