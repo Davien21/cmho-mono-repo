@@ -24,6 +24,11 @@ export interface StockEntry {
   performedBy?: string;
 }
 
+export interface InventoryItemImage {
+  url: string;
+  mediaId: string;
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -36,4 +41,6 @@ export interface InventoryItem {
   stocks?: StockEntry[];
   currentStockInBaseUnits?: number;
   earliestExpiryDate?: string | null;
+  image?: InventoryItemImage;
+  canBeSold?: boolean;
 }

@@ -6,6 +6,7 @@ export interface IInventoryUnitDefinitionDto {
   _id: string;
   name: string;
   plural: string;
+  order?: number;
 }
 
 export interface IInventoryCategoryUnitPresetDto {
@@ -27,6 +28,8 @@ export interface IInventoryCategoryDto {
    * Available when the backend populates `unitPresetIds`.
    */
   unitPresets?: IInventoryCategoryUnitPresetDto[];
+  canBeSold?: boolean;
+  order?: number;
 }
 
 export type SupplierStatus = "active" | "disabled" | "deleted";
@@ -55,6 +58,11 @@ export interface IInventoryItemUnitDto {
   quantity?: number;
 }
 
+export interface IInventoryItemImageDto {
+  url: string;
+  mediaId: string;
+}
+
 export interface IInventoryItemDto {
   _id: string;
   name: string;
@@ -65,6 +73,8 @@ export interface IInventoryItemDto {
   status: InventoryItemStatus;
   currentStockInBaseUnits?: number;
   earliestExpiryDate?: string;
+  image?: IInventoryItemImageDto;
+  canBeSold?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -86,6 +96,7 @@ export interface IStockEntryDto {
   expiryDate: string;
   quantityInBaseUnits: number;
   createdBy: string;
+  createdByName?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -98,16 +109,26 @@ export interface ICreateInventoryUnitRequest {
 export interface IUpdateInventoryUnitRequest
   extends ICreateInventoryUnitRequest {
   id: string;
+  order?: number;
+}
+
+export interface IReorderInventoryUnitsRequest {
+  unitOrders: Array<{ id: string; order: number }>;
 }
 
 export interface ICreateInventoryCategoryRequest {
   name: string;
   unitPresetIds?: string[];
+  canBeSold?: boolean;
 }
 
 export interface IUpdateInventoryCategoryRequest
   extends ICreateInventoryCategoryRequest {
   id: string;
+}
+
+export interface IReorderInventoryCategoriesRequest {
+  categoryOrders: Array<{ id: string; order: number }>;
 }
 
 export interface ICreateSupplierRequest {
@@ -132,6 +153,8 @@ export interface ICreateInventoryItemRequest {
   setupStatus: InventorySetupStatus;
   status: InventoryItemStatus;
   currentStockInBaseUnits?: number;
+  image?: IInventoryItemImageDto;
+  canBeSold?: boolean;
 }
 
 export interface IUpdateInventoryItemRequest
@@ -210,6 +233,20 @@ export const inventoryApi = baseApi.injectEndpoints({
         TagTypes.INVENTORY_CATEGORIES,
       ],
     }),
+    reorderInventoryUnits: builder.mutation<
+      IAPIResponse<void>,
+      IReorderInventoryUnitsRequest
+    >({
+      query: (body) => ({
+        url: "/inventory/units/reorder",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [
+        TagTypes.INVENTORY_UNITS,
+        TagTypes.INVENTORY_CATEGORIES,
+      ],
+    }),
 
     getInventoryCategories: builder.query<
       IAPIResponse<IInventoryCategoryDto[]>,
@@ -247,6 +284,17 @@ export const inventoryApi = baseApi.injectEndpoints({
       query: (id) => ({
         url: `/inventory/categories/${id}`,
         method: "DELETE",
+      }),
+      invalidatesTags: [TagTypes.INVENTORY_CATEGORIES],
+    }),
+    reorderInventoryCategories: builder.mutation<
+      IAPIResponse<void>,
+      IReorderInventoryCategoriesRequest
+    >({
+      query: (body) => ({
+        url: "/inventory/categories/reorder",
+        method: "POST",
+        body,
       }),
       invalidatesTags: [TagTypes.INVENTORY_CATEGORIES],
     }),
@@ -363,10 +411,12 @@ export const {
   useCreateInventoryUnitMutation,
   useUpdateInventoryUnitMutation,
   useDeleteInventoryUnitMutation,
+  useReorderInventoryUnitsMutation,
   useGetInventoryCategoriesQuery,
   useCreateInventoryCategoryMutation,
   useUpdateInventoryCategoryMutation,
   useDeleteInventoryCategoryMutation,
+  useReorderInventoryCategoriesMutation,
   useGetSuppliersQuery,
   useCreateSupplierMutation,
   useUpdateSupplierMutation,
