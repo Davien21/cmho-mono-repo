@@ -77,7 +77,7 @@ export const navigationConfig = {
     {
       title: "Home",
       url: "/inventory",
-      icon: Package,
+      icon: LayoutDashboard,
       breadcrumbs: [{ label: "Inventory", url: "/inventory" }],
     },
     {
@@ -90,12 +90,12 @@ export const navigationConfig = {
       ],
     },
     {
-      title: "Stock",
+      title: "Stock Changes",
       url: "/stock",
       icon: History,
       breadcrumbs: [
         { label: "Inventory", url: "/inventory" },
-        { label: "Stock", url: "/stock" },
+        { label: "Stock Changes", url: "/stock" },
       ],
     },
     {

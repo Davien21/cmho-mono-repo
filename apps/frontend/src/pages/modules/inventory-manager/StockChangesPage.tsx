@@ -136,25 +136,25 @@ export default function StockChangesPage() {
   return (
     <Layout>
       <div className="flex flex-col gap-4 sm:gap-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Stock</h2>
-            <p className="mt-1 text-sm text-gray-600">
-              {filteredItem
-                ? `All stock changes for "${filteredItem.name}".`
-                : "All stock changes across inventory items."}
-            </p>
-          </div>
+        <div className="flex flex-col gap-2">
+          <h1 className="hidden lg:block text-xl sm:text-2xl font-semibold tracking-tight">
+            Stock Changes
+          </h1>
+          <p className="text-base sm:text-sm text-muted-foreground">
+            {filteredItem
+              ? `All stock changes for "${filteredItem.name}".`
+              : "All stock changes across inventory items."}
+          </p>
+        </div>
 
-          <div className="relative w-full max-w-xs">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by item or operator..."
-              className="pl-8"
-            />
-          </div>
+        <div className="relative w-full max-w-xs">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by item or operator..."
+            className="pl-8"
+          />
         </div>
 
         {rows.length === 0 ? (
