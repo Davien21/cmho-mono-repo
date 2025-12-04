@@ -10,10 +10,18 @@ export interface InputProps
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, labelClassName, className, type, id, formError, ...rest }, ref) => {
+  ({ label, labelClassName, className, type, id, formError, autoComplete, ...rest }, ref) => {
     if (type === "file") {
-      return <input type="file" ref={ref} hidden {...rest} />;
+      return <input type="file" ref={ref} hidden autoComplete="off" {...rest} />;
     }
+
+    // Use "new-password" for password fields as it's more effective at disabling autocomplete
+    // Allow override via props if needed
+    const autoCompleteValue = autoComplete !== undefined
+      ? autoComplete
+      : type === "password"
+        ? "new-password"
+        : "off";
 
     return (
       <div className="flex flex-col gap-1">
@@ -29,6 +37,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={id}
           ref={ref}
           type={type}
+          autoComplete={autoCompleteValue}
           aria-invalid={formError ? "true" : "false"}
           className={cn(
             "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
