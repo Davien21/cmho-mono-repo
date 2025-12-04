@@ -1,0 +1,48 @@
+---
+alwaysApply: false
+---
+
+# Git Push Rules
+
+## Pre-Push Requirement
+
+**ALWAYS run `pnpm install` from the root of the monorepo before pushing to the repository.**
+
+### Why This Is Required
+
+- Ensures `pnpm-lock.yaml` stays synchronized with all `package.json` files
+- Prevents build failures in CI/CD environments (like Railway) that use `--frozen-lockfile`
+- Maintains consistency between local and remote lockfiles
+
+### Workflow
+
+1. **Before pushing**, run from the monorepo root:
+
+   ```bash
+   pnpm install
+   ```
+
+2. **Check for lockfile changes**:
+
+   ```bash
+   git status
+   ```
+
+3. **If `pnpm-lock.yaml` has changes**, commit them:
+
+   ```bash
+   git add pnpm-lock.yaml
+   git commit -m "--chore: Update pnpm lockfile"
+   ```
+
+4. **Then push**:
+   ```bash
+   git push
+   ```
+
+### Important Notes
+
+- This applies to **every push**, not just when dependencies change
+- The lockfile can become out of sync even without explicit dependency changes
+- Running `pnpm install` ensures the lockfile reflects the current state of all workspace packages
+- Never skip this step, even if you think nothing changed
