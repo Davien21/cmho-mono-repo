@@ -31,6 +31,11 @@ export type IInventoryUnit = IInventoryUnitDraft | IInventoryUnitReady;
 
 // ---- Items ----
 
+export interface IInventoryItemImage {
+  url: string;
+  mediaId: string;
+}
+
 export interface IInventoryItemBase {
   _id: ObjectId;
   name: string;
@@ -38,7 +43,8 @@ export interface IInventoryItemBase {
   status: InventoryStatus;
   createdBy: ObjectId;
   currentStockInBaseUnits?: number;
-  earliestExpiryDate?: Date;
+  image?: IInventoryItemImage;
+  canBeSold?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

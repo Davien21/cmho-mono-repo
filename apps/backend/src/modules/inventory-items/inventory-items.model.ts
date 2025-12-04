@@ -42,9 +42,15 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
       required: false,
       default: 0,
     },
-    earliestExpiryDate: {
-      type: Date,
+    image: {
+      url: { type: String, required: false },
+      mediaId: { type: String, required: false },
+      _id: false,
+    },
+    canBeSold: {
+      type: Boolean,
       required: false,
+      default: true,
     },
   },
   {

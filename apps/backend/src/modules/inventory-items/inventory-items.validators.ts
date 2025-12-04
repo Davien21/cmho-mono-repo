@@ -27,6 +27,13 @@ const inventoryUnitSchema = yup
   })
   .required();
 
+const imageSchema = yup
+  .object({
+    url: yup.string().required().label("Image URL"),
+    mediaId: yup.string().required().label("Media ID"),
+  })
+  .optional();
+
 export const createInventoryItemSchema = yup
   .object<IInventoryItemRequest>({
     name: yup.string().required().label("Name"),
@@ -47,6 +54,7 @@ export const createInventoryItemSchema = yup
       .number()
       .optional()
       .label("Current stock in base units"),
+    image: imageSchema,
   })
   .required();
 
@@ -66,4 +74,5 @@ export const updateInventoryItemSchema = yup.object<
     .oneOf(["active", "disabled", "deleted"])
     .label("Status"),
   currentStockInBaseUnits: yup.number().label("Current stock in base units"),
+  image: imageSchema,
 });
