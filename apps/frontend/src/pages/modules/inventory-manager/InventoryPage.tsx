@@ -9,10 +9,16 @@ import Layout from "@/components/Layout";
 import {
   IInventoryItemDto,
   useGetInventoryItemsQuery,
+  useDeleteInventoryItemMutation,
 } from "@/store/inventory-slice";
+import { useModalContext } from "@/contexts/modal-context";
+import { toast } from "sonner";
+import { getRTKQueryErrorMessage } from "@/lib/utils";
 
 export default function InventoryPage() {
   const { data, isLoading } = useGetInventoryItemsQuery();
+  const [deleteInventoryItem] = useDeleteInventoryItemMutation();
+  const { openModal, closeModal } = useModalContext();
 
   const items: InventoryItem[] = useMemo(() => {
     const dtos: IInventoryItemDto[] = data?.data || [];
@@ -33,6 +39,7 @@ export default function InventoryPage() {
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       earliestExpiryDate: dto.earliestExpiryDate ?? null,
+      image: dto.image,
     }));
   }, [data]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -52,10 +59,25 @@ export default function InventoryPage() {
   };
 
   const handleDelete = (item: InventoryItem) => {
-    // Delete will be handled once wired to backend mutation
-    window.alert(
-      `Delete for "${item.name}" will be available once wired to backend mutation.`
-    );
+    openModal("confirmation-dialog", {
+      title: "Delete inventory item",
+      message: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          await deleteInventoryItem(item.id).unwrap();
+          toast.success("Inventory item deleted successfully");
+        } catch (error: unknown) {
+          const message =
+            getRTKQueryErrorMessage(error) ||
+            "Failed to delete inventory item. Please try again.";
+          toast.error(message);
+        } finally {
+          closeModal("confirmation-dialog");
+        }
+      },
+      onCancel: () => closeModal("confirmation-dialog"),
+    });
   };
 
   const handleViewStockEntries = (item: InventoryItem) => {
@@ -110,12 +132,15 @@ export default function InventoryPage() {
           />
         )}
 
-        {showStockModal && selectedItem && (
+        {selectedItem && (
           <UpdateStockModal
             inventoryItem={selectedItem}
-            onClose={() => {
-              setShowStockModal(false);
-              setSelectedItem(null);
+            open={showStockModal}
+            onOpenChange={(open) => {
+              setShowStockModal(open);
+              if (!open) {
+                setSelectedItem(null);
+              }
             }}
           />
         )}

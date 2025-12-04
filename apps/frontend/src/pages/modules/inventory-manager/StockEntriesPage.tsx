@@ -41,6 +41,7 @@ export default function StockEntriesPage() {
       status: dto.setupStatus,
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
+      image: dto.image,
     }));
   }, [itemsResponse]);
 
@@ -66,7 +67,7 @@ export default function StockEntriesPage() {
         createdAt: entry.createdAt
           ? entry.createdAt.toString()
           : new Date().toISOString(),
-        performedBy: entry.createdBy,
+        performedBy: entry.createdByName || entry.createdBy || "Admin",
       }))
       .sort(
         (a, b) =>
@@ -157,7 +158,7 @@ export default function StockEntriesPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                        {entry.performedBy || "Admin"}
+                        {entry.performedBy}
                       </td>
                     </tr>
                   ))}
@@ -198,7 +199,7 @@ export default function StockEntriesPage() {
                     <div>
                       <p className="text-muted-foreground">Performed by</p>
                       <p className="font-medium text-foreground">
-                        {entry.performedBy || "Admin"}
+                        {entry.performedBy}
                       </p>
                     </div>
                   </div>

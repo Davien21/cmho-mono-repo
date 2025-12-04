@@ -26,6 +26,12 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useLogoutMutation } from "@/store/auth-slice";
+import {
+  useGetInventoryUnitsQuery,
+  useGetInventoryCategoriesQuery,
+  useGetSuppliersQuery,
+} from "@/store/inventory-slice";
+import { useGetGalleryQuery } from "@/store/gallery-slice";
 
 // Centralized navigation configuration with breadcrumb support
 export const navigationConfig = {
@@ -75,6 +81,24 @@ export const navigationConfig = {
       breadcrumbs: [{ label: "Inventory", url: "/inventory" }],
     },
     {
+      title: "Inventory",
+      url: "/inventory/items",
+      icon: Package,
+      breadcrumbs: [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Items", url: "/inventory/items" },
+      ],
+    },
+    {
+      title: "Stock",
+      url: "/stock",
+      icon: History,
+      breadcrumbs: [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Stock", url: "/stock" },
+      ],
+    },
+    {
       title: "Settings",
       url: "/inventory/settings",
       icon: Settings,
@@ -105,15 +129,6 @@ export const navigationConfig = {
         },
       ],
     },
-    {
-      title: "Stock",
-      url: "/stock",
-      icon: History,
-      breadcrumbs: [
-        { label: "Inventory", url: "/inventory" },
-        { label: "Stock", url: "/stock" },
-      ],
-    },
   ],
   // Additional routes not in sidebar navigation
   additionalRoutes: [
@@ -139,6 +154,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     location.pathname.startsWith("/inventory") ||
     location.pathname.startsWith("/stock");
 
+  // Fetch counts for inventory settings submenu items
+  const { data: unitsSummary } = useGetInventoryUnitsQuery(undefined, {
+    skip: !isInventoryPath,
+  });
+  const { data: categoriesSummary } = useGetInventoryCategoriesQuery(undefined, {
+    skip: !isInventoryPath,
+  });
+  const { data: suppliersSummary } = useGetSuppliersQuery(undefined, {
+    skip: !isInventoryPath,
+  });
+  const { data: galleryData } = useGetGalleryQuery(
+    { page: 1, limit: 100 },
+    { skip: !isInventoryPath }
+  );
+
+  const unitsCount = unitsSummary?.data?.length ?? 0;
+  const categoriesCount = categoriesSummary?.data?.length ?? 0;
+  const suppliersCount = suppliersSummary?.data?.length ?? 0;
+  const galleryCount = galleryData?.data?.meta?.total ?? 0;
+
   const currentApp =
     (isInventoryPath
       ? data.apps.find((app) => app.name === "Inventory Manager")
@@ -146,7 +181,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     data.apps[0];
 
   // Determine which nav items to show based on current app
-  const navItems = isInventoryPath ? data.inventoryNav : data.salaryNav;
+  // Add counts to inventory nav submenu items
+  const navItems = isInventoryPath
+    ? data.inventoryNav.map((item) => {
+        if (item.submenu) {
+          return {
+            ...item,
+            submenu: item.submenu.map((subItem) => {
+              let count: number | undefined;
+              if (subItem.title === "Units") {
+                count = unitsCount;
+              } else if (subItem.title === "Categories") {
+                count = categoriesCount;
+              } else if (subItem.title === "Suppliers") {
+                count = suppliersCount;
+              } else if (subItem.title === "Gallery") {
+                count = galleryCount;
+              }
+              return { ...subItem, badge: count };
+            }),
+          };
+        }
+        return item;
+      })
+    : data.salaryNav;
 
   const handleLogout = async () => {
     try {

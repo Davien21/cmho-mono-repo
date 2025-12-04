@@ -14,6 +14,7 @@ import {
   SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export function NavMain({
@@ -27,6 +28,7 @@ export function NavMain({
       title: string;
       url: string;
       icon?: LucideIcon;
+      badge?: number;
     }[];
   }[];
 }) {
@@ -64,6 +66,7 @@ export function NavMain({
         {items.map((item) => {
           const isSalaryRoot = item.url === "/salary";
           const isInventoryHome = item.url === "/inventory";
+          const isInventoryItems = item.url === "/inventory/items";
           const isStockItem = item.url === "/stock";
 
           const isActive = isSalaryRoot
@@ -73,6 +76,8 @@ export function NavMain({
               location.pathname.startsWith("/inventory/stock")
             : isInventoryHome
             ? location.pathname === "/inventory"
+            : isInventoryItems
+            ? location.pathname.startsWith("/inventory/items")
             : location.pathname.startsWith(item.url);
 
           const isOpen = openItems.includes(item.title);
@@ -122,11 +127,16 @@ export function NavMain({
                               asChild
                               isActive={isSubActive}
                               size="md"
-                              className="!h-10 text-sm"
+                              className="!h-11 sm:!h-10 text-base sm:text-sm"
                             >
                               <NavLink to={subItem.url} onClick={handleNavClick}>
-                                {subItem.icon && <subItem.icon className="size-4" />}
-                                <span className="text-sm font-medium">{subItem.title}</span>
+                                {subItem.icon && <subItem.icon className="size-5 sm:size-4" />}
+                                <span className="text-base sm:text-sm font-medium">{subItem.title}</span>
+                                {subItem.badge !== undefined && (
+                                  <Badge className="ml-auto text-xs sm:text-[11px] font-medium px-2 py-0 h-6 sm:h-5 rounded-full bg-slate-100 text-slate-700">
+                                    {subItem.badge}
+                                  </Badge>
+                                )}
                               </NavLink>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>

@@ -59,6 +59,7 @@ export default function StockChangesPage() {
       status: dto.setupStatus,
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
+      image: dto.image,
     }));
   }, [itemsResponse]);
 
@@ -109,7 +110,7 @@ export default function StockChangesPage() {
           createdAt: entry.createdAt
             ? entry.createdAt.toString()
             : new Date().toISOString(),
-          performedBy: entry.createdBy,
+          performedBy: entry.createdByName || entry.createdBy || "Admin",
           itemName: meta?.name ?? "Unknown item",
           units: meta?.units || [],
         };
@@ -222,7 +223,7 @@ export default function StockChangesPage() {
                           </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                          {row.performedBy || "Admin"}
+                          {row.performedBy}
                         </td>
                       </tr>
                     ))
@@ -301,7 +302,7 @@ export default function StockChangesPage() {
                       <div>
                         <p className="text-muted-foreground">Performed by</p>
                         <p className="font-medium text-foreground">
-                          {row.performedBy || "Admin"}
+                          {row.performedBy}
                         </p>
                       </div>
                     </div>
@@ -374,7 +375,7 @@ export default function StockChangesPage() {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Performed by</span>
                 <span className="font-medium">
-                  {selectedRow.performedBy || "Admin"}
+                  {selectedRow.performedBy}
                 </span>
               </div>
             </div>

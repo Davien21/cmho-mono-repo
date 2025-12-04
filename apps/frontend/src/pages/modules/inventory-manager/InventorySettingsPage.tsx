@@ -38,7 +38,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Package, Tags, Truck, Image as ImageIcon } from "lucide-react";
+import {
+  Package,
+  Tags,
+  Truck,
+  Image as ImageIcon,
+  Plus,
+  Check,
+  RotateCcw,
+} from "lucide-react";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { GallerySection } from "@/features/inventory-settings/InventorySettingsPage/gallery";
 import { useGetGalleryQuery } from "@/store/gallery-slice";
@@ -96,6 +104,18 @@ export default function InventorySettingsPage() {
     null
   );
   const [isDragging, setIsDragging] = useState(false);
+  const [unitsSaveButton, setUnitsSaveButton] = useState<{
+    hasPendingChanges: boolean;
+    onSave: () => void;
+    onUndo: () => void;
+    isSaving: boolean;
+  } | null>(null);
+  const [categoriesSaveButton, setCategoriesSaveButton] = useState<{
+    hasPendingChanges: boolean;
+    onSave: () => void;
+    onUndo: () => void;
+    isSaving: boolean;
+  } | null>(null);
   // _dragCounter tracks nested drag events (when dragging over child elements)
   const [_dragCounter, setDragCounter] = useState(0);
   const processFilesRef = useRef<((files: File[]) => Promise<void>) | null>(
@@ -127,10 +147,14 @@ export default function InventorySettingsPage() {
     setIsAddCategoryOpen(false);
   };
 
-  const handleCreateCategory = async (values: AddCategoryFormValues) => {
+  const handleCreateCategory = async (
+    values: AddCategoryFormValues & { unitPresetIds?: string[] }
+  ) => {
     try {
       await createCategory({
         name: values.name.trim(),
+        unitPresetIds: values.unitPresetIds,
+        canBeSold: values.canBeSold,
       }).unwrap();
       toast.success("Category added successfully");
       handleCloseAddCategory();
@@ -263,12 +287,12 @@ export default function InventorySettingsPage() {
         {isDragging && activeSection === "Gallery" && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-primary/20 backdrop-blur-sm rounded-lg">
             <div className="flex flex-col items-center justify-center gap-4 p-8 bg-background/95 backdrop-blur-md rounded-lg border-2 border-dashed border-primary shadow-lg">
-              <Upload className="h-16 w-16 text-primary animate-bounce" />
+              <Upload className="h-20 w-20 sm:h-16 sm:w-16 text-primary animate-bounce" />
               <div className="text-center">
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-xl sm:text-lg font-semibold text-foreground">
                   Drop images here to upload
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-base sm:text-sm text-muted-foreground mt-2">
                   Supported formats: JPEG, JPG, PNG, WEBP, HEIC
                 </p>
               </div>
@@ -280,7 +304,7 @@ export default function InventorySettingsPage() {
           <h1 className="hidden lg:block text-xl sm:text-2xl font-semibold tracking-tight">
             Inventory settings
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base sm:text-sm text-muted-foreground">
             Configure settings that are used across your inventory.
           </p>
         </div>
@@ -362,25 +386,52 @@ export default function InventorySettingsPage() {
             <CardHeader className="pb-3 border-b bg-muted/40 px-0 lg:px-6 pt-0 lg:pt-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                    <Package className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <Package className="h-5 w-5 sm:h-4 sm:w-4 text-primary" />
                     Inventory Units
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm sm:text-sm">
                     Start with the base units you stock and sell with.
                   </CardDescription>
                 </div>
-                <Button
-                  size="sm"
-                  className="mt-1 sm:mt-0"
-                  onClick={() => setIsAddUnitOpen(true)}
-                >
-                  Add unit
-                </Button>
+                <div className="flex items-center gap-2 mt-1 sm:mt-0">
+                  {unitsSaveButton?.hasPendingChanges && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-sm sm:text-sm px-4 py-2 h-9 sm:h-8"
+                        onClick={unitsSaveButton.onUndo}
+                        disabled={unitsSaveButton.isSaving}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                        Undo
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-sm sm:text-sm px-4 py-2 h-9 sm:h-8"
+                        onClick={unitsSaveButton.onSave}
+                        disabled={unitsSaveButton.isSaving}
+                      >
+                        <Check className="h-4 w-4" />
+                        {unitsSaveButton.isSaving ? "Saving..." : "Save"}
+                      </Button>
+                    </>
+                  )}
+                  <Button
+                    size="sm"
+                    className="text-sm sm:text-sm px-4 py-2 h-9 sm:h-8"
+                    onClick={() => setIsAddUnitOpen(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add unit
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-4 px-0">
-              <UnitsSection />
+              <UnitsSection onSaveButtonChange={setUnitsSaveButton} />
             </CardContent>
           </Card>
 
@@ -399,26 +450,53 @@ export default function InventorySettingsPage() {
             <CardHeader className="pb-3 border-b bg-muted/40 px-0 lg:px-6 pt-0 lg:pt-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                    <Tags className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <Tags className="h-5 w-5 sm:h-4 sm:w-4 text-primary" />
                     Inventory Categories
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm sm:text-sm">
                     Categories are simply the type of items that you stock up
                     on.
                   </CardDescription>
                 </div>
-                <Button
-                  size="sm"
-                  className="mt-1 sm:mt-0"
-                  onClick={() => setIsAddCategoryOpen(true)}
-                >
-                  Add category
-                </Button>
+                <div className="flex items-center gap-2 mt-1 sm:mt-0">
+                  {categoriesSaveButton?.hasPendingChanges && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-sm sm:text-sm px-4 py-2 h-9 sm:h-8"
+                        onClick={categoriesSaveButton.onUndo}
+                        disabled={categoriesSaveButton.isSaving}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                        Undo
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-sm sm:text-sm px-4 py-2 h-9 sm:h-8"
+                        onClick={categoriesSaveButton.onSave}
+                        disabled={categoriesSaveButton.isSaving}
+                      >
+                        <Check className="h-4 w-4 mr-1.5" />
+                        {categoriesSaveButton.isSaving ? "Saving..." : "Save"}
+                      </Button>
+                    </>
+                  )}
+                  <Button
+                    size="sm"
+                    className="text-sm sm:text-sm px-4 py-2 h-9 sm:h-8"
+                    onClick={() => setIsAddCategoryOpen(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-1.5" />
+                    Add category
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-4 px-0">
-              <CategoriesSection />
+              <CategoriesSection onSaveButtonChange={setCategoriesSaveButton} />
             </CardContent>
           </Card>
 
@@ -437,17 +515,17 @@ export default function InventorySettingsPage() {
             <CardHeader className="pb-3 border-b bg-muted/40 px-0 lg:px-6 pt-0 lg:pt-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                    <Truck className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <Truck className="h-5 w-5 sm:h-4 sm:w-4 text-primary" />
                     Suppliers
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm sm:text-sm">
                     Manage the suppliers you purchase stock from.
                   </CardDescription>
                 </div>
                 <Button
                   size="sm"
-                  className="mt-1 sm:mt-0"
+                  className="mt-1 sm:mt-0 text-sm sm:text-sm px-4 py-2 h-9 sm:h-8"
                   onClick={() => setIsAddSupplierOpen(true)}
                 >
                   Add supplier
@@ -484,11 +562,11 @@ export default function InventorySettingsPage() {
             <CardHeader className="pb-3 border-b bg-muted/40 px-0 lg:px-6 pt-0 lg:pt-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5 sm:h-4 sm:w-4 text-primary" />
                     Media Gallery
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm sm:text-sm">
                     Upload and manage images for your inventory items.
                   </CardDescription>
                 </div>

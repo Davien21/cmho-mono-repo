@@ -8,6 +8,7 @@ import LoginPage from '@/pages/LoginPage';
 import PaymentHistoryPage from '@/pages/modules/salary-manager/PaymentHistoryPage';
 import TransferDetailsPage from '@/pages/modules/salary-manager/TransferDetailsPage';
 import AppSelectionPage from '@/pages/AppSelectionPage';
+import InventoryHomePage from '@/pages/modules/inventory-manager/InventoryHomePage';
 import InventoryPage from '@/pages/modules/inventory-manager/InventoryPage';
 import InventorySettingsPage from '@/pages/modules/inventory-manager/InventorySettingsPage';
 import StockEntriesPage from '@/pages/modules/inventory-manager/StockEntriesPage';
@@ -31,7 +32,8 @@ export const AppRoutes = () => {
       <Route path="/salary/payments" element={<PaymentHistoryPage />} />
       <Route path="/salary/payments/:id" element={<TransferDetailsPage />} />
       <Route path="/salary/admins" element={<AdminsPage />} />
-      <Route path="/inventory" element={<InventoryPage />} />
+      <Route path="/inventory" element={<InventoryHomePage />} />
+      <Route path="/inventory/items" element={<InventoryPage />} />
       <Route path="/inventory/settings" element={<InventorySettingsPage />} />
       <Route path="/inventory/stock" element={<StockChangesPage />} />
       <Route path="/stock" element={<StockChangesPage />} />

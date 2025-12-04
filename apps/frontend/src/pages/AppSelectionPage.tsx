@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import { Package, Wallet, ArrowRight, LogOut } from 'lucide-react';
-import { useLogoutMutation } from '@/store/auth-slice';
+import { useNavigate } from "react-router-dom";
+import { Package, Wallet, ArrowRight, LogOut } from "lucide-react";
+import { useLogoutMutation } from "@/store/auth-slice";
 
 export default function AppSelectionPage() {
   const navigate = useNavigate();
@@ -8,22 +8,22 @@ export default function AppSelectionPage() {
 
   const apps = [
     {
-      id: 'salary',
-      name: 'CMHO Admin Manager',
-      description: 'Manage employee salaries and payments',
+      id: "salary",
+      name: "CMHO Admin Manager",
+      description: "Manage employee salaries and payments",
       icon: Wallet,
-      path: '/salary',
+      path: "/salary",
       available: true,
-      color: 'blue',
+      color: "blue",
     },
     {
-      id: 'inventory-manager',
-      name: 'CMHO Inventory Manager',
-      description: 'Track and manage inventory',
+      id: "inventory-manager",
+      name: "CMHO Inventory Manager",
+      description: "Track and manage inventory",
       icon: Package,
-      path: '/inventory',
+      path: "/inventory",
       available: true,
-      color: 'green',
+      color: "green",
     },
   ];
 
@@ -36,7 +36,7 @@ export default function AppSelectionPage() {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
       console.error(error);
     }
@@ -65,19 +65,20 @@ export default function AppSelectionPage() {
               const Icon = app.icon;
               const colorClasses = {
                 blue: {
-                  bg: 'bg-blue-500',
-                  text: 'text-white',
-                  hover: 'hover:shadow-2xl hover:-translate-y-1',
-                  button: 'bg-blue-600 hover:bg-blue-700',
+                  bg: "bg-blue-500",
+                  text: "text-white",
+                  hover: "hover:shadow-2xl hover:-translate-y-1",
+                  button: "bg-blue-600 hover:bg-blue-700",
                 },
                 green: {
-                  bg: 'bg-green-500',
-                  text: 'text-white',
-                  hover: 'hover:shadow-2xl hover:-translate-y-1',
-                  button: 'bg-green-600 hover:bg-green-700',
+                  bg: "bg-green-500",
+                  text: "text-white",
+                  hover: "hover:shadow-2xl hover:-translate-y-1",
+                  button: "bg-green-600 hover:bg-green-700",
                 },
               };
-              const colors = colorClasses[app.color as keyof typeof colorClasses];
+              const colors =
+                colorClasses[app.color as keyof typeof colorClasses];
 
               return (
                 <div
@@ -85,7 +86,7 @@ export default function AppSelectionPage() {
                   className={`bg-white rounded-2xl shadow-lg p-8 transition-all duration-200 ${
                     app.available
                       ? `${colors.hover} cursor-pointer`
-                      : 'opacity-60 cursor-not-allowed'
+                      : "opacity-60 cursor-not-allowed"
                   }`}
                   onClick={() => handleAppSelect(app)}
                 >
@@ -99,7 +100,7 @@ export default function AppSelectionPage() {
                       </div>
                       <h2
                         className={`text-2xl font-bold ${
-                          app.available ? 'text-gray-900' : 'text-gray-500'
+                          app.available ? "text-gray-900" : "text-gray-500"
                         }`}
                       >
                         {app.name}
@@ -107,7 +108,9 @@ export default function AppSelectionPage() {
                     </div>
 
                     {/* Description below */}
-                    <p className="text-gray-600 mb-8 flex-grow text-sm">{app.description}</p>
+                    <p className="text-gray-600 mb-8 flex-grow text-sm">
+                      {app.description}
+                    </p>
 
                     {app.available ? (
                       <button

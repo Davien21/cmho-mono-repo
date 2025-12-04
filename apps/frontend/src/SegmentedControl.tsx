@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type SegmentedControlOption = {
@@ -11,12 +11,16 @@ interface SegmentedControlProps {
   value: string;
   onChange: (value: string) => void;
   options: SegmentedControlOption[];
+  minItemWidth?: number;
+  size?: "default" | "small";
 }
 
 export default function SegmentedControl({
   value,
   onChange,
   options,
+  minItemWidth,
+  size = "default",
 }: SegmentedControlProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -33,9 +37,10 @@ export default function SegmentedControl({
       const { offsetLeft, offsetWidth } = activeButton;
       // Add a small horizontal inset so the white knob has breathing room
       // and stays visually centered with equal left/right gaps.
+      // The container has px-0.5 (2px) padding, and we want 2px gap on each side
       const horizontalInset = 2; // px
       const adjustedLeft = offsetLeft + horizontalInset;
-      const adjustedWidth = Math.max(offsetWidth - horizontalInset * 2.5, 0);
+      const adjustedWidth = Math.max(offsetWidth - horizontalInset * 2, 0);
 
       setSliderStyle({ left: adjustedLeft, width: adjustedWidth });
     }
@@ -66,9 +71,13 @@ export default function SegmentedControl({
             }}
             onClick={() => onChange(option.id)}
             className={cn(
-              "relative z-10 flex items-center justify-center gap-2 rounded-md transition-colors duration-300 px-3 py-1.5 text-sm font-medium",
+              "relative z-10 flex items-center justify-center gap-2 rounded-md transition-colors duration-300 font-medium select-none",
+              size === "small"
+                ? "px-2.5 py-1.5 text-xs"
+                : "px-3 py-1.5 text-sm",
               isActive ? "text-slate-900" : "text-slate-500"
             )}
+            style={minItemWidth ? { minWidth: `${minItemWidth}px` } : undefined}
           >
             {option.content ?? (
               <span className="whitespace-nowrap">{option.label}</span>
