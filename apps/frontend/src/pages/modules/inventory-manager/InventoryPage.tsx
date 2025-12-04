@@ -87,19 +87,13 @@ export default function InventoryPage() {
   return (
     <Layout>
       <div className="flex flex-col gap-4 sm:gap-6">
-        <div>
-          <p className="text-gray-600 mt-1 text-sm sm:text-base">
+        <div className="flex flex-col gap-2">
+          <h1 className="hidden lg:block text-xl sm:text-2xl font-semibold tracking-tight">
+            Inventory Items
+          </h1>
+          <p className="text-base sm:text-sm text-muted-foreground">
             Manage the hospital inventory
           </p>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            Inventory Items
-            <span className="ml-2 text-sm font-normal text-gray-500">
-              ({items.length} {items.length === 1 ? "item" : "items"})
-            </span>
-          </h2>
         </div>
 
         {isLoading ? (
