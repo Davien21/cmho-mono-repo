@@ -25,7 +25,22 @@ export async function getStockEntries(
     operationType,
   });
 
-  res.send(successResponse("Stock entries fetched successfully", entries));
+  // Transform entries to include createdBy name
+  const transformedEntries = entries.map((entry: any) => {
+    const entryObj = entry.toObject ? entry.toObject() : entry;
+    const createdBy = entryObj.createdBy;
+    // Handle populated createdBy (object with _id and name) or unpopulated (ObjectId/string)
+    const createdById = createdBy?._id?.toString() || createdBy?.toString() || createdBy || null;
+    const createdByName = createdBy?.name || null;
+
+    return {
+      ...entryObj,
+      createdBy: createdById,
+      createdByName,
+    };
+  });
+
+  res.send(successResponse("Stock entries fetched successfully", transformedEntries));
 }
 
 export async function createStockEntry(req: Request, res: Response) {

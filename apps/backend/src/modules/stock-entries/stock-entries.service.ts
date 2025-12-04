@@ -46,7 +46,11 @@ class StockEntriesService {
     if (inventoryItemId) filter.inventoryItemId = inventoryItemId;
     if (operationType) filter.operationType = operationType;
 
-    return StockEntry.find(filter).sort({ _id: sort }).limit(limit).skip(skip);
+    return StockEntry.find(filter)
+      .populate("createdBy", "name")
+      .sort({ _id: sort })
+      .limit(limit)
+      .skip(skip);
   }
 
   async addStock(
@@ -61,34 +65,13 @@ class StockEntriesService {
       createdBy,
     });
 
-    // Update inventory item stock and expiry date
+    // Update inventory item stock
     const item = await InventoryItem.findById(entry.inventoryItemId);
     if (item) {
       const currentStock = item.currentStockInBaseUnits ?? 0;
       const nextStock = currentStock + entry.quantityInBaseUnits;
 
-      let earliestExpiryDate = item.earliestExpiryDate;
-
-      // Update earliestExpiryDate when adding stock
-      if (entry.expiryDate) {
-        const now = new Date();
-
-        // 1) Normal case: keep the earliest expiry we've ever seen
-        if (!earliestExpiryDate || entry.expiryDate < earliestExpiryDate) {
-          earliestExpiryDate = entry.expiryDate;
-        }
-        // 2) If the current earliestExpiryDate is already in the past,
-        //    allow it to move forward to a later batch's expiry date.
-        else if (
-          earliestExpiryDate < now &&
-          entry.expiryDate > earliestExpiryDate
-        ) {
-          earliestExpiryDate = entry.expiryDate;
-        }
-      }
-
       item.currentStockInBaseUnits = nextStock;
-      item.earliestExpiryDate = earliestExpiryDate;
       await item.save();
     }
 
@@ -148,7 +131,7 @@ class StockEntriesService {
       quantityInBaseUnits: quantityToStore,
     });
 
-    // Incrementally update currentStockInBaseUnits and earliestExpiryDate
+    // Incrementally update currentStockInBaseUnits
     const item = await InventoryItem.findById(entry.inventoryItemId);
     if (item) {
       const currentStock = item.currentStockInBaseUnits ?? 0;
@@ -159,28 +142,7 @@ class StockEntriesService {
           : entry.quantityInBaseUnits;
       const nextStock = currentStock + quantityDelta;
 
-      let earliestExpiryDate = item.earliestExpiryDate;
-
-      // Only adjust earliestExpiryDate when we add stock
-      if (entry.operationType === "add" && entry.expiryDate) {
-        const now = new Date();
-
-        // 1) Normal case: keep the earliest expiry we've ever seen
-        if (!earliestExpiryDate || entry.expiryDate < earliestExpiryDate) {
-          earliestExpiryDate = entry.expiryDate;
-        }
-        // 2) If the current earliestExpiryDate is already in the past,
-        //    allow it to move forward to a later batch's expiry date.
-        else if (
-          earliestExpiryDate < now &&
-          entry.expiryDate > earliestExpiryDate
-        ) {
-          earliestExpiryDate = entry.expiryDate;
-        }
-      }
-
       item.currentStockInBaseUnits = nextStock;
-      item.earliestExpiryDate = earliestExpiryDate;
       await item.save();
     }
 
