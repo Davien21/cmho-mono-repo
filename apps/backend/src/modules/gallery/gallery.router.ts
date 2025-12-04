@@ -3,6 +3,7 @@ const router = express.Router();
 
 import { generalMulter } from "../../lib/multer";
 import validateBy from "../../middlewares/validator";
+import { authenticate, requireSuperAdmin } from "../../middlewares/authentication";
 import {
   createGalleryItem,
   deleteGalleryItem,
@@ -28,7 +29,7 @@ router.put(
   updateGalleryItem
 );
 
-router.delete("/gallery/:id", deleteGalleryItem);
+router.delete("/gallery/:id", [authenticate, requireSuperAdmin], deleteGalleryItem);
 
 export default router;
 

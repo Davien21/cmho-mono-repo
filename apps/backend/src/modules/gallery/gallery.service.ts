@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Gallery from "./gallery.model";
 import { IGallery, GalleryRequest } from "./gallery.types";
 
@@ -35,6 +36,12 @@ class GalleryService {
 
   async findById(id: string) {
     return Gallery.findById(id).lean();
+  }
+
+  async findByMediaId(mediaId: string) {
+    return Gallery.findOne({
+      media_id: new mongoose.Types.ObjectId(mediaId),
+    }).lean();
   }
 
   async create(data: {
