@@ -135,23 +135,24 @@ export function SuppliersSection({ onEditSupplier }: SuppliersSectionProps) {
                   <div className="flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreVertical className="h-4 w-4" />
+                        <Button variant="ghost" className="h-10 w-10 sm:h-8 sm:w-8 p-0">
+                          <MoreVertical className="h-5 w-5 sm:h-4 sm:w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={() => onEditSupplier(supplier)}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
                         >
-                          <Edit2 className="mr-2 h-4 w-4" />
+                          <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                           Edit supplier
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDelete(supplier)}
-                          className="text-red-600 focus:text-red-600"
+                          className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
                           disabled={isDeleting}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                           Delete supplier
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -198,21 +199,21 @@ export function SuppliersSection({ onEditSupplier }: SuppliersSectionProps) {
             <div className="flex justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
+                  <Button variant="ghost" className="h-10 w-10 sm:h-8 sm:w-8 p-0">
+                    <MoreVertical className="h-5 w-5 sm:h-4 sm:w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onEditSupplier(supplier)}>
-                    <Edit2 className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={() => onEditSupplier(supplier)} className="text-base sm:text-sm py-2.5 sm:py-2">
+                    <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                     Edit supplier
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleDelete(supplier)}
-                    className="text-red-600 focus:text-red-600"
+                    className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
                     disabled={isDeleting}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
+                    <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                     Delete supplier
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -319,41 +320,44 @@ export function SupplierModal({
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <Label htmlFor="supplier-name">Name</Label>
+                <Label htmlFor="supplier-name" className="text-base sm:text-sm">Name</Label>
                 <Input
                   id="supplier-name"
                   placeholder="e.g. ABC Pharmaceuticals"
                   {...register("name")}
+                  className="text-base sm:text-sm h-11 sm:h-9"
                 />
                 {errors.name?.message && (
-                  <p className="text-xs text-destructive mt-1">
+                  <p className="text-sm sm:text-xs text-destructive mt-1">
                     {errors.name.message}
                   </p>
                 )}
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="supplier-phone">Phone</Label>
+                <Label htmlFor="supplier-phone" className="text-base sm:text-sm">Phone</Label>
                 <Input
                   id="supplier-phone"
                   placeholder="e.g. 0803 000 0000"
                   {...register("phone")}
+                  className="text-base sm:text-sm h-11 sm:h-9"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="supplier-address">Address</Label>
+              <Label htmlFor="supplier-address" className="text-base sm:text-sm">Address</Label>
               <Input
                 id="supplier-address"
                 placeholder="e.g. 12 Main Street, Lagos"
                 {...register("address")}
+                className="text-base sm:text-sm h-11 sm:h-9"
               />
             </div>
 
             {mode === "edit" && (
               <div className="space-y-1">
-                <Label htmlFor="supplier-status">Status</Label>
+                <Label htmlFor="supplier-status" className="text-base sm:text-sm">Status</Label>
                 <Controller
                   name="status"
                   control={control}
@@ -402,17 +406,17 @@ const EmptyState = () => {
   return (
     <div className="w-full">
       <div className="bg-white rounded-lg border border-dashed border-muted/40 p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3">
-        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/5 text-primary">
-          <Truck className="h-6 w-6" />
+        <div className="inline-flex h-16 w-16 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-primary/5 text-primary">
+          <Truck className="h-8 w-8 sm:h-6 sm:w-6" />
         </div>
-        <h3 className="text-base sm:text-lg font-semibold text-foreground">
+        <h3 className="text-lg sm:text-lg font-semibold text-foreground">
           No suppliers yet
         </h3>
-        <p className="text-sm text-muted-foreground max-w-md">
+        <p className="text-base sm:text-sm text-muted-foreground max-w-md">
           Keep track of who you buy from by adding your first supplier. You will
           be able to reference suppliers when creating stock entries.
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm sm:text-xs text-muted-foreground">
           Use the <span className="font-medium">Add supplier</span> button above
           to get started.
         </p>
@@ -425,8 +429,8 @@ const LoadingState = () => {
   return (
     <div className="w-full">
       <div className="bg-white rounded-lg border border-dashed border-muted/40 p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3">
-        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/5 text-primary animate-spin">
-          <Loader2 className="h-6 w-6" />
+        <div className="inline-flex h-16 w-16 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-primary/5 text-primary animate-spin">
+          <Loader2 className="h-8 w-8 sm:h-6 sm:w-6" />
         </div>
       </div>
     </div>

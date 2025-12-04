@@ -468,13 +468,12 @@ import {
   Image as ImageIcon,
   Loader2,
   CheckSquare,
-  ZoomIn,
   MousePointer2,
-  Check,
   ChevronLeft,
   ChevronRight,
   X,
 } from "lucide-react";
+import { GalleryCard, GalleryCardViewMode } from "@/components/GalleryCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -486,118 +485,6 @@ import {
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useModalContext } from "@/contexts/modal-context";
-
-function MediaItem({
-  galleryItem,
-  isSelected,
-  viewMode,
-  onSelect,
-  showCheckbox,
-  onZoomClick,
-}: {
-  galleryItem: IGalleryDto;
-  isSelected: boolean;
-  viewMode: ViewMode;
-  onSelect: (checked: boolean) => void;
-  showCheckbox: boolean;
-  onZoomClick: () => void;
-}) {
-  const [imageError, setImageError] = useState(false);
-  // Use imageUrl if available, otherwise fall back to populated media
-  const media =
-    typeof galleryItem.media_id === "object" ? galleryItem.media_id : null;
-  const mediaUrl = galleryItem.imageUrl || media?.url || "";
-  const displayName = getDisplayName(galleryItem.name || media?.filename);
-  const mediaType = media?.type || "";
-
-  const isImage =
-    (mediaType?.toLowerCase().includes("image") ||
-      mediaUrl?.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) &&
-    !imageError;
-
-  return (
-    <div
-      className={cn(
-        "relative group rounded-lg overflow-hidden border transition-all",
-        viewMode === "grid" ? "aspect-square" : "flex items-center gap-3 p-2",
-        isSelected && "ring-1 ring-primary border-primary",
-        showCheckbox && "cursor-pointer"
-      )}
-      onClick={() => {
-        if (showCheckbox) {
-          onSelect(!isSelected);
-        }
-      }}
-    >
-      {/* Selection Indicator */}
-      {showCheckbox && (
-        <div
-          className="absolute top-2 left-2 z-10 flex"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect(!isSelected);
-          }}
-        >
-          <div
-            className={cn(
-              "h-8 w-8 sm:h-7 sm:w-7 rounded-md bg-white/20 backdrop-blur-md border-2 border-white/80 flex items-center justify-center transition-all",
-              isSelected && "bg-white/40"
-            )}
-          >
-            {isSelected && (
-              <Check className="h-4 w-4 sm:h-3.5 sm:w-3.5 text-black" />
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Image/Preview */}
-      <div
-        className={cn(
-          "w-full h-full flex items-center justify-center bg-muted",
-          viewMode === "list" && "w-16 h-16 flex-shrink-0 rounded"
-        )}
-      >
-        {isImage ? (
-          <img
-            src={mediaUrl}
-            alt={displayName}
-            className={cn(
-              "object-cover w-full h-full",
-              viewMode === "grid" ? "rounded-lg" : "rounded"
-            )}
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="flex items-center justify-center w-full h-full">
-            <ImageIcon className="h-8 w-8 text-muted-foreground" />
-          </div>
-        )}
-      </div>
-
-      {/* Filename */}
-      <div
-        className={cn(
-          "absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-2 truncate flex items-center justify-between gap-2",
-          viewMode === "list" &&
-            "static bg-transparent text-foreground flex-1 min-w-0"
-        )}
-      >
-        <span className="truncate flex-1">{displayName}</span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onZoomClick();
-          }}
-          className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
-          title="View full screen"
-        >
-          <ZoomIn className="h-3.5 w-3.5" />
-        </button>
-      </div>
-    </div>
-  );
-}
 
 type ViewMode = "grid" | "list";
 
@@ -1210,20 +1097,23 @@ export function GallerySection({
             )}
           >
             {filteredMedia.map((galleryItem, index) => (
-              <MediaItem
+              <GalleryCard
                 key={galleryItem._id}
-                galleryItem={galleryItem}
+                item={galleryItem}
                 isSelected={selectedMedia.includes(galleryItem._id)}
-                viewMode={viewMode}
+                viewMode={viewMode as GalleryCardViewMode}
                 showCheckbox={showCheckboxes}
-                onSelect={(checked) => {
+                showZoomButton={true}
+                onZoomClick={() => setSlideshowIndex(index)}
+                checkboxSize="medium"
+                onSelect={(item) => {
+                  const isCurrentlySelected = selectedMedia.includes(item._id);
                   setSelectedMedia((prev) =>
-                    checked
-                      ? [...prev, galleryItem._id]
-                      : prev.filter((id) => id !== galleryItem._id)
+                    isCurrentlySelected
+                      ? prev.filter((id) => id !== item._id)
+                      : [...prev, item._id]
                   );
                 }}
-                onZoomClick={() => setSlideshowIndex(index)}
               />
             ))}
             {isFetching && (
