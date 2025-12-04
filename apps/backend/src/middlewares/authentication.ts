@@ -59,4 +59,18 @@ const hasRole =
     next();
   };
 
-export { authenticate, hasRole };
+const requireSuperAdmin = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+
+  if (!user?.isSuperAdmin) {
+    throw new UnAuthorizedError("Super admin access required");
+  }
+
+  next();
+};
+
+export { authenticate, hasRole, requireSuperAdmin };
