@@ -6,6 +6,9 @@ export interface IInventoryUnitDefinition {
   _id: ObjectId;
   name: string;
   plural: string;
+  order?: number;
+  isDeleted?: boolean;
+  deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

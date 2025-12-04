@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { authenticate, hasRole } from "../../middlewares/authentication";
+import { authenticate, hasRole, requireSuperAdmin } from "../../middlewares/authentication";
 import { AdminRole } from "../admins/admins.types";
 import validator from "../../middlewares/validator";
 import {
@@ -9,10 +9,12 @@ import {
   deleteInventoryUnit,
   getInventoryUnits,
   updateInventoryUnit,
+  reorderInventoryUnits,
 } from "./inventory-units.controller";
 import {
   createInventoryUnitSchema,
   updateInventoryUnitSchema,
+  reorderInventoryUnitsSchema,
 } from "./inventory-units.validators";
 
 router.get("/inventory/units", [
@@ -43,8 +45,18 @@ router.put(
 
 router.delete(
   "/inventory/units/:id",
-  [authenticate, hasRole(AdminRole.INVENTORY_MANAGER)],
+  [authenticate, requireSuperAdmin],
   deleteInventoryUnit
+);
+
+router.post(
+  "/inventory/units/reorder",
+  [
+    authenticate,
+    hasRole(AdminRole.INVENTORY_MANAGER),
+    validator(reorderInventoryUnitsSchema),
+  ],
+  reorderInventoryUnits
 );
 
 export default router;

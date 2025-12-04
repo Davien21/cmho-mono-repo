@@ -28,3 +28,11 @@ export async function deleteInventoryUnit(req: Request, res: Response) {
   await inventoryUnitsService.delete(id);
   res.send(successResponse("Inventory unit deleted successfully"));
 }
+
+export async function reorderInventoryUnits(req: Request, res: Response) {
+  const { unitOrders } = req.body as {
+    unitOrders: Array<{ id: string; order: number }>;
+  };
+  await inventoryUnitsService.reorder(unitOrders);
+  res.send(successResponse("Inventory units reordered successfully"));
+}
