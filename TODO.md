@@ -184,7 +184,7 @@
   - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Add handler for viewing suppliers
   - Potentially create a new modal/component to display suppliers list
 
-16. **Improve reordering unit/category experience on mobile**
+16. **Improve reordering unit/category experience on mobile** - ✅
 
 - **Current state**: Units and categories use drag-and-drop reordering with a drag handle icon, which may be difficult to use on mobile devices
 - **Goal**: Improve the mobile experience for reordering units and categories to make it easier and more intuitive on touch devices
@@ -251,7 +251,7 @@
   - [ ] Other modules as needed
 - [ ] Implement revert functionality (separate task or future enhancement)
 
-15. **Restrict deletions to super admin access only** - ✅
+15. **Restrict deletions to super admin access only**
 
 - All deletion operations for critical entities should be restricted to super admins only
 - **Affected entities**: units, categories, suppliers, gallery items, inventory items
