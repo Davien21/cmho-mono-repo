@@ -1,4 +1,7 @@
 {
+  "buildCommand": "cd ../.. && pnpm --filter @cmho/salary build",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
