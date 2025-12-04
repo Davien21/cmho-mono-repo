@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Search,
   Package,
-  MoreVertical,
+  MoreHorizontal,
   PackagePlus,
   Edit2,
   Trash2,
   PackageOpen,
   Plus,
+  Image as ImageIcon,
+  X,
+  Loader2,
 } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -19,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { formatUnitName } from "@/lib/utils";
+import { formatUnitName, cn } from "@/lib/utils";
 import { InventoryQtyLevelBadge } from "@/components/InventoryQtyLevelBadge";
 
 interface InventoryListProps {
@@ -46,6 +49,14 @@ export function InventoryList({
   const [displayModes, setDisplayModes] = useState<Map<string, DisplayMode>>(
     new Map()
   );
+  // Track preview image
+  const [previewImage, setPreviewImage] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const previewImageRef = useRef<HTMLImageElement>(null);
+  const [viewportHeight, setViewportHeight] = useState<string>("100svh");
 
   const filteredItems = items.filter((item) => {
     const matchesSearch = item.name
@@ -185,6 +196,7 @@ export function InventoryList({
   const isExpiringSoon = (item: InventoryItem): boolean => {
     const earliestExpiry = getEarliestExpiry(item);
     if (!earliestExpiry) return false;
+    if (earliestExpiry === "ALL EXPIRED") return true;
 
     const expiryDate = new Date(earliestExpiry);
     const today = new Date();
@@ -196,6 +208,7 @@ export function InventoryList({
 
   const formatExpiryDate = (dateString: string | null): string => {
     if (!dateString) return "N/A";
+    if (dateString === "ALL EXPIRED") return "ALL EXPIRED";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -204,20 +217,82 @@ export function InventoryList({
     });
   };
 
+  const handleImageClick = (item: InventoryItem) => {
+    if (item.image?.url) {
+      setPreviewImage({
+        url: item.image.url,
+        name: item.name,
+      });
+    }
+  };
+
+  // Handle Escape key to close preview
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && previewImage) {
+        setPreviewImage(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [previewImage]);
+
+  // Reset loading state when preview image changes
+  useEffect(() => {
+    if (previewImage) {
+      setIsImageLoading(true);
+      // Check if image is already cached/loaded after a brief delay
+      const timer = setTimeout(() => {
+        if (previewImageRef.current?.complete) {
+          setIsImageLoading(false);
+        }
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [previewImage]);
+
+  // Prevent body scroll when overlay is open and set viewport height
+  useEffect(() => {
+    if (previewImage) {
+      // Save current overflow style
+      const originalOverflow = document.body.style.overflow;
+      // Disable body scroll
+      document.body.style.overflow = "hidden";
+
+      // Set viewport height to actual window height for iOS
+      const setHeight = () => {
+        const vh = window.innerHeight;
+        setViewportHeight(`${vh}px`);
+      };
+      setHeight();
+      window.addEventListener("resize", setHeight);
+
+      // Restore on cleanup
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener("resize", setHeight);
+      };
+    }
+  }, [previewImage]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 justify-between">
         <div className="relative flex-1 sm:max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             placeholder="Search items..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 text-base sm:text-sm h-10 sm:h-9"
           />
         </div>
-        <Button onClick={onAddItem} className="sm:flex-shrink-0">
-          <Plus className="h-5 w-5 sm:mr-2" />
+        <Button
+          onClick={onAddItem}
+          className="sm:flex-shrink-0 h-10 sm:h-9 px-4 sm:px-3 text-base sm:text-sm"
+        >
+          <Plus className="h-5 w-5 sm:h-4 sm:w-4 sm:mr-2" />
           <span className="hidden sm:inline">Add Item</span>
         </Button>
       </div>
@@ -225,9 +300,11 @@ export function InventoryList({
       {filteredItems.length === 0 ? (
         <div className="border rounded-lg p-12">
           <div className="text-center text-muted-foreground">
-            <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium mb-1">No items found</p>
-            <p className="text-sm">
+            <Package className="h-16 w-16 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-xl sm:text-lg font-medium mb-1">
+              No items found
+            </p>
+            <p className="text-base sm:text-sm">
               {search
                 ? "Try adjusting your search"
                 : "Add your first inventory item to get started"}
@@ -241,10 +318,27 @@ export function InventoryList({
             <div className="divide-y divide-gray-200">
               {filteredItems.map((item) => (
                 <div key={item.id} className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-medium text-gray-900">{item.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                  <div className="flex items-start justify-between mb-3 gap-3">
+                    {/* Thumbnail */}
+                    <div className="flex-shrink-0">
+                      {item.image?.url ? (
+                        <img
+                          src={item.image.url}
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => handleImageClick(item)}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                          <ImageIcon className="h-8 w-8 sm:h-6 sm:w-6 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-base text-gray-900">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm sm:text-xs text-gray-600 mt-1">
                         {item.inventoryCategory}
                       </p>
                     </div>
@@ -263,7 +357,7 @@ export function InventoryList({
                   </div>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 space-y-1">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-base sm:text-sm text-gray-500">
                         Stock:{" "}
                         <InventoryQtyLevelBadge
                           low={isLowStock(item)}
@@ -273,11 +367,15 @@ export function InventoryList({
                           {getFormattedStock(item)}
                         </InventoryQtyLevelBadge>
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-base sm:text-sm text-gray-500">
                         Earliest Expiry:{" "}
                         <Badge
                           className={
-                            isExpiringSoon(item)
+                            getEarliestExpiry(item) === "ALL EXPIRED"
+                              ? "bg-red-100 text-red-800 hover:bg-red-200"
+                              : getEarliestExpiry(item) === null
+                              ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              : isExpiringSoon(item)
                               ? "bg-red-100 text-red-800 hover:bg-red-200"
                               : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                           }
@@ -289,30 +387,41 @@ export function InventoryList({
                     <div className="flex-shrink-0">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-4 w-4" />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9 sm:h-8 sm:w-8 border-gray-300 hover:bg-gray-50"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onUpdateStock(item)}>
-                            <PackagePlus className="mr-2 h-4 w-4" />
+                          <DropdownMenuItem
+                            onClick={() => onUpdateStock(item)}
+                            className="text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <PackagePlus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                             Update Stock
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => onViewStockEntries(item)}
+                            className="text-base sm:text-sm py-2.5 sm:py-2"
                           >
-                            <PackageOpen className="mr-2 h-4 w-4" />
+                            <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                             View Stock Changes
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onEdit(item)}>
-                            <Edit2 className="mr-2 h-4 w-4" />
+                          <DropdownMenuItem
+                            onClick={() => onEdit(item)}
+                            className="text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                             Edit Item
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => onDelete(item)}
-                            className="text-red-600 focus:text-red-600"
+                            className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
+                            <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                             Delete Item
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -329,6 +438,9 @@ export function InventoryList({
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                    Image
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Item Name
                   </th>
@@ -353,6 +465,20 @@ export function InventoryList({
                 {filteredItems.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
+                      {item.image?.url ? (
+                        <img
+                          src={item.image.url}
+                          alt={item.name}
+                          className="w-12 h-12 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => handleImageClick(item)}
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                          <ImageIcon className="h-6 w-6 sm:h-5 sm:w-5 text-gray-400" />
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {item.name}
                       </div>
@@ -374,7 +500,11 @@ export function InventoryList({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge
                         className={
-                          isExpiringSoon(item)
+                          getEarliestExpiry(item) === "ALL EXPIRED"
+                            ? "bg-red-100 text-red-800 hover:bg-red-200"
+                            : getEarliestExpiry(item) === null
+                            ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            : isExpiringSoon(item)
                             ? "bg-red-100 text-red-800 hover:bg-red-200"
                             : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                         }
@@ -400,32 +530,40 @@ export function InventoryList({
                       <div className="flex justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreVertical className="h-4 w-4" />
+                            <Button
+                              variant="outline"
+                              className="h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50"
+                            >
+                              <MoreHorizontal className="h-5 w-5 sm:h-4 sm:w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => onUpdateStock(item)}
+                              className="text-base sm:text-sm py-2.5 sm:py-2"
                             >
-                              <PackagePlus className="mr-2 h-4 w-4" />
+                              <PackagePlus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                               Update Stock
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => onViewStockEntries(item)}
+                              className="text-base sm:text-sm py-2.5 sm:py-2"
                             >
-                              <PackageOpen className="mr-2 h-4 w-4" />
+                              <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                               View Stock Changes
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
-                              <Edit2 className="mr-2 h-4 w-4" />
+                            <DropdownMenuItem
+                              onClick={() => onEdit(item)}
+                              className="text-base sm:text-sm py-2.5 sm:py-2"
+                            >
+                              <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                               Edit Item
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => onDelete(item)}
-                              className="text-red-600 focus:text-red-600"
+                              className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
                             >
-                              <Trash2 className="mr-2 h-4 w-4" />
+                              <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                               Delete Item
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -436,6 +574,85 @@ export function InventoryList({
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Image Preview Overlay */}
+      {previewImage && (
+        <div
+          className="fixed z-[100] flex items-center justify-center overflow-hidden"
+          style={{
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100vw",
+            height: viewportHeight,
+            minHeight: "-webkit-fill-available",
+          }}
+        >
+          {/* Glassmorphic Backdrop */}
+          <div
+            className="absolute w-full h-full bg-black/60 backdrop-blur-md"
+            onClick={() => setPreviewImage(null)}
+            style={{
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: "100%",
+              height: "100%",
+            }}
+          />
+
+          {/* Preview Content */}
+          <div className="relative z-10 w-full h-full flex items-center justify-center p-4 overflow-auto">
+            {/* Close Button */}
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute z-20 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all text-white"
+              style={{ top: "1rem", right: "1rem" }}
+              title="Close (Esc)"
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            {/* Image Container */}
+            <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
+              <div className="relative">
+                {/* Loading Spinner */}
+                {isImageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+                      <Loader2 className="h-8 w-8 text-white animate-spin" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Image - Hidden until loaded */}
+                <img
+                  ref={previewImageRef}
+                  src={previewImage.url}
+                  alt={previewImage.name}
+                  className={cn(
+                    "max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300",
+                    isImageLoading ? "opacity-0" : "opacity-100"
+                  )}
+                  onLoadStart={() => setIsImageLoading(true)}
+                  onLoad={() => setIsImageLoading(false)}
+                  onError={() => setIsImageLoading(false)}
+                />
+                {/* Image Info - Only show when image is loaded */}
+                {!isImageLoading && (
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent rounded-b-lg">
+                    <p className="text-white text-sm font-medium truncate">
+                      {previewImage.name}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

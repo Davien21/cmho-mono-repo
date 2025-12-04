@@ -28,7 +28,16 @@ export function InventoryCategorySelect({
   errorMessage,
 }: InventoryCategorySelectProps) {
   const { data, isLoading, isError } = useGetInventoryCategoriesQuery();
-  const categories: IInventoryCategoryDto[] = data?.data || [];
+  // Sort categories by order (ascending), then by name as fallback
+  // Create a copy of the array before sorting to avoid mutating the read-only array from RTK Query
+  const categories: IInventoryCategoryDto[] = [...(data?.data || [])].sort((a, b) => {
+    const orderA = a.order ?? 0;
+    const orderB = b.order ?? 0;
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   return (
     <div className="space-y-1">

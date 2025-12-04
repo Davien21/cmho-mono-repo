@@ -27,14 +27,8 @@ export function UnitBasedInput<T extends FieldValues>({
 }: UnitBasedInputProps<T>) {
   const sortedUnits = useMemo(() => {
     // Filter out units with falsy names and maintain order
-    const unitsWithNames = units.filter((unit) => unit.name && unit.quantity);
-
-    // Filter out units with falsy quantity, but keep the base unit (last unit) even if it has no quantity
-    return unitsWithNames.filter((unit, index, array) => {
-      const isBaseUnit = index === array.length - 1;
-      // Show base unit always, or show other units only if they have a quantity
-      return isBaseUnit || unit.quantity;
-    });
+    // Show all units that have a name, regardless of whether they have a quantity
+    return units.filter((unit) => unit.name);
   }, [units]);
 
   const getBaseUnit = () => {

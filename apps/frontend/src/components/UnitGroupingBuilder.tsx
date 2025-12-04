@@ -7,7 +7,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "./ui/context-menu";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { UnitDropdown } from "./UnitDropDown";
 import { IInventoryUnitDefinitionDto } from "@/store/inventory-slice";
 
@@ -33,8 +33,22 @@ export function UnitGroupingBuilder({
   initialUnits,
   presets,
 }: UnitGroupingBuilderProps) {
-  // Derive unit names from presets for the dropdown
-  const availableUnitNames = presets.map((p) => p.name);
+  // Sort presets by order (ascending), then by name as fallback
+  const sortedPresets = useMemo(() => {
+    return [...presets].sort((a, b) => {
+      const orderA = a.order ?? 0;
+      const orderB = b.order ?? 0;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }, [presets]);
+  // Derive unit names from sorted presets for the dropdown
+  const availableUnitNames = useMemo(
+    () => sortedPresets.map((p) => p.name),
+    [sortedPresets]
+  );
   const addLevel = () => {
     const newUnit: UnitLevel = {
       id: crypto.randomUUID(),
@@ -58,15 +72,15 @@ export function UnitGroupingBuilder({
 
   const handleUnitSelect = useCallback(
     (unitId: string, value: string) => {
-      // Look up the plural from presets
-      const preset = presets.find((p) => p.name === value);
+      // Look up the plural from sorted presets
+      const preset = sortedPresets.find((p) => p.name === value);
       const updates: Partial<UnitLevel> = {
         name: value,
         ...(preset ? { plural: preset.plural } : {}),
       };
       updateUnit(unitId, updates);
     },
-    [updateUnit, presets]
+    [updateUnit, sortedPresets]
   );
 
   const removeUnit = (id: string) => {
