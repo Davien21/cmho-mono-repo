@@ -2,46 +2,35 @@
 
 ## UI/UX Improvements
 
-1. **Switch date inputs to shadcn date picker with input**
+- **Current state**: Expiry date is stored and input as a full date (day, month, year)
+- **Goal**: Change expiry date to only require month and year (no day selection)
+- **Implementation requirements**:
+  - [ ] Update frontend expiry date input in UpdateStockModal to use month/year picker (not full date)
+  - [ ] Update backend schema/validators to accept month/year format (store as first day of month or use month/year fields)
+  - [ ] Update stock entries model to handle month/year expiry dates
+  - [ ] Update inventory items model if earliestExpiryDate needs to be month/year
+  - [ ] Ensure date comparisons and logic work correctly with month/year format
+  - [ ] Update any display components showing expiry dates to format as "MM/YYYY" or "Month YYYY"
+- **Files to update**:
+  - `apps/frontend/src/components/modals/UpdateStockModal.tsx` - Change date input to month/year picker
+  - `apps/backend/src/modules/stock-entries/stock-entries.validators.ts` - Update validation schema
+  - `apps/backend/src/modules/stock-entries/stock-entries.model.ts` - Consider schema changes if needed
+  - `apps/backend/src/modules/stock-entries/stock-entries.service.ts` - Update date comparison logic
+  - `apps/backend/src/modules/inventory-items/inventory-items.model.ts` - Update earliestExpiryDate handling
 
-   - Replace all date input fields with the "Picker with Input" component from [shadcn date-picker](https://ui.shadcn.com/docs/components/date-picker)
-   - This provides a better UX with both manual input and calendar picker functionality
-   - Files to update:
-     - [ ] Identify all components using date inputs
-     - [ ] Implement the date picker component
-     - [ ] Replace existing date inputs with the new picker
-
-2. **Update expiry date to use month and year only**
-
-   - **Current state**: Expiry date is stored and input as a full date (day, month, year)
-   - **Goal**: Change expiry date to only require month and year (no day selection)
-   - **Implementation requirements**:
-     - [ ] Update frontend expiry date input in UpdateStockModal to use month/year picker (not full date)
-     - [ ] Update backend schema/validators to accept month/year format (store as first day of month or use month/year fields)
-     - [ ] Update stock entries model to handle month/year expiry dates
-     - [ ] Update inventory items model if earliestExpiryDate needs to be month/year
-     - [ ] Ensure date comparisons and logic work correctly with month/year format
-     - [ ] Update any display components showing expiry dates to format as "MM/YYYY" or "Month YYYY"
-   - **Files to update**:
-     - `apps/frontend/src/components/modals/UpdateStockModal.tsx` - Change date input to month/year picker
-     - `apps/backend/src/modules/stock-entries/stock-entries.validators.ts` - Update validation schema
-     - `apps/backend/src/modules/stock-entries/stock-entries.model.ts` - Consider schema changes if needed
-     - `apps/backend/src/modules/stock-entries/stock-entries.service.ts` - Update date comparison logic
-     - `apps/backend/src/modules/inventory-items/inventory-items.model.ts` - Update earliestExpiryDate handling
-
-3. **Align vertical spacing and style between inventory and stock modals**
+1. **Align vertical spacing and style between inventory and stock modals**
 
    - [ ] Review spacing in AddInventoryModal, EditInventoryModal, and UpdateStockModal
    - [ ] Standardize padding, margins, and gap values across all modals
    - [ ] Ensure consistent styling for form fields, buttons, and layout
 
-4. **Find a better way to present name of item in update stock modal**
+2. **Find a better way to present name of item in update stock modal**
 
    - [ ] Review current implementation in UpdateStockModal
    - [ ] Design better UI/UX for displaying item name
    - [ ] Implement improved item name presentation
 
-5. **Update lowStockValue yup schema to number and implement auto-conversion on blur**
+3. **Update lowStockValue yup schema to number and implement auto-conversion on blur**
 
    - **Current state**: `lowStockValue` in AddInventoryModal uses yup array schema (array of `{unitId, value}` objects), but backend expects a number (in base units)
    - **Goal**: Change yup schema to accept `lowStockValue` as a number and add auto-conversion logic
@@ -60,7 +49,7 @@
    - [ ] Test conversion logic with various unit configurations (e.g., 1 pack = 4 cards, 1 card = 5 tablets)
    - [ ] Ensure form submission converts unit inputs to base units number before sending to backend
 
-6. **Explore and implement inventory item picture management** - ✅
+4. **Explore and implement inventory item picture management** - ✅
 
    - Currently, inventory items don't have pictures
    - Need to explore the best approach for adding and managing pictures
@@ -76,7 +65,7 @@
      - [ ] Plan for existing items (migration strategy, optional vs required)
    - [ ] Implement chosen solution
 
-7. **Determine if users should be allowed to modify packaging structure after category selection**
+5. **Determine if users should be allowed to modify packaging structure after category selection**
 
    - **Current behavior**: When a user selects a category with predefined unit presets (packaging structure), the UnitGroupingBuilder component loads those presets
    - **Question for Dr. Ubochi**: Should users be allowed to modify the packaging structure (units, quantities, relationships) even after selecting a category that has a defined structure?
@@ -96,7 +85,7 @@
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
 
-8. **Fix unit and categories edit mode**
+6. **Fix unit and categories edit mode**
 
 - Currently, units and categories use inline editing (forms appear directly in the list)
 - This may have UX issues or inconsistencies compared to the supplier edit mode (which uses a modal)
@@ -106,7 +95,7 @@
 - [ ] Consider consistency: Should all three (units, categories, suppliers) use the same edit pattern?
 - [ ] Test edit functionality thoroughly
 
-11. **Improve text and icon sizes for better readability and mobile usability** - ✅
+7. **Improve text and icon sizes for better readability and mobile usability** - ✅
 
 - Text and icons should be larger and more readable, especially on mobile devices
 - Larger touch targets make it easier to click/tap on mobile
@@ -118,7 +107,7 @@
 - [ ] Test on mobile devices to verify improved usability
 - [x] Consider responsive sizing: larger on mobile, appropriate on desktop
 
-12. **Make UnitGroupingBuilder select adjust to content size**
+8. **Make UnitGroupingBuilder select adjust to content size**
 
 - Currently, the UnitDropdown components in UnitGroupingBuilder use a fixed width (`w-24` = 96px)
 - This can cause issues with longer unit names being truncated or having too much empty space for shorter names
@@ -128,7 +117,7 @@
 - [ ] Test with various unit name lengths to ensure proper display
 - [ ] Update both root unit and nested unit dropdowns in UnitGroupingBuilder
 
-13. **Ensure category presets are prefilled when adding inventory items**
+9. **Ensure category presets are prefilled when adding inventory items**
 
 - When a user selects a category in AddInventoryModal, the category's unit presets (packaging structure) should be automatically prefilled in the UnitGroupingBuilder
 - **Current state**: There is a useEffect that handles category changes, but it may not work correctly in all scenarios (e.g., when modal first opens, when categories load asynchronously, when switching between categories)
@@ -140,7 +129,7 @@
 - [ ] Verify that canBeSold checkbox is also prefilled from category settings
 - [ ] Ensure lowStockValue is properly initialized when presets are loaded
 
-14. **Make input in UnitBasedInput expand based on content**
+10. **Make input in UnitBasedInput expand based on content**
 
 - Currently, the number input in UnitBasedInput has a fixed width (`w-14` = 56px)
 - This can cause issues with longer numbers being truncated or having too much empty space for shorter numbers
@@ -150,7 +139,7 @@
 - [ ] Test with various number lengths to ensure proper display
 - [ ] Maintain proper alignment with the unit label text
 
-15. **Show all suppliers of an inventory item as an option in inventory item actions**
+11. **Show all suppliers of an inventory item as an option in inventory item actions**
 
 - Add a new action option in the inventory item actions dropdown menu to view all suppliers associated with an inventory item
 - **Current state**: Inventory items have supplier information, but there's no easy way to view all suppliers for an item from the actions menu
@@ -166,7 +155,7 @@
   - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Add handler for viewing suppliers
   - Potentially create a new modal/component to display suppliers list
 
-16. **Improve reordering unit/category experience on mobile** - ✅
+12. **Improve reordering unit/category experience on mobile** - ✅
 
 - **Current state**: Units and categories use drag-and-drop reordering with a drag handle icon, which may be difficult to use on mobile devices
 - **Goal**: Improve the mobile experience for reordering units and categories to make it easier and more intuitive on touch devices
@@ -181,7 +170,7 @@
   - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/units.tsx` - Improve ReorderableUnitItem mobile experience
   - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/categories.tsx` - Improve ReorderableCategoryItem mobile experience
 
-17. **Better design the app selection UI**
+13. **Better design the app selection UI**
 
 - **Current state**: AppSelectionPage has a basic design with two app cards in a grid layout
 - **Goal**: Improve the visual design, layout, and user experience of the app selection page
@@ -197,7 +186,7 @@
 - **Files to update**:
   - `apps/frontend/src/pages/AppSelectionPage.tsx` - Redesign the app selection interface
 
-18. **Change action buttons everywhere to match the one in inventory table**
+14. **Change action buttons everywhere to match the one in inventory table**
 
 - **Current state**: Different tables/components use inconsistent action button styles:
   - InventoryList uses: `variant="outline"` with `className="h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50"` and `MoreHorizontal` icon
@@ -229,7 +218,7 @@
   - `apps/frontend/src/components/tables/GroupedPaymentsTable.tsx` - Check and update if needed
   - `apps/frontend/src/components/tables/RecentEmployeesTable.tsx` - Check and update if needed
 
-19. **Automatically expand sidebar when moving from mobile back to desktop view**
+15. **Automatically expand sidebar when moving from mobile back to desktop view**
 
 - **Current state**: When transitioning from mobile view to desktop view, the sidebar stays hidden/collapsed instead of automatically expanding
 - **Goal**: Automatically expand the sidebar when the viewport changes from mobile to desktop
@@ -242,7 +231,7 @@
 - **Files to update**:
   - `apps/frontend/src/components/ui/sidebar.tsx` - Add effect to handle mobile-to-desktop transition in `SidebarProvider`
 
-20. **Use thumbnails for preview image cards and full images for preview modal**
+16. **Use thumbnails for preview image cards and full images for preview modal**
 
 - **Current state**: Preview image cards (e.g., GalleryCard) and the preview modal (ImagePreviewModal) both load full-size images, which can be slow and use unnecessary bandwidth
 - **Goal**: Optimize image loading by using smaller thumbnail images for preview cards and only loading full-size images when the user opens the preview modal
@@ -260,7 +249,7 @@
 
 ## Backend Features
 
-14. **Implement action tracking system**
+1. **Implement action tracking system**
 
 - Track every action that an admin takes on the platform
 - **Approach**: Explicit tracking in controllers/services (not middleware)
@@ -310,7 +299,7 @@
   - [ ] Other modules as needed
 - [ ] Implement revert functionality (separate task or future enhancement)
 
-15. **Restrict deletions to super admin access only**
+2. **Restrict deletions to super admin access only**
 
 - All deletion operations for critical entities should be restricted to super admins only
 - **Affected entities**: units, categories, suppliers, gallery items, inventory items
@@ -324,7 +313,7 @@
     - [x] Inventory items deletion route
 - **Security**: Prevents accidental or unauthorized deletions of critical data
 
-16. **Allow users to choose session duration for auth/login**
+3. **Allow users to choose session duration for auth/login**
 
 - Give users the ability to select how long their authentication/login session should last
 - **Current state**: Session duration is likely fixed/hardcoded
@@ -346,7 +335,7 @@
   - `apps/backend/src/middlewares/authentication.ts` - Update session validation if needed
   - `apps/backend/src/utils/token.ts` - Update token generation to accept custom expiration
 
-17. **Force logout on 401 error with "Please log in again" message**
+4. **Force logout on 401 error with "Please log in again" message**
 
 - When the backend returns a 401 (Unauthorized) error, automatically force the user to log out and display a message
 - **Current state**: 401 errors may not be properly handled, potentially leaving users in an inconsistent authentication state
