@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 
 export const extraHeaders = (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  // Skip restrictive headers for OPTIONS preflight requests
+  // CORS middleware handles these, and restrictive headers can interfere
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
   res.setHeader("Content-Security-Policy", "default-src 'self'");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "geolocation=(), microphone=()");
