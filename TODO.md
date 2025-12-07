@@ -95,19 +95,31 @@
 - [ ] Consider consistency: Should all three (units, categories, suppliers) use the same edit pattern?
 - [ ] Test edit functionality thoroughly
 
-7. **Improve text and icon sizes for better readability and mobile usability** - ✅
+8. **Migrate inventory modals to use context-based approach**
 
-- Text and icons should be larger and more readable, especially on mobile devices
-- Larger touch targets make it easier to click/tap on mobile
-- [x] Review current text sizes across the application (especially in InventorySettingsPage and related components)
-- [x] Review icon sizes (lucide-react icons, custom icons, etc.)
-- [x] Increase font sizes for better readability on mobile
-- [x] Increase icon sizes to match larger text and provide better touch targets
-- [x] Ensure buttons and interactive elements have adequate padding for mobile tapping
-- [ ] Test on mobile devices to verify improved usability
-- [x] Consider responsive sizing: larger on mobile, appropriate on desktop
+- **Current state**: Inventory modals (AddInventoryModal, EditInventoryModal, UpdateStockModal) use props-based approach with local state management in InventoryPage
+- **Goal**: Migrate to context-based modal system (like admin/employee modals) for consistency and better code organization
+- **Benefits**:
+  - Less boilerplate (no multiple useState calls in parent components)
+  - No prop drilling (can open modals from anywhere - tables, dropdowns, buttons)
+  - Consistent pattern across the app
+  - Centralized modal management
+- **Implementation steps**:
+  - [ ] Add modal types to `ModalDataMap` in `apps/frontend/src/contexts/modal-context.tsx`:
+    - `"add-inventory": undefined`
+    - `"edit-inventory": InventoryItem`
+    - `"update-stock": InventoryItem`
+  - [ ] Update `AddInventoryModal` to use `useModalContext` instead of props
+  - [ ] Update `EditInventoryModal` to use `useModalContext` instead of props
+  - [ ] Update `UpdateStockModal` to use `useModalContext` instead of props
+  - [ ] Add all three modals to `apps/frontend/src/components/modals/index.tsx`
+  - [ ] Update `InventoryPage` to use `openModal()` calls instead of local state
+  - [ ] Remove local state management (`showAddForm`, `showEditModal`, `showStockModal`, `selectedItem`) from InventoryPage
+  - [ ] Update any other components that open inventory modals to use context
+  - [ ] Test all modal functionality (open, close, form submission, data passing)
+- **Note**: `ImagePickerModal` should remain props-based as it's a sub-modal used within other modals
 
-8. **Make UnitGroupingBuilder select adjust to content size**
+9. **Make UnitGroupingBuilder select adjust to content size**
 
 - Currently, the UnitDropdown components in UnitGroupingBuilder use a fixed width (`w-24` = 96px)
 - This can cause issues with longer unit names being truncated or having too much empty space for shorter names
@@ -154,21 +166,6 @@
   - `apps/frontend/src/components/InventoryList.tsx` - Add new dropdown menu item
   - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Add handler for viewing suppliers
   - Potentially create a new modal/component to display suppliers list
-
-12. **Improve reordering unit/category experience on mobile** - ✅
-
-- **Current state**: Units and categories use drag-and-drop reordering with a drag handle icon, which may be difficult to use on mobile devices
-- **Goal**: Improve the mobile experience for reordering units and categories to make it easier and more intuitive on touch devices
-- **Considerations**:
-  - [ ] Increase drag handle touch target size for better mobile usability
-  - [ ] Consider alternative mobile-friendly reordering methods (e.g., up/down arrow buttons, long-press to drag)
-  - [ ] Improve visual feedback during dragging on mobile (better shadows, haptic feedback if available)
-  - [ ] Prevent accidental page scrolling while dragging on mobile
-  - [ ] Test touch interactions and ensure smooth dragging experience
-  - [ ] Consider swipe gestures or other mobile-native interactions
-- **Files to update**:
-  - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/units.tsx` - Improve ReorderableUnitItem mobile experience
-  - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/categories.tsx` - Improve ReorderableCategoryItem mobile experience
 
 13. **Better design the app selection UI**
 
@@ -249,56 +246,6 @@
 
 ## Backend Features
 
-1. **Implement action tracking system**
-
-- Track every action that an admin takes on the platform
-- **Approach**: Explicit tracking in controllers/services (not middleware)
-- **Tracking rules**:
-  - Only track successful actions (failed actions should not be tracked)
-  - Only track mutations (POST, PUT, DELETE, PATCH) - do not track reads (GET requests)
-  - Track actions after successful completion
-- **Data structure for each action record** (one record per affected entity):
-  - Action name (e.g., "create_transfer", "update_inventory_item", "create_stock_entry")
-  - Module name: Use frontend modules (`inventory`, `salary`, `admin`) - matches user-facing organization
-  - Entity type (e.g., "transfer", "transaction", "employee", "inventory-item", "stock-entry") - the model/collection affected
-  - Entity ID (the specific document ID that was affected) - each record tracks one entity's change
-  - Operation ID (groups all actions that are part of one user operation - same for all related entities)
-  - Admin ID (from authenticated user)
-  - Metadata (JSON containing before/after states for this specific entity and action-specific data)
-- **Multi-entity action handling**:
-  - Create one action record per affected entity (even if different entity types)
-  - Link related actions using `operationId` (same ID for all entities in one operation)
-  - Each record stores that entity's before/after state independently
-  - Handles three scenarios:
-    - Single entity: one record
-    - Multiple same entity (bulk): multiple records with same `operationId` and `entityType`
-    - Multiple different entities: multiple records with same `operationId` but different `entityType`s
-  - Examples:
-    - Single transfer: 3 records (transfer, transaction, employee) with same `operationId`
-    - Bulk inventory update: N records (one per item) with same `operationId` and `entityType: 'inventory-item'`
-    - Create stock entry: 2 records (stock-entry, inventory-item) with same `operationId`
-- **Revert functionality**:
-  - Store before/after states in metadata for revertible actions
-  - Revert operations are total (all-or-nothing) - find all records with same `operationId` and revert each
-  - Some actions are non-revertible (e.g., bulk transfers/payments)
-- **Bulk transfers specific handling**:
-  - Since not revertible, use single summary record approach
-  - Store employees array in metadata with: `name`, `amount`, `employeeId` (for UI display without lookups)
-  - Store `totalAmount` for the bulk operation
-  - Entity type: "transfer" (bulk type)
-  - Action: "initiate_bulk_transfers"
-- [ ] Design action tracking data model/schema (include: action, module, entityType, entityId, operationId, adminId, metadata, isRevertible, timestamps)
-- [ ] Create action tracking service with helper function `trackAction(action, module, entityType, entityId, metadata, options?)` and `trackOperation(operationId, actions[])` for multi-entity operations
-- [ ] Add database indexes on `operationId`, `entityType`, `entityId`, `adminId`, `module`, `action` for efficient querying
-- [ ] Implement transaction safety for multi-entity operation tracking (all records created atomically)
-- [ ] Add explicit tracking calls in controllers/services for key operations:
-  - [ ] Inventory: create, update, delete items
-  - [ ] Stock entries: create (tracks stock-entry + inventory-item update)
-  - [ ] Employees: create, update, delete
-  - [ ] Transfers: single (tracks transfer + transaction + employee update) and bulk (summary record)
-  - [ ] Other modules as needed
-- [ ] Implement revert functionality (separate task or future enhancement)
-
 2. **Restrict deletions to super admin access only**
 
 - All deletion operations for critical entities should be restricted to super admins only
@@ -354,3 +301,44 @@
   - Authentication store/slice - Add logout action that clears all auth state
   - Login/authentication utilities - Ensure proper cleanup on logout
   - Potentially add toast/notification component if not already present
+
+5. **Refactor activity tracking setup on the backend**
+
+- **Current state**: Activity tracking implementation is messy with lots of boilerplate code, complex description builder logic, and inconsistent patterns across controllers
+- **Problems**:
+  - Excessive boilerplate code in every controller (getting admin from request, building activity data objects, calling trackActivity)
+  - Complex and confusing description builder logic (`description-builder.ts`) with special handlers and field mappings
+  - Inconsistent activity tracking patterns across different controllers
+  - Manual description building in controllers (e.g., `buildUpdateDescription`, `extractChangesMetadata`)
+  - Repetitive code for extracting admin info, building entities array, and formatting descriptions
+- **Goal**: Create a standard, flexible, and clean approach that significantly reduces boilerplate code and simplifies activity tracking
+- **Proposed solution**: Implement middleware-based activity tracking that runs after controllers to automatically handle activity recording
+- **Implementation requirements**:
+  - [ ] Design a flexible activity tracking middleware that can be applied to routes
+  - [ ] Create a standardized way to extract activity metadata from request/response (admin, entities, changes, etc.)
+  - [ ] Simplify or replace the description builder logic with a cleaner, more maintainable approach
+  - [ ] Design middleware configuration options (activity type, module, entity extraction, description builder, etc.)
+  - [ ] Implement middleware that runs after controller execution to capture response data and track activities
+  - [ ] Support different activity types (create, update, delete, custom actions) through configuration
+  - [ ] Handle edge cases (errors, partial updates, bulk operations)
+  - [ ] Refactor existing controllers to use the new middleware approach
+  - [ ] Remove or significantly simplify `description-builder.ts` utility
+  - [ ] Ensure backward compatibility during migration
+  - [ ] Test activity tracking across all modules (admins, inventory items, stock entries, suppliers, categories, units, etc.)
+- **Benefits**:
+  - Drastically reduced boilerplate code in controllers
+  - Consistent activity tracking pattern across all modules
+  - Easier to maintain and extend
+  - Cleaner controller code focused on business logic
+  - Centralized activity tracking logic
+- **Files to update**:
+  - Create new middleware: `apps/backend/src/middlewares/activity-tracking.ts` (or similar)
+  - Refactor: `apps/backend/src/utils/description-builder.ts` (simplify or replace)
+  - Update all controllers that use activity tracking:
+    - `apps/backend/src/modules/admins/admins.controller.ts`
+    - `apps/backend/src/modules/inventory-items/inventory-items.controller.ts`
+    - `apps/backend/src/modules/stock-entries/stock-entries.controller.ts`
+    - `apps/backend/src/modules/suppliers/suppliers.controller.ts`
+    - `apps/backend/src/modules/inventory-categories/inventory-categories.controller.ts`
+    - `apps/backend/src/modules/inventory-units/inventory-units.controller.ts`
+    - Any other controllers with activity tracking

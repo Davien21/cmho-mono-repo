@@ -191,7 +191,7 @@ export default function StockChangesPage() {
             {filteredRows.map((row) => (
               <Card
                 key={row.id}
-                className="bg-gray-50 rounded-lg p-4 border border-gray-100 cursor-pointer"
+                className="bg-white rounded-lg p-4 border border-gray-100 cursor-pointer"
                 onClick={() => setSelectedRow(row)}
               >
                 <div className="flex items-start gap-3">

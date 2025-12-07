@@ -14,6 +14,7 @@ import InventorySettingsPage from "@/pages/modules/inventory-manager/InventorySe
 import StockEntriesPage from "@/pages/modules/inventory-manager/StockEntriesPage";
 import StockChangesPage from "@/pages/modules/inventory-manager/StockChangesPage";
 import ActivitiesPage from "@/pages/modules/inventory-manager/ActivitiesPage";
+import AdminActivitiesPage from "@/pages/modules/salary-manager/ActivitiesPage";
 import NotificationsPage from "@/pages/modules/inventory-manager/NotificationsPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -34,6 +35,7 @@ export const AppRoutes = () => {
       <Route path="/admin/payments" element={<PaymentHistoryPage />} />
       <Route path="/admin/payments/:id" element={<TransferDetailsPage />} />
       <Route path="/admin/admins" element={<AdminsPage />} />
+      <Route path="/admin/activities" element={<AdminActivitiesPage />} />
       <Route path="/inventory" element={<InventoryHomePage />} />
       <Route path="/inventory/items" element={<InventoryPage />} />
       <Route path="/inventory/settings" element={<InventorySettingsPage />} />

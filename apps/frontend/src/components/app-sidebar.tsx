@@ -74,6 +74,12 @@ export const navigationConfig = {
       icon: Shield,
       breadcrumbs: [{ label: "Admins", url: "/admin/admins" }],
     },
+    {
+      title: "Activities",
+      url: "/admin/activities",
+      icon: Activity,
+      breadcrumbs: [{ label: "Activities", url: "/admin/activities" }],
+    },
   ],
   inventoryNav: [
     {
