@@ -35,31 +35,13 @@
    - [ ] Standardize padding, margins, and gap values across all modals
    - [ ] Ensure consistent styling for form fields, buttons, and layout
 
-4. **Make inventory and stock modals use responsive modals** - ✅
-
-   - [ ] Convert AddInventoryModal to use ResponsiveDialog component
-   - [ ] Convert EditInventoryModal to use ResponsiveDialog component
-   - [ ] Convert UpdateStockModal to use ResponsiveDialog component
-   - [ ] Test mobile and desktop responsiveness
-
-5. **Find a better way to present name of item in update stock modal**
+4. **Find a better way to present name of item in update stock modal**
 
    - [ ] Review current implementation in UpdateStockModal
    - [ ] Design better UI/UX for displaying item name
    - [ ] Implement improved item name presentation
 
-6. **Update low stock value input UX to match quantity input pattern** - ✅
-
-   - Currently, low stock value uses a simple number input in AddInventoryModal and EditInventoryModal
-   - Should match the quantity input UX pattern from UpdateStockModal (multiple unit inputs with "+" separators)
-   - [ ] Review quantity input implementation in UpdateStockModal
-   - [ ] Design low stock value input with multiple unit inputs (similar to quantity section)
-   - [ ] Update AddInventoryModal to use the new low stock value input pattern
-   - [ ] Update EditInventoryModal to use the new low stock value input pattern
-   - [ ] Ensure proper conversion to base units when saving
-   - [ ] Test with different unit configurations
-
-7. **Update lowStockValue yup schema to number and implement auto-conversion on blur**
+5. **Update lowStockValue yup schema to number and implement auto-conversion on blur**
 
    - **Current state**: `lowStockValue` in AddInventoryModal uses yup array schema (array of `{unitId, value}` objects), but backend expects a number (in base units)
    - **Goal**: Change yup schema to accept `lowStockValue` as a number and add auto-conversion logic
@@ -78,7 +60,7 @@
    - [ ] Test conversion logic with various unit configurations (e.g., 1 pack = 4 cards, 1 card = 5 tablets)
    - [ ] Ensure form submission converts unit inputs to base units number before sending to backend
 
-8. **Explore and implement inventory item picture management**
+6. **Explore and implement inventory item picture management** - ✅
 
    - Currently, inventory items don't have pictures
    - Need to explore the best approach for adding and managing pictures
@@ -94,7 +76,7 @@
      - [ ] Plan for existing items (migration strategy, optional vs required)
    - [ ] Implement chosen solution
 
-9. **Determine if users should be allowed to modify packaging structure after category selection**
+7. **Determine if users should be allowed to modify packaging structure after category selection**
 
    - **Current behavior**: When a user selects a category with predefined unit presets (packaging structure), the UnitGroupingBuilder component loads those presets
    - **Question for Dr. Ubochi**: Should users be allowed to modify the packaging structure (units, quantities, relationships) even after selecting a category that has a defined structure?
@@ -114,7 +96,7 @@
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
 
-10. **Fix unit and categories edit mode**
+8. **Fix unit and categories edit mode**
 
 - Currently, units and categories use inline editing (forms appear directly in the list)
 - This may have UX issues or inconsistencies compared to the supplier edit mode (which uses a modal)
@@ -247,6 +229,35 @@
   - `apps/frontend/src/components/tables/GroupedPaymentsTable.tsx` - Check and update if needed
   - `apps/frontend/src/components/tables/RecentEmployeesTable.tsx` - Check and update if needed
 
+19. **Automatically expand sidebar when moving from mobile back to desktop view**
+
+- **Current state**: When transitioning from mobile view to desktop view, the sidebar stays hidden/collapsed instead of automatically expanding
+- **Goal**: Automatically expand the sidebar when the viewport changes from mobile to desktop
+- **Implementation requirements**:
+  - [ ] Add a `useEffect` in `SidebarProvider` that watches for `isMobile` changes
+  - [ ] When `isMobile` changes from `true` to `false` (mobile → desktop), automatically set `open` to `true` (expand sidebar)
+  - [ ] Ensure this doesn't interfere with user's manual sidebar toggle preferences
+  - [ ] Consider preserving the user's last desktop sidebar state (expanded/collapsed) when returning to desktop
+  - [ ] Test the transition behavior when resizing browser window or rotating device
+- **Files to update**:
+  - `apps/frontend/src/components/ui/sidebar.tsx` - Add effect to handle mobile-to-desktop transition in `SidebarProvider`
+
+20. **Use thumbnails for preview image cards and full images for preview modal**
+
+- **Current state**: Preview image cards (e.g., GalleryCard) and the preview modal (ImagePreviewModal) both load full-size images, which can be slow and use unnecessary bandwidth
+- **Goal**: Optimize image loading by using smaller thumbnail images for preview cards and only loading full-size images when the user opens the preview modal
+- **Implementation requirements**:
+  - [ ] Determine if backend/media service provides thumbnail URLs or if thumbnails need to be generated
+  - [ ] Update GalleryCard component to use thumbnail URLs for the preview image
+  - [ ] Update ImagePreviewModal to use full-size image URLs
+  - [ ] Ensure thumbnail fallback to full image if thumbnail is not available
+  - [ ] Consider lazy loading for thumbnails in grid views
+  - [ ] Test performance improvements (faster page loads, reduced bandwidth usage)
+- **Files to update**:
+  - `apps/frontend/src/components/GalleryCard.tsx` - Use thumbnail URLs for preview images
+  - `apps/frontend/src/components/ImagePreviewModal.tsx` - Use full-size image URLs
+  - Backend/media service - Ensure thumbnail generation and URL provision (if not already available)
+
 ## Backend Features
 
 14. **Implement action tracking system**
@@ -334,3 +345,23 @@
   - `apps/backend/src/modules/auth/auth.service.ts` - Implement custom session duration logic
   - `apps/backend/src/middlewares/authentication.ts` - Update session validation if needed
   - `apps/backend/src/utils/token.ts` - Update token generation to accept custom expiration
+
+17. **Force logout on 401 error with "Please log in again" message**
+
+- When the backend returns a 401 (Unauthorized) error, automatically force the user to log out and display a message
+- **Current state**: 401 errors may not be properly handled, potentially leaving users in an inconsistent authentication state
+- **Goal**: Automatically log out users when receiving 401 errors and show a clear message prompting them to log in again
+- **Implementation requirements**:
+  - [ ] Identify where API requests are made in the frontend (API client, axios instance, fetch wrapper, etc.)
+  - [ ] Add global error interceptor/handler to catch 401 responses
+  - [ ] When 401 is detected, clear authentication state (tokens, user data, etc.)
+  - [ ] Redirect user to login page
+  - [ ] Display toast/notification message: "Please log in again"
+  - [ ] Ensure all authentication-related state is cleared (Redux store, localStorage, sessionStorage, cookies, etc.)
+  - [ ] Handle edge cases (multiple simultaneous 401s, navigation during logout, etc.)
+  - [ ] Test with expired tokens, invalid sessions, and other 401 scenarios
+- **Files to update**:
+  - Frontend API client/axios configuration - Add 401 error interceptor
+  - Authentication store/slice - Add logout action that clears all auth state
+  - Login/authentication utilities - Ensure proper cleanup on logout
+  - Potentially add toast/notification component if not already present
