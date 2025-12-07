@@ -23,7 +23,7 @@ class InventoryItemsService {
     const skip = (page - 1) * limit;
     const now = new Date();
 
-    const filter: Record<string, any> = {};
+    const filter: Record<string, any> = { isDeleted: { $ne: true } };
     if (status) filter.status = status;
     if (setupStatus) filter.setupStatus = setupStatus;
     if (category) filter.category = category;
@@ -122,7 +122,11 @@ class InventoryItemsService {
     id: string,
     data: Partial<IInventoryItemRequest>
   ): Promise<IInventoryItem | null> {
-    const item = await InventoryItem.findByIdAndUpdate(id, data, { new: true });
+    const item = await InventoryItem.findOneAndUpdate(
+      { _id: id, isDeleted: { $ne: true } },
+      data,
+      { new: true }
+    );
 
     // If image is attached, check if gallery item needs renaming
     // Use the new name if provided, otherwise use the existing item name
@@ -164,8 +168,16 @@ class InventoryItemsService {
     }
   }
 
+  async findById(id: string): Promise<IInventoryItem | null> {
+    return InventoryItem.findOne({ _id: id, isDeleted: { $ne: true } });
+  }
+
   async delete(id: string): Promise<IInventoryItem | null> {
-    return InventoryItem.findByIdAndDelete(id);
+    return InventoryItem.findByIdAndUpdate(
+      id,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true }
+    );
   }
 }
 

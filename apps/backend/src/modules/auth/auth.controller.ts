@@ -6,6 +6,7 @@ import { env } from "../../config/env";
 import { successResponse } from "../../utils/response";
 import { generateAuthToken } from "../../utils/token";
 import { JWT_COOKIE_NAME } from "../../utils/cookie-names";
+import { getAdminFromReq } from "../../utils/request-helpers";
 
 import authService from "./auth.service";
 import adminService from "../admins/admins.service";
@@ -53,13 +54,8 @@ class AuthController {
   }
 
   async getCurrentUser(req: Request, res: Response) {
-    const userId = req.user?._id;
-
-    if (!userId) {
-      throw new UnAuthorizedError("User not authenticated");
-    }
-
-    const admin = await adminService.findById(userId);
+    const currentAdmin = getAdminFromReq(req);
+    const admin = await adminService.findById(currentAdmin._id);
 
     if (!admin) {
       throw new UnAuthorizedError("User not found");

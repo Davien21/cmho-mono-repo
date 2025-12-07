@@ -25,6 +25,8 @@ const employeeSchema = new Schema<IEmployee>(
     },
     last_paid_on: { type: Date, default: null },
     paystack_recipient_code: { type: String, default: null },
+    isDeleted: { type: Boolean, required: false, default: false },
+    deletedAt: { type: Date, required: false, default: null },
   },
   { timestamps: true }
 );

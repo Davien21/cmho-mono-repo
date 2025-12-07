@@ -43,6 +43,10 @@ class InventoryCategoriesService {
     return InventoryCategory.create({ ...data, order });
   }
 
+  findById(id: string): Promise<IInventoryCategory | null> {
+    return InventoryCategory.findOne({ _id: id, isDeleted: { $ne: true } }).lean() as Promise<IInventoryCategory | null>;
+  }
+
   update(
     id: string,
     data: Partial<IInventoryCategoryRequest>

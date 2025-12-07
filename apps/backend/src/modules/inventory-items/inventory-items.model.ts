@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { IInventoryItem, IInventoryUnit } from "./inventory-items.types";
+import notificationsService from "../notifications/notifications.service";
 
 const { Schema, model } = mongoose;
 
@@ -52,11 +53,40 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
       required: false,
       default: true,
     },
+    isDeleted: { type: Boolean, required: false, default: false },
+    deletedAt: { type: Date, required: false, default: null },
   },
   {
     timestamps: true,
     collection: "inventory_items",
   }
 );
+
+// Post-save hook to check stock notifications
+inventoryItemSchema.post("save", async function (doc) {
+  // Only check for "ready" items that are not deleted
+  if (
+    doc.setupStatus === "ready" &&
+    doc.isDeleted !== true &&
+    doc.status !== "deleted"
+  ) {
+    try {
+      const currentStock = doc.currentStockInBaseUnits ?? 0;
+      const lowStockValue = doc.lowStockValue;
+
+      // Check and create/update notifications
+      // Errors are caught to prevent notification failures from blocking saves
+      await notificationsService.checkInventoryStockNotifications(
+        doc._id.toString(),
+        doc.name,
+        currentStock,
+        lowStockValue
+      );
+    } catch (error) {
+      // Log error but don't fail the save operation
+      console.error("Error checking stock notifications:", error);
+    }
+  }
+});
 
 export default model<IInventoryItem>("InventoryItem", inventoryItemSchema);

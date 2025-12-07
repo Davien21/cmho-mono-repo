@@ -13,13 +13,13 @@ class GalleryService {
     const skip = (page - 1) * limit;
 
     // No need to populate media_id - imageUrl is denormalized and stored on the document
-    const items = await Gallery.find()
+    const items = await Gallery.find({ isDeleted: { $ne: true } })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
-    const total = await Gallery.countDocuments();
+    const total = await Gallery.countDocuments({ isDeleted: { $ne: true } });
 
     return {
       items,
@@ -35,12 +35,13 @@ class GalleryService {
   }
 
   async findById(id: string) {
-    return Gallery.findById(id).lean();
+    return Gallery.findOne({ _id: id, isDeleted: { $ne: true } }).lean();
   }
 
   async findByMediaId(mediaId: string) {
     return Gallery.findOne({
       media_id: new mongoose.Types.ObjectId(mediaId),
+      isDeleted: { $ne: true },
     }).lean();
   }
 
@@ -60,11 +61,19 @@ class GalleryService {
     id: string,
     data: Partial<GalleryRequest>
   ): Promise<IGallery | null> {
-    return Gallery.findByIdAndUpdate(id, data, { new: true }).lean();
+    return Gallery.findOneAndUpdate(
+      { _id: id, isDeleted: { $ne: true } },
+      data,
+      { new: true }
+    ).lean();
   }
 
   async delete(id: string): Promise<IGallery | null> {
-    return Gallery.findByIdAndDelete(id);
+    return Gallery.findByIdAndUpdate(
+      id,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true }
+    ).lean();
   }
 }
 

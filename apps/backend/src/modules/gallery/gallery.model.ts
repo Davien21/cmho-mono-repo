@@ -19,6 +19,8 @@ const gallerySchema = new Schema<IGallery>(
       type: String,
       required: false,
     },
+    isDeleted: { type: Boolean, required: false, default: false },
+    deletedAt: { type: Date, required: false, default: null },
   },
   {
     timestamps: true,

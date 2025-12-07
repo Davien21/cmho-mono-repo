@@ -6,6 +6,7 @@ import { AdminRole } from "../admins/admins.types";
 export interface AuthTokenPayload extends JwtPayload {
   _id: string;
   email?: string;
+  name?: string;
   isSuperAdmin?: boolean;
   roles?: AdminRole[];
 }

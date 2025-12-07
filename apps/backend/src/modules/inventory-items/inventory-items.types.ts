@@ -45,6 +45,8 @@ export interface IInventoryItemBase {
   currentStockInBaseUnits?: number;
   image?: IInventoryItemImage;
   canBeSold?: boolean;
+  isDeleted?: boolean;
+  deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

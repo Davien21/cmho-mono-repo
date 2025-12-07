@@ -18,6 +18,8 @@ export interface IEmployee {
   bank: IEmployeeBank | null;
   paystack_recipient_code?: string | null;
   last_paid_on?: Date | null;
+  isDeleted?: boolean;
+  deletedAt?: Date;
 }
 
 export interface IEmployeeWithBank extends IEmployee {

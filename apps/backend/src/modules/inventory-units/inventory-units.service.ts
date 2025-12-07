@@ -22,6 +22,13 @@ class InventoryUnitsService {
     return InventoryUnit.create({ ...data, order });
   }
 
+  findById(id: string): Promise<IInventoryUnitDefinition | null> {
+    return InventoryUnit.findOne({
+      _id: id,
+      isDeleted: { $ne: true },
+    }).lean() as Promise<IInventoryUnitDefinition | null>;
+  }
+
   update(
     id: string,
     data: Partial<IInventoryUnitDefinitionRequest>

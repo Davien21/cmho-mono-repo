@@ -66,7 +66,10 @@ class StockEntriesService {
     });
 
     // Update inventory item stock
-    const item = await InventoryItem.findById(entry.inventoryItemId);
+    const item = await InventoryItem.findOne({
+      _id: entry.inventoryItemId,
+      isDeleted: { $ne: true },
+    });
     if (item) {
       const currentStock = item.currentStockInBaseUnits ?? 0;
       const nextStock = currentStock + entry.quantityInBaseUnits;
@@ -99,7 +102,10 @@ class StockEntriesService {
     });
 
     // Update inventory item stock (subtract quantity)
-    const item = await InventoryItem.findById(entry.inventoryItemId);
+    const item = await InventoryItem.findOne({
+      _id: entry.inventoryItemId,
+      isDeleted: { $ne: true },
+    });
     if (item) {
       const currentStock = item.currentStockInBaseUnits ?? 0;
       const nextStock = currentStock - entry.quantityInBaseUnits;
@@ -110,6 +116,10 @@ class StockEntriesService {
     }
 
     return entry;
+  }
+
+  async findById(id: string): Promise<IStockEntry | null> {
+    return StockEntry.findById(id);
   }
 
   async create(data: StockEntryRequest): Promise<IStockEntry> {
@@ -132,7 +142,10 @@ class StockEntriesService {
     });
 
     // Incrementally update currentStockInBaseUnits
-    const item = await InventoryItem.findById(entry.inventoryItemId);
+    const item = await InventoryItem.findOne({
+      _id: entry.inventoryItemId,
+      isDeleted: { $ne: true },
+    });
     if (item) {
       const currentStock = item.currentStockInBaseUnits ?? 0;
       // For reduce operations, subtract the quantity; for add, add it

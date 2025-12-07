@@ -29,8 +29,8 @@ const inventoryUnitSchema = yup
 
 const imageSchema = yup
   .object({
-    url: yup.string().required().label("Image URL"),
-    mediaId: yup.string().required().label("Media ID"),
+    url: yup.string().optional().label("Image URL"),
+    mediaId: yup.string().optional().label("Media ID"),
   })
   .optional();
 

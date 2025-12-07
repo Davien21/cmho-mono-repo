@@ -7,6 +7,9 @@ class EmployeeService {
   async getEmployeeStats() {
     const result = await Employee.aggregate([
       {
+        $match: { isDeleted: { $ne: true } },
+      },
+      {
         $group: {
           _id: null,
           totalEmployees: { $sum: 1 },
@@ -36,7 +39,10 @@ class EmployeeService {
   }) {
     const skip = (page - 1) * limit;
 
-    return Employee.find().sort({ _id: sort }).limit(limit).skip(skip);
+    return Employee.find({ isDeleted: { $ne: true } })
+      .sort({ _id: sort })
+      .limit(limit)
+      .skip(skip);
   }
 
   create(employee: Omit<IEmployee, "_id">) {
@@ -44,29 +50,41 @@ class EmployeeService {
   }
 
   findById(id: string) {
-    return Employee.findById(id);
+    return Employee.findOne({ _id: id, isDeleted: { $ne: true } });
   }
 
   findByIds(ids: string[]) {
-    return Employee.find({ _id: { $in: ids } });
+    return Employee.find({ _id: { $in: ids }, isDeleted: { $ne: true } });
   }
 
   update(id: any, updateQuery: Partial<Omit<IEmployee, "_id">>) {
-    return Employee.findByIdAndUpdate(id, updateQuery, { new: true });
+    return Employee.findOneAndUpdate(
+      { _id: id, isDeleted: { $ne: true } },
+      updateQuery,
+      { new: true }
+    );
   }
 
   updateMany(ids: string[], updateQuery: Partial<Omit<IEmployee, "_id">>) {
-    return Employee.updateMany({ _id: { $in: ids } }, updateQuery, {
-      new: true,
-    });
+    return Employee.updateMany(
+      { _id: { $in: ids }, isDeleted: { $ne: true } },
+      updateQuery,
+      {
+        new: true,
+      }
+    );
   }
 
   delete(id: string) {
-    return Employee.findByIdAndDelete(id);
+    return Employee.findByIdAndUpdate(
+      id,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true }
+    );
   }
 
   getBankDetails(employeeId: string) {
-    return Employee.findOne({ _id: employeeId }).select("bank");
+    return Employee.findOne({ _id: employeeId, isDeleted: { $ne: true } }).select("bank");
   }
 }
 

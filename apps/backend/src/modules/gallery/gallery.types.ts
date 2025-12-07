@@ -7,6 +7,8 @@ export interface IGallery {
   media_id: ObjectId;
   name?: string;
   imageUrl?: string;
+  isDeleted?: boolean;
+  deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

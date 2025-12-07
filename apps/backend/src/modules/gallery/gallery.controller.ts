@@ -7,6 +7,9 @@ import { getMediaType, uploadFncs } from "../../utils/helpers";
 import { deleteFromCloud } from "../../lib/cloudinary";
 import * as fs from "fs/promises";
 import { BadRequestError, NotFoundError } from "../../config/errors";
+import activityTrackingService from "../activity-tracking/activity-tracking.service";
+import { ActivityTypes } from "../activity-tracking/activity-types";
+import { getAdminFromReq } from "../../utils/request-helpers";
 
 export async function getGalleryItems(req: Request, res: Response) {
   const page = parseInt(req.query.page as string) || 1;
@@ -26,6 +29,7 @@ export async function getGalleryItem(req: Request, res: Response) {
 }
 
 export async function createGalleryItem(req: Request, res: Response) {
+  const admin = getAdminFromReq(req);
   const { file } = req;
   const { name } = req.body;
 
@@ -61,10 +65,30 @@ export async function createGalleryItem(req: Request, res: Response) {
     imageUrl: upload.url,
   });
 
+  // Track the activity
+  const activityData = {
+    type: ActivityTypes.CREATE_GALLERY_ITEM,
+    module: "inventory",
+    entities: [
+      { id: galleryItem._id.toString(), name: "gallery-item" },
+      { id: media._id.toString(), name: "media" },
+    ],
+    adminId: admin._id,
+    adminName: admin.name,
+    description: `Added image "${galleryName}" to gallery`,
+    metadata: {
+      imageUrl: upload.url,
+      filename: upload.filename,
+      public_id: upload.public_id,
+    },
+  };
+  await activityTrackingService.trackActivity(activityData);
+
   res.send(successResponse("Gallery item created successfully", galleryItem));
 }
 
 export async function updateGalleryItem(req: Request, res: Response) {
+  const admin = getAdminFromReq(req);
   const { id } = req.params;
   const data = req.body as Partial<GalleryRequest>;
 
@@ -73,6 +97,25 @@ export async function updateGalleryItem(req: Request, res: Response) {
   if (!galleryItem) {
     throw new NotFoundError("Gallery item not found");
   }
+
+  // Track the activity
+  const galleryName = galleryItem.name || "Unknown Gallery Item";
+  const changedFields = Object.keys(data);
+  const activityData = {
+    type: ActivityTypes.UPDATE_GALLERY_ITEM,
+    module: "inventory",
+    entities: [{ id: id, name: "gallery-item" }],
+    adminId: admin._id,
+    adminName: admin.name,
+    description:
+      changedFields.length === 1
+        ? `Updated ${changedFields[0]} for gallery item "${galleryName}"`
+        : `Updated gallery item "${galleryName}"`,
+    metadata: {
+      changedFields,
+    },
+  };
+  await activityTrackingService.trackActivity(activityData);
 
   res.send(successResponse("Gallery item updated successfully", galleryItem));
 }
@@ -88,9 +131,11 @@ export async function deleteGalleryItem(req: Request, res: Response) {
 
   // Get media_id - it might be populated (object) or just the ID
   const mediaId =
-    typeof galleryItemRaw.media_id === "object" && galleryItemRaw.media_id !== null
-      ? (galleryItemRaw.media_id as any)._id?.toString() || galleryItemRaw.media_id.toString()
-      : galleryItemRaw.media_id.toString();
+    typeof galleryItemRaw.media_id === "object" &&
+    galleryItemRaw.media_id !== null
+      ? (galleryItemRaw.media_id as any)._id?.toString() ||
+        (galleryItemRaw.media_id as any).toString()
+      : String(galleryItemRaw.media_id);
 
   // Fetch the media document to get public_id
   const media = await mediaService.findById(mediaId);
@@ -108,8 +153,30 @@ export async function deleteGalleryItem(req: Request, res: Response) {
     await mediaService.delete(media._id.toString());
   }
 
-  // Delete the gallery document
+  // Delete the gallery document (soft delete)
   await galleryService.delete(id);
+
+  // Track the activity
+  // Use galleryItemRaw that was already fetched before deletion
+  if (galleryItemRaw) {
+    const admin = getAdminFromReq(req);
+    const galleryName = galleryItemRaw.name || "Unknown Gallery Item";
+    const activityData = {
+      type: ActivityTypes.DELETE_GALLERY_ITEM,
+      module: "inventory",
+      entities: [
+        { id: id, name: "gallery-item" },
+        { id: mediaId, name: "media" },
+      ],
+      adminId: admin._id,
+      adminName: admin.name,
+      description: `Deleted gallery item "${galleryName}"`,
+      metadata: {
+        public_id: media?.public_id,
+      },
+    };
+    await activityTrackingService.trackActivity(activityData);
+  }
 
   res.send(successResponse("Gallery item deleted successfully"));
 }

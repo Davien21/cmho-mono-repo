@@ -12,6 +12,8 @@ export interface ISupplier {
     address?: string;
   };
   status: SupplierStatus;
+  isDeleted?: boolean;
+  deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
