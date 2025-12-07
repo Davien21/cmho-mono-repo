@@ -49,23 +49,7 @@
    - [ ] Test conversion logic with various unit configurations (e.g., 1 pack = 4 cards, 1 card = 5 tablets)
    - [ ] Ensure form submission converts unit inputs to base units number before sending to backend
 
-4. **Explore and implement inventory item picture management** - ✅
-
-   - Currently, inventory items don't have pictures
-   - Need to explore the best approach for adding and managing pictures
-   - Goal: Make it easy and efficient (avoid one-at-a-time upload stress)
-   - Considerations to explore:
-     - [ ] Research bulk image upload solutions (drag & drop multiple files, batch upload)
-     - [ ] Determine storage solution (local storage, cloud storage like S3/Cloudinary)
-     - [ ] Design image upload UI/UX (single vs bulk upload, preview, crop/resize)
-     - [ ] Consider image optimization (compression, thumbnails, formats)
-     - [ ] Plan data model changes (add image field to inventory items model)
-     - [ ] Design API endpoints for image upload/management
-     - [ ] Consider mobile experience (camera integration, mobile upload)
-     - [ ] Plan for existing items (migration strategy, optional vs required)
-   - [ ] Implement chosen solution
-
-5. **Determine if users should be allowed to modify packaging structure after category selection**
+4. **Determine if users should be allowed to modify packaging structure after category selection**
 
    - **Current behavior**: When a user selects a category with predefined unit presets (packaging structure), the UnitGroupingBuilder component loads those presets
    - **Question for Dr. Ubochi**: Should users be allowed to modify the packaging structure (units, quantities, relationships) even after selecting a category that has a defined structure?
@@ -85,7 +69,7 @@
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
 
-6. **Fix unit and categories edit mode**
+5. **Fix unit and categories edit mode**
 
 - Currently, units and categories use inline editing (forms appear directly in the list)
 - This may have UX issues or inconsistencies compared to the supplier edit mode (which uses a modal)
@@ -282,25 +266,27 @@
   - `apps/backend/src/middlewares/authentication.ts` - Update session validation if needed
   - `apps/backend/src/utils/token.ts` - Update token generation to accept custom expiration
 
-4. **Force logout on 401 error with "Please log in again" message**
+4. **Show modal on 401 error explaining user needs to login again**
 
-- When the backend returns a 401 (Unauthorized) error, automatically force the user to log out and display a message
+- When the backend returns a 401 (Unauthorized) error, show a modal explaining that the user needs to login again with email and password to fix their session
 - **Current state**: 401 errors may not be properly handled, potentially leaving users in an inconsistent authentication state
-- **Goal**: Automatically log out users when receiving 401 errors and show a clear message prompting them to log in again
+- **Goal**: Display a modal when receiving 401 errors that explains the user needs to login again with email and password to fix their session, without automatically forcing logout
 - **Implementation requirements**:
   - [ ] Identify where API requests are made in the frontend (API client, axios instance, fetch wrapper, etc.)
   - [ ] Add global error interceptor/handler to catch 401 responses
-  - [ ] When 401 is detected, clear authentication state (tokens, user data, etc.)
-  - [ ] Redirect user to login page
-  - [ ] Display toast/notification message: "Please log in again"
-  - [ ] Ensure all authentication-related state is cleared (Redux store, localStorage, sessionStorage, cookies, etc.)
-  - [ ] Handle edge cases (multiple simultaneous 401s, navigation during logout, etc.)
+  - [ ] When 401 is detected, show a modal (not force logout) that:
+    - Explains the session has expired or become invalid
+    - Instructs the user to login again with email and password to fix their session
+    - Provides a button/link to navigate to the login page
+    - Optionally allows the user to dismiss the modal (though they'll need to login to continue)
+  - [ ] Design modal UI that is clear and user-friendly
+  - [ ] Handle edge cases (multiple simultaneous 401s, preventing duplicate modals, etc.)
   - [ ] Test with expired tokens, invalid sessions, and other 401 scenarios
 - **Files to update**:
   - Frontend API client/axios configuration - Add 401 error interceptor
-  - Authentication store/slice - Add logout action that clears all auth state
-  - Login/authentication utilities - Ensure proper cleanup on logout
-  - Potentially add toast/notification component if not already present
+  - Create or update modal component for session expiration message
+  - Modal context/system - Add session expiration modal type
+  - Login/authentication utilities - Handle modal display on 401
 
 5. **Refactor activity tracking setup on the backend**
 
@@ -342,3 +328,26 @@
     - `apps/backend/src/modules/inventory-categories/inventory-categories.controller.ts`
     - `apps/backend/src/modules/inventory-units/inventory-units.controller.ts`
     - Any other controllers with activity tracking
+
+6. **Rename stock-entries to stock-movement everywhere**
+
+- **Current state**: The codebase uses "stock-entries" as the naming convention for stock movement/transaction records
+- **Goal**: Rename all references from "stock-entries" to "stock-movement" for better clarity and consistency
+- **Implementation requirements**:
+  - [ ] Rename backend module directory: `apps/backend/src/modules/stock-entries/` → `apps/backend/src/modules/stock-movement/`
+  - [ ] Rename all backend files in the module (controller, service, model, router, validators, types)
+  - [ ] Update all imports and references to stock-entries in backend code
+  - [ ] Update API routes/endpoints that use "stock-entries" to use "stock-movement"
+  - [ ] Update frontend API calls and endpoints that reference "stock-entries"
+  - [ ] Update frontend store/slice: `apps/frontend/src/store/transactions-slice.ts` (if it references stock-entries)
+  - [ ] Update any frontend components that reference stock-entries
+  - [ ] Update database model names if applicable
+  - [ ] Update any documentation or comments that reference stock-entries
+  - [ ] Search codebase for all occurrences of "stock-entries" and "stockEntries" (camelCase) and update to "stock-movement" and "stockMovement"
+  - [ ] Ensure no broken references after renaming
+- **Files to update**:
+  - Backend module directory and all files within: `apps/backend/src/modules/stock-entries/`
+  - Backend route configuration: `apps/backend/src/config/routes.ts`
+  - Frontend API slice/store files that reference stock-entries
+  - Frontend components that use stock-entries endpoints
+  - Any other files that import or reference stock-entries
