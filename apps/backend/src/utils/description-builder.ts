@@ -114,6 +114,13 @@ function buildSingleFieldDescription(
     return `Updated password for ${entityName} "${entityDisplayName}"`;
   }
 
+  // Special handling for admin name changes
+  if (entityName === "admin" && field === "name") {
+    const oldFormatted = formatValue(oldValue);
+    const newFormatted = formatValue(newValue);
+    return `Updated an admin's name from ${oldFormatted} to ${newFormatted}`;
+  }
+
   // Special handling for array fields
   if (
     options.specialHandlers?.arrays &&

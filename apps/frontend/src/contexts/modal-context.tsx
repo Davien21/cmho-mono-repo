@@ -1,5 +1,5 @@
 // modal context
-import { IEmployee } from "@/types";
+import { IEmployee, IAdmin } from "@/types";
 import { IConfirmationDialog, IAddEmployeeRequest } from "@/types";
 import { createContext, useState, useContext, ReactNode, useMemo } from "react";
 
@@ -11,6 +11,7 @@ type ConfirmationDialogData = IConfirmationDialog;
 type FailedUploadsModalData = {
   failedFiles: Array<{ file: File; preview: string }>;
 };
+type EditAdminModalData = IAdmin;
 
 export type ModalDataMap = {
   "sign-up": SignUpModalData;
@@ -18,6 +19,7 @@ export type ModalDataMap = {
   "confirmation-dialog": ConfirmationDialogData;
   "update-employee": UpdateEmployeeModalData;
   "failed-uploads": FailedUploadsModalData;
+  "edit-admin": EditAdminModalData;
 };
 
 type ModalState<T> = { isOpen: boolean; data?: T };

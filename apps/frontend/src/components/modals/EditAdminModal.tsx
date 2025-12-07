@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { useModalContext } from "@/contexts/modal-context";
@@ -22,7 +22,13 @@ interface IFormValues {
 const validationSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup.string().min(6, "Password must be at least 6 characters"),
+  password: yup
+    .string()
+    .test(
+      "min-length",
+      "Password must be at least 6 characters",
+      (value) => !value || value.length >= 6
+    ),
   roles: yup.array().of(yup.string()),
   isSuperAdmin: yup.boolean(),
 });
@@ -33,6 +39,15 @@ export const EditAdminModal = () => {
   const { modals, closeModal } = useModalContext();
   const modal = modals["edit-admin"] || { isOpen: false };
   const admin = modal.data as IAdmin | undefined;
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
+
+  // Store initial values for change detection
+  const initialValuesRef = useRef<{
+    name: string;
+    email: string;
+    roles: string[];
+    isSuperAdmin: boolean;
+  } | null>(null);
 
   const formMethods = useForm<IFormValues>({
     mode: "onChange",
@@ -51,6 +66,15 @@ export const EditAdminModal = () => {
   useEffect(() => {
     if (!modal.isOpen || !admin) return;
 
+    const initialValues = {
+      name: admin.name,
+      email: admin.email,
+      roles: admin.roles || [],
+      isSuperAdmin: admin.isSuperAdmin || false,
+    };
+
+    initialValuesRef.current = initialValues;
+
     formMethods.reset({
       name: admin.name,
       email: admin.email,
@@ -58,17 +82,67 @@ export const EditAdminModal = () => {
       roles: admin.roles || [],
       isSuperAdmin: admin.isSuperAdmin || false,
     });
+    setShowPasswordInput(false);
   }, [modal.isOpen, admin, formMethods]);
 
   const handleClose = () => {
     closeModal("edit-admin");
     formMethods.reset();
+    setShowPasswordInput(false);
+  };
+
+  const handleChangePasswordClick = () => {
+    setShowPasswordInput(true);
+    formMethods.setValue("password", "");
   };
 
   const onSubmit = async (data: IFormValues) => {
-    if (!admin) return;
+    if (!admin || !initialValuesRef.current) return;
 
     try {
+      // Detect changes by comparing with initial values
+      const changedFields: string[] = [];
+      const oldValues: Record<string, any> = {};
+      const newValues: Record<string, any> = {};
+
+      // Compare name
+      if (data.name !== initialValuesRef.current.name) {
+        changedFields.push("name");
+        oldValues.name = initialValuesRef.current.name;
+        newValues.name = data.name;
+      }
+
+      // Compare email
+      if (data.email !== initialValuesRef.current.email) {
+        changedFields.push("email");
+        oldValues.email = initialValuesRef.current.email;
+        newValues.email = data.email;
+      }
+
+      // Compare roles (check if arrays are different)
+      const rolesChanged =
+        JSON.stringify(data.roles.sort()) !==
+        JSON.stringify(initialValuesRef.current.roles.sort());
+      if (rolesChanged) {
+        changedFields.push("roles");
+        oldValues.roles = initialValuesRef.current.roles;
+        newValues.roles = data.roles;
+      }
+
+      // Compare isSuperAdmin
+      if (data.isSuperAdmin !== initialValuesRef.current.isSuperAdmin) {
+        changedFields.push("isSuperAdmin");
+        oldValues.isSuperAdmin = initialValuesRef.current.isSuperAdmin;
+        newValues.isSuperAdmin = data.isSuperAdmin;
+      }
+
+      // Compare password (only if provided)
+      if (data.password && data.password.trim() !== "") {
+        changedFields.push("password");
+        oldValues.password = ""; // Don't show old password
+        newValues.password = ""; // Don't show new password
+      }
+
       const updateData: any = {
         id: admin._id,
         name: data.name,
@@ -79,6 +153,15 @@ export const EditAdminModal = () => {
 
       if (data.password) {
         updateData.password = data.password;
+      }
+
+      // Include change metadata if there are any changes
+      if (changedFields.length > 0) {
+        updateData._changes = {
+          changedFields,
+          oldValues,
+          newValues,
+        };
       }
 
       await updateAdmin(updateData).unwrap();
@@ -143,13 +226,32 @@ export const EditAdminModal = () => {
               formError={errors.email?.message}
             />
 
-            <Input
-              label="Password (leave blank to keep current)"
-              type="password"
-              {...register("password")}
-              placeholder="Enter new password (min 6 characters)"
-              formError={errors.password?.message}
-            />
+            {showPasswordInput ? (
+              <Input
+                label="Password"
+                type="password"
+                {...register("password")}
+                placeholder="Enter new password (min 6 characters)"
+                formError={errors.password?.message}
+              />
+            ) : (
+              <>
+                <input type="hidden" {...register("password")} />
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleChangePasswordClick}
+                    className="w-full"
+                  >
+                    Change Password
+                  </Button>
+                </div>
+              </>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
