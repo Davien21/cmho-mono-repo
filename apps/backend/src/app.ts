@@ -37,29 +37,12 @@ const allowedOrigins = [
   "https://www.cmho.xyz",
   "https://salary.cmho.xyz",
   "https://cmho-salary-manager-app.vercel.app",
-].filter(Boolean); // Filter out undefined values
-
-// Helper function to check if origin is a development IP
-const isDevelopmentIP = (origin: string): boolean => {
-  if (env.NODE_ENV !== "development") return false;
-
-  const patterns = [
-    /^https?:\/\/(\d{1,3}\.){3}\d{1,3}(:\d+)?$/, // IPv4
-    /^https?:\/\/localhost(:\d+)?$/, // localhost
-    /^https?:\/\/\[?[0-9a-fA-F:]+\]?(:\d+)?$/, // IPv6
-  ];
-
-  return patterns.some((pattern) => pattern.test(origin));
-};
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        isDevelopmentIP(origin)
-      ) {
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else callback(new Error("Not allowed by CORS"));
     },
