@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       const baseCrumbs: BreadcrumbItem[] = [
         { label: "Inventory", url: "/inventory" },
-        { label: "Stock Changes", url: "/stock" },
+        { label: "Stock Movement", url: "/stock" },
       ];
 
       if (itemLabel) {

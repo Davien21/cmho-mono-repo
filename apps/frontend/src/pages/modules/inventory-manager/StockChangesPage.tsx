@@ -149,12 +149,12 @@ export default function StockChangesPage() {
       <div className="flex flex-col gap-4 sm:gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="hidden lg:block text-xl sm:text-2xl font-semibold tracking-tight">
-            Stock Changes
+            Stock Movement
           </h1>
           <p className="text-base sm:text-sm text-muted-foreground">
             {filteredItem
-              ? `All stock changes for "${filteredItem.name}".`
-              : "All stock changes across inventory items."}
+              ? `All stock movement for "${filteredItem.name}".`
+              : "All stock movement across inventory items."}
           </p>
         </div>
 
@@ -171,7 +171,7 @@ export default function StockChangesPage() {
         {rows.length === 0 ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <p className="text-base font-medium text-foreground">
-              No stock changes yet
+              No stock movement yet
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
               Use the inventory actions to add or reduce stock.
@@ -180,7 +180,7 @@ export default function StockChangesPage() {
         ) : filteredRows.length === 0 ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <p className="text-base font-medium text-foreground">
-              No stock changes match your search
+              No stock movement match your search
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
               Try adjusting your search terms
@@ -230,7 +230,7 @@ export default function StockChangesPage() {
           <Card className="w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold">Stock Change Details</h3>
+                <h3 className="text-lg font-semibold">Stock Movement Details</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {formatDateTime(selectedRow.createdAt)}
                 </p>

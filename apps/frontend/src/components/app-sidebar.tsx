@@ -98,12 +98,12 @@ export const navigationConfig = {
       ],
     },
     {
-      title: "Stock Changes",
+      title: "Stock Movement",
       url: "/stock",
       icon: History,
       breadcrumbs: [
         { label: "Inventory", url: "/inventory" },
-        { label: "Stock Changes", url: "/stock" },
+        { label: "Stock Movement", url: "/stock" },
       ],
     },
     {

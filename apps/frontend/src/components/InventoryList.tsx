@@ -387,7 +387,7 @@ export function InventoryList({
                             className="text-base sm:text-sm py-2.5 sm:py-2"
                           >
                             <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                            View Stock Changes
+                            View Stock Movement
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => onEdit(item)}
@@ -556,7 +556,7 @@ export function InventoryList({
                               className="text-base sm:text-sm py-2.5 sm:py-2"
                             >
                               <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                              View Stock Changes
+                              View Stock Movement
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => onEdit(item)}
