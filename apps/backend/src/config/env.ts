@@ -63,7 +63,7 @@ let API_BASE_URL = `http://localhost:${PORT}`;
 let CLIENT_URL = "http://localhost:3000";
 if (activeEnv === "production") {
   API_BASE_URL = `https://api.${APP_NAME}.xyz`;
-  // CLIENT_URL = `https://${APP_NAME}.xyz`;
+  CLIENT_URL = `https://${APP_NAME}.xyz`;
 }
 
 const PUBLIC_BASE_URL = `${API_BASE_URL}/api/v1`;
@@ -122,7 +122,7 @@ const production: z.infer<typeof schema> = {
   ...common,
   NODE_ENV: "production",
   CLOUDINARY_FOLDER: `${common.APP_NAME}_prod`,
-  CLIENT_URL,
+  CLIENT_URL: process.env.CLIENT_URL || CLIENT_URL,
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
   COOKIE_CONFIG: {
     httpOnly: true,
