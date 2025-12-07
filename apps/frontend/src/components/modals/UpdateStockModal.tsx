@@ -44,41 +44,50 @@ interface IProfit {
 
 const createUpdateStockSchema = (operationType: "add" | "reduce") => {
   return yup.object({
-    expiryDate: yup.string().when([], {
-      is: operationType === "add",
-      then: (schema) => schema.required("Expiry date is required"),
-      otherwise: (schema) => schema.optional(),
-    }),
-    costPrice: yup.string().when([], {
-      is: operationType === "add",
-      then: (schema) =>
-        schema
-          .required("Cost price is required")
-          .test(
-            "is-valid-cost",
-            "Cost price must be greater than 0",
-            (value) => {
-              const parsed = parseFloat(value ?? "");
-              return !Number.isNaN(parsed) && parsed > 0;
-            }
-          ),
-      otherwise: (schema) => schema.optional(),
-    }),
-    sellingPrice: yup.string().when([], {
-      is: operationType === "add",
-      then: (schema) =>
-        schema
-          .required("Selling price is required")
-          .test(
-            "is-valid-selling",
-            "Selling price must be greater than 0",
-            (value) => {
-              const parsed = parseFloat(value ?? "");
-              return !Number.isNaN(parsed) && parsed > 0;
-            }
-          ),
-      otherwise: (schema) => schema.optional(),
-    }),
+    expiryDate:
+      operationType === "add"
+        ? yup.string().required("Expiry date is required")
+        : yup
+            .string()
+            .optional()
+            .nullable()
+            .transform((value) => (value === "" ? undefined : value)),
+    costPrice:
+      operationType === "add"
+        ? yup
+            .string()
+            .required("Cost price is required")
+            .test(
+              "is-valid-cost",
+              "Cost price must be greater than 0",
+              (value) => {
+                const parsed = parseFloat(value ?? "");
+                return !Number.isNaN(parsed) && parsed > 0;
+              }
+            )
+        : yup
+            .string()
+            .optional()
+            .nullable()
+            .transform((value) => (value === "" ? undefined : value)),
+    sellingPrice:
+      operationType === "add"
+        ? yup
+            .string()
+            .required("Selling price is required")
+            .test(
+              "is-valid-selling",
+              "Selling price must be greater than 0",
+              (value) => {
+                const parsed = parseFloat(value ?? "");
+                return !Number.isNaN(parsed) && parsed > 0;
+              }
+            )
+        : yup
+            .string()
+            .optional()
+            .nullable()
+            .transform((value) => (value === "" ? undefined : value)),
     quantity: yup
       .array()
       .of(
@@ -248,7 +257,7 @@ export function UpdateStockModal({
     }
 
     try {
-      await createStockEntry({
+      const payload = {
         inventoryItemId: localItem.id,
         operationType,
         supplier:
@@ -267,9 +276,10 @@ export function UpdateStockModal({
             ? undefined
             : parseFloat(values.sellingPrice || "0"),
         expiryDate: operationType === "reduce" ? undefined : values.expiryDate,
-        quantityInBaseUnits:
-          operationType === "reduce" ? -totalQuantity : totalQuantity,
-      }).unwrap();
+        quantityInBaseUnits: totalQuantity,
+      };
+
+      await createStockEntry(payload).unwrap();
 
       await Promise.all([refetchItems(), refetchStockEntries()]);
 
@@ -305,7 +315,14 @@ export function UpdateStockModal({
           }`}
         >
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, (errors) => {
+              console.error("Form validation errors:", errors);
+              // Show first error to user
+              const firstError = Object.values(errors)[0];
+              if (firstError?.message) {
+                toast.error(firstError.message as string);
+              }
+            })}
             className="flex flex-col flex-1 min-h-0"
           >
             <ResponsiveDialog.Header className="px-0 flex-shrink-0">

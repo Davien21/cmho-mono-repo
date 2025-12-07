@@ -4,6 +4,7 @@ import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
 import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
 import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
+import { ImagePreviewModal } from "@/components/ImagePreviewModal";
 import { InventoryItem } from "@/types/inventory";
 import Layout from "@/components/Layout";
 import {
@@ -46,6 +47,10 @@ export default function InventoryPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showStockModal, setShowStockModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [previewImage, setPreviewImage] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
   const navigate = useNavigate();
 
   const handleUpdateStock = (item: InventoryItem) => {
@@ -84,6 +89,15 @@ export default function InventoryPage() {
     navigate(`/inventory/stock?itemId=${encodeURIComponent(item.id)}`);
   };
 
+  const handleImageClick = (item: InventoryItem) => {
+    if (item.image?.url) {
+      setPreviewImage({
+        url: item.image.url,
+        name: item.name,
+      });
+    }
+  };
+
   return (
     <Layout>
       <div className="flex flex-col gap-4 sm:gap-6">
@@ -108,6 +122,7 @@ export default function InventoryPage() {
             onDelete={handleDelete}
             onViewStockEntries={handleViewStockEntries}
             onAddItem={() => setShowAddForm(true)}
+            onImageClick={handleImageClick}
           />
         )}
 
@@ -138,6 +153,11 @@ export default function InventoryPage() {
             }}
           />
         )}
+
+        <ImagePreviewModal
+          image={previewImage}
+          onClose={() => setPreviewImage(null)}
+        />
       </div>
     </Layout>
   );
