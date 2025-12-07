@@ -24,7 +24,7 @@ import { InventorySupplierSelect } from "@/components/InventorySupplierSelect";
 import { UnitBasedInput } from "@/components/UnitBasedInput";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { MonthYearPicker } from "@/components/ui/month-year-picker";
+import { MonthPickerInput } from "@/components/ui/month-picker-input";
 
 interface UpdateStockModalProps {
   inventoryItem: InventoryItem;
@@ -47,17 +47,16 @@ const createUpdateStockSchema = (operationType: "add" | "reduce") => {
     expiryDate:
       operationType === "add"
         ? yup
-            .string()
+            .date()
             .required("Expiry date is required")
-            .matches(
-              /^\d{4}-\d{2}$/,
-              "Expiry date must be in YYYY-MM format (e.g., 2024-03)"
-            )
+            .typeError("Expiry date is required")
         : yup
-            .string()
+            .date()
             .optional()
             .nullable()
-            .transform((value) => (value === "" ? undefined : value)),
+            .transform((value) =>
+              value === "" || value === null ? undefined : value
+            ),
     costPrice:
       operationType === "add"
         ? yup
@@ -119,7 +118,7 @@ const createUpdateStockSchema = (operationType: "add" | "reduce") => {
 };
 
 type UpdateStockFormValues = {
-  expiryDate?: string;
+  expiryDate?: Date;
   costPrice?: string;
   sellingPrice?: string;
   quantity: QuantityInput[];
@@ -166,7 +165,7 @@ export function UpdateStockModal({
   } = useForm<UpdateStockFormValues>({
     resolver: yupResolver(schema) as any,
     defaultValues: {
-      expiryDate: "",
+      expiryDate: undefined,
       costPrice: "",
       sellingPrice: "",
       quantity: getInitialQuantity(),
@@ -181,7 +180,7 @@ export function UpdateStockModal({
     if (!localItem) return;
     const initialQuantity = getInitialQuantity();
     reset({
-      expiryDate: "",
+      expiryDate: undefined,
       costPrice: "",
       sellingPrice: "",
       quantity: initialQuantity,
@@ -263,20 +262,12 @@ export function UpdateStockModal({
     }
 
     try {
-      // Convert expiryDate from "YYYY-MM" format to Date (first day of month)
+      // expiryDate is already a Date object from MonthPickerInput
       let expiryDate: Date | undefined = undefined;
       if (operationType === "add" && values.expiryDate) {
-        // Parse "YYYY-MM" and create date for first day of that month
-        const parts = values.expiryDate.split("-");
-        const yearStr = parts[0];
-        const monthStr = parts[1];
-        if (yearStr && monthStr) {
-          const year = parseInt(yearStr, 10);
-          const month = parseInt(monthStr, 10);
-          if (!isNaN(year) && !isNaN(month)) {
-            expiryDate = new Date(year, month - 1, 1);
-          }
-        }
+        // Ensure it's the first day of the month
+        const date = new Date(values.expiryDate);
+        expiryDate = new Date(date.getFullYear(), date.getMonth(), 1);
       }
 
       const payload: any = {
@@ -437,11 +428,11 @@ export function UpdateStockModal({
                         name="expiryDate"
                         control={control}
                         render={({ field }) => (
-                          <MonthYearPicker
+                          <MonthPickerInput
                             id="expiryDate"
                             value={field.value}
-                            onChange={(value) => {
-                              field.onChange(value);
+                            onChange={(date: Date | undefined) => {
+                              field.onChange(date);
                             }}
                             placeholder="Select month and year"
                             required
