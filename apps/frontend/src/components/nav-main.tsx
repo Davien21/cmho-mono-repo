@@ -64,13 +64,13 @@ export function NavMain({
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-          const isSalaryRoot = item.url === "/salary";
+          const isSalaryRoot = item.url === "/admin";
           const isInventoryHome = item.url === "/inventory";
           const isInventoryItems = item.url === "/inventory/items";
           const isStockItem = item.url === "/stock";
 
           const isActive = isSalaryRoot
-            ? location.pathname === "/salary"
+            ? location.pathname === "/admin"
             : isStockItem
             ? location.pathname.startsWith("/stock") ||
               location.pathname.startsWith("/inventory/stock")

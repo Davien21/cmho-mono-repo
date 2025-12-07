@@ -38,7 +38,7 @@ export const navigationConfig = {
   apps: [
     {
       name: "Admin Manager",
-      path: "/salary",
+      path: "/admin",
       icon: Wallet,
     },
     {
@@ -50,27 +50,27 @@ export const navigationConfig = {
   salaryNav: [
     {
       title: "Salaries",
-      url: "/salary",
+      url: "/admin",
       icon: LayoutDashboard,
-      breadcrumbs: [{ label: "Salaries", url: "/salary" }],
+      breadcrumbs: [{ label: "Salaries", url: "/admin" }],
     },
     {
       title: "Employees",
-      url: "/salary/employees",
+      url: "/admin/employees",
       icon: Users,
-      breadcrumbs: [{ label: "Employees", url: "/salary/employees" }],
+      breadcrumbs: [{ label: "Employees", url: "/admin/employees" }],
     },
     {
       title: "Payments",
-      url: "/salary/payments",
+      url: "/admin/payments",
       icon: ArrowRightLeft,
-      breadcrumbs: [{ label: "Payment History", url: "/salary/payments" }],
+      breadcrumbs: [{ label: "Payment History", url: "/admin/payments" }],
     },
     {
       title: "Admins",
-      url: "/salary/admins",
+      url: "/admin/admins",
       icon: Shield,
-      breadcrumbs: [{ label: "Admins", url: "/salary/admins" }],
+      breadcrumbs: [{ label: "Admins", url: "/admin/admins" }],
     },
   ],
   inventoryNav: [
@@ -133,9 +133,9 @@ export const navigationConfig = {
   // Additional routes not in sidebar navigation
   additionalRoutes: [
     {
-      pattern: /^\/salary\/payments\/[^/]+$/,
+      pattern: /^\/admin\/payments\/[^/]+$/,
       breadcrumbs: [
-        { label: "Payment History", url: "/salary/payments" },
+        { label: "Payment History", url: "/admin/payments" },
         { label: "Transfer Details", url: null }, // null means current page, not clickable
       ],
     },
@@ -158,9 +158,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: unitsSummary } = useGetInventoryUnitsQuery(undefined, {
     skip: !isInventoryPath,
   });
-  const { data: categoriesSummary } = useGetInventoryCategoriesQuery(undefined, {
-    skip: !isInventoryPath,
-  });
+  const { data: categoriesSummary } = useGetInventoryCategoriesQuery(
+    undefined,
+    {
+      skip: !isInventoryPath,
+    }
+  );
   const { data: suppliersSummary } = useGetSuppliersQuery(undefined, {
     skip: !isInventoryPath,
   });

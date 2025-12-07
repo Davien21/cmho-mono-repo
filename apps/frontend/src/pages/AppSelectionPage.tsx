@@ -12,7 +12,7 @@ export default function AppSelectionPage() {
       name: "CMHO Admin Manager",
       description: "Manage employee salaries and payments",
       icon: Wallet,
-      path: "/salary",
+      path: "/admin",
       available: true,
       color: "blue",
     },
