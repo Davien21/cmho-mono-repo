@@ -25,6 +25,9 @@ const mode = env.NODE_ENV;
 
 app.use(helmet()); // sets most basics
 
+// Add the rest manually
+app.use(extraHeaders);
+
 app.use(morgan("dev"));
 
 const allowedOrigins = [
@@ -36,7 +39,6 @@ const allowedOrigins = [
   "https://cmho-salary-manager-app.vercel.app",
 ];
 
-// CORS must be before extraHeaders to handle OPTIONS preflight requests
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -56,9 +58,6 @@ app.use(
     methods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
   })
 );
-
-// Add the rest manually - after CORS so it doesn't interfere with OPTIONS requests
-app.use(extraHeaders);
 
 // @ts-ignore
 app.use(compression());
