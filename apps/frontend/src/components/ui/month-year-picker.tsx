@@ -1,56 +1,70 @@
-import * as React from "react"
-import { format, parse } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
+import * as React from "react";
+import {
+  format,
+  parse,
+  eachMonthOfInterval,
+  startOfYear,
+  endOfYear,
+} from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 interface MonthYearPickerProps {
-  value?: string | null // Format: "YYYY-MM" or null
-  onChange?: (value: string | undefined) => void // Returns "YYYY-MM" format
-  placeholder?: string
-  className?: string
-  disabled?: boolean
-  required?: boolean
-  id?: string
+  value?: string | null; // Format: "YYYY-MM" or null
+  onChange?: (value: string | undefined) => void; // Returns "YYYY-MM" format
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
+  required?: boolean;
+  id?: string;
 }
 
-const MONTHS = [
-  { value: "01", label: "January" },
-  { value: "02", label: "February" },
-  { value: "03", label: "March" },
-  { value: "04", label: "April" },
-  { value: "05", label: "May" },
-  { value: "06", label: "June" },
-  { value: "07", label: "July" },
-  { value: "08", label: "August" },
-  { value: "09", label: "September" },
-  { value: "10", label: "October" },
-  { value: "11", label: "November" },
-  { value: "12", label: "December" },
-]
+// Generate months with value, label, and short form
+const getMonths = () => {
+  const currentYear = new Date().getFullYear();
+  const yearStart = startOfYear(new Date(currentYear, 0, 1));
+  const yearEnd = endOfYear(new Date(currentYear, 0, 1));
+  const months = eachMonthOfInterval({ start: yearStart, end: yearEnd });
+
+  return months.map((date, index) => {
+    const monthNumber = index + 1;
+    const value = monthNumber.toString().padStart(2, "0");
+    const label = format(date, "MMMM"); // Full month name (e.g., "January")
+    const shortName = format(date, "MMM"); // Short month name (e.g., "Jan")
+
+    return {
+      value,
+      label,
+      shortName,
+    };
+  });
+};
+
+const MONTHS = getMonths();
 
 // Generate years from current year to 10 years in the future
 const getYears = () => {
-  const currentYear = new Date().getFullYear()
-  const years = []
+  const currentYear = new Date().getFullYear();
+  const years = [];
   for (let i = 0; i <= 10; i++) {
-    years.push((currentYear + i).toString())
+    years.push((currentYear + i).toString());
   }
-  return years
-}
+  return years;
+};
 
 export function MonthYearPicker({
   value,
@@ -61,59 +75,59 @@ export function MonthYearPicker({
   required = false,
   id,
 }: MonthYearPickerProps) {
-  const [month, setMonth] = React.useState<string>("")
-  const [year, setYear] = React.useState<string>("")
-  const [open, setOpen] = React.useState(false)
+  const [month, setMonth] = React.useState<string>("");
+  const [year, setYear] = React.useState<string>("");
+  const [open, setOpen] = React.useState(false);
 
   // Parse value on mount and when value changes
   React.useEffect(() => {
     if (value) {
       try {
         // Value format: "YYYY-MM"
-        const [yearPart, monthPart] = value.split("-")
+        const [yearPart, monthPart] = value.split("-");
         if (yearPart && monthPart) {
-          setYear(yearPart)
-          setMonth(monthPart)
+          setYear(yearPart);
+          setMonth(monthPart);
         }
       } catch (error) {
-        console.error("Error parsing month/year value:", error)
+        console.error("Error parsing month/year value:", error);
       }
     } else {
-      setMonth("")
-      setYear("")
+      setMonth("");
+      setYear("");
     }
-  }, [value])
+  }, [value]);
 
   const handleMonthChange = (newMonth: string) => {
-    setMonth(newMonth)
+    setMonth(newMonth);
     if (year) {
-      const newValue = `${year}-${newMonth}`
-      onChange?.(newValue)
+      const newValue = `${year}-${newMonth}`;
+      onChange?.(newValue);
     }
-  }
+  };
 
   const handleYearChange = (newYear: string) => {
-    setYear(newYear)
+    setYear(newYear);
     if (month) {
-      const newValue = `${newYear}-${month}`
-      onChange?.(newValue)
+      const newValue = `${newYear}-${month}`;
+      onChange?.(newValue);
     }
-  }
+  };
 
   const displayValue = React.useMemo(() => {
     if (month && year) {
       try {
         // Create a date object for the first day of the month for formatting
-        const date = parse(`${year}-${month}-01`, "yyyy-MM-dd", new Date())
-        return format(date, "MMMM yyyy")
+        const date = parse(`${year}-${month}-01`, "yyyy-MM-dd", new Date());
+        return format(date, "MMM yyyy");
       } catch {
-        return `${month}/${year}`
+        return `${month}/${year}`;
       }
     }
-    return null
-  }, [month, year])
+    return null;
+  }, [month, year]);
 
-  const years = React.useMemo(() => getYears(), [])
+  const years = React.useMemo(() => getYears(), []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -136,22 +150,29 @@ export function MonthYearPicker({
       <PopoverContent className="w-auto p-4" align="start">
         <div className="flex gap-2">
           <Select value={month} onValueChange={handleMonthChange}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[100px]">
               <SelectValue placeholder="Month" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent
+              position="popper"
+              className="max-h-[144px]"
+              style={{ minWidth: "100px", width: "100px", maxWidth: "100px" }}
+            >
               {MONTHS.map((m) => (
                 <SelectItem key={m.value} value={m.value}>
-                  {m.label}
+                  {m.shortName}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={year} onValueChange={handleYearChange}>
-            <SelectTrigger className="w-[100px]">
+            <SelectTrigger className="w-[80px]">
               <SelectValue placeholder="Year" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent
+              position="popper"
+              style={{ minWidth: "80px", width: "80px", maxWidth: "80px" }}
+            >
               {years.map((y) => (
                 <SelectItem key={y} value={y}>
                   {y}
@@ -162,6 +183,5 @@ export function MonthYearPicker({
         </div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
-

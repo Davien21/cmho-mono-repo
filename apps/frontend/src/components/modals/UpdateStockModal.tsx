@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -392,20 +391,11 @@ export function UpdateStockModal({
                       <SelectItem value="reduce">Reduce Stock</SelectItem>
                     </SelectContent>
                   </Select>
-                  <ResponsiveDialog.Close asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 bg-gray-100"
-                    >
-                      <X className="h-5 w-5 text-gray-700" />
-                    </Button>
-                  </ResponsiveDialog.Close>
                 </div>
               </div>
             </ResponsiveDialog.Header>
 
-            <div className="flex-1 min-h-0 overflow-y-auto px-1">
+            <div className="flex-1 min-h-0 overflow-y-auto px-1 mt-6">
               <div className="space-y-4">
                 {/* Current Stock Display (prominent for reduce mode) */}
                 {operationType === "reduce" && (
@@ -556,7 +546,7 @@ export function UpdateStockModal({
               </div>
             </div>
 
-            <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-6 border-t px-0 flex-shrink-0">
+            <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-4 border-t px-0 flex-shrink-0 mt-6">
               <Button
                 type="button"
                 variant="outline"
