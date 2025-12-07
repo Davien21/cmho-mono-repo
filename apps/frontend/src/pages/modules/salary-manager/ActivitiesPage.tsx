@@ -26,13 +26,18 @@ export default function ActivitiesPage() {
   const isSearchingRef = useRef(false);
   const isLoadingMoreRef = useRef(false);
 
-  const { data, isLoading, isFetching } = useGetActivitiesQuery({
-    module: "inventory",
-    search: debouncedSearch || undefined,
-    limit: 20,
-    page,
-    sort: "desc",
-  });
+  // No module filter - fetch all activities
+  const { data, isLoading, isFetching } = useGetActivitiesQuery(
+    {
+      search: debouncedSearch || undefined,
+      limit: 20,
+      page,
+      sort: "desc",
+    },
+    {
+      pollingInterval: 3000,
+    }
+  );
 
   const currentPageActivities = data?.data?.data || [];
   const total = data?.data?.total || 0;
@@ -125,7 +130,7 @@ export default function ActivitiesPage() {
             Activities
           </h1>
           <p className="text-base sm:text-sm text-muted-foreground">
-            View all inventory activities and track changes
+            View all activities across all modules and track changes
           </p>
         </div>
 
@@ -148,7 +153,7 @@ export default function ActivitiesPage() {
         {isLoading && page === 1 ? (
           <Card className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+              <div key={i} className="bg-white rounded-lg p-4 border border-gray-100">
                 <div className="flex items-start gap-3">
                   <Skeleton className="w-2 h-2 rounded-full mt-1.5" />
                   <div className="flex-1 space-y-2">
@@ -168,7 +173,7 @@ export default function ActivitiesPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               {debouncedSearch
                 ? "Try adjusting your search terms"
-                : "Activities will appear here as inventory changes are made"}
+                : "Activities will appear here as changes are made across all modules"}
             </p>
           </Card>
         ) : (
@@ -177,7 +182,7 @@ export default function ActivitiesPage() {
               {activities.map((activity) => (
                 <Card
                   key={activity._id}
-                  className="bg-gray-50 rounded-lg p-4 border border-gray-100"
+                  className="bg-white rounded-lg p-4 border border-gray-100"
                 >
                   <div className="flex items-start gap-3">
                     <div
@@ -197,6 +202,14 @@ export default function ActivitiesPage() {
                         <span className="text-xs text-gray-500">
                           {formatTimeAgo(activity.createdAt)}
                         </span>
+                        {activity.module && (
+                          <>
+                            <span className="text-xs text-gray-400">•</span>
+                            <span className="text-xs text-gray-500 capitalize">
+                              {activity.module}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
