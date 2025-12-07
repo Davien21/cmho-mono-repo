@@ -32,6 +32,17 @@ function formatDateTime(iso: string) {
   });
 }
 
+function formatExpiryDate(dateString: string | null) {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return dateString;
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default function StockChangesPage() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
@@ -166,151 +177,51 @@ export default function StockChangesPage() {
               Use the inventory actions to add or reduce stock.
             </p>
           </Card>
+        ) : filteredRows.length === 0 ? (
+          <Card className="p-8 flex flex-col items-center justify-center text-center">
+            <p className="text-base font-medium text-foreground">
+              No stock changes match your search
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Try adjusting your search terms
+            </p>
+          </Card>
         ) : (
-          <Card className="overflow-hidden">
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Time of Update
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Item
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Quantity
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Performed by
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredRows.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-4 py-6 text-center text-sm text-muted-foreground"
+          <div className="space-y-3">
+            {filteredRows.map((row) => (
+              <Card
+                key={row.id}
+                className="bg-gray-50 rounded-lg p-4 border border-gray-100 cursor-pointer"
+                onClick={() => setSelectedRow(row)}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span className="text-sm font-semibold text-gray-900">
+                        {row.itemName}
+                      </span>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
                       >
-                        No stock changes match your search.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredRows.map((row) => (
-                      <tr
-                        key={row.id}
-                        className="hover:bg-gray-50 cursor-pointer"
-                        onClick={() => setSelectedRow(row)}
-                      >
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                          {formatDateTime(row.createdAt)}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                          {row.itemName}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
-                            <StockUpdateBadge
-                              units={row.units}
-                              quantityInBaseUnits={row.quantityInBaseUnits}
-                              operationType={row.operationType}
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                          {row.performedBy}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile card view */}
-            <div className="block sm:hidden divide-y divide-gray-200">
-              {filteredRows.length === 0 ? (
-                <div className="p-4 text-center text-xs text-muted-foreground">
-                  No stock changes match your search.
-                </div>
-              ) : (
-                filteredRows.map((row) => (
-                  <div
-                    key={row.id}
-                    className="p-4 space-y-2 cursor-pointer"
-                    onClick={() => setSelectedRow(row)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-foreground">
-                        {formatDateTime(row.createdAt)}
-                      </p>
+                        <StockUpdateBadge
+                          units={row.units}
+                          quantityInBaseUnits={row.quantityInBaseUnits}
+                          operationType={row.operationType}
+                        />
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <p className="text-muted-foreground">Item</p>
-                        <p className="font-medium text-foreground">
-                          {row.itemName}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Quantity</p>
-                        <p className="font-medium text-foreground">
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
-                            <StockUpdateBadge
-                              units={row.units}
-                              quantityInBaseUnits={row.quantityInBaseUnits}
-                              operationType={row.operationType}
-                            />
-                          </div>
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Expiry Date</p>
-                        <p className="font-medium text-foreground">
-                          {row.expiryDate}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Cost Price</p>
-                        <p className="font-medium text-foreground">
-                          ₦
-                          {row.costPrice.toLocaleString("en-NG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Selling Price</p>
-                        <p className="font-medium text-foreground">
-                          ₦
-                          {row.sellingPrice.toLocaleString("en-NG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Performed by</p>
-                        <p className="font-medium text-foreground">
-                          {row.performedBy}
-                        </p>
-                      </div>
+                    <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500">
+                      <span>{formatDateTime(row.createdAt)}</span>
+                      <span>•</span>
+                      <span>by {row.performedBy}</span>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-          </Card>
+                </div>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
 
@@ -348,30 +259,44 @@ export default function StockChangesPage() {
                   operationType={selectedRow.operationType}
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Cost Price</span>
-                <span className="font-medium">
-                  ₦
-                  {selectedRow.costPrice.toLocaleString("en-NG", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Selling Price</span>
-                <span className="font-medium">
-                  ₦
-                  {selectedRow.sellingPrice.toLocaleString("en-NG", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Expiry Date</span>
-                <span className="font-medium">{selectedRow.expiryDate}</span>
-              </div>
+              {selectedRow.operationType !== "reduce" && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Cost Price</span>
+                    <span className="font-medium">
+                      ₦
+                      {selectedRow.costPrice.toLocaleString("en-NG", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Selling Price</span>
+                    <span className="font-medium">
+                      ₦
+                      {selectedRow.sellingPrice.toLocaleString("en-NG", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Expiry Date</span>
+                    <span className="font-medium">
+                      {formatExpiryDate(selectedRow.expiryDate)}
+                    </span>
+                  </div>
+                </>
+              )}
+              {selectedRow.operationType === "reduce" && (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Expiry Date</span>
+                  <span className="font-medium">
+                    {formatExpiryDate(selectedRow.expiryDate)}
+                  </span>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Performed by</span>
                 <span className="font-medium">

@@ -135,6 +135,7 @@ export function UnitBasedInput<T extends FieldValues>({
                           onChange={(e) =>
                             updateQuantityInput(unit.id, e.target.value)
                           }
+                          autoComplete="off"
                           className="w-14 text-sm border-0 bg-transparent py-1.5 pl-3 pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                         />
                         <span className="text-sm pr-3 text-foreground font-medium">

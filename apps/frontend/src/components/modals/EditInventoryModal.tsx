@@ -5,7 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Checkbox } from "../ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -37,6 +36,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useUploadGalleryMutation, IGalleryDto } from "@/store/gallery-slice";
 import { Upload, Image as ImageIcon, X, RotateCcw, Check } from "lucide-react";
 import { ImagePickerModal } from "./ImagePickerModal";
+import SegmentedControl from "@/SegmentedControl";
 
 interface EditInventoryModalProps {
   item: InventoryItem;
@@ -295,6 +295,17 @@ export function EditInventoryModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadGallery, { isLoading: isUploadingImage }] =
     useUploadGalleryMutation();
+
+  // Store initial values for change detection
+  const initialValuesRef = useRef({
+    name: item.name,
+    category: item.category,
+    image: item.image || null,
+    units: item.units || [],
+    lowStockValue: item.lowStockValue,
+    setupStatus: item.status,
+    canBeSold: (item as any).canBeSold ?? true,
+  });
 
   const { refetch } = useGetInventoryItemsQuery();
   const { data: unitsResponse } = useGetInventoryUnitsQuery();
@@ -568,27 +579,129 @@ export function EditInventoryModal({
       }
       // If imagePreview is null and item.image is also null, image stays undefined (no change)
 
+      const newName = values.name.trim();
+      const newCategory = values.inventoryCategory as InventoryCategory;
+      const newUnits = units.map((u) => ({
+        id: u.id,
+        name: u.name,
+        plural: u.plural,
+        quantity: u.quantity,
+      }));
+      const newLowStockValue =
+        lowStockValueInBaseUnits && lowStockValueInBaseUnits > 0
+          ? lowStockValueInBaseUnits
+          : undefined;
+      const newSetupStatus = values.setupStatus;
+      const newCanBeSold = values.canBeSold;
+
+      // Detect changes by comparing with initial values
+      const changedFields: string[] = [];
+      const oldValues: Record<string, any> = {};
+      const newValues: Record<string, any> = {};
+
+      // Compare name
+      if (newName !== initialValuesRef.current.name) {
+        changedFields.push("name");
+        oldValues.name = initialValuesRef.current.name;
+        newValues.name = newName;
+      }
+
+      // Compare category
+      if (newCategory !== initialValuesRef.current.category) {
+        changedFields.push("category");
+        oldValues.category = initialValuesRef.current.category;
+        newValues.category = newCategory;
+      }
+
+      // Compare image
+      const oldImageId = initialValuesRef.current.image?.mediaId || null;
+      const newImageId = image?.mediaId || null;
+      if (oldImageId !== newImageId) {
+        changedFields.push("image");
+        oldValues.image = initialValuesRef.current.image;
+        newValues.image = image;
+      }
+
+      // Compare units (simplified: check if array length or structure changed)
+      const unitsChanged =
+        JSON.stringify(newUnits) !==
+        JSON.stringify(initialValuesRef.current.units);
+      if (unitsChanged) {
+        changedFields.push("units");
+        oldValues.units = initialValuesRef.current.units;
+        newValues.units = newUnits;
+      }
+
+      // Compare lowStockValue
+      // Check if the form array is still all zeros (default/unmodified)
+      const isLowStockUnchanged =
+        !values.lowStockValue ||
+        values.lowStockValue.length === 0 ||
+        values.lowStockValue.every((input) => {
+          const val = parseFloat(input.value || "0");
+          return val === 0 || isNaN(val);
+        });
+
+      // Only mark as changed if:
+      // 1. The form was actually modified (not all zeros), AND
+      // 2. The calculated value differs from the initial value
+      if (!isLowStockUnchanged) {
+        // Normalize values: treat undefined, null, and 0 as equivalent (no value set)
+        const oldLowStock = initialValuesRef.current.lowStockValue;
+        const normalizedOldLowStock =
+          oldLowStock === undefined || oldLowStock === null || oldLowStock === 0
+            ? undefined
+            : oldLowStock;
+        const normalizedNewLowStock =
+          newLowStockValue === undefined ||
+          newLowStockValue === null ||
+          newLowStockValue === 0
+            ? undefined
+            : newLowStockValue;
+
+        if (normalizedNewLowStock !== normalizedOldLowStock) {
+          changedFields.push("lowStockValue");
+          oldValues.lowStockValue = initialValuesRef.current.lowStockValue;
+          newValues.lowStockValue = newLowStockValue;
+        }
+      }
+
+      // Compare setupStatus
+      if (newSetupStatus !== initialValuesRef.current.setupStatus) {
+        changedFields.push("setupStatus");
+        oldValues.setupStatus = initialValuesRef.current.setupStatus;
+        newValues.setupStatus = newSetupStatus;
+      }
+
+      // Compare canBeSold
+      if (newCanBeSold !== initialValuesRef.current.canBeSold) {
+        changedFields.push("canBeSold");
+        oldValues.canBeSold = initialValuesRef.current.canBeSold;
+        newValues.canBeSold = newCanBeSold;
+      }
+
       const updatePayload: any = {
         id: item.id,
-        name: values.name.trim(),
-        category: values.inventoryCategory as InventoryCategory,
-        units: units.map((u) => ({
-          id: u.id,
-          name: u.name,
-          plural: u.plural,
-          quantity: u.quantity,
-        })),
-        lowStockValue:
-          lowStockValueInBaseUnits && lowStockValueInBaseUnits > 0
-            ? lowStockValueInBaseUnits
-            : undefined,
-        setupStatus: values.setupStatus,
-        canBeSold: values.canBeSold,
+        name: newName,
+        category: newCategory,
+        units: newUnits,
+        lowStockValue: newLowStockValue,
+        setupStatus: newSetupStatus,
+        canBeSold: newCanBeSold,
       };
 
       // Add, update, or remove image
       if (image !== undefined) {
         updatePayload.image = image;
+      }
+
+      // Include change metadata if there are any changes
+      if (changedFields.length > 0) {
+        updatePayload._changes = {
+          changedFields,
+          oldValues,
+          newValues,
+        };
       }
 
       await updateInventoryItem(updatePayload).unwrap();
@@ -730,24 +843,26 @@ export function EditInventoryModal({
                   </div>
                 )}
 
-                <div className="flex items-center space-x-2 mt-4">
+                <div className="flex items-center gap-10 mt-4">
+                  <Label className="text-base sm:text-sm text-gray-700">
+                    Will this item be sold?
+                  </Label>
                   <Controller
                     name="canBeSold"
                     control={control}
                     render={({ field }) => (
-                      <Checkbox
-                        id="edit-can-be-sold"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+                      <SegmentedControl
+                        size="small"
+                        minItemWidth={70}
+                        value={field.value ? "yes" : "no"}
+                        onChange={(value) => field.onChange(value === "yes")}
+                        options={[
+                          { id: "no", label: "No" },
+                          { id: "yes", label: "Yes" },
+                        ]}
                       />
                     )}
                   />
-                  <Label
-                    htmlFor="edit-can-be-sold"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    Click to mark this as an item that can be sold
-                  </Label>
                 </div>
 
                 <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-6 border-t px-0 flex-shrink-0">

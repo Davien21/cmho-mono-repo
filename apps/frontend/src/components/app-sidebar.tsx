@@ -12,6 +12,8 @@ import {
   Truck,
   Image as ImageIcon,
   Shield,
+  Activity,
+  Bell,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -96,6 +98,24 @@ export const navigationConfig = {
       breadcrumbs: [
         { label: "Inventory", url: "/inventory" },
         { label: "Stock Changes", url: "/stock" },
+      ],
+    },
+    {
+      title: "Activities",
+      url: "/inventory/activities",
+      icon: Activity,
+      breadcrumbs: [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Activities", url: "/inventory/activities" },
+      ],
+    },
+    {
+      title: "Notifications",
+      url: "/inventory/notifications",
+      icon: Bell,
+      breadcrumbs: [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Notifications", url: "/inventory/notifications" },
       ],
     },
     {

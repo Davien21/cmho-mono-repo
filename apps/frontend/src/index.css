@@ -149,6 +149,13 @@ h1 {
   .border {
     @apply dark:border-gray-600;
   }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* hsl(13.61deg 92.31% 54.12%) */

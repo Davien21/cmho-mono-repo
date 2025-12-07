@@ -92,6 +92,46 @@ export const duplicateArray = <T>(array: T[], times: number): T[] => {
 };
 
 /**
+ * Formats a date as a relative time string (e.g., "2 hours ago", "1 day ago")
+ * @param date - The date to format (string, Date, or ISO string)
+ * @returns A human-readable relative time string
+ */
+export const formatTimeAgo = (date: string | Date | null): string => {
+  if (!date) return "Unknown time";
+
+  const now = new Date();
+  const past = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
+
+  if (diffInSeconds < 60) {
+    return "just now";
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} ${diffInMinutes === 1 ? "minute" : "minutes"} ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) {
+    return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
+  }
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) {
+    return `${diffInMonths} ${diffInMonths === 1 ? "month" : "months"} ago`;
+  }
+
+  const diffInYears = Math.floor(diffInMonths / 12);
+  return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
+};
+
+/**
  * Returns the appropriate unit name (singular or plural) based on quantity
  * @param unit - The unit object containing name and plural properties
  * @param quantity - The quantity to check (number or string)

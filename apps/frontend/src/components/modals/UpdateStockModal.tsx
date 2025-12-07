@@ -377,143 +377,143 @@ export function UpdateStockModal({
 
             <div className="flex-1 min-h-0 overflow-y-auto px-1">
               <div className="space-y-4">
-            {/* Current Stock Display (prominent for reduce mode) */}
-            {operationType === "reduce" && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-red-900">
-                    Current Stock:
-                  </span>
-                  <span className="text-lg font-bold text-red-900">
-                    {currentStock}{" "}
-                    {baseUnit
-                      ? formatUnitName(baseUnit, currentStock)
-                      : "units"}
-                  </span>
-                </div>
-              </div>
-            )}
+                {/* Current Stock Display (prominent for reduce mode) */}
+                {operationType === "reduce" && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-red-900">
+                        Current Stock:
+                      </span>
+                      <span className="text-lg font-bold text-red-900">
+                        {currentStock}{" "}
+                        {baseUnit
+                          ? formatUnitName(baseUnit, currentStock)
+                          : "units"}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
-            {/* Supplier and Expiry Date - Only show for Add */}
-            {operationType === "add" && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="inventory-supplier">
-                    Supplier (Optional)
-                  </Label>
-                  <InventorySupplierSelect
-                    id="inventory-supplier"
-                    value={supplierId}
-                    onChange={(supplier) => {
-                      setSupplierId(supplier?.id ?? null);
-                      setSupplierName(supplier?.name ?? null);
-                    }}
-                  />
-                </div>
+                {/* Supplier and Expiry Date - Only show for Add */}
+                {operationType === "add" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="inventory-supplier">
+                        Supplier (Optional)
+                      </Label>
+                      <InventorySupplierSelect
+                        id="inventory-supplier"
+                        value={supplierId}
+                        onChange={(supplier) => {
+                          setSupplierId(supplier?.id ?? null);
+                          setSupplierName(supplier?.name ?? null);
+                        }}
+                      />
+                    </div>
 
+                    <div className="space-y-2">
+                      <Label htmlFor="expiryDate">Expiry Date *</Label>
+                      <Input
+                        id="expiryDate"
+                        type="date"
+                        {...register("expiryDate")}
+                        required
+                      />
+                      {errors.expiryDate?.message && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.expiryDate.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pricing Section - Only show for Add */}
+                {operationType === "add" && (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="costPrice">
+                          Cost Price in ₦ (per{" "}
+                          {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                        </Label>
+                        <Input
+                          id="costPrice"
+                          type="number"
+                          step="0.01"
+                          {...register("costPrice")}
+                          placeholder="0.00"
+                          required
+                        />
+                        {errors.costPrice?.message && (
+                          <p className="text-xs text-destructive mt-1">
+                            {errors.costPrice.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="sellingPrice">
+                          Selling Price in ₦ (per{" "}
+                          {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
+                        </Label>
+                        <Input
+                          id="sellingPrice"
+                          type="number"
+                          step="0.01"
+                          {...register("sellingPrice")}
+                          placeholder="0.00"
+                          required
+                        />
+                        {errors.sellingPrice?.message && (
+                          <p className="text-xs text-destructive mt-1">
+                            {errors.sellingPrice.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      <span className="">Profit: </span>
+                      <span className="font-medium text-foreground">
+                        {getProfitText(profit)}
+                      </span>
+                    </p>
+                  </div>
+                )}
+
+                {/* Quantity Section */}
                 <div className="space-y-2">
-                  <Label htmlFor="expiryDate">Expiry Date *</Label>
-                  <Input
-                    id="expiryDate"
-                    type="date"
-                    {...register("expiryDate")}
-                    required
+                  <UnitBasedInput
+                    control={control}
+                    name="quantity"
+                    label="Quantity *"
+                    units={localItem.units}
+                    error={errors.quantity?.message}
                   />
-                  {errors.expiryDate?.message && (
-                    <p className="text-xs text-destructive mt-1">
-                      {errors.expiryDate.message}
+
+                  {/* Warning for reduce operations */}
+                  {operationType === "reduce" && totalInBaseUnits > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      After reduction:{" "}
+                      <span
+                        className={`font-medium ${
+                          currentStock - totalInBaseUnits < 0
+                            ? "text-destructive"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {Math.max(0, currentStock - totalInBaseUnits)}{" "}
+                        {baseUnit
+                          ? formatUnitName(
+                              baseUnit,
+                              Math.max(0, currentStock - totalInBaseUnits)
+                            )
+                          : "units"}
+                      </span>
                     </p>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* Pricing Section - Only show for Add */}
-            {operationType === "add" && (
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="costPrice">
-                      Cost Price in ₦ (per{" "}
-                      {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
-                    </Label>
-                    <Input
-                      id="costPrice"
-                      type="number"
-                      step="0.01"
-                      {...register("costPrice")}
-                      placeholder="0.00"
-                      required
-                    />
-                    {errors.costPrice?.message && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.costPrice.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="sellingPrice">
-                      Selling Price in ₦ (per{" "}
-                      {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
-                    </Label>
-                    <Input
-                      id="sellingPrice"
-                      type="number"
-                      step="0.01"
-                      {...register("sellingPrice")}
-                      placeholder="0.00"
-                      required
-                    />
-                    {errors.sellingPrice?.message && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.sellingPrice.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <p className="text-sm text-muted-foreground">
-                  <span className="">Profit: </span>
-                  <span className="font-medium text-foreground">
-                    {getProfitText(profit)}
-                  </span>
-                </p>
-              </div>
-            )}
-
-            {/* Quantity Section */}
-            <div className="space-y-2">
-              <UnitBasedInput
-                control={control}
-                name="quantity"
-                label="Quantity *"
-                units={localItem.units}
-                error={errors.quantity?.message}
-              />
-
-              {/* Warning for reduce operations */}
-              {operationType === "reduce" && totalInBaseUnits > 0 && (
-                <p className="text-sm text-muted-foreground">
-                  After reduction:{" "}
-                  <span
-                    className={`font-medium ${
-                      currentStock - totalInBaseUnits < 0
-                        ? "text-destructive"
-                        : "text-foreground"
-                    }`}
-                  >
-                    {Math.max(0, currentStock - totalInBaseUnits)}{" "}
-                    {baseUnit
-                      ? formatUnitName(
-                          baseUnit,
-                          Math.max(0, currentStock - totalInBaseUnits)
-                        )
-                      : "units"}
-                  </span>
-                </p>
-              )}
-            </div>
               </div>
             </div>
 
@@ -547,4 +547,3 @@ export function UpdateStockModal({
     </ResponsiveDialog.Root>
   );
 }
-

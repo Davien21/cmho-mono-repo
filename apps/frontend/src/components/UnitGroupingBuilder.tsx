@@ -175,6 +175,7 @@ export function UnitGroupingBuilder({
                               });
                             }}
                             placeholder="-"
+                            autoComplete="off"
                             className="w-8 text-sm border-0 bg-transparent py-1.5 pl-3 pr-1 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                           />
 
