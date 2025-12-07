@@ -264,7 +264,9 @@ export default function StockEntriesPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Expiry Date</span>
-                <span className="font-medium">{selectedEntry.expiryDate}</span>
+                <span className="font-medium">
+                  {formatExpiryDate(selectedEntry.expiryDate)}
+                </span>
               </div>
             </div>
           </Card>
@@ -283,5 +285,16 @@ const formatDateTime = (iso: string) => {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+  });
+};
+
+const formatExpiryDate = (dateString: string | null) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return dateString;
+  // Format as "MMM YYYY" (e.g., "Mar 2024")
+  return date.toLocaleDateString("en-GB", {
+    month: "short",
+    year: "numeric",
   });
 };

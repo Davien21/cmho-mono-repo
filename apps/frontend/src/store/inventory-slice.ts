@@ -169,9 +169,9 @@ export interface ICreateStockEntryRequest {
     supplierId: string;
     name: string;
   } | null;
-  costPrice: number;
-  sellingPrice: number;
-  expiryDate: string;
+  costPrice?: number;
+  sellingPrice?: number;
+  expiryDate?: string | Date;
   quantityInBaseUnits: number;
 }
 

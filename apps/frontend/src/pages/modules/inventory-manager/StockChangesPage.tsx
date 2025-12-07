@@ -36,8 +36,8 @@ function formatExpiryDate(dateString: string | null) {
   if (!dateString) return "N/A";
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return dateString;
+  // Format as "MMM YYYY" (e.g., "Mar 2024")
   return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
     month: "short",
     year: "numeric",
   });

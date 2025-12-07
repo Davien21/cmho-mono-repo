@@ -202,8 +202,8 @@ export function InventoryList({
     if (!dateString) return "N/A";
     if (dateString === "ALL EXPIRED") return "ALL EXPIRED";
     const date = new Date(dateString);
+    // Format as "MMM YYYY" (e.g., "Mar 2024")
     return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
       month: "short",
       year: "numeric",
     });

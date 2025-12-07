@@ -2,6 +2,20 @@ import StockEntry from "./stock-entries.model";
 import { IStockEntry, StockEntryRequest } from "./stock-entries.types";
 import InventoryItem from "../inventory-items/inventory-items.model";
 
+/**
+ * Normalizes an expiry date to the first day of the month.
+ * This ensures expiry dates are stored consistently as month/year only.
+ */
+function normalizeExpiryDate(date: Date | string | null | undefined): Date | null {
+  if (!date) return null;
+
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(dateObj.getTime())) return null;
+
+  // Set to first day of the month
+  return new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+}
+
 interface AddStockRequest {
   inventoryItemId: string;
   supplier?: {
@@ -57,9 +71,13 @@ class StockEntriesService {
     data: AddStockRequest,
     createdBy: string
   ): Promise<IStockEntry> {
+    // Normalize expiry date to first day of month
+    const normalizedExpiryDate = normalizeExpiryDate(data.expiryDate);
+
     // Create stock entry with operationType: "add"
     const entry = await StockEntry.create({
       ...data,
+      expiryDate: normalizedExpiryDate || data.expiryDate,
       operationType: "add",
       quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
       createdBy,
@@ -85,12 +103,17 @@ class StockEntriesService {
     data: ReduceStockRequest,
     createdBy: string
   ): Promise<IStockEntry> {
+    // Normalize expiry date to first day of month if provided
+    const normalizedExpiryDate = data.expiryDate
+      ? normalizeExpiryDate(data.expiryDate)
+      : null;
+
     // Set default values for reduce operations
     const entryData = {
       ...data,
       costPrice: data.costPrice ?? 0,
       sellingPrice: data.sellingPrice ?? 0,
-      expiryDate: data.expiryDate ?? new Date(),
+      expiryDate: normalizedExpiryDate ?? new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     };
 
     // Create stock entry with operationType: "reduce"
@@ -123,13 +146,22 @@ class StockEntriesService {
   }
 
   async create(data: StockEntryRequest): Promise<IStockEntry> {
+    // Normalize expiry date to first day of month if provided
+    let normalizedExpiryDate: Date | undefined = undefined;
+    if (data.expiryDate) {
+      normalizedExpiryDate = normalizeExpiryDate(data.expiryDate) || undefined;
+    } else if (data.operationType === "reduce") {
+      // For reduce operations without expiry date, use first day of current month
+      normalizedExpiryDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    }
+
     // For reduce operations, set default values if not provided
     const entryData: StockEntryRequest = {
       ...data,
+      expiryDate: normalizedExpiryDate,
       ...(data.operationType === "reduce" && {
         costPrice: data.costPrice ?? 0,
         sellingPrice: data.sellingPrice ?? 0,
-        expiryDate: data.expiryDate ?? new Date(),
       }),
     };
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
@@ -25,6 +25,7 @@ import { InventorySupplierSelect } from "@/components/InventorySupplierSelect";
 import { UnitBasedInput } from "@/components/UnitBasedInput";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 interface UpdateStockModalProps {
   inventoryItem: InventoryItem;
@@ -46,7 +47,13 @@ const createUpdateStockSchema = (operationType: "add" | "reduce") => {
   return yup.object({
     expiryDate:
       operationType === "add"
-        ? yup.string().required("Expiry date is required")
+        ? yup
+            .string()
+            .required("Expiry date is required")
+            .matches(
+              /^\d{4}-\d{2}$/,
+              "Expiry date must be in YYYY-MM format (e.g., 2024-03)"
+            )
         : yup
             .string()
             .optional()
@@ -216,8 +223,8 @@ export function UpdateStockModal({
   }, [localItem]);
 
   const calculateProfit = (): IProfit => {
-    const cost = parseFloat(costPrice) || 0;
-    const selling = parseFloat(sellingPrice) || 0;
+    const cost = parseFloat(costPrice || "0") || 0;
+    const selling = parseFloat(sellingPrice || "0") || 0;
     if (cost === 0) return { percent: "0.0", amount: "0" };
     const profitAmount = selling - cost;
     const profitPercent = ((profitAmount / cost) * 100).toFixed(1);
@@ -257,7 +264,23 @@ export function UpdateStockModal({
     }
 
     try {
-      const payload = {
+      // Convert expiryDate from "YYYY-MM" format to Date (first day of month)
+      let expiryDate: Date | undefined = undefined;
+      if (operationType === "add" && values.expiryDate) {
+        // Parse "YYYY-MM" and create date for first day of that month
+        const parts = values.expiryDate.split("-");
+        const yearStr = parts[0];
+        const monthStr = parts[1];
+        if (yearStr && monthStr) {
+          const year = parseInt(yearStr, 10);
+          const month = parseInt(monthStr, 10);
+          if (!isNaN(year) && !isNaN(month)) {
+            expiryDate = new Date(year, month - 1, 1);
+          }
+        }
+      }
+
+      const payload: any = {
         inventoryItemId: localItem.id,
         operationType,
         supplier:
@@ -267,17 +290,24 @@ export function UpdateStockModal({
                 supplierId,
                 name: supplierName,
               },
-        costPrice:
-          operationType === "reduce"
-            ? undefined
-            : parseFloat(values.costPrice || "0"),
-        sellingPrice:
-          operationType === "reduce"
-            ? undefined
-            : parseFloat(values.sellingPrice || "0"),
-        expiryDate: operationType === "reduce" ? undefined : values.expiryDate,
         quantityInBaseUnits: totalQuantity,
       };
+
+      // For add operations, include pricing and expiry
+      if (operationType === "add") {
+        payload.costPrice = parseFloat(values.costPrice || "0");
+        payload.sellingPrice = parseFloat(values.sellingPrice || "0");
+        payload.expiryDate = expiryDate;
+      } else {
+        // For reduce operations, these are optional but backend expects them
+        payload.costPrice = 0;
+        payload.sellingPrice = 0;
+        payload.expiryDate = new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          1
+        );
+      }
 
       await createStockEntry(payload).unwrap();
 
@@ -299,7 +329,7 @@ export function UpdateStockModal({
 
   const baseUnit = getBaseUnit();
   const profit = calculateProfit();
-  const currentStock = getTotalStock(localItem);
+  const currentStock = localItem ? getTotalStock(localItem) : 0;
   const quantityValues = watch("quantity") || [];
   const totalInBaseUnits = calculateTotalInBaseUnits(quantityValues);
 
@@ -413,11 +443,20 @@ export function UpdateStockModal({
 
                     <div className="space-y-2">
                       <Label htmlFor="expiryDate">Expiry Date *</Label>
-                      <Input
-                        id="expiryDate"
-                        type="date"
-                        {...register("expiryDate")}
-                        required
+                      <Controller
+                        name="expiryDate"
+                        control={control}
+                        render={({ field }) => (
+                          <MonthYearPicker
+                            id="expiryDate"
+                            value={field.value}
+                            onChange={(value) => {
+                              field.onChange(value);
+                            }}
+                            placeholder="Select month and year"
+                            required
+                          />
+                        )}
                       />
                       {errors.expiryDate?.message && (
                         <p className="text-xs text-destructive mt-1">
