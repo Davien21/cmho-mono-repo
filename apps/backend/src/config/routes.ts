@@ -16,6 +16,8 @@ import suppliersRouter from "../modules/suppliers/suppliers.router";
 import mediaRouter from "../modules/media/media.router";
 import galleryRouter from "../modules/gallery/gallery.router";
 import adminsRouter from "../modules/admins/admins.router";
+import activityTrackingRouter from "../modules/activity-tracking/activity-tracking.router";
+import notificationsRouter from "../modules/notifications/notifications.router";
 
 router.use(authRouter);
 router.use(banksRouter);
@@ -32,5 +34,7 @@ router.use(suppliersRouter);
 router.use(mediaRouter);
 router.use(galleryRouter);
 router.use(adminsRouter);
+router.use(activityTrackingRouter);
+router.use(notificationsRouter);
 
 export default router;

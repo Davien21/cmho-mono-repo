@@ -13,6 +13,8 @@ import InventoryPage from "@/pages/modules/inventory-manager/InventoryPage";
 import InventorySettingsPage from "@/pages/modules/inventory-manager/InventorySettingsPage";
 import StockEntriesPage from "@/pages/modules/inventory-manager/StockEntriesPage";
 import StockChangesPage from "@/pages/modules/inventory-manager/StockChangesPage";
+import ActivitiesPage from "@/pages/modules/inventory-manager/ActivitiesPage";
+import NotificationsPage from "@/pages/modules/inventory-manager/NotificationsPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export const AppRoutes = () => {
@@ -37,6 +39,8 @@ export const AppRoutes = () => {
       <Route path="/inventory/settings" element={<InventorySettingsPage />} />
       <Route path="/inventory/stock" element={<StockChangesPage />} />
       <Route path="/stock" element={<StockChangesPage />} />
+      <Route path="/inventory/activities" element={<ActivitiesPage />} />
+      <Route path="/inventory/notifications" element={<NotificationsPage />} />
       <Route path="/inventory/:itemId/entries" element={<StockEntriesPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
