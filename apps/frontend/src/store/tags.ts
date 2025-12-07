@@ -11,4 +11,6 @@ export enum TagTypes {
   MEDIA = "Media",
   GALLERY = "Gallery",
   ADMIN = "Admin",
+  ACTIVITY_RECORDS = "Activity_Records",
+  NOTIFICATIONS = "Notifications",
 }

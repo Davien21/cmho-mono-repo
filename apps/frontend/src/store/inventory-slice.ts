@@ -401,7 +401,11 @@ export const inventoryApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [TagTypes.STOCK_ENTRIES, TagTypes.INVENTORY_ITEMS],
+      invalidatesTags: [
+        TagTypes.STOCK_ENTRIES,
+        TagTypes.INVENTORY_ITEMS,
+        TagTypes.ACTIVITY_RECORDS,
+      ],
     }),
   }),
 });

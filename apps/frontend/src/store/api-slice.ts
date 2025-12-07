@@ -23,5 +23,7 @@ export const baseApi = createApi({
     TagTypes.MEDIA,
     TagTypes.GALLERY,
     TagTypes.ADMIN,
+    TagTypes.ACTIVITY_RECORDS,
+    TagTypes.NOTIFICATIONS,
   ],
 });
