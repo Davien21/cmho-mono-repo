@@ -1,14 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 
 import { UnAuthorizedError } from "../config/errors";
-import authService, { AuthTokenPayload } from "../modules/auth/auth.service";
-import { AdminRole } from "../modules/admins/admins.types";
+import authService from "../modules/auth/auth.service";
+import { AdminRole, IAdmin } from "../modules/admins/admins.types";
 import { JWT_COOKIE_NAME } from "../utils/cookie-names";
+import Admin from "../modules/admins/admins.model";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: AuthTokenPayload;
+      user?: Omit<IAdmin, "passwordHash">;
     }
   }
 }
@@ -24,8 +25,18 @@ const authenticate = async function (
   if (!authToken) throw new UnAuthorizedError();
   try {
     const decoded = authService.verifyAuthToken(authToken);
-    // Attach decoded token payload to the request for downstream middlewares/controllers.
-    req.user = decoded;
+
+    // Fetch admin from database and exclude passwordHash
+    const admin = await Admin.findById(decoded._id)
+      .select("-passwordHash")
+      .lean();
+
+    if (!admin) {
+      throw new UnAuthorizedError("Admin not found");
+    }
+
+    // Set req.user directly to the admin object
+    req.user = admin as Omit<IAdmin, "passwordHash">;
 
     next();
   } catch (error) {
