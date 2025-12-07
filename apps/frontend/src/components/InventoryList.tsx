@@ -31,6 +31,8 @@ interface InventoryListProps {
   onViewStockEntries: (item: InventoryItem) => void;
   onAddItem: () => void;
   onImageClick?: (item: InventoryItem) => void;
+  onEditImage?: (item: InventoryItem) => void;
+  onPreviewImage?: (item: InventoryItem) => void;
 }
 
 type DisplayMode = "full" | "skipOne" | "baseOnly";
@@ -43,6 +45,8 @@ export function InventoryList({
   onViewStockEntries,
   onAddItem,
   onImageClick,
+  onEditImage,
+  onPreviewImage,
 }: InventoryListProps) {
   const [search, setSearch] = useState("");
   // Track display mode per item
@@ -209,9 +213,18 @@ export function InventoryList({
     });
   };
 
-  const handleImageClick = (item: InventoryItem) => {
-    if (item.image?.url && onImageClick) {
-      onImageClick(item);
+  const handleImageClick = (item: InventoryItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (item.image?.url) {
+      // If image exists, show context menu via onImageClick
+      if (onImageClick) {
+        onImageClick(item);
+      }
+    } else {
+      // If no image, open add image modal
+      if (onEditImage) {
+        onEditImage(item);
+      }
     }
   };
 
@@ -261,14 +274,41 @@ export function InventoryList({
                     {/* Thumbnail */}
                     <div className="flex-shrink-0">
                       {item.image?.url ? (
-                        <img
-                          src={item.image.url}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => handleImageClick(item)}
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <img
+                              src={item.image.url}
+                              alt={item.name}
+                              className="w-16 h-16 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={(e) => handleImageClick(item, e)}
+                            />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            {onPreviewImage && (
+                              <DropdownMenuItem
+                                onClick={() => onPreviewImage(item)}
+                                className="text-base sm:text-sm py-2.5 sm:py-2"
+                              >
+                                <ImageIcon className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                                Preview Image
+                              </DropdownMenuItem>
+                            )}
+                            {onEditImage && (
+                              <DropdownMenuItem
+                                onClick={() => onEditImage(item)}
+                                className="text-base sm:text-sm py-2.5 sm:py-2"
+                              >
+                                <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                                Edit Image
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       ) : (
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                        <div
+                          className="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
+                          onClick={(e) => handleImageClick(item, e)}
+                        >
                           <ImageIcon className="h-8 w-8 sm:h-6 sm:w-6 text-gray-400" />
                         </div>
                       )}
@@ -405,14 +445,41 @@ export function InventoryList({
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.image?.url ? (
-                        <img
-                          src={item.image.url}
-                          alt={item.name}
-                          className="w-12 h-12 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => handleImageClick(item)}
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <img
+                              src={item.image.url}
+                              alt={item.name}
+                              className="w-12 h-12 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={(e) => handleImageClick(item, e)}
+                            />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            {onPreviewImage && (
+                              <DropdownMenuItem
+                                onClick={() => onPreviewImage(item)}
+                                className="text-base sm:text-sm py-2.5 sm:py-2"
+                              >
+                                <ImageIcon className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                                Preview Image
+                              </DropdownMenuItem>
+                            )}
+                            {onEditImage && (
+                              <DropdownMenuItem
+                                onClick={() => onEditImage(item)}
+                                className="text-base sm:text-sm py-2.5 sm:py-2"
+                              >
+                                <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                                Edit Image
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       ) : (
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                        <div
+                          className="w-12 h-12 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
+                          onClick={(e) => handleImageClick(item, e)}
+                        >
                           <ImageIcon className="h-6 w-6 sm:h-5 sm:w-5 text-gray-400" />
                         </div>
                       )}

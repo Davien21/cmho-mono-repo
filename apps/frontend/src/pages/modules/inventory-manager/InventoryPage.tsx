@@ -4,6 +4,7 @@ import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
 import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
 import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
+import { AddInventoryImageModal } from "@/components/modals/AddInventoryImageModal";
 import { ImagePreviewModal } from "@/components/ImagePreviewModal";
 import { InventoryItem } from "@/types/inventory";
 import Layout from "@/components/Layout";
@@ -46,6 +47,8 @@ export default function InventoryPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showStockModal, setShowStockModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalMode, setImageModalMode] = useState<"add" | "edit">("add");
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [previewImage, setPreviewImage] = useState<{
     url: string;
@@ -89,7 +92,13 @@ export default function InventoryPage() {
     navigate(`/inventory/stock?itemId=${encodeURIComponent(item.id)}`);
   };
 
-  const handleImageClick = (item: InventoryItem) => {
+  const handleEditImage = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setImageModalMode(item.image?.url ? "edit" : "add");
+    setShowImageModal(true);
+  };
+
+  const handlePreviewImage = (item: InventoryItem) => {
     if (item.image?.url) {
       setPreviewImage({
         url: item.image.url,
@@ -122,7 +131,8 @@ export default function InventoryPage() {
             onDelete={handleDelete}
             onViewStockEntries={handleViewStockEntries}
             onAddItem={() => setShowAddForm(true)}
-            onImageClick={handleImageClick}
+            onEditImage={handleEditImage}
+            onPreviewImage={handlePreviewImage}
           />
         )}
 
@@ -151,6 +161,20 @@ export default function InventoryPage() {
                 setSelectedItem(null);
               }
             }}
+          />
+        )}
+
+        {selectedItem && (
+          <AddInventoryImageModal
+            item={selectedItem}
+            open={showImageModal}
+            onOpenChange={(open) => {
+              setShowImageModal(open);
+              if (!open) {
+                setSelectedItem(null);
+              }
+            }}
+            mode={imageModalMode}
           />
         )}
 
