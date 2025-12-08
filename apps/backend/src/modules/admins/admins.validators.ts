@@ -34,3 +34,4 @@ export const getAdminsSchema = paginationQuerySchema;
 
 export type GetAdminsQuerySchema = yup.InferType<typeof getAdminsSchema>;
 
+
