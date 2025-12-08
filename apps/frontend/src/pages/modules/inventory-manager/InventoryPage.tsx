@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
 import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
@@ -18,7 +18,15 @@ import { toast } from "sonner";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 
 export default function InventoryPage() {
-  const { data, isLoading } = useGetInventoryItemsQuery();
+  const [searchParams] = useSearchParams();
+  const filter = searchParams.get("filter") as
+    | "outOfStock"
+    | "lowStock"
+    | "inStock"
+    | null;
+  const { data, isLoading } = useGetInventoryItemsQuery(
+    filter ? { stockFilter: filter } : undefined
+  );
   const [deleteInventoryItem] = useDeleteInventoryItemMutation();
   const { openModal, closeModal } = useModalContext();
 
@@ -37,7 +45,6 @@ export default function InventoryPage() {
         quantity: u.quantity,
       })),
       lowStockValue: dto.lowStockValue,
-      status: dto.setupStatus,
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       earliestExpiryDate: dto.earliestExpiryDate ?? null,

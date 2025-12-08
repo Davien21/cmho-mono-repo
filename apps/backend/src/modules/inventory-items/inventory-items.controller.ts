@@ -20,9 +20,9 @@ export async function getInventoryItems(
     limit = "10",
     page = "1",
     status,
-    setupStatus,
     category,
     search,
+    stockFilter,
   } = req.query;
 
   const items = await inventoryItemsService.list({
@@ -30,9 +30,13 @@ export async function getInventoryItems(
     limit: parseInt(limit),
     page: parseInt(page),
     status,
-    setupStatus,
     category,
     search,
+    stockFilter: stockFilter as
+      | "outOfStock"
+      | "lowStock"
+      | "inStock"
+      | undefined,
   });
 
   res.send(successResponse("Inventory items fetched successfully", items));
@@ -58,7 +62,6 @@ export async function createInventoryItem(req: Request, res: Response) {
     description: `Created inventory item "${itemName}"`,
     metadata: {
       category: data.category,
-      setupStatus: data.setupStatus || "draft",
     },
   };
   await activityTrackingService.trackActivity(activityData);
@@ -94,7 +97,6 @@ export async function updateInventoryItem(req: Request, res: Response) {
           name: "name",
           category: "category",
           image: "Image",
-          setupStatus: "setup status",
           lowStockValue: "low stock value",
           canBeSold: "can be sold",
         },

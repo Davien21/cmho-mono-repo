@@ -8,24 +8,23 @@ class InventoryItemsService {
     limit = 10,
     page = 1,
     status,
-    setupStatus,
     category,
     search,
+    stockFilter,
   }: {
     sort?: 1 | -1;
     limit?: number;
     page?: number;
     status?: string;
-    setupStatus?: string;
     category?: string;
     search?: string;
+    stockFilter?: "outOfStock" | "lowStock" | "inStock";
   }): Promise<IInventoryItem[]> {
     const skip = (page - 1) * limit;
     const now = new Date();
 
     const filter: Record<string, any> = { isDeleted: { $ne: true } };
     if (status) filter.status = status;
-    if (setupStatus) filter.setupStatus = setupStatus;
     if (category) filter.category = category;
     if (search) filter.name = { $regex: search, $options: "i" };
 
@@ -98,6 +97,56 @@ class InventoryItemsService {
         },
       },
       { $unset: ["earliestExpiryEntry", "hasAnyStockEntries"] },
+      // Apply stock filter if provided
+      ...(stockFilter
+        ? [
+            {
+              $match: (() => {
+                switch (stockFilter) {
+                  case "outOfStock":
+                    return { currentStockInBaseUnits: { $eq: 0 } };
+                  case "lowStock":
+                    return {
+                      $and: [
+                        { currentStockInBaseUnits: { $gt: 0 } },
+                        { lowStockValue: { $exists: true, $ne: null } },
+                        {
+                          $expr: {
+                            $lte: [
+                              "$currentStockInBaseUnits",
+                              "$lowStockValue",
+                            ],
+                          },
+                        },
+                      ],
+                    };
+                  case "inStock":
+                    return {
+                      $and: [
+                        { currentStockInBaseUnits: { $gt: 0 } },
+                        {
+                          $or: [
+                            { lowStockValue: { $exists: false } },
+                            { lowStockValue: null },
+                            {
+                              $expr: {
+                                $gt: [
+                                  "$currentStockInBaseUnits",
+                                  "$lowStockValue",
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    };
+                  default:
+                    return {};
+                }
+              })(),
+            },
+          ]
+        : []),
       { $sort: { _id: sort } },
       { $skip: skip },
       { $limit: limit },

@@ -2,15 +2,18 @@ import * as yup from "yup";
 import { paginationQuerySchema } from "../../validators/general.validator";
 import {
   IInventoryItemRequest,
-  InventorySetupStatus,
   InventoryStatus,
 } from "./inventory-items.types";
 
 export const getInventoryItemsSchema = paginationQuerySchema.shape({
   status: yup.string().optional().label("Status"),
-  setupStatus: yup.string().optional().label("Setup status"),
   category: yup.string().optional().label("Category"),
   search: yup.string().optional().label("Search query"),
+  stockFilter: yup
+    .string()
+    .oneOf(["outOfStock", "lowStock", "inStock"])
+    .optional()
+    .label("Stock filter"),
 });
 
 export type GetInventoryItemsQuerySchema = yup.InferType<
@@ -40,11 +43,6 @@ export const createInventoryItemSchema = yup
     category: yup.string().required().label("Category"),
     units: yup.array(inventoryUnitSchema).min(1).required().label("Units"),
     lowStockValue: yup.number().optional().label("Low stock value"),
-    setupStatus: yup
-      .mixed<InventorySetupStatus>()
-      .oneOf(["draft", "ready"])
-      .required()
-      .label("Setup status"),
     status: yup
       .mixed<InventoryStatus>()
       .oneOf(["active", "disabled", "deleted"])
@@ -65,10 +63,6 @@ export const updateInventoryItemSchema = yup.object<
   category: yup.string().label("Category"),
   units: yup.array(inventoryUnitSchema).label("Units"),
   lowStockValue: yup.number().label("Low stock value"),
-  setupStatus: yup
-    .mixed<InventorySetupStatus>()
-    .oneOf(["draft", "ready"])
-    .label("Setup status"),
   status: yup
     .mixed<InventoryStatus>()
     .oneOf(["active", "disabled", "deleted"])

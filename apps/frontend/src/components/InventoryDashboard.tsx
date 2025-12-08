@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import {
+  Package,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  ExternalLink,
+} from "lucide-react";
 import { useGetInventoryItemsQuery } from "@/store/inventory-slice";
 import { useGetActivitiesQuery } from "@/store/activity-slice";
 import { useGetNotificationsQuery } from "@/store/notifications-slice";
@@ -120,7 +126,6 @@ export function InventoryDashboard() {
         quantity: u.quantity,
       })),
       lowStockValue: dto.lowStockValue,
-      status: dto.setupStatus,
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       earliestExpiryDate: dto.earliestExpiryDate ?? null,
@@ -179,24 +184,28 @@ export function InventoryDashboard() {
             label="Out of Stock"
             value={stats.outOfStock.toLocaleString()}
             color="bg-red-500"
+            onClick={() => navigate("/inventory/items?filter=outOfStock")}
           />
           <StatCard
             icon={Clock}
             label="Low Stock"
             value={stats.lowStock.toLocaleString()}
             color="bg-orange-500"
+            onClick={() => navigate("/inventory/items?filter=lowStock")}
           />
           <StatCard
             icon={CheckCircle2}
             label="In Stock"
             value={stats.inStock.toLocaleString()}
             color="bg-green-500"
+            onClick={() => navigate("/inventory/items?filter=inStock")}
           />
           <StatCard
             icon={Package}
             label="Total Items"
             value={stats.totalItems.toLocaleString()}
             color="bg-blue-500"
+            onClick={() => navigate("/inventory/items")}
           />
         </div>
       </div>
@@ -207,24 +216,28 @@ export function InventoryDashboard() {
           label="Out of Stock"
           value={stats.outOfStock.toLocaleString()}
           color="bg-red-500"
+          onClick={() => navigate("/inventory/items?filter=outOfStock")}
         />
         <StatCard
           icon={Clock}
           label="Low Stock"
           value={stats.lowStock.toLocaleString()}
           color="bg-orange-500"
+          onClick={() => navigate("/inventory/items?filter=lowStock")}
         />
         <StatCard
           icon={CheckCircle2}
           label="In Stock"
           value={stats.inStock.toLocaleString()}
           color="bg-green-500"
+          onClick={() => navigate("/inventory/items?filter=inStock")}
         />
         <StatCard
           icon={Package}
           label="Total Items"
           value={stats.totalItems.toLocaleString()}
           color="bg-blue-500"
+          onClick={() => navigate("/inventory/items")}
         />
       </div>
 
@@ -364,23 +377,35 @@ interface StatCardProps {
   label: string;
   value: string;
   color: string;
+  onClick?: () => void;
 }
 
-function StatCard({ icon: Icon, label, value, color }: StatCardProps) {
+function StatCard({ icon: Icon, label, value, color, onClick }: StatCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border flex-shrink-0 w-[280px] max-w-[280px] sm:w-auto sm:max-w-none">
-      <div className="flex items-center">
-        <div className={`${color} p-2 sm:p-3 rounded-lg flex-shrink-0`}>
-          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center flex-1 min-w-0">
+          <div className={`${color} p-2 sm:p-3 rounded-lg flex-shrink-0`}>
+            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          </div>
+          <div className="ml-3 sm:ml-4 min-w-0 flex-1 overflow-hidden">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
+              {label}
+            </p>
+            <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
+              {value}
+            </p>
+          </div>
         </div>
-        <div className="ml-3 sm:ml-4 min-w-0 flex-1 overflow-hidden">
-          <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
-            {label}
-          </p>
-          <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
-            {value}
-          </p>
-        </div>
+        {onClick && (
+          <button
+            onClick={onClick}
+            className="ml-2 flex-shrink-0 p-1 rounded hover:bg-gray-100 transition-colors cursor-pointer"
+            aria-label={`View ${label}`}
+          >
+            <ExternalLink className="w-6 h-6 lg:w-5 lg:h-5 text-gray-400 hover:text-gray-600" />
+          </button>
+        )}
       </div>
     </div>
   );

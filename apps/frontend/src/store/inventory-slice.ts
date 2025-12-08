@@ -46,8 +46,6 @@ export interface ISupplierDto {
   updatedAt?: string;
 }
 
-export type InventorySetupStatus = "draft" | "ready";
-
 export type InventoryItemStatus = "active" | "disabled" | "deleted";
 
 export interface IInventoryItemUnitDto {
@@ -69,7 +67,6 @@ export interface IInventoryItemDto {
   category: string;
   units: IInventoryItemUnitDto[];
   lowStockValue?: number;
-  setupStatus: InventorySetupStatus;
   status: InventoryItemStatus;
   currentStockInBaseUnits?: number;
   earliestExpiryDate?: string;
@@ -150,7 +147,6 @@ export interface ICreateInventoryItemRequest {
   category: string;
   units: IInventoryItemUnitDto[];
   lowStockValue?: number;
-  setupStatus: InventorySetupStatus;
   status: InventoryItemStatus;
   currentStockInBaseUnits?: number;
   image?: IInventoryItemImageDto;
@@ -336,13 +332,17 @@ export const inventoryApi = baseApi.injectEndpoints({
       invalidatesTags: [TagTypes.SUPPLIERS],
     }),
 
-    getInventoryItems: builder.query<IAPIResponse<IInventoryItemDto[]>, void>({
-      query: () => ({
+    getInventoryItems: builder.query<
+      IAPIResponse<IInventoryItemDto[]>,
+      { stockFilter?: "outOfStock" | "lowStock" | "inStock" } | void
+    >({
+      query: (params) => ({
         url: "/inventory/items",
         method: "GET",
         params: {
           sort: "desc",
           limit: 100,
+          ...(params?.stockFilter && { stockFilter: params.stockFilter }),
         },
       }),
       providesTags: [TagTypes.INVENTORY_ITEMS],
