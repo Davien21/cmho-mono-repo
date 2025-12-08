@@ -2,8 +2,6 @@ import mongoose from "mongoose";
 
 export type ObjectId = mongoose.Types.ObjectId;
 
-export type InventorySetupStatus = "draft" | "ready";
-
 export type InventoryStatus = "active" | "disabled" | "deleted";
 
 // ---- Units ----
@@ -26,7 +24,7 @@ export interface IInventoryUnitReady extends IInventoryUnitBase {
   quantity: number;
 }
 
-// Convenience alias when you don't care about setupStatus
+// Convenience alias
 export type IInventoryUnit = IInventoryUnitDraft | IInventoryUnitReady;
 
 // ---- Items ----
@@ -51,24 +49,11 @@ export interface IInventoryItemBase {
   updatedAt?: Date;
 }
 
-export interface IInventoryItemDraft
-  extends Omit<IInventoryItemBase, "status"> {
-  setupStatus: "draft";
+export interface IInventoryItem extends IInventoryItemBase {
   status: InventoryStatus;
-  units: IInventoryUnitDraft[];
+  units: IInventoryUnit[];
   lowStockValue?: number;
 }
-
-export interface IInventoryItemReady
-  extends Omit<IInventoryItemBase, "status"> {
-  setupStatus: "ready";
-  status: InventoryStatus;
-  units: IInventoryUnitReady[];
-  lowStockValue: number;
-}
-
-// Main type used when reading from the database
-export type IInventoryItem = IInventoryItemDraft | IInventoryItemReady;
 
 // Type used for request bodies (client-provided data) – server fills these
 export type IInventoryItemRequest = Omit<

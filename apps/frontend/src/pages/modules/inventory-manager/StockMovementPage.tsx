@@ -67,7 +67,6 @@ export default function StockMovementPage() {
         quantity: u.quantity,
       })),
       lowStockValue: dto.lowStockValue,
-      status: dto.setupStatus,
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       image: dto.image,

@@ -5,20 +5,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
-import {
-  InventoryItem,
-  InventoryCategory,
-  InventoryStatus,
-  UnitLevel,
-} from "@/types/inventory";
+import { InventoryItem, InventoryCategory, UnitLevel } from "@/types/inventory";
 import {
   IInventoryUnitDefinitionDto,
   IInventoryCategoryDto,
@@ -58,10 +46,6 @@ const editInventoryItemSchema = yup.object({
       })
     )
     .optional(),
-  setupStatus: yup
-    .mixed<InventoryStatus>()
-    .oneOf(["draft", "ready"])
-    .required(),
   canBeSold: yup.boolean().optional(),
 });
 
@@ -85,7 +69,6 @@ export function EditInventoryModal({
     category: item.category,
     units: item.units || [],
     lowStockValue: item.lowStockValue,
-    setupStatus: item.status,
     canBeSold: (item as any).canBeSold ?? true,
   });
 
@@ -123,7 +106,6 @@ export function EditInventoryModal({
       name: item.name,
       inventoryCategory: item.inventoryCategory,
       lowStockValue: getInitialLowStockValue(),
-      setupStatus: item.status,
       canBeSold: (item as any).canBeSold ?? true,
     },
   });
@@ -214,7 +196,6 @@ export function EditInventoryModal({
         lowStockValueInBaseUnits && lowStockValueInBaseUnits > 0
           ? lowStockValueInBaseUnits
           : undefined;
-      const newSetupStatus = values.setupStatus;
       const newCanBeSold = values.canBeSold;
 
       // Detect changes by comparing with initial values
@@ -280,13 +261,6 @@ export function EditInventoryModal({
         }
       }
 
-      // Compare setupStatus
-      if (newSetupStatus !== initialValuesRef.current.setupStatus) {
-        changedFields.push("setupStatus");
-        oldValues.setupStatus = initialValuesRef.current.setupStatus;
-        newValues.setupStatus = newSetupStatus;
-      }
-
       // Compare canBeSold
       if (newCanBeSold !== initialValuesRef.current.canBeSold) {
         changedFields.push("canBeSold");
@@ -300,7 +274,6 @@ export function EditInventoryModal({
         category: newCategory,
         units: newUnits,
         lowStockValue: newLowStockValue,
-        setupStatus: newSetupStatus,
         canBeSold: newCanBeSold,
       };
 
@@ -340,34 +313,6 @@ export function EditInventoryModal({
                 <ResponsiveDialog.Title className="text-2xl sm:text-2xl font-bold">
                   Edit Inventory Item
                 </ResponsiveDialog.Title>
-                <div className="flex items-center gap-3">
-                  <Controller
-                    name="setupStatus"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={(value) =>
-                          field.onChange(value as InventoryStatus)
-                        }
-                      >
-                        <SelectTrigger
-                          className={`min-w-[90px] w-full sm:w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
-                            field.value === "ready"
-                              ? "bg-green-100 text-green-800 hover:bg-green-200"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="draft">Draft</SelectItem>
-                          <SelectItem value="ready">Ready</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </div>
               </div>
               <ResponsiveDialog.Description className="sr-only">
                 Edit the inventory item details below
@@ -465,7 +410,7 @@ export function EditInventoryModal({
                 />
               </div>
 
-              <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-6 border-t px-0 flex-shrink-0">
+              <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-6 border-t px-0 flex-shrink-0 mt-4">
                 <Button
                   type="button"
                   variant="outline"

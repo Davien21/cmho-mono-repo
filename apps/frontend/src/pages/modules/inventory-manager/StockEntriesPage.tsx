@@ -38,7 +38,6 @@ export default function StockEntriesPage() {
         quantity: u.quantity,
       })),
       lowStockValue: dto.lowStockValue,
-      status: dto.setupStatus,
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       image: dto.image,
@@ -83,7 +82,9 @@ export default function StockEntriesPage() {
     <Layout>
       <div className="flex flex-col gap-4 sm:gap-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Stock Movement</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Stock Movement
+          </h2>
           <p className="mt-1 text-sm text-gray-600">
             {item
               ? `Viewing stock movement for "${item.name}".`

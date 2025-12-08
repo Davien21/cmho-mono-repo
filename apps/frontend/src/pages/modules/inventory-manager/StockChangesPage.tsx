@@ -67,7 +67,6 @@ export default function StockChangesPage() {
         quantity: u.quantity,
       })),
       lowStockValue: dto.lowStockValue,
-      status: dto.setupStatus,
       stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       image: dto.image,
@@ -230,7 +229,9 @@ export default function StockChangesPage() {
           <Card className="w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold">Stock Movement Details</h3>
+                <h3 className="text-lg font-semibold">
+                  Stock Movement Details
+                </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {formatDateTime(selectedRow.createdAt)}
                 </p>
@@ -299,9 +300,7 @@ export default function StockChangesPage() {
               )}
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Performed by</span>
-                <span className="font-medium">
-                  {selectedRow.performedBy}
-                </span>
+                <span className="font-medium">{selectedRow.performedBy}</span>
               </div>
             </div>
           </Card>

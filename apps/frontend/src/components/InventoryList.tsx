@@ -321,18 +321,6 @@ export function InventoryList({
                         {item.inventoryCategory}
                       </p>
                     </div>
-                    <Badge
-                      variant={
-                        item.status === "ready" ? "success" : "secondary"
-                      }
-                      className={
-                        item.status === "ready"
-                          ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
-                      }
-                    >
-                      {item.status}
-                    </Badge>
                   </div>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 space-y-1">
@@ -432,9 +420,6 @@ export function InventoryList({
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Earliest Expiry
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
@@ -516,20 +501,6 @@ export function InventoryList({
                         }
                       >
                         {formatExpiryDate(getEarliestExpiry(item))}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge
-                        variant={
-                          item.status === "ready" ? "success" : "secondary"
-                        }
-                        className={
-                          item.status === "ready"
-                            ? "bg-green-100 text-green-800 hover:bg-green-200 capitalize"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200 capitalize"
-                        }
-                      >
-                        {item.status}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

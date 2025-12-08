@@ -5,19 +5,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
-import {
-  InventoryCategory,
-  InventoryStatus,
-  UnitLevel,
-} from "@/types/inventory";
+import { InventoryCategory, UnitLevel } from "@/types/inventory";
 import { InventoryCategorySelect } from "@/components/InventoryCategorySelect";
 import {
   IInventoryCategoryDto,
@@ -55,10 +44,6 @@ const inventoryItemSchema = yup.object({
       })
     )
     .optional(),
-  setupStatus: yup
-    .mixed<InventoryStatus>()
-    .oneOf(["draft", "ready"])
-    .required(),
   canBeSold: yup.boolean().optional(),
 });
 
@@ -146,7 +131,6 @@ export function AddInventoryModal({
       name: "",
       inventoryCategory: "",
       lowStockValue: [],
-      setupStatus: "ready",
       canBeSold: true,
     },
   });
@@ -273,7 +257,6 @@ export function AddInventoryModal({
           lowStockValueInBaseUnits && lowStockValueInBaseUnits > 0
             ? lowStockValueInBaseUnits
             : undefined,
-        setupStatus: values.setupStatus,
         status: "active" as const,
         currentStockInBaseUnits: 0,
         canBeSold: values.canBeSold,
@@ -304,34 +287,6 @@ export function AddInventoryModal({
                 <ResponsiveDialog.Title className="text-2xl sm:text-2xl font-bold">
                   Create Inventory Item
                 </ResponsiveDialog.Title>
-                <div className="flex items-center gap-3">
-                  <Controller
-                    name="setupStatus"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={(value) =>
-                          field.onChange(value as InventoryStatus)
-                        }
-                      >
-                        <SelectTrigger
-                          className={`min-w-[90px] w-full sm:w-[120px] h-9 text-sm font-medium border-0 shadow-none ${
-                            field.value === "ready"
-                              ? "bg-green-100 text-green-800 hover:bg-green-200"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="draft">Draft</SelectItem>
-                          <SelectItem value="ready">Ready</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </div>
               </div>
               <ResponsiveDialog.Description className="sr-only">
                 Create a new inventory item by filling in the details below
