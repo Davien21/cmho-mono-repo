@@ -8,12 +8,16 @@ import { deleteFromCloud } from "../../lib/cloudinary";
 import * as fs from "fs/promises";
 import { BadRequestError, NotFoundError } from "../../config/errors";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
-import { ActivityTypes } from "../activity-tracking/activity-types";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
+import { GetGalleryItemsQuerySchema } from "./gallery.validators";
 
-export async function getGalleryItems(req: Request, res: Response) {
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 100;
+export async function getGalleryItems(
+  req: Request<{}, {}, {}, GetGalleryItemsQuerySchema>,
+  res: Response
+) {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "100");
 
   const result = await galleryService.list({ page, limit });
   res.send(successResponse("Gallery items fetched successfully", result));
@@ -70,11 +74,11 @@ export async function createGalleryItem(req: Request, res: Response) {
     type: ActivityTypes.CREATE_GALLERY_ITEM,
     module: "inventory",
     entities: [
-      { id: galleryItem._id.toString(), name: "gallery-item" },
-      { id: media._id.toString(), name: "media" },
+      { id: galleryItem._id, name: "gallery-item" },
+      { id: media._id, name: "media" },
     ],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Added image "${galleryName}" to gallery`,
     metadata: {
       imageUrl: upload.url,
@@ -105,8 +109,8 @@ export async function updateGalleryItem(req: Request, res: Response) {
     type: ActivityTypes.UPDATE_GALLERY_ITEM,
     module: "inventory",
     entities: [{ id: id, name: "gallery-item" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description:
       changedFields.length === 1
         ? `Updated ${changedFields[0]} for gallery item "${galleryName}"`
@@ -168,8 +172,8 @@ export async function deleteGalleryItem(req: Request, res: Response) {
         { id: id, name: "gallery-item" },
         { id: mediaId, name: "media" },
       ],
-      adminId: admin._id,
-      adminName: admin.name,
+      performerId: admin._id,
+      performerName: admin.name,
       description: `Deleted gallery item "${galleryName}"`,
       metadata: {
         public_id: media?.public_id,

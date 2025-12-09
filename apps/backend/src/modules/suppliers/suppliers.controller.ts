@@ -3,7 +3,7 @@ import suppliersService from "./suppliers.service";
 import { successResponse } from "../../utils/response";
 import { SupplierRequest } from "./suppliers.types";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
-import { ActivityTypes } from "../activity-tracking/activity-types";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 import {
   buildUpdateDescription,
@@ -25,9 +25,9 @@ export async function createSupplier(req: Request, res: Response) {
   const activityData = {
     type: ActivityTypes.CREATE_SUPPLIER,
     module: "inventory",
-    entities: [{ id: supplier._id.toString(), name: "supplier" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    entities: [{ id: supplier._id, name: "supplier" }],
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Created supplier "${supplierName}"`,
     metadata: {},
   };
@@ -74,8 +74,8 @@ export async function updateSupplier(req: Request, res: Response) {
       type: ActivityTypes.UPDATE_SUPPLIER,
       module: "inventory",
       entities: [{ id: id, name: "supplier" }],
-      adminId: admin._id,
-      adminName: admin.name,
+      performerId: admin._id,
+      performerName: admin.name,
       description,
       metadata: changes
         ? {
@@ -104,8 +104,8 @@ export async function deleteSupplier(req: Request, res: Response) {
     type: ActivityTypes.DELETE_SUPPLIER,
     module: "inventory",
     entities: [{ id: id, name: "supplier" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Deleted supplier "${supplierName}"`,
     metadata: {},
   };

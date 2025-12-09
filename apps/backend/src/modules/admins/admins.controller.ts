@@ -5,7 +5,7 @@ import { NotFoundError } from "../../config/errors";
 import { IAdmin, AdminRole } from "./admins.types";
 import bcrypt from "bcrypt";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
-import { ActivityTypes } from "../activity-tracking/activity-types";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 import {
   buildUpdateDescription,
@@ -54,17 +54,14 @@ export async function createAdmin(req: Request, res: Response) {
     status: "active",
   });
 
-  const adminObject = admin.toObject();
-  const { passwordHash: _, __v, ...safeAdmin } = adminObject;
-
   // Track the activity
   const roleText = admin.isSuperAdmin ? "Super Admin" : "Admin";
   const activityData = {
     type: ActivityTypes.CREATE_ADMIN,
     module: "admin",
-    entities: [{ id: admin._id.toString(), name: "admin" }],
-    adminId: currentAdmin._id,
-    adminName: currentAdmin.name,
+    entities: [{ id: admin._id, name: "admin" }],
+    performerId: currentAdmin._id,
+    performerName: currentAdmin.name,
     description: `Created ${roleText} "${admin.name}"`,
     metadata: {
       email: admin.email,
@@ -74,7 +71,7 @@ export async function createAdmin(req: Request, res: Response) {
   };
   await activityTrackingService.trackActivity(activityData);
 
-  res.send(successResponse("Admin created successfully", safeAdmin));
+  res.send(successResponse("Admin created successfully"));
 }
 
 export async function updateAdmin(req: Request, res: Response) {
@@ -160,8 +157,8 @@ export async function updateAdmin(req: Request, res: Response) {
     type: ActivityTypes.UPDATE_ADMIN,
     module: "admin",
     entities: [{ id: id, name: "admin" }],
-    adminId: currentAdmin._id,
-    adminName: currentAdmin.name,
+    performerId: currentAdmin._id,
+    performerName: currentAdmin.name,
     description,
     metadata: changes
       ? {
@@ -193,8 +190,8 @@ export async function disableAdmin(req: Request, res: Response) {
     type: ActivityTypes.DISABLE_ADMIN,
     module: "admin",
     entities: [{ id: id, name: "admin" }],
-    adminId: currentAdmin._id,
-    adminName: currentAdmin.name,
+    performerId: currentAdmin._id,
+    performerName: currentAdmin.name,
     description: `Disabled admin "${adminName}"`,
     metadata: {
       statusChanged: true,

@@ -11,9 +11,17 @@ import {
   getGalleryItems,
   updateGalleryItem,
 } from "./gallery.controller";
-import { galleryUpload, updateGallerySchema } from "./gallery.validators";
+import {
+  galleryUpload,
+  updateGallerySchema,
+  getGalleryItemsQuerySchema,
+} from "./gallery.validators";
 
-router.get("/gallery", getGalleryItems);
+router.get(
+  "/gallery",
+  [validateBy(getGalleryItemsQuerySchema, "query")],
+  getGalleryItems
+);
 
 router.get("/gallery/:id", getGalleryItem);
 
