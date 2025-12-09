@@ -57,11 +57,38 @@ export const notificationsApi = baseApi.injectEndpoints({
           : undefined,
       }),
       providesTags: [TagTypes.NOTIFICATIONS],
-      // Refetch when component mounts or args change to ensure fresh data
-      refetchOnMountOrArgChange: true,
+    }),
+    getNotificationsPages: builder.infiniteQuery<
+      IAPIResponse<INotificationsResponse>,
+      Omit<IGetNotificationsQuery, "page" | "limit">,
+      number
+    >({
+      query: ({ pageParam, ...queryArg }) => ({
+        url: "/notifications",
+        method: "GET",
+        params: {
+          ...queryArg,
+          page: pageParam,
+          limit: 20,
+          sort: (queryArg as any)?.sort || "desc",
+        },
+      }),
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          const total = lastPage.data.total;
+          const limit = lastPage.data.limit;
+          const totalPages = Math.ceil(total / limit);
+          const currentPage = allPages.length;
+          return currentPage < totalPages ? currentPage + 1 : undefined;
+        },
+      },
+      providesTags: [TagTypes.NOTIFICATIONS],
     }),
   }),
 });
 
-export const { useGetNotificationsQuery } = notificationsApi;
-
+export const {
+  useGetNotificationsQuery,
+  useGetNotificationsPagesInfiniteQuery,
+} = notificationsApi;

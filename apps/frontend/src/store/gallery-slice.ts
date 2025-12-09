@@ -51,6 +51,29 @@ export const galleryApi = baseApi.injectEndpoints({
         );
       },
     }),
+    getGalleryPages: builder.infiniteQuery<
+      IAPIResponse<IGalleryResponse>,
+      { limit?: number },
+      number
+    >({
+      query: ({ pageParam, ...queryArg }) => ({
+        url: "/gallery",
+        method: "GET",
+        params: {
+          page: pageParam,
+          limit: queryArg?.limit || 100,
+        },
+      }),
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          const totalPages = lastPage.data.meta.totalPages;
+          const currentPage = allPages.length;
+          return currentPage < totalPages ? currentPage + 1 : undefined;
+        },
+      },
+      providesTags: [TagTypes.GALLERY],
+    }),
     getGalleryItem: builder.query<IAPIResponse<IGalleryDto>, string>({
       query: (id) => ({
         url: `/gallery/${id}`,
@@ -98,9 +121,9 @@ export const galleryApi = baseApi.injectEndpoints({
 
 export const {
   useGetGalleryQuery,
+  useGetGalleryPagesInfiniteQuery,
   useGetGalleryItemQuery,
   useUploadGalleryMutation,
   useUpdateGalleryMutation,
   useDeleteGalleryMutation,
 } = galleryApi;
-

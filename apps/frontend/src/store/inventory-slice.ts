@@ -92,8 +92,9 @@ export interface IStockEntryDto {
   sellingPrice: number;
   expiryDate: string;
   quantityInBaseUnits: number;
-  createdBy: string;
-  createdByName?: string | null;
+  balance?: number;
+  performerId: string;
+  performerName: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -177,6 +178,13 @@ export interface IGetStockEntriesQuery {
   page?: number;
   limit?: number;
   sort?: "asc" | "desc";
+}
+
+export interface IStockEntriesResponse {
+  data: IStockEntryDto[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export const inventoryApi = baseApi.injectEndpoints({
@@ -378,7 +386,7 @@ export const inventoryApi = baseApi.injectEndpoints({
     }),
 
     getStockEntries: builder.query<
-      IAPIResponse<IStockEntryDto[]>,
+      IAPIResponse<IStockEntriesResponse>,
       IGetStockEntriesQuery | void
     >({
       query: (params) => ({
@@ -390,6 +398,33 @@ export const inventoryApi = baseApi.injectEndpoints({
             }
           : undefined,
       }),
+      providesTags: [TagTypes.STOCK_ENTRIES],
+    }),
+    getStockEntriesPages: builder.infiniteQuery<
+      IAPIResponse<IStockEntriesResponse>,
+      Omit<IGetStockEntriesQuery, "page" | "limit">,
+      number
+    >({
+      query: ({ pageParam, ...queryArg }) => ({
+        url: "/inventory/stock-entries",
+        method: "GET",
+        params: {
+          ...queryArg,
+          page: pageParam,
+          limit: 20,
+          sort: queryArg?.sort || "desc",
+        },
+      }),
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          const total = lastPage.data.total;
+          const limit = lastPage.data.limit;
+          const totalPages = Math.ceil(total / limit);
+          const currentPage = allPages.length;
+          return currentPage < totalPages ? currentPage + 1 : undefined;
+        },
+      },
       providesTags: [TagTypes.STOCK_ENTRIES],
     }),
     createStockEntry: builder.mutation<
@@ -430,5 +465,6 @@ export const {
   useUpdateInventoryItemMutation,
   useDeleteInventoryItemMutation,
   useGetStockEntriesQuery,
+  useGetStockEntriesPagesInfiniteQuery,
   useCreateStockEntryMutation,
 } = inventoryApi;

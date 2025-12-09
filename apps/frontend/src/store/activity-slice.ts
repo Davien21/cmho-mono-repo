@@ -10,7 +10,7 @@ export interface IActivityRecordDto {
     id: string;
     name: string;
   }>;
-  admin: {
+  performer: {
     id: string;
     name: string;
   };
@@ -24,12 +24,12 @@ export interface IActivityRecordDto {
 
 export interface IGetActivitiesQuery {
   module?: string;
-  adminId?: string;
+  performerId?: string;
   entityId?: string;
   type?: string;
   startDate?: string;
   endDate?: string;
-  search?: string; // Regex search for description OR admin name
+  search?: string; // Regex search for description OR performer name
   limit?: number;
   page?: number;
   sort?: "asc" | "desc";
@@ -58,11 +58,35 @@ export const activityApi = baseApi.injectEndpoints({
           : undefined,
       }),
       providesTags: [TagTypes.ACTIVITY_RECORDS],
-      // Refetch when component mounts or args change to ensure fresh data
-      refetchOnMountOrArgChange: true,
+    }),
+    getActivitiesPages: builder.infiniteQuery<
+      IAPIResponse<IActivitiesResponse>,
+      Omit<IGetActivitiesQuery, "page" | "limit">,
+      number
+    >({
+      query: ({ pageParam, ...queryArg }) => ({
+        url: "/activities",
+        method: "GET",
+        params: {
+          ...queryArg,
+          page: pageParam,
+          limit: 20,
+        },
+      }),
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          const total = lastPage.data.total;
+          const limit = lastPage.data.limit;
+          const totalPages = Math.ceil(total / limit);
+          const currentPage = allPages.length;
+          return currentPage < totalPages ? currentPage + 1 : undefined;
+        },
+      },
+      providesTags: [TagTypes.ACTIVITY_RECORDS],
     }),
   }),
 });
 
-export const { useGetActivitiesQuery } = activityApi;
-
+export const { useGetActivitiesQuery, useGetActivitiesPagesInfiniteQuery } =
+  activityApi;
