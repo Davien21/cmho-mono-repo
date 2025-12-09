@@ -1,23 +1,45 @@
-import React, { useState } from "react";
 import { Lock, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 import { useLoginMutation } from "@/store/auth-slice";
 import { toast } from "sonner";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 
+interface IFormValues {
+  email: string;
+  password: string;
+}
+
+const validationSchema = yup.object().shape({
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup
+    .string()
+    .min(4, "Password must be at least 4 characters")
+    .required("Password is required"),
+});
+
 export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormValues>({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: IFormValues) => {
     try {
-      e.preventDefault();
-
-      await login({ email, password }).unwrap();
-
+      await login(data).unwrap();
       navigate("/");
     } catch (error: unknown) {
       const errorMessage = getRTKQueryErrorMessage(error);
@@ -42,7 +64,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <div>
               <label
@@ -54,13 +76,20 @@ export default function LoginPage() {
               <input
                 type="email"
                 id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base"
+                {...register("email")}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base ${
+                  errors.email
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300"
+                }`}
                 placeholder="you@example.com"
                 autoComplete="off"
-                required
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -73,20 +102,26 @@ export default function LoginPage() {
               <input
                 type="password"
                 id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base"
+                {...register("password")}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base ${
+                  errors.password
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300"
+                }`}
                 placeholder="Enter your password"
                 autoComplete="new-password"
-                required
-                minLength={4}
               />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
 
           <button
             type="submit"
-            disabled={!email || password.length < 4 || isLoading}
+            disabled={isLoading}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-base"
           >
             {isLoading ? (
