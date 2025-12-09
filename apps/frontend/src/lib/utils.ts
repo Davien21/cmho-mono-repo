@@ -70,11 +70,14 @@ export const pluralizePhrase = (phrase: string, count: number) => {
   return pluralizedWords.join(" ");
 };
 
-export const getRTKQueryErrorMessage = (error: any): string | null => {
+export const getRTKQueryErrorMessage = (
+  error: any,
+  defaultMessage = "Something went wrong. Please try again or contact support"
+): string | null => {
   const errorMessage = error?.data?.message;
   if (errorMessage) return errorMessage;
 
-  return null;
+  return defaultMessage || null;
 };
 
 export const formatDate = (date: string | Date | null) => {
@@ -154,5 +157,7 @@ export function formatUnitName(
   if (numQuantity === 1) {
     return unit.name || "";
   }
-  return (unit.plural && unit.plural.trim() !== "") ? unit.plural : (unit.name || "");
+  return unit.plural && unit.plural.trim() !== ""
+    ? unit.plural
+    : unit.name || "";
 }

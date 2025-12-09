@@ -18,6 +18,7 @@ export interface StockEntry {
   sellingPrice: number;
   expiryDate: string;
   quantityInBaseUnits: number;
+  balance?: number;
   createdAt: string;
   performedBy?: string;
 }

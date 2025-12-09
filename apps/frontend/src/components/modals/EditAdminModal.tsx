@@ -14,7 +14,7 @@ import { AdminRole, IAdmin } from "@/types";
 interface IFormValues {
   name: string;
   email: string;
-  password: string;
+  password?: string;
   roles: string[];
   isSuperAdmin: boolean;
 }
@@ -29,8 +29,8 @@ const validationSchema = yup.object().shape({
       "Password must be at least 6 characters",
       (value) => !value || value.length >= 6
     ),
-  roles: yup.array().of(yup.string()),
-  isSuperAdmin: yup.boolean(),
+  roles: yup.array().of(yup.string().required()).default([]),
+  isSuperAdmin: yup.boolean().default(false),
 });
 
 const availableRoles = Object.values(AdminRole);
@@ -120,13 +120,14 @@ export const EditAdminModal = () => {
       }
 
       // Compare roles (check if arrays are different)
+      const currentRoles = data.roles || [];
       const rolesChanged =
-        JSON.stringify(data.roles.sort()) !==
+        JSON.stringify(currentRoles.sort()) !==
         JSON.stringify(initialValuesRef.current.roles.sort());
       if (rolesChanged) {
         changedFields.push("roles");
         oldValues.roles = initialValuesRef.current.roles;
-        newValues.roles = data.roles;
+        newValues.roles = currentRoles;
       }
 
       // Compare isSuperAdmin
@@ -147,8 +148,8 @@ export const EditAdminModal = () => {
         id: admin._id,
         name: data.name,
         email: data.email,
-        roles: data.roles,
-        isSuperAdmin: data.isSuperAdmin,
+        roles: data.roles || [],
+        isSuperAdmin: data.isSuperAdmin ?? false,
       };
 
       if (data.password) {
@@ -176,7 +177,13 @@ export const EditAdminModal = () => {
     }
   };
 
-  const { register, handleSubmit, formState: { errors }, control, watch } = formMethods;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+    watch,
+  } = formMethods;
   const selectedRoles = watch("roles") || [];
 
   const toggleRole = (role: string) => {
@@ -315,4 +322,3 @@ export const EditAdminModal = () => {
     </ResponsiveDialog.Root>
   );
 };
-
