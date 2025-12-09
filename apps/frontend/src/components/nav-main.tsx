@@ -17,30 +17,29 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: LucideIcon;
-    submenu?: {
-      title: string;
-      url: string;
-      icon?: LucideIcon;
-      badge?: number;
-    }[];
-  }[];
-}) {
+interface SubItem {
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  badge?: number;
+}
+
+interface Item {
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  submenu?: SubItem[];
+}
+
+export function NavMain({ items }: { items: Item[] }) {
   const location = useLocation();
-  const { setOpenMobile, isMobile } = useSidebar();
+  const { setOpenMobile, isMobile, state } = useSidebar();
   const [openItems, setOpenItems] = React.useState<string[]>([]);
+  const isCollapsed = state === "collapsed";
 
   // Close sidebar when navigating (especially on mobile)
   const handleNavClick = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    }
+    if (isMobile) setOpenMobile(false);
   };
 
   React.useEffect(() => {
@@ -50,8 +49,11 @@ export function NavMain({
         const currentUrl = location.pathname + location.search;
         const hasActiveSubmenu = item.submenu.some((subItem) => {
           // Check if current URL matches the submenu item URL
-          return currentUrl === subItem.url ||
-            (subItem.url.includes("?") && currentUrl.includes(subItem.url.split("?")[1]));
+          return (
+            currentUrl === subItem.url ||
+            (subItem.url.includes("?") &&
+              currentUrl.includes(subItem.url.split("?")[1]))
+          );
         });
         if (hasActiveSubmenu && !openItems.includes(item.title)) {
           setOpenItems((prev) => [...prev, item.title]);
@@ -102,24 +104,32 @@ export function NavMain({
                       tooltip={item.title}
                       isActive={isActive}
                       size="lg"
-                      className="w-full text-base h-12"
+                      className="w-full text-base h-12 group-data-[collapsible=icon]:justify-center"
                     >
                       {item.icon && <item.icon className="size-5" />}
-                      <span className="text-base font-medium">{item.title}</span>
-                      <ChevronRight
-                        className={cn(
-                          "ml-auto transition-transform duration-200 size-4",
-                          isOpen && "rotate-90"
-                        )}
-                      />
+                      {!isCollapsed && (
+                        <>
+                          <span className="text-base font-medium">
+                            {item.title}
+                          </span>
+                          <ChevronRight
+                            className={cn(
+                              "ml-auto transition-transform duration-200 size-4",
+                              isOpen && "rotate-90"
+                            )}
+                          />
+                        </>
+                      )}
                     </SidebarMenuButton>
                   </Collapsible.Trigger>
                   <Collapsible.Content>
                     <SidebarMenuSub>
-                      {item.submenu.map((subItem) => {
+                      {item.submenu?.map?.((subItem) => {
                         const currentUrl = location.pathname + location.search;
-                        const isSubActive = currentUrl === subItem.url ||
-                          (subItem.url.includes("?") && currentUrl.includes(subItem.url.split("?")[1]));
+                        const isSubActive =
+                          currentUrl === subItem.url ||
+                          (subItem.url.includes("?") &&
+                            currentUrl.includes(subItem.url.split("?")[1]));
 
                         return (
                           <SidebarMenuSubItem key={subItem.title}>
@@ -127,15 +137,27 @@ export function NavMain({
                               asChild
                               isActive={isSubActive}
                               size="md"
-                              className="!h-11 sm:!h-10 text-base sm:text-sm"
+                              className="!h-11 sm:!h-10 text-base sm:text-sm group-data-[collapsible=icon]:justify-center"
                             >
-                              <NavLink to={subItem.url} onClick={handleNavClick}>
-                                {subItem.icon && <subItem.icon className="size-5 sm:size-4" />}
-                                <span className="text-base sm:text-sm font-medium">{subItem.title}</span>
-                                {subItem.badge !== undefined && (
-                                  <Badge className="ml-auto text-xs sm:text-[11px] font-medium px-2 py-0 h-6 sm:h-5 rounded-full bg-slate-100 text-slate-700">
-                                    {subItem.badge}
-                                  </Badge>
+                              <NavLink
+                                to={subItem.url}
+                                onClick={handleNavClick}
+                                className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center"
+                              >
+                                {subItem.icon && (
+                                  <subItem.icon className="size-5 sm:size-4" />
+                                )}
+                                {!isCollapsed && (
+                                  <>
+                                    <span className="text-base sm:text-sm font-medium">
+                                      {subItem.title}
+                                    </span>
+                                    {subItem.badge !== undefined && (
+                                      <Badge className="ml-auto text-xs sm:text-[11px] font-medium px-2 py-0 h-6 sm:h-5 rounded-full bg-slate-100 text-slate-700">
+                                        {subItem.badge}
+                                      </Badge>
+                                    )}
+                                  </>
                                 )}
                               </NavLink>
                             </SidebarMenuSubButton>
@@ -156,11 +178,17 @@ export function NavMain({
                 tooltip={item.title}
                 isActive={isActive}
                 size="lg"
-                className="text-base h-12"
+                className="text-base h-12 group-data-[collapsible=icon]:justify-center"
               >
-                <NavLink to={item.url} onClick={handleNavClick}>
+                <NavLink
+                  to={item.url}
+                  onClick={handleNavClick}
+                  className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center"
+                >
                   {item.icon && <item.icon className="size-5" />}
-                  <span className="text-base font-medium">{item.title}</span>
+                  {!isCollapsed && (
+                    <span className="text-base font-medium">{item.title}</span>
+                  )}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
