@@ -1,13 +1,13 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetActivitiesQuery } from "@/store/activity-slice";
+import { IActivityRecordDto } from "@/store/activity-slice";
 import { formatTimeAgo } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
-import { IActivityRecordDto } from "@/store/activity-slice";
+import { useInfiniteActivities } from "@/hooks/use-infinite-activities";
 
 function getActivityColor(type: string): string {
   if (type.includes("add") || type.includes("create")) return "bg-green-500";
@@ -17,42 +17,19 @@ function getActivityColor(type: string): string {
 }
 
 export default function ActivitiesPage() {
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [allActivities, setAllActivities] = useState<IActivityRecordDto[]>([]);
   const debouncedSearch = useDebounce(search, 500);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const previousSearchRef = useRef<string | undefined>(undefined);
   const isSearchingRef = useRef(false);
-  const isLoadingMoreRef = useRef(false);
 
   // No module filter - fetch all activities
-  const { data, isLoading, isFetching } = useGetActivitiesQuery(
-    {
+  const { activities, isLoading, isFetching, isFetchingNextPage, hasNextPage } =
+    useInfiniteActivities({
+      loadMoreRef,
       search: debouncedSearch || undefined,
-      limit: 20,
-      page,
       sort: "desc",
-    },
-    {
-      pollingInterval: 3000,
-    }
-  );
-
-  const currentPageActivities = data?.data?.data || [];
-  const total = data?.data?.total || 0;
-  const limit = data?.data?.limit || 20;
-  const totalPages = Math.ceil(total / limit);
-  const hasNextPage = page < totalPages;
-
-  // Reset page when search changes, but don't clear data yet
-  useEffect(() => {
-    if (previousSearchRef.current !== debouncedSearch) {
-      previousSearchRef.current = debouncedSearch;
-      setPage(1);
-      isSearchingRef.current = true;
-    }
-  }, [debouncedSearch]);
+    });
 
   // Reset search flag when fetch completes
   useEffect(() => {
@@ -61,66 +38,13 @@ export default function ActivitiesPage() {
     }
   }, [isFetching]);
 
-  // Accumulate activities as pages load
+  // Track search changes
   useEffect(() => {
-    if (currentPageActivities.length > 0) {
-      if (page === 1) {
-        // First page - replace all (this happens when new data arrives after search change)
-        setAllActivities(currentPageActivities);
-        isLoadingMoreRef.current = false;
-      } else {
-        // Subsequent pages - append
-        setAllActivities((prev) => {
-          // Avoid duplicates by checking IDs
-          const existingIds = new Set(prev.map((a) => a._id));
-          const newActivities = currentPageActivities.filter(
-            (a) => !existingIds.has(a._id)
-          );
-          return [...prev, ...newActivities];
-        });
-        isLoadingMoreRef.current = false;
-      }
-    } else if (currentPageActivities.length === 0 && page === 1 && !isFetching) {
-      // Only clear if we got empty results and we're not fetching
-      setAllActivities([]);
-      isLoadingMoreRef.current = false;
+    if (previousSearchRef.current !== debouncedSearch) {
+      previousSearchRef.current = debouncedSearch;
+      isSearchingRef.current = true;
     }
-  }, [currentPageActivities, page, isFetching]);
-
-  // Intersection Observer for infinite scroll
-  useEffect(() => {
-    if (!hasNextPage || isLoading || !loadMoreRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const target = entries[0];
-        if (
-          target.isIntersecting &&
-          hasNextPage &&
-          !isFetching &&
-          !isLoadingMoreRef.current
-        ) {
-          isLoadingMoreRef.current = true;
-          setPage((prev) => {
-            if (prev >= totalPages) return prev;
-            return prev + 1;
-          });
-        }
-      },
-      {
-        rootMargin: "200px", // Start loading when 200px before the element is visible
-        threshold: 0.1,
-      }
-    );
-
-    observer.observe(loadMoreRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [hasNextPage, isFetching, isLoading, totalPages]);
-
-  const activities = allActivities;
+  }, [debouncedSearch]);
 
   return (
     <Layout>
@@ -130,7 +54,7 @@ export default function ActivitiesPage() {
             Activities
           </h1>
           <p className="text-base sm:text-sm text-muted-foreground">
-            View all activities across all modules and track changes
+            View all activities and track changes
           </p>
         </div>
 
@@ -140,9 +64,8 @@ export default function ActivitiesPage() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setPage(1); // Reset to first page when searching
             }}
-            placeholder="Search by description or admin name..."
+            placeholder="Search by description or performer name..."
             className="pl-8 pr-8"
           />
           {(isLoading || (isFetching && isSearchingRef.current)) && (
@@ -150,10 +73,13 @@ export default function ActivitiesPage() {
           )}
         </div>
 
-        {isLoading && page === 1 ? (
+        {isLoading ? (
           <Card className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-lg p-4 border border-gray-100">
+              <div
+                key={i}
+                className="bg-gray-50 rounded-lg p-4 border border-gray-100"
+              >
                 <div className="flex items-start gap-3">
                   <Skeleton className="w-2 h-2 rounded-full mt-1.5" />
                   <div className="flex-1 space-y-2">
@@ -173,16 +99,16 @@ export default function ActivitiesPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               {debouncedSearch
                 ? "Try adjusting your search terms"
-                : "Activities will appear here as changes are made across all modules"}
+                : "Activities will appear here as changes are made"}
             </p>
           </Card>
         ) : (
           <>
             <div className="space-y-3">
-              {activities.map((activity) => (
+              {activities.map((activity: IActivityRecordDto) => (
                 <Card
                   key={activity._id}
-                  className="bg-white rounded-lg p-4 border border-gray-100"
+                  className="bg-gray-50 rounded-lg p-4 border border-gray-100"
                 >
                   <div className="flex items-start gap-3">
                     <div
@@ -196,20 +122,12 @@ export default function ActivitiesPage() {
                       </p>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs text-gray-500">
-                          by {activity.admin.name}
+                          by {activity.performer?.name || "Unknown"}
                         </span>
                         <span className="text-xs text-gray-400">•</span>
                         <span className="text-xs text-gray-500">
                           {formatTimeAgo(activity.createdAt)}
                         </span>
-                        {activity.module && (
-                          <>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-500 capitalize">
-                              {activity.module}
-                            </span>
-                          </>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -218,7 +136,7 @@ export default function ActivitiesPage() {
             </div>
 
             {/* Loading indicator at bottom for infinite scroll */}
-            {isFetching && page > 1 && !isSearchingRef.current && (
+            {isFetchingNextPage && (
               <div className="flex justify-center py-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
@@ -228,9 +146,7 @@ export default function ActivitiesPage() {
             )}
 
             {/* Intersection observer target - only show when there's more to load */}
-            {hasNextPage && (
-              <div ref={loadMoreRef} className="h-20" />
-            )}
+            {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
 
             {/* End of list indicator - only show when we're done and not fetching */}
             {!hasNextPage && activities.length > 0 && !isFetching && (
@@ -244,4 +160,3 @@ export default function ActivitiesPage() {
     </Layout>
   );
 }
-
