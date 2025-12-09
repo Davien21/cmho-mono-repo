@@ -1,15 +1,15 @@
 import express from "express";
 const router = express.Router();
 
-import { authenticate, hasRole } from "../../middlewares/authentication";
-import { AdminRole } from "../admins/admins.types";
+import { authenticate } from "../../middlewares/authentication";
 import { getActivities } from "./activity-tracking.controller";
+import { getActivitiesQuerySchema } from "./activity-tracking.validator";
+import validator from "../../middlewares/validator";
 
 router.get(
   "/activities",
-  [authenticate, hasRole(AdminRole.ADMIN_MANAGER)],
+  [authenticate, validator(getActivitiesQuerySchema, "query")],
   getActivities
 );
 
 export default router;
-

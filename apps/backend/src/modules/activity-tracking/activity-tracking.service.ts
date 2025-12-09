@@ -1,38 +1,46 @@
 import mongoose from "mongoose";
 import ActivityRecord from "./activity-tracking.model";
+import { ActivityType } from "./activity-tracking.types";
 import { IActivityRecord } from "./activity-tracking.types";
 
 class ActivityTrackingService {
   /**
    * Track a single activity
    */
+
+  private toObjectId(
+    id: string | mongoose.Types.ObjectId
+  ): mongoose.Types.ObjectId {
+    return typeof id === "string" ? new mongoose.Types.ObjectId(id) : id;
+  }
+
   async trackActivity(activityData: {
-    type: string;
+    type: ActivityType;
     module: string;
     entities: Array<{
-      id: string;
+      id: string | mongoose.Types.ObjectId;
       name: string; // Model/collection name
     }>;
-    adminId: string | mongoose.Types.ObjectId;
-    adminName: string;
+    performerId: string | mongoose.Types.ObjectId;
+    performerName: string;
     description: string;
     metadata?: {
       [key: string]: any;
     };
   }): Promise<IActivityRecord> {
-    // Convert adminId string to ObjectId if needed
-    const adminIdObjectId =
-      typeof activityData.adminId === "string"
-        ? new mongoose.Types.ObjectId(activityData.adminId)
-        : activityData.adminId;
+    // Convert entity ids to strings
+    const entities = activityData.entities.map((entity) => ({
+      id: entity.id.toString(),
+      name: entity.name,
+    }));
 
     const record = await ActivityRecord.create({
       type: activityData.type,
       module: activityData.module,
-      entities: activityData.entities,
-      admin: {
-        id: adminIdObjectId,
-        name: activityData.adminName,
+      entities,
+      performer: {
+        id: this.toObjectId(activityData.performerId),
+        name: activityData.performerName,
       },
       description: activityData.description,
       metadata: activityData.metadata || {},
@@ -45,13 +53,8 @@ class ActivityTrackingService {
    * Query activities with filters
    */
   async list(filters: {
-    adminId?: string;
     module?: string;
-    entityId?: string;
-    type?: string;
-    startDate?: Date;
-    endDate?: Date;
-    search?: string; // Regex search for description OR admin name
+    search?: string; // Regex search for description OR performer name
     limit?: number;
     page?: number;
     sort?: 1 | -1;
@@ -61,38 +64,18 @@ class ActivityTrackingService {
     page: number;
     limit: number;
   }> {
-    const {
-      adminId,
-      module,
-      entityId,
-      type,
-      startDate,
-      endDate,
-      search,
-      limit = 10,
-      page = 1,
-      sort = -1,
-    } = filters;
+    const { module, search, limit = 10, page = 1, sort = -1 } = filters;
 
     const skip = (page - 1) * limit;
 
     const filter: Record<string, any> = {};
-    if (adminId) filter["admin.id"] = adminId;
     if (module) filter.module = module;
-    if (entityId) filter["entities.id"] = entityId;
-    if (type) filter.type = type;
 
-    if (startDate || endDate) {
-      filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = startDate;
-      if (endDate) filter.createdAt.$lte = endDate;
-    }
-
-    // Add regex search for description OR admin name
+    // Add regex search for description OR performer name
     if (search) {
       filter.$or = [
         { description: { $regex: search, $options: "i" } },
-        { "admin.name": { $regex: search, $options: "i" } },
+        { "performer.name": { $regex: search, $options: "i" } },
       ];
     }
 
@@ -111,29 +94,6 @@ class ActivityTrackingService {
       page,
       limit,
     };
-  }
-
-  /**
-   * Get activities for a specific entity
-   */
-  async getByEntityId(
-    entityId: string,
-    limit = 10
-  ): Promise<IActivityRecord[]> {
-    return ActivityRecord.find({ "entities.id": entityId })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .lean() as Promise<IActivityRecord[]>;
-  }
-
-  /**
-   * Get activities for a specific admin
-   */
-  async getByAdminId(adminId: string, limit = 10): Promise<IActivityRecord[]> {
-    return ActivityRecord.find({ "admin.id": adminId })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .lean() as Promise<IActivityRecord[]>;
   }
 }
 

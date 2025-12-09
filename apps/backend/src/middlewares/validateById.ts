@@ -9,12 +9,14 @@ function validateById(errorMessage: string = "Invalid id") {
       .required(),
   });
 
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, _: Response, next: NextFunction) => {
     try {
       await paramId.validate(req.params);
       next();
-    } catch (error) {
-      throw new BadRequestError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) throw new BadRequestError(error.message);
+
+      throw new BadRequestError("Invalid id");
     }
   };
 }

@@ -3,24 +3,31 @@ import { IActivityRecord } from "./activity-tracking.types";
 
 const { Schema, model } = mongoose;
 
+const performerSchema = new Schema(
+  {
+    id: { type: Schema.Types.ObjectId, required: true },
+    name: { type: String, required: true, trim: true },
+    userType: { type: String, required: true, default: "admin" },
+  },
+  { _id: false }
+);
+
+const entitySchema = new Schema(
+  {
+    id: { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true },
+  },
+  { _id: false }
+);
+
 const activityRecordSchema = new Schema<IActivityRecord>(
   {
-    type: { type: String, required: true, trim: true, index: true },
-    module: { type: String, required: true, trim: true, index: true },
-    entities: [
-      {
-        id: { type: String, required: true, trim: true },
-        name: { type: String, required: true, trim: true },
-      },
-    ],
-    admin: {
-      id: {
-        type: Schema.Types.ObjectId,
-        ref: "Admin",
-        required: true,
-        index: true,
-      },
-      name: { type: String, required: true, trim: true },
+    type: { type: String, required: true, trim: true },
+    module: { type: String, required: true, trim: true },
+    entities: [entitySchema],
+    performer: {
+      type: performerSchema,
+      required: true,
     },
     description: { type: String, required: true, trim: true },
     metadata: { type: Schema.Types.Mixed, required: true, default: {} },
@@ -32,11 +39,8 @@ const activityRecordSchema = new Schema<IActivityRecord>(
 );
 
 // Create indexes for efficient querying
-activityRecordSchema.index({ "entities.id": 1, createdAt: -1 }); // Find all activities for an entity
-activityRecordSchema.index({ "admin.id": 1, createdAt: -1 }); // Admin activity timeline
-activityRecordSchema.index({ module: 1, createdAt: -1 }); // Module-specific feeds
-activityRecordSchema.index({ type: 1, createdAt: -1 }); // Filter by activity type
-activityRecordSchema.index({ createdAt: -1 }); // Most recent activities first
+// Only indexes needed for actual frontend queries
+activityRecordSchema.index({ module: 1, createdAt: -1 }); // Module-specific feeds with sorting
+activityRecordSchema.index({ createdAt: -1 }); // General sort for unfiltered queries
 
 export default model<IActivityRecord>("ActivityRecord", activityRecordSchema);
-
