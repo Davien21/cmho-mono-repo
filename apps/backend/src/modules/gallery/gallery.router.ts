@@ -3,7 +3,10 @@ const router = express.Router();
 
 import { generalMulter } from "../../lib/multer";
 import validateBy from "../../middlewares/validator";
-import { authenticate, requireSuperAdmin } from "../../middlewares/authentication";
+import {
+  authenticate,
+  requireSuperAdmin,
+} from "../../middlewares/authentication";
 import {
   createGalleryItem,
   deleteGalleryItem,
@@ -19,25 +22,30 @@ import {
 
 router.get(
   "/gallery",
-  [validateBy(getGalleryItemsQuerySchema, "query")],
+  [authenticate, validateBy(getGalleryItemsQuerySchema, "query")],
   getGalleryItems
 );
 
-router.get("/gallery/:id", getGalleryItem);
+router.get("/gallery/:id", [authenticate], getGalleryItem);
 
 router.post(
   "/gallery",
+  [authenticate],
   [generalMulter.single("file"), validateBy(galleryUpload)],
   createGalleryItem
 );
 
 router.put(
   "/gallery/:id",
+  [authenticate],
   [validateBy(updateGallerySchema)],
   updateGalleryItem
 );
 
-router.delete("/gallery/:id", [authenticate, requireSuperAdmin], deleteGalleryItem);
+router.delete(
+  "/gallery/:id",
+  [authenticate, requireSuperAdmin],
+  deleteGalleryItem
+);
 
 export default router;
-
