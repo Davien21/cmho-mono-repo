@@ -3,7 +3,7 @@ import inventoryCategoriesService from "./inventory-categories.service";
 import { successResponse } from "../../utils/response";
 import { IInventoryCategoryRequest } from "./inventory-categories.types";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
-import { ActivityTypes } from "../activity-tracking/activity-types";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 
 export async function getInventoryCategories(_req: Request, res: Response) {
@@ -23,9 +23,9 @@ export async function createInventoryCategory(req: Request, res: Response) {
   const activityData = {
     type: ActivityTypes.CREATE_INVENTORY_CATEGORY,
     module: "inventory",
-    entities: [{ id: category._id.toString(), name: "inventory-category" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    entities: [{ id: category._id, name: "inventory-category" }],
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Created category "${categoryName}"`,
     metadata: {
       canBeSold: data.canBeSold,
@@ -70,8 +70,8 @@ export async function updateInventoryCategory(req: Request, res: Response) {
       type: ActivityTypes.UPDATE_INVENTORY_CATEGORY,
       module: "inventory",
       entities: [{ id: id, name: "inventory-category" }],
-      adminId: admin._id,
-      adminName: admin.name,
+      performerId: admin._id,
+      performerName: admin.name,
       description,
       metadata: {
         changedFields: Object.keys(data),
@@ -101,8 +101,8 @@ export async function deleteInventoryCategory(req: Request, res: Response) {
     type: ActivityTypes.DELETE_INVENTORY_CATEGORY,
     module: "inventory",
     entities: [{ id: id, name: "inventory-category" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Deleted category "${categoryName}"`,
     metadata: {},
   };

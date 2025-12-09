@@ -1,6 +1,7 @@
 import InventoryItem from "./inventory-items.model";
 import { IInventoryItem, IInventoryItemRequest } from "./inventory-items.types";
 import galleryService from "../gallery/gallery.service";
+import { Types } from "mongoose";
 
 class InventoryItemsService {
   async list({
@@ -217,7 +218,7 @@ class InventoryItemsService {
     }
   }
 
-  async findById(id: string): Promise<IInventoryItem | null> {
+  async findById(id: string | Types.ObjectId): Promise<IInventoryItem | null> {
     return InventoryItem.findOne({ _id: id, isDeleted: { $ne: true } });
   }
 

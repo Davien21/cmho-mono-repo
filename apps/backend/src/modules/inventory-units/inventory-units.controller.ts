@@ -3,7 +3,7 @@ import inventoryUnitsService from "./inventory-units.service";
 import { successResponse } from "../../utils/response";
 import { IInventoryUnitDefinitionRequest } from "./inventory-units.types";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
-import { ActivityTypes } from "../activity-tracking/activity-types";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 
 export async function getInventoryUnits(_req: Request, res: Response) {
@@ -21,9 +21,9 @@ export async function createInventoryUnit(req: Request, res: Response) {
   const activityData = {
     type: ActivityTypes.CREATE_INVENTORY_UNIT,
     module: "inventory",
-    entities: [{ id: unit._id.toString(), name: "inventory-unit" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    entities: [{ id: unit._id, name: "inventory-unit" }],
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Created unit "${unitName}"`,
     metadata: {},
   };
@@ -47,8 +47,8 @@ export async function updateInventoryUnit(req: Request, res: Response) {
       type: ActivityTypes.UPDATE_INVENTORY_UNIT,
       module: "inventory",
       entities: [{ id: id, name: "inventory-unit" }],
-      adminId: admin._id,
-      adminName: admin.name,
+      performerId: admin._id,
+      performerName: admin.name,
       description:
         changedFields.length === 1
           ? `Updated ${changedFields[0]} for unit "${unitName}"`
@@ -78,8 +78,8 @@ export async function deleteInventoryUnit(req: Request, res: Response) {
     type: ActivityTypes.DELETE_INVENTORY_UNIT,
     module: "inventory",
     entities: [{ id: id, name: "inventory-unit" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Deleted unit "${unitName}"`,
     metadata: {},
   };

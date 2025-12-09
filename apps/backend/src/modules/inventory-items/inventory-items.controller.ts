@@ -4,7 +4,7 @@ import { successResponse } from "../../utils/response";
 import { GetInventoryItemsQuerySchema } from "./inventory-items.validators";
 import { IInventoryItemRequest } from "./inventory-items.types";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
-import { ActivityTypes } from "../activity-tracking/activity-types";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 import {
   buildUpdateDescription,
@@ -56,9 +56,9 @@ export async function createInventoryItem(req: Request, res: Response) {
   const activityData = {
     type: ActivityTypes.CREATE_INVENTORY_ITEM,
     module: "inventory",
-    entities: [{ id: item._id.toString(), name: "inventory-item" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    entities: [{ id: item._id, name: "inventory-item" }],
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Created inventory item "${itemName}"`,
     metadata: {
       category: data.category,
@@ -113,8 +113,8 @@ export async function updateInventoryItem(req: Request, res: Response) {
       type: ActivityTypes.UPDATE_INVENTORY_ITEM,
       module: "inventory",
       entities: [{ id: id, name: "inventory-item" }],
-      adminId: admin._id,
-      adminName: admin.name,
+      performerId: admin._id,
+      performerName: admin.name,
       description,
       metadata: changes
         ? {
@@ -143,8 +143,8 @@ export async function deleteInventoryItem(req: Request, res: Response) {
     type: ActivityTypes.DELETE_INVENTORY_ITEM,
     module: "inventory",
     entities: [{ id: id, name: "inventory-item" }],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Deleted inventory item "${itemName}"`,
     metadata: {},
   };
