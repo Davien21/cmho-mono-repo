@@ -8,9 +8,9 @@ import { Card } from "@/components/ui/card";
 import { InventoryItem, StockEntry, UnitLevel } from "@/types/inventory";
 import {
   IInventoryItemDto,
-  IStockEntryDto,
+  IStockMovementDto,
   useGetInventoryItemsQuery,
-  useGetStockEntriesQuery,
+  useGetStockMovementQuery,
 } from "@/store/inventory-slice";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
 import { formatUnitName } from "@/lib/utils";
@@ -20,7 +20,7 @@ export default function StockEntriesPage() {
   const navigate = useNavigate();
 
   const { data: itemsResponse } = useGetInventoryItemsQuery();
-  const { data: stockEntriesResponse } = useGetStockEntriesQuery(
+  const { data: stockMovementResponse } = useGetStockMovementQuery(
     itemId ? { inventoryItemId: itemId } : undefined
   );
 
@@ -53,7 +53,8 @@ export default function StockEntriesPage() {
   const [selectedEntry, setSelectedEntry] = useState<StockEntry | null>(null);
 
   const sortedEntries: StockEntry[] = useMemo(() => {
-    const entries: IStockEntryDto[] = stockEntriesResponse?.data?.data || [];
+    const entries: IStockMovementDto[] =
+      stockMovementResponse?.data?.data || [];
     return entries
       .map<StockEntry>((entry) => ({
         id: entry._id,
@@ -74,7 +75,7 @@ export default function StockEntriesPage() {
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-  }, [stockEntriesResponse]);
+  }, [stockMovementResponse]);
 
   const handleBack = () => {
     navigate("/inventory");

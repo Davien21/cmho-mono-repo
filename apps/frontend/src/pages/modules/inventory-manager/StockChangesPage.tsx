@@ -10,9 +10,9 @@ import { StockEntry, UnitLevel } from "@/types/inventory";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
 import {
   IInventoryItemDto,
-  IStockEntryDto,
+  IStockMovementDto,
   useGetInventoryItemsQuery,
-  useGetStockEntriesQuery,
+  useGetStockMovementQuery,
 } from "@/store/inventory-slice";
 
 type StockChangeRow = StockEntry & {
@@ -50,7 +50,7 @@ export default function StockChangesPage() {
   const [selectedRow, setSelectedRow] = useState<StockChangeRow | null>(null);
 
   const { data: itemsResponse } = useGetInventoryItemsQuery();
-  const { data: stockEntriesResponse } = useGetStockEntriesQuery();
+  const { data: stockMovementResponse } = useGetStockMovementQuery();
 
   const items = useMemo(() => {
     const dtos: IInventoryItemDto[] = itemsResponse?.data || [];
@@ -100,7 +100,8 @@ export default function StockChangesPage() {
       itemById.set(item.id, { name: item.name, units: item.units || [] });
     });
 
-    const entries: IStockEntryDto[] = stockEntriesResponse?.data?.data || [];
+    const entries: IStockMovementDto[] =
+      stockMovementResponse?.data?.data || [];
 
     const all: StockChangeRow[] = entries
       .filter(
@@ -130,7 +131,7 @@ export default function StockChangesPage() {
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [items, stockEntriesResponse, filterItemId]);
+  }, [items, stockMovementResponse, filterItemId]);
 
   const filteredRows: StockChangeRow[] = useMemo(() => {
     const term = search.trim().toLowerCase();

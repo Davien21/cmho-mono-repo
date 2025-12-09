@@ -10,10 +10,10 @@ import { StockEntry, UnitLevel } from "@/types/inventory";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
 import {
   IInventoryItemDto,
-  IStockEntryDto,
+  IStockMovementDto,
   useGetInventoryItemsQuery,
 } from "@/store/inventory-slice";
-import { useInfiniteStockEntries } from "@/hooks/use-infinite-stock-entries";
+import { useInfiniteStockMovement } from "@/hooks/use-infinite-stock-movement";
 
 type StockChangeRow = StockEntry & {
   itemName: string;
@@ -55,12 +55,12 @@ export default function StockMovementPage() {
 
   const { data: itemsResponse } = useGetInventoryItemsQuery();
   const {
-    stockEntries: allStockEntries,
+    stockMovements: allStockMovements,
     isLoading,
     isFetching,
     isFetchingNextPage,
     hasNextPage,
-  } = useInfiniteStockEntries({
+  } = useInfiniteStockMovement({
     loadMoreRef,
     inventoryItemId: filterItemId || undefined,
     sort: "desc",
@@ -119,7 +119,7 @@ export default function StockMovementPage() {
       itemById.set(item.id, { name: item.name, units: item.units || [] });
     });
 
-    const entries: IStockEntryDto[] = allStockEntries;
+    const entries: IStockMovementDto[] = allStockMovements;
 
     const all: StockChangeRow[] = entries.map((entry) => {
       const meta = itemById.get(entry.inventoryItemId);
@@ -145,7 +145,7 @@ export default function StockMovementPage() {
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [items, allStockEntries]);
+  }, [items, allStockMovements]);
 
   const filteredRows: StockChangeRow[] = useMemo(() => {
     const term = search.trim().toLowerCase();
