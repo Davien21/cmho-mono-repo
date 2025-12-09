@@ -1,12 +1,15 @@
 import StockEntry from "./stock-entries.model";
 import { IStockEntry, StockEntryRequest } from "./stock-entries.types";
 import InventoryItem from "../inventory-items/inventory-items.model";
+import { Types } from "mongoose";
 
 /**
  * Normalizes an expiry date to the first day of the month.
  * This ensures expiry dates are stored consistently as month/year only.
  */
-function normalizeExpiryDate(date: Date | string | null | undefined): Date | null {
+function normalizeExpiryDate(
+  date: Date | string | null | undefined
+): Date | null {
   if (!date) return null;
 
   const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -53,23 +56,35 @@ class StockEntriesService {
     page?: number;
     inventoryItemId?: string;
     operationType?: string;
-  }): Promise<IStockEntry[]> {
+  }): Promise<{
+    data: IStockEntry[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const skip = (page - 1) * limit;
 
     const filter: Record<string, any> = {};
     if (inventoryItemId) filter.inventoryItemId = inventoryItemId;
     if (operationType) filter.operationType = operationType;
 
-    return StockEntry.find(filter)
-      .populate("createdBy", "name")
-      .sort({ _id: sort })
-      .limit(limit)
-      .skip(skip);
+    const [data, total] = await Promise.all([
+      StockEntry.find(filter).sort({ _id: sort }).limit(limit).skip(skip),
+      StockEntry.countDocuments(filter),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async addStock(
     data: AddStockRequest,
-    createdBy: string
+    performerId: Types.ObjectId,
+    performerName: string
   ): Promise<IStockEntry> {
     // Normalize expiry date to first day of month
     const normalizedExpiryDate = normalizeExpiryDate(data.expiryDate);
@@ -80,7 +95,8 @@ class StockEntriesService {
       expiryDate: normalizedExpiryDate || data.expiryDate,
       operationType: "add",
       quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
-      createdBy,
+      performerId,
+      performerName,
     });
 
     // Update inventory item stock
@@ -94,6 +110,10 @@ class StockEntriesService {
 
       item.currentStockInBaseUnits = nextStock;
       await item.save();
+
+      // Update entry with balance
+      entry.balance = nextStock;
+      await entry.save();
     }
 
     return entry;
@@ -101,7 +121,8 @@ class StockEntriesService {
 
   async reduceStock(
     data: ReduceStockRequest,
-    createdBy: string
+    performerId: Types.ObjectId,
+    performerName: string
   ): Promise<IStockEntry> {
     // Normalize expiry date to first day of month if provided
     const normalizedExpiryDate = data.expiryDate
@@ -113,7 +134,9 @@ class StockEntriesService {
       ...data,
       costPrice: data.costPrice ?? 0,
       sellingPrice: data.sellingPrice ?? 0,
-      expiryDate: normalizedExpiryDate ?? new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      expiryDate:
+        normalizedExpiryDate ??
+        new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     };
 
     // Create stock entry with operationType: "reduce"
@@ -121,7 +144,8 @@ class StockEntriesService {
       ...entryData,
       operationType: "reduce",
       quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
-      createdBy,
+      performerId,
+      performerName,
     });
 
     // Update inventory item stock (subtract quantity)
@@ -134,8 +158,13 @@ class StockEntriesService {
       const nextStock = currentStock - entry.quantityInBaseUnits;
 
       // Ensure stock doesn't go negative (or handle as needed)
-      item.currentStockInBaseUnits = Math.max(0, nextStock);
+      const finalStock = Math.max(0, nextStock);
+      item.currentStockInBaseUnits = finalStock;
       await item.save();
+
+      // Update entry with balance
+      entry.balance = finalStock;
+      await entry.save();
     }
 
     return entry;
@@ -152,13 +181,17 @@ class StockEntriesService {
       normalizedExpiryDate = normalizeExpiryDate(data.expiryDate) || undefined;
     } else if (data.operationType === "reduce") {
       // For reduce operations without expiry date, use first day of current month
-      normalizedExpiryDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      normalizedExpiryDate = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1
+      );
     }
 
     // For reduce operations, set default values if not provided
     const entryData: StockEntryRequest = {
       ...data,
-      expiryDate: normalizedExpiryDate,
+      ...(normalizedExpiryDate && { expiryDate: normalizedExpiryDate }),
       ...(data.operationType === "reduce" && {
         costPrice: data.costPrice ?? 0,
         sellingPrice: data.sellingPrice ?? 0,
@@ -189,6 +222,10 @@ class StockEntriesService {
 
       item.currentStockInBaseUnits = nextStock;
       await item.save();
+
+      // Update entry with balance
+      entry.balance = nextStock;
+      await entry.save();
     }
 
     return entry;

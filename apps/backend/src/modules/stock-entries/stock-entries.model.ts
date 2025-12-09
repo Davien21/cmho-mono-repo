@@ -36,11 +36,13 @@ const stockEntrySchema = new Schema<IStockEntry>(
     sellingPrice: { type: Number, required: true },
     expiryDate: { type: Date, required: true },
     quantityInBaseUnits: { type: Number, required: true },
-    createdBy: {
+    balance: { type: Number, required: false },
+    performerId: {
       type: Schema.Types.ObjectId,
       ref: "Admin",
       required: true,
     },
+    performerName: { type: String, required: true, trim: true },
   },
   {
     timestamps: true,
@@ -52,5 +54,3 @@ stockEntrySchema.index({ inventoryItemId: 1, createdAt: -1 });
 stockEntrySchema.index({ createdAt: -1 });
 
 export default model<IStockEntry>("StockEntry", stockEntrySchema);
-
-

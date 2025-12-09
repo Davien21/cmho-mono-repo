@@ -18,7 +18,9 @@ export interface IStockEntry {
   sellingPrice: number;
   expiryDate: Date;
   quantityInBaseUnits: number;
-  createdBy: ObjectId;
+  balance?: number;
+  performerId: ObjectId;
+  performerName: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,7 +29,7 @@ export interface IStockEntry {
 // For reduce operations, costPrice, sellingPrice, and expiryDate are optional
 export type StockEntryRequest = Omit<
   IStockEntry,
-  "_id" | "createdBy" | "createdAt" | "updatedAt"
+  "_id" | "performerId" | "performerName" | "createdAt" | "updatedAt"
 > & {
   costPrice?: number;
   sellingPrice?: number;

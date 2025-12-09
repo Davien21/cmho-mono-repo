@@ -5,7 +5,7 @@ import { GetStockEntriesQuerySchema } from "./stock-entries.validators";
 import { StockEntryRequest } from "./stock-entries.types";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
 import inventoryItemsService from "../inventory-items/inventory-items.service";
-import { ActivityTypes } from "../activity-tracking/activity-types";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 
 export async function getStockEntries(
@@ -20,7 +20,7 @@ export async function getStockEntries(
     operationType,
   } = req.query;
 
-  const entries = await stockEntriesService.list({
+  const result = await stockEntriesService.list({
     sort: sort === "desc" ? -1 : 1,
     limit: parseInt(limit),
     page: parseInt(page),
@@ -28,45 +28,33 @@ export async function getStockEntries(
     operationType,
   });
 
-  // Transform entries to include createdBy name
-  const transformedEntries = entries.map((entry: any) => {
-    const entryObj = entry.toObject ? entry.toObject() : entry;
-    const createdBy = entryObj.createdBy;
-    // Handle populated createdBy (object with _id and name) or unpopulated (ObjectId/string)
-    const createdById =
-      createdBy?._id?.toString() || createdBy?.toString() || createdBy || null;
-    const createdByName = createdBy?.name || null;
+  // Return entries as-is (performerName is already in the model)
 
-    return {
-      ...entryObj,
-      createdBy: createdById,
-      createdByName,
-    };
-  });
-
-  res.send(
-    successResponse("Stock entries fetched successfully", transformedEntries)
-  );
+  res.send(successResponse("Stock entries fetched successfully", result));
 }
 
-export async function createStockEntry(req: Request, res: Response) {
+export async function createStockEntry(
+  req: Request<{}, {}, StockEntryRequest, {}>,
+  res: Response
+) {
   const admin = getAdminFromReq(req);
-  const data = req.body as StockEntryRequest;
+  const data = req.body;
 
   // Get previous stock before update
-  const item = await inventoryItemsService.findById(
-    data.inventoryItemId.toString()
-  );
+  const item = await inventoryItemsService.findById(data.inventoryItemId);
   const previousStock = item?.currentStockInBaseUnits ?? 0;
 
-  // Attach createdBy from authenticated user
-  (data as any).createdBy = admin._id;
+  // Attach performerId and performerName from authenticated user
+  const performerData = {
+    performerId: admin._id,
+    performerName: admin.name,
+  };
 
-  const entry = await stockEntriesService.create(data);
+  const entry = await stockEntriesService.create({ ...data, ...performerData });
 
   // Get updated item after stock change
   const updatedItem = await inventoryItemsService.findById(
-    data.inventoryItemId.toString()
+    data.inventoryItemId
   );
 
   // Track the activity
@@ -76,19 +64,22 @@ export async function createStockEntry(req: Request, res: Response) {
     data.operationType === "reduce"
       ? ActivityTypes.REDUCE_STOCK
       : ActivityTypes.ADD_STOCK;
+
+  const AddStockDesc = `Added ${quantity} units of ${itemName}`;
+  const ReduceStockDesc = `Reduced ${quantity} units of ${itemName}`;
+
+  const description =
+    data.operationType === "add" ? AddStockDesc : ReduceStockDesc;
+
   const activityData = {
     type: actionType,
     module: "inventory",
     entities: [
-      { id: entry._id.toString(), name: "stock-entry" },
-      { id: data.inventoryItemId.toString(), name: "inventory-item" },
+      { id: entry._id, name: "stock-entry" },
+      { id: data.inventoryItemId, name: "inventory-item" },
     ],
-    adminId: admin._id,
-    adminName: admin.name,
-    description:
-      data.operationType === "reduce"
-        ? `Reduced ${quantity} units of ${itemName}`
-        : `Added ${quantity} units of ${itemName}`,
+    ...performerData,
+    description,
     metadata: {
       quantityInBaseUnits: quantity,
       operationType: data.operationType,
@@ -112,7 +103,7 @@ export async function addStock(req: Request, res: Response) {
   const item = await inventoryItemsService.findById(data.inventoryItemId);
   const previousStock = item?.currentStockInBaseUnits ?? 0;
 
-  const entry = await stockEntriesService.addStock(data, admin._id.toString());
+  const entry = await stockEntriesService.addStock(data, admin._id, admin.name);
 
   // Get updated item after stock addition
   const updatedItem = await inventoryItemsService.findById(
@@ -126,11 +117,11 @@ export async function addStock(req: Request, res: Response) {
     type: ActivityTypes.ADD_STOCK,
     module: "inventory",
     entities: [
-      { id: entry._id.toString(), name: "stock-entry" },
-      { id: data.inventoryItemId.toString(), name: "inventory-item" },
+      { id: entry._id, name: "stock-entry" },
+      { id: data.inventoryItemId, name: "inventory-item" },
     ],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Added ${quantity} units of ${itemName}`,
     metadata: {
       quantityInBaseUnits: quantity,
@@ -157,7 +148,8 @@ export async function reduceStock(req: Request, res: Response) {
 
   const entry = await stockEntriesService.reduceStock(
     data,
-    admin._id.toString()
+    admin._id,
+    admin.name
   );
 
   // Get updated item after stock reduction
@@ -172,11 +164,11 @@ export async function reduceStock(req: Request, res: Response) {
     type: ActivityTypes.REDUCE_STOCK,
     module: "inventory",
     entities: [
-      { id: entry._id.toString(), name: "stock-entry" },
-      { id: data.inventoryItemId.toString(), name: "inventory-item" },
+      { id: entry._id, name: "stock-entry" },
+      { id: data.inventoryItemId, name: "inventory-item" },
     ],
-    adminId: admin._id,
-    adminName: admin.name,
+    performerId: admin._id,
+    performerName: admin.name,
     description: `Reduced ${quantity} units of ${itemName}`,
     metadata: {
       quantityInBaseUnits: quantity,
