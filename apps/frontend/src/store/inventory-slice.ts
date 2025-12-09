@@ -172,6 +172,30 @@ export interface ICreateStockMovementRequest {
   quantityInBaseUnits: number;
 }
 
+export interface IAddStockRequest {
+  inventoryItemId: string;
+  supplier: {
+    supplierId: string;
+    name: string;
+  } | null;
+  costPrice: number;
+  sellingPrice: number;
+  expiryDate: string | Date;
+  quantityInBaseUnits: number;
+}
+
+export interface IReduceStockRequest {
+  inventoryItemId: string;
+  supplier: {
+    supplierId: string;
+    name: string;
+  } | null;
+  costPrice?: number | null;
+  sellingPrice?: number | null;
+  expiryDate?: string | Date | null;
+  quantityInBaseUnits: number;
+}
+
 export interface IGetStockMovementQuery {
   inventoryItemId?: string;
   operationType?: StockOperationType;
@@ -442,6 +466,36 @@ export const inventoryApi = baseApi.injectEndpoints({
         TagTypes.ACTIVITY_RECORDS,
       ],
     }),
+    addStock: builder.mutation<
+      IAPIResponse<IStockMovementDto>,
+      IAddStockRequest
+    >({
+      query: (body) => ({
+        url: "/inventory/stock-movement/add",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [
+        TagTypes.STOCK_MOVEMENTS,
+        TagTypes.INVENTORY_ITEMS,
+        TagTypes.ACTIVITY_RECORDS,
+      ],
+    }),
+    reduceStock: builder.mutation<
+      IAPIResponse<IStockMovementDto>,
+      IReduceStockRequest
+    >({
+      query: (body) => ({
+        url: "/inventory/stock-movement/reduce",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [
+        TagTypes.STOCK_MOVEMENTS,
+        TagTypes.INVENTORY_ITEMS,
+        TagTypes.ACTIVITY_RECORDS,
+      ],
+    }),
   }),
 });
 
@@ -467,4 +521,6 @@ export const {
   useGetStockMovementQuery,
   useGetStockMovementPagesInfiniteQuery,
   useCreateStockMovementMutation,
+  useAddStockMutation,
+  useReduceStockMutation,
 } = inventoryApi;
