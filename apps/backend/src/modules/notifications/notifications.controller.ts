@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
 import { successResponse } from "../../utils/response";
 import notificationsService from "./notifications.service";
+import { GetNotificationsQuerySchema } from "./notifications.validators";
 import { NotificationStatus } from "./notifications.types";
 
-export async function getNotifications(req: Request, res: Response) {
+export async function getNotifications(
+  req: Request<{}, {}, {}, GetNotificationsQuerySchema>,
+  res: Response
+) {
   const {
     sort = "desc",
     limit = "10",
@@ -18,13 +22,13 @@ export async function getNotifications(req: Request, res: Response) {
 
   const notifications = await notificationsService.list({
     status: status as NotificationStatus | undefined,
-    module: module as string | undefined,
-    type: type as string | undefined,
-    inventoryId: inventoryId as string | undefined,
-    title: title as string | undefined,
-    search: search as string | undefined,
-    limit: parseInt(limit as string),
-    page: parseInt(page as string),
+    module: module,
+    type: type,
+    inventoryId: inventoryId,
+    title: title,
+    search: search,
+    limit: parseInt(limit),
+    page: parseInt(page),
     sort: sort === "desc" ? -1 : 1,
   });
 
@@ -32,4 +36,3 @@ export async function getNotifications(req: Request, res: Response) {
     successResponse("Notifications fetched successfully", notifications)
   );
 }
-
