@@ -95,7 +95,7 @@
     - `"update-stock": InventoryItem`
   - [ ] Update `AddInventoryModal` to use `useModalContext` instead of props
   - [ ] Update `EditInventoryModal` to use `useModalContext` instead of props
-  - [ ] Update `UpdateStockModal` to use `useModalContext` instead of props
+  - [ ] Update `AddStockModal` and `RemoveStockModal` to use `useModalContext` instead of props
   - [ ] Add all three modals to `apps/frontend/src/components/modals/index.tsx`
   - [ ] Update `InventoryPage` to use `openModal()` calls instead of local state
   - [ ] Remove local state management (`showAddForm`, `showEditModal`, `showStockModal`, `selectedItem`) from InventoryPage
@@ -329,7 +329,41 @@
     - `apps/backend/src/modules/inventory-units/inventory-units.controller.ts`
     - Any other controllers with activity tracking
 
-6. **Rename stock-entries to stock-movement everywhere**
+6. **Refine track activity metadata based on activity type**
+
+- **Current state**: The `trackActivity` method accepts a generic `metadata` object with `[key: string]: any`, which allows any structure for any activity type. This can lead to inconsistencies and makes it unclear what metadata should be included for each activity type.
+- **Goal**: Define type-specific metadata structures for each activity type to ensure consistency, type safety, and clarity about what information should be tracked for each activity.
+- **Implementation requirements**:
+  - [ ] Analyze all current activity types and identify what metadata is needed for each:
+    - Stock operations (ADD_STOCK, REDUCE_STOCK): quantity, unit, previous quantity, new quantity, expiry date, etc.
+    - Inventory item operations (CREATE, UPDATE, DELETE): fields changed, old values, new values, etc.
+    - Category operations: category details, affected items count, etc.
+    - Unit operations: unit details, conversion factors, etc.
+    - Supplier operations: supplier details, contact information, etc.
+    - Gallery operations: image details, file sizes, etc.
+    - Admin operations: admin details, permissions, etc.
+  - [ ] Create TypeScript interfaces/types for metadata structures for each activity type (or groups of related activity types)
+  - [ ] Update `trackActivity` method signature to use discriminated unions or type parameters based on activity type
+  - [ ] Update `IActivityRecord` interface to use typed metadata instead of generic `{ [key: string]: any }`
+  - [ ] Update all controller calls to `trackActivity` to use the appropriate metadata structure for each activity type
+  - [ ] Ensure backward compatibility during migration (consider gradual migration or type assertions)
+  - [ ] Add validation to ensure required metadata fields are present for each activity type
+  - [ ] Update activity tracking service to handle type-specific metadata structures
+  - [ ] Document metadata requirements for each activity type
+  - [ ] Test that all activity tracking calls provide correct metadata structures
+- **Benefits**:
+  - Type safety for metadata structures
+  - Clear documentation of what metadata is expected for each activity type
+  - Prevents inconsistent or missing metadata
+  - Better IDE autocomplete and error detection
+  - Easier to query and filter activities by metadata fields
+- **Files to update**:
+  - `apps/backend/src/modules/activity-tracking/activity-tracking.types.ts` - Add typed metadata interfaces
+  - `apps/backend/src/modules/activity-tracking/activity-tracking.service.ts` - Update method signature to use typed metadata
+  - `apps/backend/src/modules/activity-tracking/activity-tracking.model.ts` - Update model if needed
+  - All controllers that call `trackActivity` - Update to use typed metadata structures
+
+7. **Rename stock-entries to stock-movement everywhere**
 
 - **Current state**: The codebase uses "stock-entries" as the naming convention for stock movement/transaction records
 - **Goal**: Rename all references from "stock-entries" to "stock-movement" for better clarity and consistency
@@ -351,3 +385,33 @@
   - Frontend API slice/store files that reference stock-entries
   - Frontend components that use stock-entries endpoints
   - Any other files that import or reference stock-entries
+
+## Documentation
+
+8. **Create a tutorial library for the entire project**
+
+- **Goal**: Build a comprehensive tutorial library that helps users understand and navigate the entire application
+- **Scope**: Cover all major features, workflows, and modules across both the salary manager and inventory manager applications
+- **Implementation requirements**:
+  - [ ] Identify all key features and workflows that need tutorials (inventory management, stock operations, employee management, salary processing, etc.)
+  - [ ] Design tutorial system architecture (onboarding flow, interactive guides, tooltips, help documentation)
+  - [ ] Choose tutorial library/framework (e.g., React Joyride, Shepherd.js, Intro.js, or custom solution)
+  - [ ] Create tutorial content for each major feature:
+    - [ ] Inventory management (adding items, updating stock, managing categories/units/suppliers)
+    - [ ] Stock operations (adding stock, reducing stock, viewing stock entries)
+    - [ ] Employee management (adding employees, processing payments)
+    - [ ] Admin management (creating admins, managing permissions)
+    - [ ] Gallery management
+    - [ ] Activity tracking and notifications
+  - [ ] Implement tutorial UI components (progress indicators, skip/resume functionality, navigation)
+  - [ ] Add tutorial triggers (first-time user onboarding, contextual help buttons, feature discovery)
+  - [ ] Create tutorial persistence (track completed tutorials, allow users to replay tutorials)
+  - [ ] Ensure tutorials work on both desktop and mobile views
+  - [ ] Test tutorial flows across all major user journeys
+  - [ ] Consider accessibility (keyboard navigation, screen reader support)
+- **Files to create/update**:
+  - Create tutorial configuration files
+  - Create tutorial components (if using custom solution)
+  - Update main app components to integrate tutorial system
+  - Create tutorial content/data files
+  - Update documentation with tutorial information
