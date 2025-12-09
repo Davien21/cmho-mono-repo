@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { InventoryItem } from "@/types/inventory";
 import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
 import {
-  useCreateStockMovementMutation,
+  useReduceStockMutation,
   useGetInventoryItemsQuery,
   useGetStockMovementQuery,
 } from "@/store/inventory-slice";
@@ -61,8 +61,8 @@ export function ReduceStockModal({
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { refetch: refetchItems } = useGetInventoryItemsQuery();
   const { refetch: refetchStockMovement } = useGetStockMovementQuery();
-  const [createStockMovement, { isLoading: isCreatingStockMovement }] =
-    useCreateStockMovementMutation();
+  const [reduceStock, { isLoading: isReducingStock }] =
+    useReduceStockMutation();
 
   const getInitialQuantity = useCallback((): QuantityInput[] => {
     if (!inventoryItem) return [];
@@ -144,21 +144,16 @@ export function ReduceStockModal({
     clearErrors("quantity");
 
     try {
-      const payload: any = {
+      const payload = {
         inventoryItemId: inventoryItem.id,
-        operationType: "reduce",
         supplier: null,
         quantityInBaseUnits: totalQuantity,
-        costPrice: 0,
-        sellingPrice: 0,
-        expiryDate: new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          1
-        ),
+        costPrice: null,
+        sellingPrice: null,
+        expiryDate: null,
       };
 
-      await createStockMovement(payload).unwrap();
+      await reduceStock(payload).unwrap();
 
       await Promise.all([refetchItems(), refetchStockMovement()]);
 
@@ -265,9 +260,9 @@ export function ReduceStockModal({
                 type="submit"
                 className="bg-gray-900 hover:bg-gray-800"
                 size={isMobile ? "lg" : "default"}
-                disabled={isCreatingStockMovement || isFormSubmitting}
+                disabled={isReducingStock || isFormSubmitting}
               >
-                {isCreatingStockMovement || isFormSubmitting
+                {isReducingStock || isFormSubmitting
                   ? "Reducing..."
                   : "Reduce Stock"}
               </Button>

@@ -8,7 +8,7 @@ import { Label } from "../ui/label";
 import { InventoryItem } from "@/types/inventory";
 import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
 import {
-  useCreateStockMovementMutation,
+  useAddStockMutation,
   useGetInventoryItemsQuery,
   useGetStockMovementQuery,
 } from "@/store/inventory-slice";
@@ -108,8 +108,7 @@ export function AddStockModal({
   const [supplierName, setSupplierName] = useState<string | null>(null);
   const { refetch: refetchItems } = useGetInventoryItemsQuery();
   const { refetch: refetchStockMovement } = useGetStockMovementQuery();
-  const [createStockMovement, { isLoading: isCreatingStockMovement }] =
-    useCreateStockMovementMutation();
+  const [addStock, { isLoading: isAddingStock }] = useAddStockMutation();
 
   const getInitialQuantity = useCallback((): QuantityInput[] => {
     if (!inventoryItem) return [];
@@ -200,10 +199,13 @@ export function AddStockModal({
 
     try {
       const expiryDate = getExpiryDate(values.expiryDate);
+      if (!expiryDate) {
+        toast.error("Expiry date is required");
+        return;
+      }
 
-      const payload: any = {
+      const payload = {
         inventoryItemId: inventoryItem.id,
-        operationType: "add",
         supplier:
           !supplierId || !supplierName
             ? null
@@ -217,7 +219,7 @@ export function AddStockModal({
         expiryDate: expiryDate,
       };
 
-      await createStockMovement(payload).unwrap();
+      await addStock(payload).unwrap();
 
       await Promise.all([refetchItems(), refetchStockMovement()]);
 
@@ -378,11 +380,9 @@ export function AddStockModal({
                 type="submit"
                 className="bg-gray-900 hover:bg-gray-800"
                 size={isMobile ? "lg" : "default"}
-                disabled={isCreatingStockMovement || isFormSubmitting}
+                disabled={isAddingStock || isFormSubmitting}
               >
-                {isCreatingStockMovement || isFormSubmitting
-                  ? "Adding..."
-                  : "Add Stock"}
+                {isAddingStock || isFormSubmitting ? "Adding..." : "Add Stock"}
               </Button>
             </ResponsiveDialog.Footer>
           </form>
