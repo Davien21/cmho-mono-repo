@@ -72,12 +72,16 @@ export function GalleryCard({
       className={cn(
         "relative group rounded-lg overflow-hidden border transition-all",
         viewMode === "grid" ? "aspect-square" : "flex items-center gap-3 p-2",
-        isSelected && "ring-1 ring-primary border-primary",
         showCheckbox && "cursor-pointer"
       )}
       onClick={showCheckbox ? handleClick : undefined}
       onDoubleClick={onDoubleClick ? handleDoubleClick : undefined}
     >
+      {/* Dark overlay on selection */}
+      {isSelected && (
+        <div className="absolute inset-0 bg-black/40 z-[5] rounded-lg transition-opacity" />
+      )}
+
       {/* Selection Indicator */}
       {showCheckbox && (
         <div

@@ -32,7 +32,11 @@ import {
 export const ResponsiveDialog = {
   Root: (props: React.ComponentProps<typeof Dialog>) => {
     const isMobile = useMediaQuery("(max-width: 640px)");
-    return isMobile ? <Drawer {...props} /> : <Dialog {...props} />;
+    return isMobile ? (
+      <Drawer {...props} dismissible={false} />
+    ) : (
+      <Dialog {...props} />
+    );
   },
 
   Trigger: (props: React.ComponentProps<typeof DialogTrigger>) => {
