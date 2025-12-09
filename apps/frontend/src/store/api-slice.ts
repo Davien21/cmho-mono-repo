@@ -18,7 +18,7 @@ export const baseApi = createApi({
     TagTypes.INVENTORY_UNITS,
     TagTypes.INVENTORY_CATEGORIES,
     TagTypes.INVENTORY_ITEMS,
-    TagTypes.STOCK_ENTRIES,
+    TagTypes.STOCK_MOVEMENTS,
     TagTypes.SUPPLIERS,
     TagTypes.MEDIA,
     TagTypes.GALLERY,

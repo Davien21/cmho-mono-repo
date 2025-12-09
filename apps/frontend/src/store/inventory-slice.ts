@@ -83,7 +83,7 @@ export interface IStockSupplierSnapshotDto {
   name: string;
 }
 
-export interface IStockEntryDto {
+export interface IStockMovementDto {
   _id: string;
   inventoryItemId: string;
   operationType: StockOperationType;
@@ -159,7 +159,7 @@ export interface IUpdateInventoryItemRequest
   id: string;
 }
 
-export interface ICreateStockEntryRequest {
+export interface ICreateStockMovementRequest {
   inventoryItemId: string;
   operationType: StockOperationType;
   supplier: {
@@ -172,7 +172,7 @@ export interface ICreateStockEntryRequest {
   quantityInBaseUnits: number;
 }
 
-export interface IGetStockEntriesQuery {
+export interface IGetStockMovementQuery {
   inventoryItemId?: string;
   operationType?: StockOperationType;
   page?: number;
@@ -180,8 +180,8 @@ export interface IGetStockEntriesQuery {
   sort?: "asc" | "desc";
 }
 
-export interface IStockEntriesResponse {
-  data: IStockEntryDto[];
+export interface IStockMovementResponse {
+  data: IStockMovementDto[];
   total: number;
   page: number;
   limit: number;
@@ -385,12 +385,12 @@ export const inventoryApi = baseApi.injectEndpoints({
       invalidatesTags: [TagTypes.INVENTORY_ITEMS],
     }),
 
-    getStockEntries: builder.query<
-      IAPIResponse<IStockEntriesResponse>,
-      IGetStockEntriesQuery | void
+    getStockMovement: builder.query<
+      IAPIResponse<IStockMovementResponse>,
+      IGetStockMovementQuery | void
     >({
       query: (params) => ({
-        url: "/inventory/stock-entries",
+        url: "/inventory/stock-movement",
         method: "GET",
         params: params
           ? {
@@ -398,15 +398,15 @@ export const inventoryApi = baseApi.injectEndpoints({
             }
           : undefined,
       }),
-      providesTags: [TagTypes.STOCK_ENTRIES],
+      providesTags: [TagTypes.STOCK_MOVEMENTS],
     }),
-    getStockEntriesPages: builder.infiniteQuery<
-      IAPIResponse<IStockEntriesResponse>,
-      Omit<IGetStockEntriesQuery, "page" | "limit">,
+    getStockMovementPages: builder.infiniteQuery<
+      IAPIResponse<IStockMovementResponse>,
+      Omit<IGetStockMovementQuery, "page" | "limit">,
       number
     >({
       query: ({ pageParam, ...queryArg }) => ({
-        url: "/inventory/stock-entries",
+        url: "/inventory/stock-movement",
         method: "GET",
         params: {
           ...queryArg,
@@ -425,19 +425,19 @@ export const inventoryApi = baseApi.injectEndpoints({
           return currentPage < totalPages ? currentPage + 1 : undefined;
         },
       },
-      providesTags: [TagTypes.STOCK_ENTRIES],
+      providesTags: [TagTypes.STOCK_MOVEMENTS],
     }),
-    createStockEntry: builder.mutation<
-      IAPIResponse<IStockEntryDto>,
-      ICreateStockEntryRequest
+    createStockMovement: builder.mutation<
+      IAPIResponse<IStockMovementDto>,
+      ICreateStockMovementRequest
     >({
       query: (body) => ({
-        url: "/inventory/stock-entries",
+        url: "/inventory/stock-movement",
         method: "POST",
         body,
       }),
       invalidatesTags: [
-        TagTypes.STOCK_ENTRIES,
+        TagTypes.STOCK_MOVEMENTS,
         TagTypes.INVENTORY_ITEMS,
         TagTypes.ACTIVITY_RECORDS,
       ],
@@ -464,7 +464,7 @@ export const {
   useCreateInventoryItemMutation,
   useUpdateInventoryItemMutation,
   useDeleteInventoryItemMutation,
-  useGetStockEntriesQuery,
-  useGetStockEntriesPagesInfiniteQuery,
-  useCreateStockEntryMutation,
+  useGetStockMovementQuery,
+  useGetStockMovementPagesInfiniteQuery,
+  useCreateStockMovementMutation,
 } = inventoryApi;
