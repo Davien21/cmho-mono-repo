@@ -8,9 +8,9 @@ import { Label } from "../ui/label";
 import { InventoryItem } from "@/types/inventory";
 import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
 import {
-  useCreateStockEntryMutation,
+  useCreateStockMovementMutation,
   useGetInventoryItemsQuery,
-  useGetStockEntriesQuery,
+  useGetStockMovementQuery,
 } from "@/store/inventory-slice";
 import { toast } from "sonner";
 import { InventorySupplierSelect } from "@/components/InventorySupplierSelect";
@@ -107,9 +107,9 @@ export function AddStockModal({
   const [supplierId, setSupplierId] = useState<string | null>(null);
   const [supplierName, setSupplierName] = useState<string | null>(null);
   const { refetch: refetchItems } = useGetInventoryItemsQuery();
-  const { refetch: refetchStockEntries } = useGetStockEntriesQuery();
-  const [createStockEntry, { isLoading: isCreatingStockEntry }] =
-    useCreateStockEntryMutation();
+  const { refetch: refetchStockMovement } = useGetStockMovementQuery();
+  const [createStockMovement, { isLoading: isCreatingStockMovement }] =
+    useCreateStockMovementMutation();
 
   const getInitialQuantity = useCallback((): QuantityInput[] => {
     if (!inventoryItem) return [];
@@ -217,9 +217,9 @@ export function AddStockModal({
         expiryDate: expiryDate,
       };
 
-      await createStockEntry(payload).unwrap();
+      await createStockMovement(payload).unwrap();
 
-      await Promise.all([refetchItems(), refetchStockEntries()]);
+      await Promise.all([refetchItems(), refetchStockMovement()]);
 
       toast.success("Stock added successfully");
       onOpenChange(false);
@@ -378,9 +378,9 @@ export function AddStockModal({
                 type="submit"
                 className="bg-gray-900 hover:bg-gray-800"
                 size={isMobile ? "lg" : "default"}
-                disabled={isCreatingStockEntry || isFormSubmitting}
+                disabled={isCreatingStockMovement || isFormSubmitting}
               >
-                {isCreatingStockEntry || isFormSubmitting
+                {isCreatingStockMovement || isFormSubmitting
                   ? "Adding..."
                   : "Add Stock"}
               </Button>

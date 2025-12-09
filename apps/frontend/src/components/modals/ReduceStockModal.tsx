@@ -6,9 +6,9 @@ import { Button } from "../ui/button";
 import { InventoryItem } from "@/types/inventory";
 import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
 import {
-  useCreateStockEntryMutation,
+  useCreateStockMovementMutation,
   useGetInventoryItemsQuery,
-  useGetStockEntriesQuery,
+  useGetStockMovementQuery,
 } from "@/store/inventory-slice";
 import { toast } from "sonner";
 import { UnitBasedInput } from "@/components/UnitBasedInput";
@@ -60,9 +60,9 @@ export function ReduceStockModal({
 }: ReduceStockModalProps) {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { refetch: refetchItems } = useGetInventoryItemsQuery();
-  const { refetch: refetchStockEntries } = useGetStockEntriesQuery();
-  const [createStockEntry, { isLoading: isCreatingStockEntry }] =
-    useCreateStockEntryMutation();
+  const { refetch: refetchStockMovement } = useGetStockMovementQuery();
+  const [createStockMovement, { isLoading: isCreatingStockMovement }] =
+    useCreateStockMovementMutation();
 
   const getInitialQuantity = useCallback((): QuantityInput[] => {
     if (!inventoryItem) return [];
@@ -158,9 +158,9 @@ export function ReduceStockModal({
         ),
       };
 
-      await createStockEntry(payload).unwrap();
+      await createStockMovement(payload).unwrap();
 
-      await Promise.all([refetchItems(), refetchStockEntries()]);
+      await Promise.all([refetchItems(), refetchStockMovement()]);
 
       toast.success("Stock reduced successfully");
       onOpenChange(false);
@@ -265,9 +265,9 @@ export function ReduceStockModal({
                 type="submit"
                 className="bg-gray-900 hover:bg-gray-800"
                 size={isMobile ? "lg" : "default"}
-                disabled={isCreatingStockEntry || isFormSubmitting}
+                disabled={isCreatingStockMovement || isFormSubmitting}
               >
-                {isCreatingStockEntry || isFormSubmitting
+                {isCreatingStockMovement || isFormSubmitting
                   ? "Reducing..."
                   : "Reduce Stock"}
               </Button>
