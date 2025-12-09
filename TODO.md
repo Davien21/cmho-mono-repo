@@ -2,22 +2,6 @@
 
 ## UI/UX Improvements
 
-- **Current state**: Expiry date is stored and input as a full date (day, month, year)
-- **Goal**: Change expiry date to only require month and year (no day selection)
-- **Implementation requirements**:
-  - [ ] Update frontend expiry date input in UpdateStockModal to use month/year picker (not full date)
-  - [ ] Update backend schema/validators to accept month/year format (store as first day of month or use month/year fields)
-  - [ ] Update stock entries model to handle month/year expiry dates
-  - [ ] Update inventory items model if earliestExpiryDate needs to be month/year
-  - [ ] Ensure date comparisons and logic work correctly with month/year format
-  - [ ] Update any display components showing expiry dates to format as "MM/YYYY" or "Month YYYY"
-- **Files to update**:
-  - `apps/frontend/src/components/modals/UpdateStockModal.tsx` - Change date input to month/year picker
-  - `apps/backend/src/modules/stock-entries/stock-entries.validators.ts` - Update validation schema
-  - `apps/backend/src/modules/stock-entries/stock-entries.model.ts` - Consider schema changes if needed
-  - `apps/backend/src/modules/stock-entries/stock-entries.service.ts` - Update date comparison logic
-  - `apps/backend/src/modules/inventory-items/inventory-items.model.ts` - Update earliestExpiryDate handling
-
 1. **Align vertical spacing and style between inventory and stock modals**
 
    - [ ] Review spacing in AddInventoryModal, EditInventoryModal, and UpdateStockModal
@@ -69,17 +53,7 @@
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
 
-5. **Fix unit and categories edit mode**
-
-- Currently, units and categories use inline editing (forms appear directly in the list)
-- This may have UX issues or inconsistencies compared to the supplier edit mode (which uses a modal)
-- [ ] Review current inline edit implementation in UnitsSection and CategoriesSection
-- [ ] Compare with supplier edit mode (modal-based) to determine best approach
-- [ ] Fix any issues with the edit mode (validation, error handling, UX, etc.)
-- [ ] Consider consistency: Should all three (units, categories, suppliers) use the same edit pattern?
-- [ ] Test edit functionality thoroughly
-
-8. **Migrate inventory modals to use context-based approach**
+5. **Migrate inventory modals to use context-based approach**
 
 - **Current state**: Inventory modals (AddInventoryModal, EditInventoryModal, UpdateStockModal) use props-based approach with local state management in InventoryPage
 - **Goal**: Migrate to context-based modal system (like admin/employee modals) for consistency and better code organization
@@ -112,18 +86,6 @@
 - [ ] Ensure the select dropdown content also adjusts appropriately
 - [ ] Test with various unit name lengths to ensure proper display
 - [ ] Update both root unit and nested unit dropdowns in UnitGroupingBuilder
-
-9. **Ensure category presets are prefilled when adding inventory items**
-
-- When a user selects a category in AddInventoryModal, the category's unit presets (packaging structure) should be automatically prefilled in the UnitGroupingBuilder
-- **Current state**: There is a useEffect that handles category changes, but it may not work correctly in all scenarios (e.g., when modal first opens, when categories load asynchronously, when switching between categories)
-- [ ] Verify that category presets are properly prefilled when category is selected in AddInventoryModal
-- [ ] Ensure presets are loaded correctly when modal first opens with a default category
-- [ ] Handle edge cases: categories loading asynchronously, switching between categories, categories without presets
-- [ ] Ensure initialUnits state is properly set when category presets are loaded
-- [ ] Test with categories that have unitPresets vs categories that use unitPresetIds
-- [ ] Verify that canBeSold checkbox is also prefilled from category settings
-- [ ] Ensure lowStockValue is properly initialized when presets are loaded
 
 10. **Make input in UnitBasedInput expand based on content**
 
@@ -362,29 +324,6 @@
   - `apps/backend/src/modules/activity-tracking/activity-tracking.service.ts` - Update method signature to use typed metadata
   - `apps/backend/src/modules/activity-tracking/activity-tracking.model.ts` - Update model if needed
   - All controllers that call `trackActivity` - Update to use typed metadata structures
-
-7. **Rename stock-entries to stock-movement everywhere**
-
-- **Current state**: The codebase uses "stock-entries" as the naming convention for stock movement/transaction records
-- **Goal**: Rename all references from "stock-entries" to "stock-movement" for better clarity and consistency
-- **Implementation requirements**:
-  - [ ] Rename backend module directory: `apps/backend/src/modules/stock-entries/` → `apps/backend/src/modules/stock-movement/`
-  - [ ] Rename all backend files in the module (controller, service, model, router, validators, types)
-  - [ ] Update all imports and references to stock-entries in backend code
-  - [ ] Update API routes/endpoints that use "stock-entries" to use "stock-movement"
-  - [ ] Update frontend API calls and endpoints that reference "stock-entries"
-  - [ ] Update frontend store/slice: `apps/frontend/src/store/transactions-slice.ts` (if it references stock-entries)
-  - [ ] Update any frontend components that reference stock-entries
-  - [ ] Update database model names if applicable
-  - [ ] Update any documentation or comments that reference stock-entries
-  - [ ] Search codebase for all occurrences of "stock-entries" and "stockEntries" (camelCase) and update to "stock-movement" and "stockMovement"
-  - [ ] Ensure no broken references after renaming
-- **Files to update**:
-  - Backend module directory and all files within: `apps/backend/src/modules/stock-entries/`
-  - Backend route configuration: `apps/backend/src/config/routes.ts`
-  - Frontend API slice/store files that reference stock-entries
-  - Frontend components that use stock-entries endpoints
-  - Any other files that import or reference stock-entries
 
 ## Documentation
 
