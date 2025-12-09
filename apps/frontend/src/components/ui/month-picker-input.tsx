@@ -75,14 +75,17 @@ export function MonthPickerInput({
     };
   }, []);
 
+  const [open, setOpen] = React.useState(false);
+
   const handleSelect = (selectedMonth: Date) => {
     setMonth(selectedMonth);
     onChange?.(selectedMonth);
+    setOpen(false); // Close popover when month is selected
   };
 
   return (
     <div ref={wrapperRef} className="w-full">
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             id={id}
