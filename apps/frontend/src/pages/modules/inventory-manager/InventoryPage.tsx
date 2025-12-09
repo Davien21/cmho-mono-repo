@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
@@ -17,6 +17,7 @@ import {
 import { useModalContext } from "@/contexts/modal-context";
 import { toast } from "sonner";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function InventoryPage() {
   const [searchParams] = useSearchParams();
@@ -25,9 +26,43 @@ export default function InventoryPage() {
     | "lowStock"
     | "inStock"
     | null;
-  const { data, isLoading } = useGetInventoryItemsQuery(
-    filter ? { stockFilter: filter } : undefined
-  );
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
+  const previousSearchRef = useRef<string | undefined>(undefined);
+  const isSearchingRef = useRef(false);
+
+  const queryParams = useMemo(() => {
+    const params: {
+      stockFilter?: "outOfStock" | "lowStock" | "inStock";
+      search?: string;
+    } = {};
+    if (filter) {
+      params.stockFilter = filter;
+    }
+    if (debouncedSearch.trim()) {
+      params.search = debouncedSearch.trim();
+    }
+    // Always return an object to ensure consistent caching
+    return params;
+  }, [filter, debouncedSearch]);
+
+  const { data, isLoading, isFetching } =
+    useGetInventoryItemsQuery(queryParams);
+
+  // Reset search flag when fetch completes
+  useEffect(() => {
+    if (!isFetching && isSearchingRef.current) {
+      isSearchingRef.current = false;
+    }
+  }, [isFetching]);
+
+  // Track search changes
+  useEffect(() => {
+    if (previousSearchRef.current !== debouncedSearch) {
+      previousSearchRef.current = debouncedSearch;
+      isSearchingRef.current = true;
+    }
+  }, [debouncedSearch]);
   const [deleteInventoryItem] = useDeleteInventoryItemMutation();
   const { openModal, closeModal } = useModalContext();
 
@@ -141,6 +176,9 @@ export default function InventoryPage() {
         ) : (
           <InventoryList
             items={items}
+            search={search}
+            onSearchChange={setSearch}
+            isFetching={isFetching && isSearchingRef.current}
             onAddStock={handleAddStock}
             onReduceStock={handleReduceStock}
             onEdit={handleEdit}

@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
-import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { UnitLevel } from "@/types/inventory";
 import { formatUnitName } from "@/lib/utils";
@@ -16,6 +15,66 @@ interface UnitBasedInputProps<T extends FieldValues> {
   units: UnitLevel[];
   label?: string;
   error?: string;
+}
+
+interface QuantityInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  displayName: string;
+  showPlus: boolean;
+}
+
+function QuantityInput({
+  value,
+  onChange,
+  displayName,
+  showPlus,
+}: QuantityInputProps) {
+  // Calculate width based on character count
+  // Base width: 30px for 1 character
+  // Each additional character (from 2nd onwards): +20px
+  // Max 4 characters
+  const getWidth = () => {
+    const charCount = value ? value.length : 0;
+    const baseWidth = 40; // Starting width
+
+    if (charCount <= 1) return baseWidth;
+
+    const extraChars = Math.min(charCount - 1, 3); // Max 3 extra chars (2nd, 3rd, 4th)
+    const baseIncrement = extraChars * 8;
+    // Add extra 2px for the 4th character
+    const extraIncrement = charCount >= 4 ? 2 : 0;
+    return baseWidth + baseIncrement + extraIncrement;
+  };
+
+  const width = getWidth();
+
+  return (
+    <div className="flex items-center gap-3">
+      {showPlus && (
+        <span className="text-sm text-muted-foreground font-medium flex-shrink-0">
+          +
+        </span>
+      )}
+
+      <div className="flex items-center bg-neutral-100 rounded-md">
+        <input
+          type="tel"
+          step="1"
+          min="0"
+          placeholder="-"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          autoComplete="off"
+          style={{ width: `${width}px` }}
+          className="text-sm border-0 bg-transparent py-1.5 pl-3 pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none transition-all outline-none"
+        />
+        <span className="text-sm pr-3 text-foreground font-medium">
+          {displayName}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 export function UnitBasedInput<T extends FieldValues>({
@@ -118,31 +177,13 @@ export function UnitBasedInput<T extends FieldValues>({
                   const displayName = formatUnitName(unit, inputValue || "0");
 
                   return (
-                    <div key={unit.id} className="flex items-center gap-3">
-                      {idx > 0 && (
-                        <span className="text-sm text-muted-foreground font-medium flex-shrink-0">
-                          +
-                        </span>
-                      )}
-
-                      <div className="flex items-center bg-neutral-100 rounded-md">
-                        <Input
-                          type="number"
-                          step="1"
-                          min="0"
-                          placeholder="-"
-                          value={inputValue}
-                          onChange={(e) =>
-                            updateQuantityInput(unit.id, e.target.value)
-                          }
-                          autoComplete="off"
-                          className="w-14 text-sm border-0 bg-transparent py-1.5 pl-3 pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
-                        />
-                        <span className="text-sm pr-3 text-foreground font-medium">
-                          {displayName}
-                        </span>
-                      </div>
-                    </div>
+                    <QuantityInput
+                      key={unit.id}
+                      value={inputValue}
+                      onChange={(value) => updateQuantityInput(unit.id, value)}
+                      displayName={displayName}
+                      showPlus={idx > 0}
+                    />
                   );
                 })}
               </div>

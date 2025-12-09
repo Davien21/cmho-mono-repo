@@ -27,7 +27,18 @@ class InventoryItemsService {
     const filter: Record<string, any> = { isDeleted: { $ne: true } };
     if (status) filter.status = status;
     if (category) filter.category = category;
-    if (search) filter.name = { $regex: search, $options: "i" };
+    if (search) {
+      // If category is already filtered, only search by name
+      // Otherwise, search by name OR category
+      if (category) {
+        filter.name = { $regex: search, $options: "i" };
+      } else {
+        filter.$or = [
+          { name: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+        ];
+      }
+    }
 
     // Use aggregation to calculate earliest expiry date dynamically from stock entries
     const items = await InventoryItem.aggregate([

@@ -5,7 +5,8 @@ import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
 import { StockEntry, UnitLevel } from "@/types/inventory";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
 import {
@@ -50,8 +51,11 @@ export default function StockMovementPage() {
   const [selectedRow, setSelectedRow] = useState<StockChangeRow | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const previousFilterItemIdRef = useRef<string | null>(null);
+  const previousSearchRef = useRef<string | undefined>(undefined);
+  const isSearchingRef = useRef(false);
 
   const filterItemId = searchParams.get("itemId");
+  const debouncedSearch = useDebounce(search, 300);
 
   const { data: itemsResponse } = useGetInventoryItemsQuery();
   const {
@@ -64,6 +68,7 @@ export default function StockMovementPage() {
     loadMoreRef,
     inventoryItemId: filterItemId || undefined,
     sort: "desc",
+    search: debouncedSearch.trim() || undefined,
   });
 
   const items = useMemo(() => {
@@ -106,6 +111,21 @@ export default function StockMovementPage() {
     }
   }, [filteredItem, filterItemId, searchInitialized]);
 
+  // Reset search flag when fetch completes
+  useEffect(() => {
+    if (!isFetching && isSearchingRef.current) {
+      isSearchingRef.current = false;
+    }
+  }, [isFetching]);
+
+  // Track search changes
+  useEffect(() => {
+    if (previousSearchRef.current !== debouncedSearch) {
+      previousSearchRef.current = debouncedSearch;
+      isSearchingRef.current = true;
+    }
+  }, [debouncedSearch]);
+
   // Track filter changes
   useEffect(() => {
     if (previousFilterItemIdRef.current !== filterItemId) {
@@ -147,16 +167,8 @@ export default function StockMovementPage() {
     );
   }, [items, allStockMovements]);
 
-  const filteredRows: StockChangeRow[] = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    if (!term) return rows;
-    return rows.filter((row) => {
-      const haystack = `${row.itemName} ${
-        row.performedBy || ""
-      } ${formatDateTime(row.createdAt)}`.toLowerCase();
-      return haystack.includes(term);
-    });
-  }, [rows, search]);
+  // No client-side filtering needed - search is handled by API
+  const filteredRows = rows;
 
   return (
     <Layout>
@@ -177,9 +189,12 @@ export default function StockMovementPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by item or operator..."
-            className="pl-8"
+            placeholder="Search by item name or operator..."
+            className="pl-8 pr-8"
           />
+          {(isLoading || (isFetching && isSearchingRef.current)) && (
+            <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+          )}
         </div>
 
         {isLoading ? (
@@ -188,23 +203,17 @@ export default function StockMovementPage() {
               Loading stock movement...
             </p>
           </Card>
-        ) : rows.length === 0 ? (
+        ) : rows.length === 0 && !isFetching ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <p className="text-base font-medium text-foreground">
-              No stock movement yet
+              {debouncedSearch
+                ? `No stock movement found for "${debouncedSearch}"`
+                : "No stock movement yet"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Use the inventory actions to add or reduce stock.
-            </p>
-          </Card>
-        ) : filteredRows.length === 0 ? (
-          <Card className="p-8 flex flex-col items-center justify-center text-center">
-            <p className="text-base font-medium text-foreground">
-              Sorry, we could not find any stock movement for{" "}
-              <span className="font-semibold">"{search}"</span>
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Try searching for something else
+              {debouncedSearch
+                ? "Try adjusting your search terms"
+                : "Use the inventory actions to add or reduce stock."}
             </p>
           </Card>
         ) : (

@@ -28,8 +28,7 @@ export function BorderedOptions({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          size="icon"
-          className={`h-9 w-9 sm:h-8 sm:w-8 border-gray-300 hover:bg-gray-50 ${className || ""}`}
+          className={`h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50 ${className || ""}`}
         >
           <MoreHorizontal className="h-4 w-4" />
         </Button>

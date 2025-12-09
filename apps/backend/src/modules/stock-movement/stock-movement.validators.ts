@@ -9,6 +9,7 @@ export const getStockMovementSchema = paginationQuerySchema.shape({
     .optional()
     .oneOf(["add", "reduce"])
     .label("Operation type"),
+  search: yup.string().optional().label("Search query"),
 });
 
 export type GetStockMovementQuerySchema = yup.InferType<
@@ -118,4 +119,3 @@ export const reduceStockSchema = yup
       .label("Quantity in base units"),
   })
   .required();
-

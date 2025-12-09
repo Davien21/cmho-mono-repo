@@ -9,12 +9,15 @@ import {
   formatDate,
 } from "@/lib/utils";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   useMultiplePaymentsMutation,
   useSinglePaymentMutation,
 } from "@/store/transfers-slice";
+import { BorderedOptions } from "@/components/BorderedOptions";
+import {
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface EmployeesTableProps {
   employees: IEmployee[];
@@ -208,27 +211,29 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEditEmployee(employee);
-                    }}
-                    className="flex-1 p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center gap-1"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openPaymentConfirmation(employee);
-                    }}
-                    className="flex-1 px-3 py-2 bg-green-100 text-green-700 hover:bg-green-200 rounded-lg transition-colors flex items-center justify-center gap-1"
-                  >
-                    <DollarSign className="w-4 h-4" />
-                    Pay
-                  </button>
+                <div className="flex justify-end">
+                  <BorderedOptions>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditEmployee(employee);
+                      }}
+                      className="text-base sm:text-sm py-2.5 sm:py-2"
+                    >
+                      <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openPaymentConfirmation(employee);
+                      }}
+                      className="text-base sm:text-sm py-2.5 sm:py-2"
+                    >
+                      <DollarSign className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                      Pay
+                    </DropdownMenuItem>
+                  </BorderedOptions>
                 </div>
               </div>
             ))}
@@ -311,27 +316,29 @@ export function EmployeesTable({ employees }: EmployeesTableProps) {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditEmployee(employee);
-                        }}
-                        className="bg-transparent shadow-none p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Edit employee"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openPaymentConfirmation(employee);
-                        }}
-                        className="bg-green-100 shadow-none p-2 text-green-700 hover:text-green-800 hover:bg-green-200 rounded-lg transition-colors"
-                      >
-                        <DollarSign className="w-4 h-4" />
-                        Pay
-                      </Button>
+                    <div className="flex justify-end">
+                      <BorderedOptions>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditEmployee(employee);
+                          }}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openPaymentConfirmation(employee);
+                          }}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <DollarSign className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Pay
+                        </DropdownMenuItem>
+                      </BorderedOptions>
                     </div>
                   </td>
                 </tr>

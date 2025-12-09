@@ -87,6 +87,21 @@ export function UnitGroupingBuilder({
     onChange(units.filter((u) => u.id !== id));
   };
 
+  // Calculate width based on character count (same logic as UnitBasedInput)
+  const getInputWidth = (value: number | undefined) => {
+    const valueStr = value?.toString() || "";
+    const charCount = valueStr.length;
+    const baseWidth = 26; // Starting width
+
+    if (charCount <= 1) return baseWidth;
+
+    const extraChars = Math.min(charCount - 1, 3); // Max 3 extra chars (2nd, 3rd, 4th)
+    const baseIncrement = extraChars * 8;
+    // Add extra 2px for the 4th character
+    const extraIncrement = charCount >= 4 ? 2 : 0;
+    return baseWidth + baseIncrement + extraIncrement;
+  };
+
   // Units are already in the correct order in the array
   const sortedUnits = units;
 
@@ -160,6 +175,8 @@ export function UnitGroupingBuilder({
                         <div className="flex items-center bg-neutral-100 rounded-md">
                           <input
                             type="tel"
+                            step="1"
+                            min="0"
                             value={unit.quantity ?? ""}
                             onChange={(e) => {
                               const value = e.target.value;
@@ -176,7 +193,10 @@ export function UnitGroupingBuilder({
                             }}
                             placeholder="-"
                             autoComplete="off"
-                            className="w-8 text-sm border-0 bg-transparent py-1.5 pl-3 pr-1 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
+                            style={{
+                              width: `${getInputWidth(unit.quantity)}px`,
+                            }}
+                            className="text-sm border-0 bg-transparent py-1.5 pl-3 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none transition-all outline-none"
                           />
 
                           <span className="text-muted-foreground mx-1.5 text-sm">

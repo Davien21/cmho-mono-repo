@@ -87,16 +87,6 @@
 - [ ] Test with various unit name lengths to ensure proper display
 - [ ] Update both root unit and nested unit dropdowns in UnitGroupingBuilder
 
-10. **Make input in UnitBasedInput expand based on content**
-
-- Currently, the number input in UnitBasedInput has a fixed width (`w-14` = 56px)
-- This can cause issues with longer numbers being truncated or having too much empty space for shorter numbers
-- [ ] Update the Input component in UnitBasedInput to dynamically adjust width based on content
-- [ ] Consider using `min-w-fit` or `w-auto` with appropriate min/max width constraints
-- [ ] Ensure the input expands smoothly as user types longer numbers
-- [ ] Test with various number lengths to ensure proper display
-- [ ] Maintain proper alignment with the unit label text
-
 11. **Show all suppliers of an inventory item as an option in inventory item actions**
 
 - Add a new action option in the inventory item actions dropdown menu to view all suppliers associated with an inventory item

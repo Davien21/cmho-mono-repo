@@ -202,6 +202,7 @@ export interface IGetStockMovementQuery {
   page?: number;
   limit?: number;
   sort?: "asc" | "desc";
+  search?: string;
 }
 
 export interface IStockMovementResponse {
@@ -366,15 +367,21 @@ export const inventoryApi = baseApi.injectEndpoints({
 
     getInventoryItems: builder.query<
       IAPIResponse<IInventoryItemDto[]>,
-      { stockFilter?: "outOfStock" | "lowStock" | "inStock" } | void
+      {
+        stockFilter?: "outOfStock" | "lowStock" | "inStock";
+        search?: string;
+        category?: string;
+      }
     >({
-      query: (params) => ({
+      query: (params = {}) => ({
         url: "/inventory/items",
         method: "GET",
         params: {
           sort: "desc",
           limit: 100,
-          ...(params?.stockFilter && { stockFilter: params.stockFilter }),
+          ...(params.stockFilter && { stockFilter: params.stockFilter }),
+          ...(params.search && { search: params.search }),
+          ...(params.category && { category: params.category }),
         },
       }),
       providesTags: [TagTypes.INVENTORY_ITEMS],

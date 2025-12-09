@@ -17,6 +17,7 @@ export async function getStockMovement(
     page = "1",
     inventoryItemId,
     operationType,
+    search,
   } = req.query;
 
   const result = await stockMovementService.list({
@@ -25,6 +26,7 @@ export async function getStockMovement(
     page: parseInt(page),
     inventoryItemId,
     operationType,
+    search,
   });
 
   // Return entries as-is (performerName is already in the model)

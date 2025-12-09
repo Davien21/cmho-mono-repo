@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { Edit2, MoreVertical, Shield, ShieldOff, Crown } from "lucide-react";
+import { Edit2, ShieldOff, Crown } from "lucide-react";
 import { IAdmin } from "../../types";
 import { useModalContext } from "@/contexts/modal-context";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { BorderedOptions } from "@/components/BorderedOptions";
+import {
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface AdminsTableProps {
   admins: IAdmin[];
@@ -86,28 +83,21 @@ export function AdminsTable({ admins }: AdminsTableProps) {
                     </p>
                   </div>
                   <div className="flex-shrink-0 ml-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditAdmin(admin)}>
-                          <Edit2 className="mr-2 h-4 w-4" />
-                          Edit
+                    <BorderedOptions>
+                      <DropdownMenuItem onClick={() => handleEditAdmin(admin)} className="text-base sm:text-sm py-2.5 sm:py-2">
+                        <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      {admin.status === "active" && (
+                        <DropdownMenuItem
+                          onClick={() => handleDisableAdmin(admin)}
+                          className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <ShieldOff className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Disable
                         </DropdownMenuItem>
-                        {admin.status === "active" && (
-                          <DropdownMenuItem
-                            onClick={() => handleDisableAdmin(admin)}
-                            className="text-red-600 focus:text-red-600"
-                          >
-                            <ShieldOff className="mr-2 h-4 w-4" />
-                            Disable
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      )}
+                    </BorderedOptions>
                   </div>
                 </div>
               </div>
@@ -163,28 +153,21 @@ export function AdminsTable({ admins }: AdminsTableProps) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEditAdmin(admin)}>
-                            <Edit2 className="mr-2 h-4 w-4" />
-                            Edit
+                      <BorderedOptions>
+                        <DropdownMenuItem onClick={() => handleEditAdmin(admin)} className="text-base sm:text-sm py-2.5 sm:py-2">
+                          <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        {admin.status === "active" && (
+                          <DropdownMenuItem
+                            onClick={() => handleDisableAdmin(admin)}
+                            className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <ShieldOff className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                            Disable
                           </DropdownMenuItem>
-                          {admin.status === "active" && (
-                            <DropdownMenuItem
-                              onClick={() => handleDisableAdmin(admin)}
-                              className="text-red-600 focus:text-red-600"
-                            >
-                              <ShieldOff className="mr-2 h-4 w-4" />
-                              Disable
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                        )}
+                      </BorderedOptions>
                     </div>
                   </td>
                 </tr>

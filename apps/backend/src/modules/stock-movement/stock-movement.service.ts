@@ -50,12 +50,14 @@ class StockMovementService {
     page = 1,
     inventoryItemId,
     operationType,
+    search,
   }: {
     sort?: 1 | -1;
     limit?: number;
     page?: number;
     inventoryItemId?: string;
     operationType?: string;
+    search?: string;
   }): Promise<{
     data: IStockMovement[];
     total: number;
@@ -64,13 +66,79 @@ class StockMovementService {
   }> {
     const skip = (page - 1) * limit;
 
-    const filter: Record<string, any> = {};
-    if (inventoryItemId) filter.inventoryItemId = inventoryItemId;
-    if (operationType) filter.operationType = operationType;
+    // Build base filter
+    const baseFilter: Record<string, any> = {};
+    if (inventoryItemId) baseFilter.inventoryItemId = inventoryItemId;
+    if (operationType) baseFilter.operationType = operationType;
 
+    // If search is provided, use aggregation with $lookup to search by item name or performer name
+    if (search) {
+      const pipeline: any[] = [
+        { $match: baseFilter },
+        {
+          $lookup: {
+            from: "inventory_items",
+            localField: "inventoryItemId",
+            foreignField: "_id",
+            as: "inventoryItem",
+          },
+        },
+        {
+          $unwind: {
+            path: "$inventoryItem",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+      ];
+
+      // Add search filter
+      const searchFilter: any[] = [];
+      if (search) {
+        searchFilter.push(
+          { "inventoryItem.name": { $regex: search, $options: "i" } },
+          { performerName: { $regex: search, $options: "i" } }
+        );
+      }
+      if (searchFilter.length > 0) {
+        pipeline.push({ $match: { $or: searchFilter } });
+      }
+
+      // Get total count
+      const countPipeline = [...pipeline, { $count: "total" }];
+      const countResult = await StockMovement.aggregate(countPipeline);
+      const total = countResult[0]?.total || 0;
+
+      // Add sorting, skip, and limit
+      pipeline.push(
+        { $sort: { _id: sort } },
+        { $skip: skip },
+        { $limit: limit }
+      );
+
+      // Remove inventoryItem from output (we don't need it in the response)
+      pipeline.push({
+        $project: {
+          inventoryItem: 0,
+        },
+      });
+
+      const data = await StockMovement.aggregate(pipeline);
+
+      return {
+        data: data as IStockMovement[],
+        total,
+        page,
+        limit,
+      };
+    }
+
+    // If no search, use simple find query
     const [data, total] = await Promise.all([
-      StockMovement.find(filter).sort({ _id: sort }).limit(limit).skip(skip),
-      StockMovement.countDocuments(filter),
+      StockMovement.find(baseFilter)
+        .sort({ _id: sort })
+        .limit(limit)
+        .skip(skip),
+      StockMovement.countDocuments(baseFilter),
     ]);
 
     return {
@@ -235,4 +303,3 @@ class StockMovementService {
 const stockMovementService = new StockMovementService();
 
 export default stockMovementService;
-

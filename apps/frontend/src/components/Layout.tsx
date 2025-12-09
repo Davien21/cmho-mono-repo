@@ -67,6 +67,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       return baseCrumbs;
     }
 
+    // Special handling for inventory items page with filter query parameter
+    if (pathname === "/inventory/items") {
+      const filter = searchParams.get("filter");
+      const baseCrumbs: BreadcrumbItem[] = [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Items", url: "/inventory/items" },
+      ];
+
+      if (filter === "outOfStock") {
+        baseCrumbs.push({ label: "Out Of Stock", url: null });
+      } else if (filter === "lowStock") {
+        baseCrumbs.push({ label: "Low Stock", url: null });
+      } else if (filter === "inStock") {
+        baseCrumbs.push({ label: "In Stock", url: null });
+      }
+
+      return baseCrumbs;
+    }
+
     // Check all navigation items from both nav groups
     const allNavItems = [
       ...navigationConfig.salaryNav,

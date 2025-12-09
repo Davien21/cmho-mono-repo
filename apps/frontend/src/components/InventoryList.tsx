@@ -9,6 +9,7 @@ import {
   PackageOpen,
   Plus,
   Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -26,6 +27,9 @@ import { BorderedOptions } from "@/components/BorderedOptions";
 
 interface InventoryListProps {
   items: InventoryItem[];
+  search?: string;
+  onSearchChange?: (search: string) => void;
+  isFetching?: boolean;
   onAddStock: (item: InventoryItem) => void;
   onReduceStock: (item: InventoryItem) => void;
   onEdit: (item: InventoryItem) => void;
@@ -41,6 +45,9 @@ type DisplayMode = "full" | "skipOne" | "baseOnly";
 
 export function InventoryList({
   items,
+  search = "",
+  onSearchChange,
+  isFetching = false,
   onAddStock,
   onReduceStock,
   onEdit,
@@ -51,18 +58,10 @@ export function InventoryList({
   onEditImage,
   onPreviewImage,
 }: InventoryListProps) {
-  const [search, setSearch] = useState("");
   // Track display mode per item
   const [displayModes, setDisplayModes] = useState<Map<string, DisplayMode>>(
     new Map()
   );
-
-  const filteredItems = items.filter((item) => {
-    const matchesSearch = item.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    return matchesSearch;
-  });
 
   const getTotalStock = (item: InventoryItem): number => {
     return item.currentStockInBaseUnits ?? 0;
@@ -237,11 +236,14 @@ export function InventoryList({
         <div className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
-            placeholder="Search items..."
+            placeholder="Search items by name or category..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 text-base sm:text-sm h-10 sm:h-9"
+            onChange={(e) => onSearchChange?.(e.target.value)}
+            className="pl-10 pr-10 text-base sm:text-sm h-10 sm:h-9"
           />
+          {isFetching && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-4 sm:w-4 animate-spin text-muted-foreground" />
+          )}
         </div>
         <Button
           onClick={onAddItem}
@@ -252,7 +254,7 @@ export function InventoryList({
         </Button>
       </div>
 
-      {filteredItems.length === 0 ? (
+      {items.length === 0 && !isFetching ? (
         <div className="border rounded-lg p-12">
           <div className="text-center text-muted-foreground">
             <Package className="h-16 w-16 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
@@ -271,7 +273,7 @@ export function InventoryList({
           {/* Mobile Card View */}
           <div className="block sm:hidden">
             <div className="divide-y divide-gray-200">
-              {filteredItems.map((item) => (
+              {items.map((item) => (
                 <div key={item.id} className="p-4">
                   <div className="flex items-start justify-between mb-3 gap-3">
                     {/* Thumbnail */}
@@ -375,7 +377,7 @@ export function InventoryList({
                           className="text-base sm:text-sm py-2.5 sm:py-2"
                         >
                           <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                          Stock Movements
+                          View
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => onEdit(item)}
@@ -425,7 +427,7 @@ export function InventoryList({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredItems.map((item) => (
+                {items.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.image?.url ? (
@@ -524,7 +526,7 @@ export function InventoryList({
                             className="text-base sm:text-sm py-2.5 sm:py-2"
                           >
                             <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                            Stock Movements
+                            View
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => onEdit(item)}
