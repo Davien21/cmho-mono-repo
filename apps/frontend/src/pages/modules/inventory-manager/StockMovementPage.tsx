@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Layout from "@/components/Layout";
@@ -12,8 +12,8 @@ import {
   IInventoryItemDto,
   IStockEntryDto,
   useGetInventoryItemsQuery,
-  useGetStockEntriesQuery,
 } from "@/store/inventory-slice";
+import { useInfiniteStockEntries } from "@/hooks/use-infinite-stock-entries";
 
 type StockChangeRow = StockEntry & {
   itemName: string;
@@ -48,9 +48,23 @@ export default function StockMovementPage() {
   const [search, setSearch] = useState("");
   const [searchInitialized, setSearchInitialized] = useState(false);
   const [selectedRow, setSelectedRow] = useState<StockChangeRow | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const previousFilterItemIdRef = useRef<string | null>(null);
+
+  const filterItemId = searchParams.get("itemId");
 
   const { data: itemsResponse } = useGetInventoryItemsQuery();
-  const { data: stockEntriesResponse } = useGetStockEntriesQuery();
+  const {
+    stockEntries: allStockEntries,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteStockEntries({
+    loadMoreRef,
+    inventoryItemId: filterItemId || undefined,
+    sort: "desc",
+  });
 
   const items = useMemo(() => {
     const dtos: IInventoryItemDto[] = itemsResponse?.data || [];
@@ -73,8 +87,6 @@ export default function StockMovementPage() {
     }));
   }, [itemsResponse]);
 
-  const filterItemId = searchParams.get("itemId");
-
   const filteredItem = useMemo(
     () => items.find((item) => item.id === filterItemId) ?? null,
     [items, filterItemId]
@@ -94,43 +106,46 @@ export default function StockMovementPage() {
     }
   }, [filteredItem, filterItemId, searchInitialized]);
 
+  // Track filter changes
+  useEffect(() => {
+    if (previousFilterItemIdRef.current !== filterItemId) {
+      previousFilterItemIdRef.current = filterItemId;
+    }
+  }, [filterItemId]);
+
   const rows: StockChangeRow[] = useMemo(() => {
     const itemById = new Map<string, { name: string; units: UnitLevel[] }>();
     items.forEach((item) => {
       itemById.set(item.id, { name: item.name, units: item.units || [] });
     });
 
-    const entries: IStockEntryDto[] = stockEntriesResponse?.data || [];
+    const entries: IStockEntryDto[] = allStockEntries;
 
-    const all: StockChangeRow[] = entries
-      .filter(
-        (entry) => !filterItemId || entry.inventoryItemId === filterItemId
-      )
-      .map((entry) => {
-        const meta = itemById.get(entry.inventoryItemId);
-        return {
-          id: entry._id,
-          inventoryItemId: entry.inventoryItemId,
-          operationType: entry.operationType,
-          supplier: entry.supplier?.name ?? null,
-          costPrice: entry.costPrice,
-          sellingPrice: entry.sellingPrice,
-          expiryDate: entry.expiryDate.toString(),
-          quantityInBaseUnits: entry.quantityInBaseUnits,
-          createdAt: entry.createdAt
-            ? entry.createdAt.toString()
-            : new Date().toISOString(),
-          performedBy: entry.createdByName || entry.createdBy || "Admin",
-          itemName: meta?.name ?? "Unknown item",
-          units: meta?.units || [],
-        };
-      });
+    const all: StockChangeRow[] = entries.map((entry) => {
+      const meta = itemById.get(entry.inventoryItemId);
+      return {
+        id: entry._id,
+        inventoryItemId: entry.inventoryItemId,
+        operationType: entry.operationType,
+        supplier: entry.supplier?.name ?? null,
+        costPrice: entry.costPrice,
+        sellingPrice: entry.sellingPrice,
+        expiryDate: entry.expiryDate.toString(),
+        quantityInBaseUnits: entry.quantityInBaseUnits,
+        createdAt: entry.createdAt
+          ? entry.createdAt.toString()
+          : new Date().toISOString(),
+        performedBy: entry.performerName || "Admin",
+        itemName: meta?.name ?? "Unknown item",
+        units: meta?.units || [],
+      };
+    });
 
     return all.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [items, stockEntriesResponse, filterItemId]);
+  }, [items, allStockEntries]);
 
   const filteredRows: StockChangeRow[] = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -167,7 +182,13 @@ export default function StockMovementPage() {
           />
         </div>
 
-        {rows.length === 0 ? (
+        {isLoading ? (
+          <Card className="p-8 flex flex-col items-center justify-center text-center">
+            <p className="text-base font-medium text-foreground">
+              Loading stock movement...
+            </p>
+          </Card>
+        ) : rows.length === 0 ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <p className="text-base font-medium text-foreground">
               No stock movement yet
@@ -187,41 +208,63 @@ export default function StockMovementPage() {
             </p>
           </Card>
         ) : (
-          <div className="space-y-3">
-            {filteredRows.map((row) => (
-              <Card
-                key={row.id}
-                className="bg-white rounded-lg p-4 border border-gray-100 cursor-pointer"
-                onClick={() => setSelectedRow(row)}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="text-sm font-semibold text-gray-900">
-                        {row.itemName}
-                      </span>
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                      >
-                        <StockUpdateBadge
-                          units={row.units}
-                          quantityInBaseUnits={row.quantityInBaseUnits}
-                          operationType={row.operationType}
-                        />
+          <>
+            <div className="space-y-3">
+              {filteredRows.map((row) => (
+                <Card
+                  key={row.id}
+                  className="bg-white rounded-lg p-4 border border-gray-100 cursor-pointer"
+                  onClick={() => setSelectedRow(row)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {row.itemName}
+                        </span>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <StockUpdateBadge
+                            units={row.units}
+                            quantityInBaseUnits={row.quantityInBaseUnits}
+                            operationType={row.operationType}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500">
+                        <span>{formatDateTime(row.createdAt)}</span>
+                        <span>•</span>
+                        <span>by {row.performedBy}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500">
-                      <span>{formatDateTime(row.createdAt)}</span>
-                      <span>•</span>
-                      <span>by {row.performedBy}</span>
-                    </div>
                   </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Loading indicator at bottom for infinite scroll */}
+            {isFetchingNextPage && (
+              <div className="flex justify-center py-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                  Loading more stock movement...
                 </div>
-              </Card>
-            ))}
-          </div>
+              </div>
+            )}
+
+            {/* Intersection observer target - only show when there's more to load */}
+            {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
+
+            {/* End of list indicator - only show when we're done and not fetching */}
+            {!hasNextPage && rows.length > 0 && !isFetching && (
+              <div className="text-center py-4 text-sm text-muted-foreground">
+                No more stock movement to load
+              </div>
+            )}
+          </>
         )}
       </div>
 

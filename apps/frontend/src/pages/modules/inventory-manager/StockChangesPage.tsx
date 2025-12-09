@@ -100,7 +100,7 @@ export default function StockChangesPage() {
       itemById.set(item.id, { name: item.name, units: item.units || [] });
     });
 
-    const entries: IStockEntryDto[] = stockEntriesResponse?.data || [];
+    const entries: IStockEntryDto[] = stockEntriesResponse?.data?.data || [];
 
     const all: StockChangeRow[] = entries
       .filter(
@@ -120,7 +120,7 @@ export default function StockChangesPage() {
           createdAt: entry.createdAt
             ? entry.createdAt.toString()
             : new Date().toISOString(),
-          performedBy: entry.createdByName || entry.createdBy || "Admin",
+          performedBy: entry.performerName || "Admin",
           itemName: meta?.name ?? "Unknown item",
           units: meta?.units || [],
         };

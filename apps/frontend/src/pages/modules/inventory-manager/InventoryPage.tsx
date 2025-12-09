@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
-import { UpdateStockModal } from "@/components/modals/UpdateStockModal";
+import { AddStockModal } from "@/components/modals/AddStockModal";
+import { ReduceStockModal } from "@/components/modals/ReduceStockModal";
 import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
 import { AddInventoryImageModal } from "@/components/modals/AddInventoryImageModal";
 import { ImagePreviewModal } from "@/components/ImagePreviewModal";
@@ -53,7 +54,8 @@ export default function InventoryPage() {
   }, [data]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showStockModal, setShowStockModal] = useState(false);
+  const [showAddStockModal, setShowAddStockModal] = useState(false);
+  const [showReduceStockModal, setShowReduceStockModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageModalMode, setImageModalMode] = useState<"add" | "edit">("add");
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -63,9 +65,14 @@ export default function InventoryPage() {
   } | null>(null);
   const navigate = useNavigate();
 
-  const handleUpdateStock = (item: InventoryItem) => {
+  const handleAddStock = (item: InventoryItem) => {
     setSelectedItem(item);
-    setShowStockModal(true);
+    setShowAddStockModal(true);
+  };
+
+  const handleReduceStock = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setShowReduceStockModal(true);
   };
 
   const handleEdit = (item: InventoryItem) => {
@@ -83,9 +90,10 @@ export default function InventoryPage() {
           await deleteInventoryItem(item.id).unwrap();
           toast.success("Inventory item deleted successfully");
         } catch (error: unknown) {
-          const message =
-            getRTKQueryErrorMessage(error) ||
-            "Failed to delete inventory item. Please try again.";
+          const message = getRTKQueryErrorMessage(
+            error,
+            "Failed to delete inventory item. Please try again."
+          );
           toast.error(message);
         } finally {
           closeModal("confirmation-dialog");
@@ -133,7 +141,8 @@ export default function InventoryPage() {
         ) : (
           <InventoryList
             items={items}
-            onUpdateStock={handleUpdateStock}
+            onAddStock={handleAddStock}
+            onReduceStock={handleReduceStock}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onViewStockEntries={handleViewStockEntries}
@@ -159,11 +168,24 @@ export default function InventoryPage() {
         )}
 
         {selectedItem && (
-          <UpdateStockModal
+          <AddStockModal
             inventoryItem={selectedItem}
-            open={showStockModal}
+            open={showAddStockModal}
             onOpenChange={(open) => {
-              setShowStockModal(open);
+              setShowAddStockModal(open);
+              if (!open) {
+                setSelectedItem(null);
+              }
+            }}
+          />
+        )}
+
+        {selectedItem && (
+          <ReduceStockModal
+            inventoryItem={selectedItem}
+            open={showReduceStockModal}
+            onOpenChange={(open) => {
+              setShowReduceStockModal(open);
               if (!open) {
                 setSelectedItem(null);
               }

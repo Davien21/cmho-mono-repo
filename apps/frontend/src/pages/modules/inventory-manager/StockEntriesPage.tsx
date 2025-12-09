@@ -5,7 +5,7 @@ import { PackageOpen } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { InventoryItem, StockEntry } from "@/types/inventory";
+import { InventoryItem, StockEntry, UnitLevel } from "@/types/inventory";
 import {
   IInventoryItemDto,
   IStockEntryDto,
@@ -13,6 +13,7 @@ import {
   useGetStockEntriesQuery,
 } from "@/store/inventory-slice";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
+import { formatUnitName } from "@/lib/utils";
 
 export default function StockEntriesPage() {
   const { itemId } = useParams<{ itemId: string }>();
@@ -52,7 +53,7 @@ export default function StockEntriesPage() {
   const [selectedEntry, setSelectedEntry] = useState<StockEntry | null>(null);
 
   const sortedEntries: StockEntry[] = useMemo(() => {
-    const entries: IStockEntryDto[] = stockEntriesResponse?.data || [];
+    const entries: IStockEntryDto[] = stockEntriesResponse?.data?.data || [];
     return entries
       .map<StockEntry>((entry) => ({
         id: entry._id,
@@ -63,10 +64,11 @@ export default function StockEntriesPage() {
         sellingPrice: entry.sellingPrice,
         expiryDate: entry.expiryDate.toString(),
         quantityInBaseUnits: entry.quantityInBaseUnits,
+        balance: entry.balance,
         createdAt: entry.createdAt
           ? entry.createdAt.toString()
           : new Date().toISOString(),
-        performedBy: entry.createdByName || entry.createdBy || "Admin",
+        performedBy: entry.performerName || "Admin",
       }))
       .sort(
         (a, b) =>
@@ -269,6 +271,14 @@ export default function StockEntriesPage() {
                   {formatExpiryDate(selectedEntry.expiryDate)}
                 </span>
               </div>
+              {selectedEntry.balance !== undefined && (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Balance After</span>
+                  <span className="font-medium">
+                    {formatBalance(selectedEntry.balance, item.units || [])}
+                  </span>
+                </div>
+              )}
             </div>
           </Card>
         </div>
@@ -298,4 +308,50 @@ const formatExpiryDate = (dateString: string | null) => {
     month: "short",
     year: "numeric",
   });
+};
+
+const formatBalance = (balance: number, units: UnitLevel[]): string => {
+  if (units.length === 0) {
+    return `${balance} units`;
+  }
+
+  const baseUnit = units[units.length - 1];
+  const unitMultipliers = new Map<string, number>();
+
+  units.forEach((unit, unitIndex) => {
+    let multiplier = 1;
+    for (let i = unitIndex + 1; i < units.length; i++) {
+      const qty = units[i].quantity;
+      if (qty !== undefined && qty > 0) {
+        multiplier *= qty;
+      }
+    }
+    unitMultipliers.set(unit.id, multiplier);
+  });
+
+  let remaining = balance;
+  const result: { unit: UnitLevel; quantity: number }[] = [];
+
+  units.forEach((unit) => {
+    const multiplier = unitMultipliers.get(unit.id) || 1;
+    if (multiplier > 1) {
+      const quantity = Math.floor(remaining / multiplier);
+      if (quantity > 0) {
+        result.push({ unit, quantity });
+        remaining -= quantity * multiplier;
+      }
+    }
+  });
+
+  if (remaining > 0 && baseUnit) {
+    result.push({ unit: baseUnit, quantity: remaining });
+  }
+
+  if (result.length === 0) {
+    return `0 ${formatUnitName(baseUnit, 0)}`;
+  }
+
+  return result
+    .map((r) => `${r.quantity} ${formatUnitName(r.unit, r.quantity)}`)
+    .join(", ");
 };

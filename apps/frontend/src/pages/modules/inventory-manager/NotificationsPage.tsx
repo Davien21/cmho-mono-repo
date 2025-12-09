@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetNotificationsQuery } from "@/store/notifications-slice";
 import { formatTimeAgo } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
-import { INotificationDto } from "@/store/notifications-slice";
+import { useInfiniteNotifications } from "@/hooks/use-infinite-notifications";
 
 function getNotificationColor(type: string): string {
   if (type === "out_of_stock") return "bg-red-500";
@@ -29,10 +29,8 @@ function getPriorityColor(priority: string): string {
 }
 
 export default function NotificationsPage() {
-  const [page, setPage] = useState(1);
   const [titleFilter, setTitleFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [allNotifications, setAllNotifications] = useState<INotificationDto[]>([]);
   const debouncedSearch = useDebounce(search, 500);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const previousSearchRef = useRef<string | undefined>(undefined);
@@ -52,22 +50,21 @@ export default function NotificationsPage() {
     return Array.from(titles).sort();
   }, [allNotificationsData]);
 
-  const { data, isLoading, isFetching } = useGetNotificationsQuery({
+  const {
+    notifications,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteNotifications({
+    loadMoreRef,
     module: "inventory",
     title: titleFilter && titleFilter !== "all" ? titleFilter : undefined,
     search: debouncedSearch || undefined,
-    limit: 20,
-    page,
     sort: "desc",
   });
 
-  const currentPageNotifications = data?.data?.data || [];
-  const total = data?.data?.total || 0;
-  const limit = data?.data?.limit || 20;
-  const totalPages = Math.ceil(total / limit);
-  const hasNextPage = page < totalPages;
-
-  // Reset page when search or filter changes, but don't clear data yet
+  // Track search/filter changes
   useEffect(() => {
     if (
       previousSearchRef.current !== debouncedSearch ||
@@ -75,54 +72,8 @@ export default function NotificationsPage() {
     ) {
       previousSearchRef.current = debouncedSearch;
       previousTitleFilterRef.current = titleFilter;
-      setPage(1);
     }
   }, [debouncedSearch, titleFilter]);
-
-  // Accumulate notifications as pages load
-  useEffect(() => {
-    if (currentPageNotifications.length > 0) {
-      if (page === 1) {
-        // First page - replace all (this happens when new data arrives after search/filter change)
-        setAllNotifications(currentPageNotifications);
-      } else {
-        // Subsequent pages - append
-        setAllNotifications((prev) => {
-          // Avoid duplicates by checking IDs
-          const existingIds = new Set(prev.map((n) => n._id));
-          const newNotifications = currentPageNotifications.filter(
-            (n) => !existingIds.has(n._id)
-          );
-          return [...prev, ...newNotifications];
-        });
-      }
-    } else if (currentPageNotifications.length === 0 && page === 1 && !isFetching) {
-      // Only clear if we got empty results and we're not fetching
-      setAllNotifications([]);
-    }
-  }, [currentPageNotifications, page, isFetching]);
-
-  // Infinite scroll handler
-  useEffect(() => {
-    if (!hasNextPage || isFetching || isLoading) return;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } =
-        document.documentElement;
-      // Load more when user is within 300px of the bottom
-      if (scrollHeight - scrollTop - clientHeight < 300) {
-        setPage((prev) => {
-          if (prev >= totalPages) return prev;
-          return prev + 1;
-        });
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPage, isFetching, isLoading, totalPages]);
-
-  const notifications = allNotifications;
 
   return (
     <Layout>
@@ -171,10 +122,13 @@ export default function NotificationsPage() {
           </Select>
         </div>
 
-        {isLoading && page === 1 ? (
+        {isLoading ? (
           <Card className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+              <div
+                key={i}
+                className="bg-gray-50 rounded-lg p-4 border border-gray-100"
+              >
                 <div className="flex items-start gap-3">
                   <Skeleton className="w-2 h-2 rounded-full mt-1.5" />
                   <div className="flex-1 space-y-2">
@@ -257,7 +211,7 @@ export default function NotificationsPage() {
             </div>
 
             {/* Loading indicator at bottom for infinite scroll */}
-            {isFetching && page > 1 && (
+            {isFetchingNextPage && (
               <div className="flex justify-center py-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
@@ -266,19 +220,18 @@ export default function NotificationsPage() {
               </div>
             )}
 
+            {/* Intersection observer target - only show when there's more to load */}
+            {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
+
             {/* End of list indicator */}
             {!hasNextPage && notifications.length > 0 && (
               <div className="text-center py-4 text-sm text-muted-foreground">
                 No more notifications to load
               </div>
             )}
-
-            {/* Intersection observer target */}
-            <div ref={loadMoreRef} className="h-1" />
           </>
         )}
       </div>
     </Layout>
   );
 }
-

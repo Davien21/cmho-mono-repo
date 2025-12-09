@@ -136,9 +136,10 @@ export default function InventorySettingsPage() {
       toast.success("Unit added successfully");
       handleCloseAddUnit();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to add unit. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to add unit. Please try again."
+      );
       toast.error(message);
     }
   };
@@ -159,9 +160,10 @@ export default function InventorySettingsPage() {
       toast.success("Category added successfully");
       handleCloseAddCategory();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to add category. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to add category. Please try again."
+      );
       toast.error(message);
     }
   };
@@ -186,9 +188,10 @@ export default function InventorySettingsPage() {
       toast.success("Supplier added successfully");
       handleCloseAddSupplier();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to add supplier. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to add supplier. Please try again."
+      );
       toast.error(message);
     }
   };
@@ -215,9 +218,10 @@ export default function InventorySettingsPage() {
       toast.success("Supplier updated successfully");
       handleCloseEditSupplier();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update supplier. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to update supplier. Please try again."
+      );
       toast.error(message);
     }
   };
