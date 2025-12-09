@@ -6,13 +6,11 @@ import { AdminRole } from "../admins/admins.types";
 import validator from "../../middlewares/validator";
 import {
   addStock,
-  createStockMovement,
   getStockMovement,
   reduceStock,
 } from "./stock-movement.controller";
 import {
   addStockSchema,
-  createStockMovementSchema,
   getStockMovementSchema,
   reduceStockSchema,
 } from "./stock-movement.validators";
@@ -27,18 +25,7 @@ router.get(
   getStockMovement
 );
 
-// Legacy route for backward compatibility
-router.post(
-  "/inventory/stock-movement",
-  [
-    authenticate,
-    hasRole(AdminRole.INVENTORY_MANAGER),
-    validator(createStockMovementSchema),
-  ],
-  createStockMovement
-);
-
-// Separate route for adding stock
+// Route for adding stock
 router.post(
   "/inventory/stock-movement/add",
   [
