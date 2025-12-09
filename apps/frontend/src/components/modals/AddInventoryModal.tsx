@@ -365,7 +365,7 @@ export function AddInventoryModal({
 
               <div className="flex items-center gap-10 mt-4">
                 <Label className="text-base sm:text-sm text-gray-700">
-                  Will this item be sold?
+                  Is this item for sale?
                 </Label>
                 <Controller
                   name="canBeSold"

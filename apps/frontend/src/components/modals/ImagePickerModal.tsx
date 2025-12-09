@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useGetGalleryQuery, IGalleryDto } from "@/store/gallery-slice";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { GalleryCard } from "@/components/GalleryCard";
+import { GalleryCard, getDisplayName } from "@/components/GalleryCard";
 
 interface ImagePickerModalProps {
   open: boolean;

@@ -1,23 +1,21 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import * as yup from "yup";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { InventoryItem } from "@/types/inventory";
-import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
+import { getRTKQueryErrorMessage } from "@/lib/utils";
 import {
   useAddStockMutation,
   useGetInventoryItemsQuery,
   useGetStockMovementQuery,
 } from "@/store/inventory-slice";
 import { toast } from "sonner";
-import { InventorySupplierSelect } from "@/components/InventorySupplierSelect";
-import { UnitBasedInput } from "@/components/UnitBasedInput";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { MonthPickerInput } from "@/components/ui/month-picker-input";
+import { Step1Details } from "./AddStockModal/Step1Details";
+import { Step2Quantity } from "./AddStockModal/Step2Quantity";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface AddStockModalProps {
   inventoryItem: InventoryItem;
@@ -87,11 +85,6 @@ type AddStockFormValues = {
   quantity: QuantityInput[];
 };
 
-const getProfitText = (profit: IProfit): string => {
-  if (!profit.percent || !profit.amount) return "Unknown";
-  return `${profit.percent}% (₦${profit.amount})`;
-};
-
 const getExpiryDate = (date: Date | undefined): Date | undefined => {
   if (!date) return undefined;
   const dateObj = new Date(date);
@@ -104,6 +97,7 @@ export function AddStockModal({
   onOpenChange,
 }: AddStockModalProps) {
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const [currentStep, setCurrentStep] = useState(1);
   const [supplierId, setSupplierId] = useState<string | null>(null);
   const [supplierName, setSupplierName] = useState<string | null>(null);
   const { refetch: refetchItems } = useGetInventoryItemsQuery();
@@ -117,11 +111,11 @@ export function AddStockModal({
   }, [inventoryItem]);
 
   const {
-    register,
     handleSubmit,
     watch,
     control,
     reset,
+    trigger,
     formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm<AddStockFormValues>({
     resolver: yupResolver(addStockSchema) as any,
@@ -148,13 +142,15 @@ export function AddStockModal({
     });
     setSupplierId(null);
     setSupplierName(null);
+    setCurrentStep(1);
   }, [inventoryItem, reset, getInitialQuantity]);
 
-  const getBaseUnit = () => {
-    if (!inventoryItem) return null;
-    const units = inventoryItem.units;
-    return units.length > 0 ? units[units.length - 1] : null;
-  };
+  // Reset step when modal closes
+  useEffect(() => {
+    if (!open) {
+      setCurrentStep(1);
+    }
+  }, [open]);
 
   const calculateTotalInBaseUnits = useMemo(() => {
     return (quantityInputs: QuantityInput[]) => {
@@ -234,156 +230,165 @@ export function AddStockModal({
     }
   };
 
-  const baseUnit = getBaseUnit();
   const profit = calculateProfit();
 
+  const handleNextStep = async () => {
+    const isValid = await trigger(["expiryDate", "costPrice", "sellingPrice"]);
+    if (isValid) {
+      setCurrentStep(2);
+    }
+  };
+
+  const handlePreviousStep = () => {
+    setCurrentStep(1);
+  };
+
   if (!inventoryItem) return null;
+
+  const showSteps = isMobile;
 
   return (
     <ResponsiveDialog.Root open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialog.Portal>
         <ResponsiveDialog.Overlay />
-        <ResponsiveDialog.Content className="max-w-[550px] w-full max-h-[90vh] flex flex-col">
+        <ResponsiveDialog.Content
+          className={`max-w-[550px] w-full flex flex-col ${
+            isMobile ? "max-h-[80vh]" : "max-h-[90vh]"
+          }`}
+        >
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col flex-1 min-h-0"
           >
             <ResponsiveDialog.Header className="px-0 flex-shrink-0">
-              <div>
-                <ResponsiveDialog.Title className="text-2xl sm:text-2xl font-bold">
-                  Add Stock
-                </ResponsiveDialog.Title>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {inventoryItem.name}
-                </p>
+              <div className="flex items-start gap-3">
+                {showSteps && currentStep === 2 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handlePreviousStep}
+                    className="flex-shrink-0 mt-1 h-9 w-9"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                )}
+                <div className="flex-1 min-w-0">
+                  <ResponsiveDialog.Title className="text-2xl sm:text-2xl font-bold">
+                    Add Stock
+                  </ResponsiveDialog.Title>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {inventoryItem.name}
+                  </p>
+                </div>
               </div>
             </ResponsiveDialog.Header>
 
-            <div className="flex-1 min-h-0 overflow-y-auto px-1 mt-6">
-              <div className="space-y-4">
-                {/* Supplier and Expiry Date */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="inventory-supplier">
-                      Supplier (Optional)
-                    </Label>
-                    <InventorySupplierSelect
-                      id="inventory-supplier"
-                      value={supplierId}
-                      onChange={(supplier) => {
+            <div
+              className={`${
+                showSteps && currentStep === 2
+                  ? "flex-1 min-h-0 mt-4"
+                  : "flex-1 min-h-0 mt-6"
+              } overflow-y-auto px-1`}
+            >
+              {showSteps ? (
+                // Mobile: Show steps
+                <>
+                  {currentStep === 1 && (
+                    <Step1Details
+                      control={control}
+                      errors={errors}
+                      supplierId={supplierId}
+                      supplierName={supplierName}
+                      onSupplierChange={(supplier) => {
                         setSupplierId(supplier?.id ?? null);
                         setSupplierName(supplier?.name ?? null);
                       }}
+                      inventoryItem={inventoryItem}
+                      profit={profit}
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="expiryDate">Expiry Date *</Label>
-                    <Controller
-                      name="expiryDate"
+                  )}
+                  {currentStep === 2 && (
+                    <Step2Quantity
                       control={control}
-                      render={({ field }) => (
-                        <MonthPickerInput
-                          id="expiryDate"
-                          value={field.value}
-                          onChange={(date: Date | undefined) => {
-                            field.onChange(date);
-                          }}
-                          placeholder="Select month and year"
-                          required
-                        />
-                      )}
+                      errors={errors}
+                      inventoryItem={inventoryItem}
                     />
-                    {errors.expiryDate?.message && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.expiryDate.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Pricing Section */}
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="costPrice">
-                        Cost Price in ₦ (per{" "}
-                        {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
-                      </Label>
-                      <Input
-                        id="costPrice"
-                        type="number"
-                        step="0.01"
-                        {...register("costPrice")}
-                        placeholder="0.00"
-                        required
-                      />
-                      {errors.costPrice?.message && (
-                        <p className="text-xs text-destructive mt-1">
-                          {errors.costPrice.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="sellingPrice">
-                        Selling Price in ₦ (per{" "}
-                        {baseUnit ? formatUnitName(baseUnit, 1) : "unit"}) *
-                      </Label>
-                      <Input
-                        id="sellingPrice"
-                        type="number"
-                        step="0.01"
-                        {...register("sellingPrice")}
-                        placeholder="0.00"
-                        required
-                      />
-                      {errors.sellingPrice?.message && (
-                        <p className="text-xs text-destructive mt-1">
-                          {errors.sellingPrice.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-muted-foreground">
-                    <span className="">Profit: </span>
-                    <span className="font-medium text-foreground">
-                      {getProfitText(profit)}
-                    </span>
-                  </p>
-                </div>
-
-                {/* Quantity Section */}
-                <div className="space-y-2">
-                  <UnitBasedInput
+                  )}
+                </>
+              ) : (
+                // Desktop: Show all fields
+                <div className="space-y-4">
+                  <Step1Details
                     control={control}
-                    name="quantity"
-                    label="Quantity *"
-                    units={inventoryItem.units}
-                    error={errors.quantity?.message}
+                    errors={errors}
+                    supplierId={supplierId}
+                    supplierName={supplierName}
+                    onSupplierChange={(supplier) => {
+                      setSupplierId(supplier?.id ?? null);
+                      setSupplierName(supplier?.name ?? null);
+                    }}
+                    inventoryItem={inventoryItem}
+                    profit={profit}
+                  />
+                  <Step2Quantity
+                    control={control}
+                    errors={errors}
+                    inventoryItem={inventoryItem}
                   />
                 </div>
-              </div>
+              )}
             </div>
 
-            <ResponsiveDialog.Footer className="flex flex-row gap-3 justify-end pt-4 border-t px-0 flex-shrink-0 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                size={isMobile ? "lg" : "default"}
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-gray-900 hover:bg-gray-800"
-                size={isMobile ? "lg" : "default"}
-                disabled={isAddingStock || isFormSubmitting}
-              >
-                {isAddingStock || isFormSubmitting ? "Adding..." : "Add Stock"}
-              </Button>
+            <ResponsiveDialog.Footer
+              className={`flex flex-row gap-3 pt-4 border-t px-0 flex-shrink-0 ${
+                showSteps && currentStep === 2 ? "mt-4" : "mt-6"
+              } ${showSteps && currentStep === 1 ? "justify-end" : ""}`}
+            >
+              {showSteps && currentStep === 1 ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    onClick={() => onOpenChange(false)}
+                    className="flex-1 sm:flex-initial"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    className="bg-gray-900 hover:bg-gray-800 flex-1 sm:flex-initial flex items-center justify-center gap-2"
+                    size="lg"
+                    onClick={handleNextStep}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size={isMobile ? "lg" : "default"}
+                    onClick={() => onOpenChange(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-gray-900 hover:bg-gray-800 flex-1"
+                    size={isMobile ? "lg" : "default"}
+                    disabled={isAddingStock || isFormSubmitting}
+                  >
+                    {isAddingStock || isFormSubmitting
+                      ? "Adding..."
+                      : "Add Stock"}
+                  </Button>
+                </>
+              )}
             </ResponsiveDialog.Footer>
           </form>
         </ResponsiveDialog.Content>

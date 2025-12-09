@@ -244,7 +244,7 @@ export function AddInventoryImageModal({
       <ResponsiveDialog.Root open={open} onOpenChange={handleClose}>
         <ResponsiveDialog.Portal>
           <ResponsiveDialog.Overlay />
-          <ResponsiveDialog.Content className="max-w-[550px] w-full max-h-[90vh] flex flex-col">
+          <ResponsiveDialog.Content className="max-w-[450px] w-full max-h-[80vh] flex flex-col">
             <ResponsiveDialog.Header className="px-0 xl:pr-10 flex-shrink-0">
               <ResponsiveDialog.Title className="text-2xl sm:text-2xl font-bold">
                 {title}
@@ -261,7 +261,7 @@ export function AddInventoryImageModal({
                 <div className="mb-4">
                   <div
                     className={`relative border-2 border-dashed rounded-xl transition-all ${
-                      isMobile ? "h-56" : "h-64 sm:h-96"
+                      isMobile ? "h-56" : "h-64 sm:h-80"
                     } flex items-center justify-center overflow-hidden ${
                       dragActive
                         ? "border-blue-500 bg-blue-50"
