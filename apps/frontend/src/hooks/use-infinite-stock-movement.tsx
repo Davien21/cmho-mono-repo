@@ -1,20 +1,20 @@
 import { useMemo, RefObject } from "react";
 import {
-  useGetStockEntriesPagesInfiniteQuery,
-  IStockEntryDto,
-  IGetStockEntriesQuery,
+  useGetStockMovementPagesInfiniteQuery,
+  IStockMovementDto,
+  IGetStockMovementQuery,
 } from "@/store/inventory-slice";
 import { useInfiniteScrollRTK } from "./use-infinite-scroll-rtk";
 
-interface UseInfiniteStockEntriesOptions
-  extends Omit<IGetStockEntriesQuery, "page" | "limit"> {
+interface UseInfiniteStockMovementOptions
+  extends Omit<IGetStockMovementQuery, "page" | "limit"> {
   loadMoreRef: RefObject<HTMLElement>;
   rootMargin?: string;
   threshold?: number;
 }
 
-interface UseInfiniteStockEntriesReturn {
-  stockEntries: IStockEntryDto[];
+interface UseInfiniteStockMovementReturn {
+  stockMovements: IStockMovementDto[];
   isLoading: boolean;
   isFetching: boolean;
   isFetchingNextPage: boolean;
@@ -25,12 +25,12 @@ interface UseInfiniteStockEntriesReturn {
 }
 
 /**
- * Hook that combines infinite query and infinite scroll for stock entries
+ * Hook that combines infinite query and infinite scroll for stock movement
  * Automatically handles pagination and data flattening
  */
-export function useInfiniteStockEntries(
-  options: UseInfiniteStockEntriesOptions
-): UseInfiniteStockEntriesReturn {
+export function useInfiniteStockMovement(
+  options: UseInfiniteStockMovementOptions
+): UseInfiniteStockMovementReturn {
   const {
     loadMoreRef,
     rootMargin = "200px",
@@ -47,10 +47,10 @@ export function useInfiniteStockEntries(
     isFetchingNextPage,
     isError,
     error,
-  } = useGetStockEntriesPagesInfiniteQuery(queryParams);
+  } = useGetStockMovementPagesInfiniteQuery(queryParams);
 
   // Flatten all pages into a single array
-  const stockEntries = useMemo(() => {
+  const stockMovements = useMemo(() => {
     if (!data?.pages) return [];
     return data.pages.flatMap((page) => page.data.data);
   }, [data]);
@@ -67,7 +67,7 @@ export function useInfiniteStockEntries(
   });
 
   return {
-    stockEntries,
+    stockMovements,
     isLoading,
     isFetching,
     isFetchingNextPage,
@@ -77,3 +77,4 @@ export function useInfiniteStockEntries(
     loadMoreRef,
   };
 }
+
