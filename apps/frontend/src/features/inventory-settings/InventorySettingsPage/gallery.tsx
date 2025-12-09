@@ -477,7 +477,6 @@ import { GalleryCard, GalleryCardViewMode } from "@/components/GalleryCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  useGetGalleryQuery,
   useUploadGalleryMutation,
   useDeleteGalleryMutation,
   IGalleryDto,
@@ -485,6 +484,7 @@ import {
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useModalContext } from "@/contexts/modal-context";
+import { useInfiniteGallery } from "@/hooks/use-infinite-gallery";
 
 type ViewMode = "grid" | "list";
 
@@ -495,10 +495,16 @@ export function GallerySection({
     processFiles: (files: File[]) => Promise<void>
   ) => void;
 }) {
-  const [page, setPage] = useState(1);
-  const { data, isLoading, isFetching } = useGetGalleryQuery({
-    page,
-    limit: 100,
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const {
+    galleryItems: galleryList,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteGallery({
+    loadMoreRef,
+    limit: 1,
   });
   const [uploadGallery] = useUploadGalleryMutation();
   const [deleteGallery, { isLoading: isDeleting }] = useDeleteGalleryMutation();
@@ -512,9 +518,6 @@ export function GallerySection({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const slideshowImageRef = useRef<HTMLImageElement>(null);
   const { openModal, closeModal } = useModalContext();
-
-  const galleryList = data?.data?.items || [];
-  const hasNextPage = data?.data?.meta?.hasNextPage ?? false;
 
   const filteredMedia = useMemo(() => {
     if (!searchQuery.trim()) return galleryList;
@@ -689,8 +692,10 @@ export function GallerySection({
           if (result.status === "rejected") {
             const file = optimizedFiles[index];
             const preview = URL.createObjectURL(file);
-            const errorMessage =
-              getRTKQueryErrorMessage(result.reason) || "Upload failed";
+            const errorMessage = getRTKQueryErrorMessage(
+              result.reason,
+              "Upload failed"
+            );
             uploadFailedFiles.push({ file, preview, error: errorMessage });
           } else {
             successCount++;
@@ -761,19 +766,17 @@ export function GallerySection({
           );
         }
 
-        // Only reset page if at least one file succeeded
-        if (successCount > 0) {
-          setPage(1); // Reset to first page to see new uploads
-        }
+        // Note: RTK Query infinite queries automatically refetch when cache is invalidated
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
       } catch (error: unknown) {
         // This catch should rarely be hit now since we use allSettled
-        const message =
-          getRTKQueryErrorMessage(error) ||
-          "Failed to upload files. Please try again.";
+        const message = getRTKQueryErrorMessage(
+          error,
+          "Failed to upload files. Please try again."
+        );
         toast.error(message, { id: toastId, duration: Infinity });
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -782,7 +785,7 @@ export function GallerySection({
         setIsUploading(false);
       }
     },
-    [uploadGallery, openModal, setPage]
+    [uploadGallery, openModal]
   );
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -823,9 +826,10 @@ export function GallerySection({
           );
           closeModal("confirmation-dialog");
         } catch (error: unknown) {
-          const message =
-            getRTKQueryErrorMessage(error) ||
-            "Failed to delete image. Please try again.";
+          const message = getRTKQueryErrorMessage(
+            error,
+            "Failed to delete image. Please try again."
+          );
           toast.error(message);
           // Re-open modal without loading state so user can try again
           openModal("confirmation-dialog", {
@@ -879,9 +883,10 @@ export function GallerySection({
           setSelectedMedia([]);
           closeModal("confirmation-dialog");
         } catch (error: unknown) {
-          const message =
-            getRTKQueryErrorMessage(error) ||
-            "Failed to delete images. Please try again.";
+          const message = getRTKQueryErrorMessage(
+            error,
+            "Failed to delete images. Please try again."
+          );
           toast.error(message);
           // Re-open modal without loading state so user can try again
           openModal("confirmation-dialog", {
@@ -966,26 +971,7 @@ export function GallerySection({
     }
   }, [slideshowIndex]);
 
-  // Infinite scroll handler - use window scroll
-  useEffect(() => {
-    if (!hasNextPage || isFetching) return;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } =
-        document.documentElement;
-      // Load more when user is within 300px of the bottom
-      if (scrollHeight - scrollTop - clientHeight < 300) {
-        setPage((prev) => {
-          // Prevent loading if already at max or currently fetching
-          if (prev >= (data?.data?.meta?.totalPages ?? 1)) return prev;
-          return prev + 1;
-        });
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPage, isFetching, data?.data?.meta?.totalPages]);
+  // Infinite scroll using Intersection Observer with RTK Query
 
   if (isLoading) {
     return (
@@ -1116,13 +1102,26 @@ export function GallerySection({
                 }}
               />
             ))}
-            {isFetching && (
-              <div className="col-span-full flex items-center justify-center py-8">
-                <div className="text-sm text-muted-foreground">
-                  Loading more...
-                </div>
-              </div>
-            )}
+          </div>
+        )}
+
+        {/* Loading indicator at bottom for infinite scroll */}
+        {isFetchingNextPage && (
+          <div className="flex justify-center py-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+              Loading more images...
+            </div>
+          </div>
+        )}
+
+        {/* Intersection observer target - only show when there's more to load */}
+        {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
+
+        {/* End of list indicator - only show when we're done and not fetching */}
+        {!hasNextPage && filteredMedia.length > 0 && !isFetching && (
+          <div className="text-center py-4 text-sm text-muted-foreground">
+            No more images to load
           </div>
         )}
       </div>

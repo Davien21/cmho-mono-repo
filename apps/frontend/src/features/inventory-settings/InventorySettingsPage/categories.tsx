@@ -192,9 +192,10 @@ export function CategoriesSection({
           await deleteCategory(id).unwrap();
           toast.success("Category deleted successfully");
         } catch (error: unknown) {
-          const message =
-            getRTKQueryErrorMessage(error) ||
-            "Failed to delete category. Please try again.";
+          const message = getRTKQueryErrorMessage(
+            error,
+            "Failed to delete category. Please try again."
+          );
           toast.error(message);
         } finally {
           closeModal("confirmation-dialog");
@@ -242,9 +243,10 @@ export function CategoriesSection({
       toast.success("Categories reordered successfully");
       setPendingOrders(null);
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to reorder categories. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to reorder categories. Please try again."
+      );
       toast.error(message);
     }
   }, [pendingOrders, reorderCategories]);
@@ -552,9 +554,10 @@ export function EditCategoryModal({
       toast.success("Category updated successfully");
       handleClose();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update category. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to update category. Please try again."
+      );
       toast.error(message);
     }
   };

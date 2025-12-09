@@ -13,7 +13,6 @@ import {
 } from "@/store/inventory-slice";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,13 +23,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
-import { Edit2, Loader2, MoreVertical, Trash2, Truck } from "lucide-react";
+import { BorderedOptions } from "@/components/BorderedOptions";
+import { Edit2, Loader2, Trash2, Truck } from "lucide-react";
 
 export const supplierSchema = yup.object({
   name: yup.string().trim().required("Name is required"),
@@ -66,9 +63,10 @@ export function SuppliersSection({ onEditSupplier }: SuppliersSectionProps) {
           await deleteSupplier(supplier._id).unwrap();
           toast.success("Supplier deleted successfully");
         } catch (error: unknown) {
-          const message =
-            getRTKQueryErrorMessage(error) ||
-            "Failed to delete supplier. Please try again.";
+          const message = getRTKQueryErrorMessage(
+            error,
+            "Failed to delete supplier. Please try again."
+          );
           toast.error(message);
         } finally {
           closeModal("confirmation-dialog");
@@ -133,30 +131,23 @@ export function SuppliersSection({ onEditSupplier }: SuppliersSectionProps) {
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-10 w-10 sm:h-8 sm:w-8 p-0">
-                          <MoreVertical className="h-5 w-5 sm:h-4 sm:w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => onEditSupplier(supplier)}
-                          className="text-base sm:text-sm py-2.5 sm:py-2"
-                        >
-                          <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                          Edit supplier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(supplier)}
-                          className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
-                          disabled={isDeleting}
-                        >
-                          <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                          Delete supplier
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <BorderedOptions>
+                      <DropdownMenuItem
+                        onClick={() => onEditSupplier(supplier)}
+                        className="text-base sm:text-sm py-2.5 sm:py-2"
+                      >
+                        <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                        Edit supplier
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(supplier)}
+                        className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
+                        disabled={isDeleting}
+                      >
+                        <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                        Delete supplier
+                      </DropdownMenuItem>
+                    </BorderedOptions>
                   </div>
                 </td>
               </tr>
@@ -197,27 +188,20 @@ export function SuppliersSection({ onEditSupplier }: SuppliersSectionProps) {
               </Badge>
             </div>
             <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-10 w-10 sm:h-8 sm:w-8 p-0">
-                    <MoreVertical className="h-5 w-5 sm:h-4 sm:w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onEditSupplier(supplier)} className="text-base sm:text-sm py-2.5 sm:py-2">
-                    <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                    Edit supplier
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleDelete(supplier)}
-                    className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
-                    disabled={isDeleting}
-                  >
-                    <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                    Delete supplier
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <BorderedOptions>
+                <DropdownMenuItem onClick={() => onEditSupplier(supplier)} className="text-base sm:text-sm py-2.5 sm:py-2">
+                  <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                  Edit supplier
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleDelete(supplier)}
+                  className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                  Delete supplier
+                </DropdownMenuItem>
+              </BorderedOptions>
             </div>
           </div>
         ))}

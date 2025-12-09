@@ -184,9 +184,10 @@ export function UnitsSection({ onSaveButtonChange }: UnitsSectionProps = {}) {
           await deleteUnit(id).unwrap();
           toast.success("Unit deleted successfully");
         } catch (error: unknown) {
-          const message =
-            getRTKQueryErrorMessage(error) ||
-            "Failed to delete unit. Please try again.";
+          const message = getRTKQueryErrorMessage(
+            error,
+            "Failed to delete unit. Please try again."
+          );
           toast.error(message);
         } finally {
           closeModal("confirmation-dialog");
@@ -234,9 +235,10 @@ export function UnitsSection({ onSaveButtonChange }: UnitsSectionProps = {}) {
       toast.success("Units reordered successfully");
       setPendingOrders(null);
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to reorder units. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to reorder units. Please try again."
+      );
       toast.error(message);
     }
   }, [pendingOrders, reorderUnits]);
@@ -461,9 +463,10 @@ export function EditUnitModal({
       toast.success("Unit updated successfully");
       handleClose();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update unit. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to update unit. Please try again."
+      );
       toast.error(message);
     }
   };
