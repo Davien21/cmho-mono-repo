@@ -26,7 +26,7 @@ interface InventoryStats {
 interface ActivityItem {
   id: string;
   description: string;
-  adminName: string;
+  performerName: string;
   timeAgo: string;
   type: "add" | "update" | "remove" | "create" | "other";
 }
@@ -140,7 +140,7 @@ export function InventoryDashboard() {
     return activitiesData.data.data.map((activity) => ({
       id: activity._id,
       description: activity.description,
-      adminName: activity.admin.name,
+      performerName: activity.performer?.name || "Unknown",
       timeAgo: formatTimeAgo(activity.createdAt),
       type: getActivityType(activity.type),
     }));
@@ -276,7 +276,7 @@ export function InventoryDashboard() {
                       {activity.description}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      by {activity.adminName} • {activity.timeAgo}
+                      by {activity.performerName} • {activity.timeAgo}
                     </p>
                   </div>
                 </div>

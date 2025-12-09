@@ -2,8 +2,8 @@ import { useState } from "react";
 import {
   Search,
   Package,
-  MoreHorizontal,
   PackagePlus,
+  PackageMinus,
   Edit2,
   Trash2,
   PackageOpen,
@@ -22,10 +22,12 @@ import {
 } from "./ui/dropdown-menu";
 import { formatUnitName } from "@/lib/utils";
 import { InventoryQtyLevelBadge } from "@/components/InventoryQtyLevelBadge";
+import { BorderedOptions } from "@/components/BorderedOptions";
 
 interface InventoryListProps {
   items: InventoryItem[];
-  onUpdateStock: (item: InventoryItem) => void;
+  onAddStock: (item: InventoryItem) => void;
+  onReduceStock: (item: InventoryItem) => void;
   onEdit: (item: InventoryItem) => void;
   onDelete: (item: InventoryItem) => void;
   onViewStockEntries: (item: InventoryItem) => void;
@@ -39,7 +41,8 @@ type DisplayMode = "full" | "skipOne" | "baseOnly";
 
 export function InventoryList({
   items,
-  onUpdateStock,
+  onAddStock,
+  onReduceStock,
   onEdit,
   onDelete,
   onViewStockEntries,
@@ -352,47 +355,43 @@ export function InventoryList({
                       </p>
                     </div>
                     <div className="flex-shrink-0">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9 sm:h-8 sm:w-8 border-gray-300 hover:bg-gray-50"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => onUpdateStock(item)}
-                            className="text-base sm:text-sm py-2.5 sm:py-2"
-                          >
-                            <PackagePlus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                            Update Stock
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => onViewStockEntries(item)}
-                            className="text-base sm:text-sm py-2.5 sm:py-2"
-                          >
-                            <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                            View Stock Movement
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => onEdit(item)}
-                            className="text-base sm:text-sm py-2.5 sm:py-2"
-                          >
-                            <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                            Edit Item
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => onDelete(item)}
-                            className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
-                          >
-                            <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                            Delete Item
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <BorderedOptions>
+                        <DropdownMenuItem
+                          onClick={() => onAddStock(item)}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <PackagePlus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Add Stock
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onReduceStock(item)}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <PackageMinus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Reduce Stock
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onViewStockEntries(item)}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Stock Movements
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onEdit(item)}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Edit Item
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onDelete(item)}
+                          className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
+                        >
+                          <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                          Delete Item
+                        </DropdownMenuItem>
+                      </BorderedOptions>
                     </div>
                   </div>
                 </div>
@@ -505,46 +504,43 @@ export function InventoryList({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50"
-                            >
-                              <MoreHorizontal className="h-5 w-5 sm:h-4 sm:w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => onUpdateStock(item)}
-                              className="text-base sm:text-sm py-2.5 sm:py-2"
-                            >
-                              <PackagePlus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                              Update Stock
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => onViewStockEntries(item)}
-                              className="text-base sm:text-sm py-2.5 sm:py-2"
-                            >
-                              <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                              View Stock Movement
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => onEdit(item)}
-                              className="text-base sm:text-sm py-2.5 sm:py-2"
-                            >
-                              <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                              Edit Item
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => onDelete(item)}
-                              className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
-                            >
-                              <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-                              Delete Item
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <BorderedOptions>
+                          <DropdownMenuItem
+                            onClick={() => onAddStock(item)}
+                            className="text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <PackagePlus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                            Add Stock
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onReduceStock(item)}
+                            className="text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <PackageMinus className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                            Reduce Stock
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onViewStockEntries(item)}
+                            className="text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <PackageOpen className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                            Stock Movements
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onEdit(item)}
+                            className="text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                            Edit Item
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onDelete(item)}
+                            className="text-red-600 focus:text-red-600 text-base sm:text-sm py-2.5 sm:py-2"
+                          >
+                            <Trash2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+                            Delete Item
+                          </DropdownMenuItem>
+                        </BorderedOptions>
                       </div>
                     </td>
                   </tr>

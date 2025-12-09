@@ -266,9 +266,10 @@ export function AddInventoryModal({
       toast.success("Inventory item created successfully");
       handleClose();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to create inventory item. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to create inventory item. Please try again."
+      );
       toast.error(message);
     }
   };

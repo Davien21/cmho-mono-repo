@@ -292,9 +292,10 @@ export function EditInventoryModal({
       toast.success("Inventory item updated successfully");
       handleClose();
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update inventory item. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to update inventory item. Please try again."
+      );
       toast.error(message);
     }
   };

@@ -122,14 +122,15 @@ export function AddInventoryImageModal({
 
       toast.success("Image uploaded successfully");
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) || "Failed to upload image";
+      const message = getRTKQueryErrorMessage(error, "Failed to upload image");
       toast.error(message);
       // Clean up blob URL on error
       if (imagePreview && imagePreview.startsWith("blob:")) {
         URL.revokeObjectURL(imagePreview);
       }
-      setImagePreview(mode === "edit" && item.image?.url ? item.image.url : null);
+      setImagePreview(
+        mode === "edit" && item.image?.url ? item.image.url : null
+      );
     } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -214,9 +215,10 @@ export function AddInventoryImageModal({
       );
       onOpenChange(false);
     } catch (error: unknown) {
-      const message =
-        getRTKQueryErrorMessage(error) ||
-        "Failed to update image. Please try again.";
+      const message = getRTKQueryErrorMessage(
+        error,
+        "Failed to update image. Please try again."
+      );
       toast.error(message);
     }
   };
@@ -295,13 +297,18 @@ export function AddInventoryImageModal({
                           <ImageIcon size={48} className="text-gray-400" />
                         </div>
                         <p className="text-lg font-medium text-gray-600">
-                          {isUploadingImage ? "Uploading..." : "Tap to add a photo"}
+                          {isUploadingImage
+                            ? "Uploading..."
+                            : "Tap to add a photo"}
                         </p>
                       </div>
                     ) : (
                       <div className="py-16 px-6 text-center">
                         <div className="inline-flex items-center justify-center w-24 h-24 sm:w-20 sm:h-20 bg-gray-200 rounded-full mb-4">
-                          <Upload size={44} className="sm:size-9 text-gray-500" />
+                          <Upload
+                            size={44}
+                            className="sm:size-9 text-gray-500"
+                          />
                         </div>
                         <p className="text-2xl sm:text-xl font-medium text-gray-900 mb-2">
                           Drag and drop an image here
@@ -386,7 +393,9 @@ export function AddInventoryImageModal({
                       disabled={isSubmitting || isUploadingImage}
                       className="w-full"
                     >
-                      {isSubmitting || isUploadingImage ? "Saving..." : "Skip for now"}
+                      {isSubmitting || isUploadingImage
+                        ? "Saving..."
+                        : "Skip for now"}
                     </Button>
                   </>
                 )}
@@ -412,4 +421,3 @@ export function AddInventoryImageModal({
     </>
   );
 }
-
