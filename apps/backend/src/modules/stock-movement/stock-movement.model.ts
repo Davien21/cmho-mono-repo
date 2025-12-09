@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IStockEntry, IStockSupplierSnapshot } from "./stock-entries.types";
+import { IStockMovement, IStockSupplierSnapshot } from "./stock-movement.types";
 
 const { Schema, model } = mongoose;
 
@@ -15,7 +15,7 @@ const stockSupplierSnapshotSchema = new Schema<IStockSupplierSnapshot>(
   { _id: false }
 );
 
-const stockEntrySchema = new Schema<IStockEntry>(
+const stockMovementSchema = new Schema<IStockMovement>(
   {
     inventoryItemId: {
       type: Schema.Types.ObjectId,
@@ -46,11 +46,11 @@ const stockEntrySchema = new Schema<IStockEntry>(
   },
   {
     timestamps: true,
-    collection: "stock_entries",
+    collection: "stock_movements",
   }
 );
 
-stockEntrySchema.index({ inventoryItemId: 1, createdAt: -1 });
-stockEntrySchema.index({ createdAt: -1 });
+stockMovementSchema.index({ inventoryItemId: 1, createdAt: -1 });
+stockMovementSchema.index({ createdAt: -1 });
 
-export default model<IStockEntry>("StockEntry", stockEntrySchema);
+export default model<IStockMovement>("StockMovement", stockMovementSchema);

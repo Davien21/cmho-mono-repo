@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import stockEntriesService from "./stock-entries.service";
+import stockMovementService from "./stock-movement.service";
 import { successResponse } from "../../utils/response";
-import { GetStockEntriesQuerySchema } from "./stock-entries.validators";
-import { StockEntryRequest } from "./stock-entries.types";
+import { GetStockMovementQuerySchema } from "./stock-movement.validators";
+import { StockMovementRequest } from "./stock-movement.types";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
 import inventoryItemsService from "../inventory-items/inventory-items.service";
 import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 
-export async function getStockEntries(
-  req: Request<{}, {}, {}, GetStockEntriesQuerySchema>,
+export async function getStockMovement(
+  req: Request<{}, {}, {}, GetStockMovementQuerySchema>,
   res: Response
 ) {
   const {
@@ -20,7 +20,7 @@ export async function getStockEntries(
     operationType,
   } = req.query;
 
-  const result = await stockEntriesService.list({
+  const result = await stockMovementService.list({
     sort: sort === "desc" ? -1 : 1,
     limit: parseInt(limit),
     page: parseInt(page),
@@ -30,11 +30,11 @@ export async function getStockEntries(
 
   // Return entries as-is (performerName is already in the model)
 
-  res.send(successResponse("Stock entries fetched successfully", result));
+  res.send(successResponse("Stock movement fetched successfully", result));
 }
 
-export async function createStockEntry(
-  req: Request<{}, {}, StockEntryRequest, {}>,
+export async function createStockMovement(
+  req: Request<{}, {}, StockMovementRequest, {}>,
   res: Response
 ) {
   const admin = getAdminFromReq(req);
@@ -50,7 +50,7 @@ export async function createStockEntry(
     performerName: admin.name,
   };
 
-  const entry = await stockEntriesService.create({ ...data, ...performerData });
+  const entry = await stockMovementService.create({ ...data, ...performerData });
 
   // Get updated item after stock change
   const updatedItem = await inventoryItemsService.findById(
@@ -75,7 +75,7 @@ export async function createStockEntry(
     type: actionType,
     module: "inventory",
     entities: [
-      { id: entry._id, name: "stock-entry" },
+      { id: entry._id, name: "stock-movement" },
       { id: data.inventoryItemId, name: "inventory-item" },
     ],
     ...performerData,
@@ -92,7 +92,7 @@ export async function createStockEntry(
   };
   await activityTrackingService.trackActivity(activityData);
 
-  res.send(successResponse("Stock entry created successfully", entry));
+  res.send(successResponse("Stock movement created successfully", entry));
 }
 
 export async function addStock(req: Request, res: Response) {
@@ -103,7 +103,7 @@ export async function addStock(req: Request, res: Response) {
   const item = await inventoryItemsService.findById(data.inventoryItemId);
   const previousStock = item?.currentStockInBaseUnits ?? 0;
 
-  const entry = await stockEntriesService.addStock(data, admin._id, admin.name);
+  const entry = await stockMovementService.addStock(data, admin._id, admin.name);
 
   // Get updated item after stock addition
   const updatedItem = await inventoryItemsService.findById(
@@ -117,7 +117,7 @@ export async function addStock(req: Request, res: Response) {
     type: ActivityTypes.ADD_STOCK,
     module: "inventory",
     entities: [
-      { id: entry._id, name: "stock-entry" },
+      { id: entry._id, name: "stock-movement" },
       { id: data.inventoryItemId, name: "inventory-item" },
     ],
     performerId: admin._id,
@@ -146,7 +146,7 @@ export async function reduceStock(req: Request, res: Response) {
   const item = await inventoryItemsService.findById(data.inventoryItemId);
   const previousStock = item?.currentStockInBaseUnits ?? 0;
 
-  const entry = await stockEntriesService.reduceStock(
+  const entry = await stockMovementService.reduceStock(
     data,
     admin._id,
     admin.name
@@ -164,7 +164,7 @@ export async function reduceStock(req: Request, res: Response) {
     type: ActivityTypes.REDUCE_STOCK,
     module: "inventory",
     entities: [
-      { id: entry._id, name: "stock-entry" },
+      { id: entry._id, name: "stock-movement" },
       { id: data.inventoryItemId, name: "inventory-item" },
     ],
     performerId: admin._id,
@@ -184,3 +184,4 @@ export async function reduceStock(req: Request, res: Response) {
 
   res.send(successResponse("Stock reduced successfully", entry));
 }
+

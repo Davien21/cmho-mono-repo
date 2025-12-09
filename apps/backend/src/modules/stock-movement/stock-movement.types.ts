@@ -9,7 +9,7 @@ export interface IStockSupplierSnapshot {
   name: string;
 }
 
-export interface IStockEntry {
+export interface IStockMovement {
   _id: ObjectId;
   inventoryItemId: ObjectId;
   operationType: StockOperationType;
@@ -27,11 +27,12 @@ export interface IStockEntry {
 
 // Shape used for request bodies (client-provided data)
 // For reduce operations, costPrice, sellingPrice, and expiryDate are optional
-export type StockEntryRequest = Omit<
-  IStockEntry,
+export type StockMovementRequest = Omit<
+  IStockMovement,
   "_id" | "performerId" | "performerName" | "createdAt" | "updatedAt"
 > & {
   costPrice?: number;
   sellingPrice?: number;
   expiryDate?: Date;
 };
+

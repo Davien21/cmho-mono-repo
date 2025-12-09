@@ -1,8 +1,8 @@
 import * as yup from "yup";
 import { paginationQuerySchema } from "../../validators/general.validator";
-import { StockEntryRequest } from "./stock-entries.types";
+import { StockMovementRequest } from "./stock-movement.types";
 
-export const getStockEntriesSchema = paginationQuerySchema.shape({
+export const getStockMovementSchema = paginationQuerySchema.shape({
   inventoryItemId: yup.string().optional().label("Inventory item ID"),
   operationType: yup
     .string()
@@ -11,13 +11,13 @@ export const getStockEntriesSchema = paginationQuerySchema.shape({
     .label("Operation type"),
 });
 
-export type GetStockEntriesQuerySchema = yup.InferType<
-  typeof getStockEntriesSchema
+export type GetStockMovementQuerySchema = yup.InferType<
+  typeof getStockMovementSchema
 >;
 
 // Legacy schema for backward compatibility (if needed)
-export const createStockEntrySchema = yup
-  .object<StockEntryRequest>({
+export const createStockMovementSchema = yup
+  .object<StockMovementRequest>({
     inventoryItemId: yup.string().required().label("Inventory item ID"),
     operationType: yup
       .string()
@@ -118,3 +118,4 @@ export const reduceStockSchema = yup
       .label("Quantity in base units"),
   })
   .required();
+

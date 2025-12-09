@@ -34,7 +34,7 @@ class InventoryItemsService {
       { $match: filter },
       {
         $lookup: {
-          from: "stock_entries",
+          from: "stock_movements",
           let: { itemId: "$_id" },
           pipeline: [
             {
@@ -57,7 +57,7 @@ class InventoryItemsService {
       },
       {
         $lookup: {
-          from: "stock_entries",
+          from: "stock_movements",
           let: { itemId: "$_id" },
           pipeline: [
             {
@@ -72,7 +72,7 @@ class InventoryItemsService {
             },
             { $limit: 1 },
           ],
-          as: "hasAnyStockEntries",
+          as: "hasAnyStockMovement",
         },
       },
       {
@@ -85,7 +85,7 @@ class InventoryItemsService {
                 $cond: {
                   if: {
                     $and: [
-                      { $gt: [{ $size: "$hasAnyStockEntries" }, 0] },
+                      { $gt: [{ $size: "$hasAnyStockMovement" }, 0] },
                       { $gt: ["$currentStockInBaseUnits", 0] },
                     ],
                   },
@@ -97,7 +97,7 @@ class InventoryItemsService {
           },
         },
       },
-      { $unset: ["earliestExpiryEntry", "hasAnyStockEntries"] },
+      { $unset: ["earliestExpiryEntry", "hasAnyStockMovement"] },
       // Apply stock filter if provided
       ...(stockFilter
         ? [

@@ -6,41 +6,41 @@ import { AdminRole } from "../admins/admins.types";
 import validator from "../../middlewares/validator";
 import {
   addStock,
-  createStockEntry,
-  getStockEntries,
+  createStockMovement,
+  getStockMovement,
   reduceStock,
-} from "./stock-entries.controller";
+} from "./stock-movement.controller";
 import {
   addStockSchema,
-  createStockEntrySchema,
-  getStockEntriesSchema,
+  createStockMovementSchema,
+  getStockMovementSchema,
   reduceStockSchema,
-} from "./stock-entries.validators";
+} from "./stock-movement.validators";
 
 router.get(
-  "/inventory/stock-entries",
+  "/inventory/stock-movement",
   [
     authenticate,
     hasRole(AdminRole.INVENTORY_MANAGER),
-    validator(getStockEntriesSchema, "query"),
+    validator(getStockMovementSchema, "query"),
   ],
-  getStockEntries
+  getStockMovement
 );
 
 // Legacy route for backward compatibility
 router.post(
-  "/inventory/stock-entries",
+  "/inventory/stock-movement",
   [
     authenticate,
     hasRole(AdminRole.INVENTORY_MANAGER),
-    validator(createStockEntrySchema),
+    validator(createStockMovementSchema),
   ],
-  createStockEntry
+  createStockMovement
 );
 
 // Separate route for adding stock
 router.post(
-  "/inventory/stock-entries/add",
+  "/inventory/stock-movement/add",
   [
     authenticate,
     hasRole(AdminRole.INVENTORY_MANAGER),
@@ -51,7 +51,7 @@ router.post(
 
 // Separate route for reducing stock
 router.post(
-  "/inventory/stock-entries/reduce",
+  "/inventory/stock-movement/reduce",
   [
     authenticate,
     hasRole(AdminRole.INVENTORY_MANAGER),
@@ -61,3 +61,4 @@ router.post(
 );
 
 export default router;
+

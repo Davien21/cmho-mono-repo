@@ -1,5 +1,5 @@
-import StockEntry from "./stock-entries.model";
-import { IStockEntry, StockEntryRequest } from "./stock-entries.types";
+import StockMovement from "./stock-movement.model";
+import { IStockMovement, StockMovementRequest } from "./stock-movement.types";
 import InventoryItem from "../inventory-items/inventory-items.model";
 import { Types } from "mongoose";
 
@@ -43,7 +43,7 @@ interface ReduceStockRequest {
   quantityInBaseUnits: number;
 }
 
-class StockEntriesService {
+class StockMovementService {
   async list({
     sort = -1,
     limit = 10,
@@ -57,7 +57,7 @@ class StockEntriesService {
     inventoryItemId?: string;
     operationType?: string;
   }): Promise<{
-    data: IStockEntry[];
+    data: IStockMovement[];
     total: number;
     page: number;
     limit: number;
@@ -69,8 +69,8 @@ class StockEntriesService {
     if (operationType) filter.operationType = operationType;
 
     const [data, total] = await Promise.all([
-      StockEntry.find(filter).sort({ _id: sort }).limit(limit).skip(skip),
-      StockEntry.countDocuments(filter),
+      StockMovement.find(filter).sort({ _id: sort }).limit(limit).skip(skip),
+      StockMovement.countDocuments(filter),
     ]);
 
     return {
@@ -85,12 +85,12 @@ class StockEntriesService {
     data: AddStockRequest,
     performerId: Types.ObjectId,
     performerName: string
-  ): Promise<IStockEntry> {
+  ): Promise<IStockMovement> {
     // Normalize expiry date to first day of month
     const normalizedExpiryDate = normalizeExpiryDate(data.expiryDate);
 
-    // Create stock entry with operationType: "add"
-    const entry = await StockEntry.create({
+    // Create stock movement with operationType: "add"
+    const entry = await StockMovement.create({
       ...data,
       expiryDate: normalizedExpiryDate || data.expiryDate,
       operationType: "add",
@@ -123,7 +123,7 @@ class StockEntriesService {
     data: ReduceStockRequest,
     performerId: Types.ObjectId,
     performerName: string
-  ): Promise<IStockEntry> {
+  ): Promise<IStockMovement> {
     // Normalize expiry date to first day of month if provided
     const normalizedExpiryDate = data.expiryDate
       ? normalizeExpiryDate(data.expiryDate)
@@ -139,8 +139,8 @@ class StockEntriesService {
         new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     };
 
-    // Create stock entry with operationType: "reduce"
-    const entry = await StockEntry.create({
+    // Create stock movement with operationType: "reduce"
+    const entry = await StockMovement.create({
       ...entryData,
       operationType: "reduce",
       quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
@@ -170,11 +170,11 @@ class StockEntriesService {
     return entry;
   }
 
-  async findById(id: string): Promise<IStockEntry | null> {
-    return StockEntry.findById(id);
+  async findById(id: string): Promise<IStockMovement | null> {
+    return StockMovement.findById(id);
   }
 
-  async create(data: StockEntryRequest): Promise<IStockEntry> {
+  async create(data: StockMovementRequest): Promise<IStockMovement> {
     // Normalize expiry date to first day of month if provided
     let normalizedExpiryDate: Date | undefined = undefined;
     if (data.expiryDate) {
@@ -189,7 +189,7 @@ class StockEntriesService {
     }
 
     // For reduce operations, set default values if not provided
-    const entryData: StockEntryRequest = {
+    const entryData: StockMovementRequest = {
       ...data,
       ...(normalizedExpiryDate && { expiryDate: normalizedExpiryDate }),
       ...(data.operationType === "reduce" && {
@@ -201,7 +201,7 @@ class StockEntriesService {
     // Ensure quantity is stored as positive in the database for clarity
     // (we'll handle the sign when updating stock)
     const quantityToStore = Math.abs(entryData.quantityInBaseUnits);
-    const entry = await StockEntry.create({
+    const entry = await StockMovement.create({
       ...entryData,
       quantityInBaseUnits: quantityToStore,
     });
@@ -232,6 +232,7 @@ class StockEntriesService {
   }
 }
 
-const stockEntriesService = new StockEntriesService();
+const stockMovementService = new StockMovementService();
 
-export default stockEntriesService;
+export default stockMovementService;
+
