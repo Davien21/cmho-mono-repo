@@ -12,13 +12,16 @@ import InventoryUnit from "../src/modules/inventory-units/inventory-units.model"
 import InventoryCategory from "../src/modules/inventory-categories/inventory-categories.model";
 import Supplier from "../src/modules/suppliers/suppliers.model";
 import InventoryItem from "../src/modules/inventory-items/inventory-items.model";
+import { IInventoryItem } from "../src/modules/inventory-items/inventory-items.types";
 import StockMovement from "../src/modules/stock-movement/stock-movement.model";
+import { IStockMovement } from "../src/modules/stock-movement/stock-movement.types";
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SUPER_ADMIN_EMAIL = "chidiebereekennia@gmail.com";
+const SUPER_ADMIN_NAME = "Chidiebere Ekennia";
 const SUPER_ADMIN_PASSWORD = "1234";
 
 // Load seed data from JSON files
@@ -77,7 +80,7 @@ async function seedSuperAdmin() {
   const passwordHash = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
 
   await Admin.create({
-    name: "Chidiebere Ekennia",
+    name: SUPER_ADMIN_NAME,
     email: SUPER_ADMIN_EMAIL,
     passwordHash,
     isSuperAdmin: true,
@@ -91,23 +94,23 @@ async function seedSuperAdmin() {
 }
 
 async function seedInventoryPresets() {
-  // 1. Seed units
+  // 1. Seed units - batch create
+  const unitsToCreate = unitsData.map((unitData) => ({
+    name: unitData.name,
+    plural: unitData.plural,
+  }));
+
+  const createdUnits = await InventoryUnit.insertMany(unitsToCreate);
+  logger.info(`Seeded ${createdUnits.length} inventory units`);
+
+  // Build map for quick lookup
   const unitsByName = new Map<string, mongoose.Types.ObjectId>();
-
-  for (const unitData of unitsData) {
-    const unit = await InventoryUnit.create({
-      name: unitData.name,
-      plural: unitData.plural,
-    });
-
-    logger.info(
-      `Seeded inventory unit "${unitData.name}" (plural: "${unitData.plural}")`
-    );
-    unitsByName.set(unitData.name, unit._id);
+  for (const unit of createdUnits) {
+    unitsByName.set(unit.name, unit._id);
   }
 
-  // 2. Seed categories using the units above
-  for (const category of categoriesData) {
+  // 2. Seed categories - batch create
+  const categoriesToCreate = categoriesData.map((category) => {
     // Parse unitPreset string (e.g., "Pack -> Card -> Tablet") into array of unit names
     const unitNames = category.unitPreset
       .split("->")
@@ -125,26 +128,26 @@ async function seedInventoryPresets() {
       );
     }
 
-    await InventoryCategory.create({
+    return {
       name: category.name,
       unitPresetIds,
       canBeSold: category.canBeSold,
-    });
+    };
+  });
 
-    logger.info(
-      `Seeded inventory category "${category.name}" with unit preset: ${category.unitPreset}`
-    );
-  }
+  const createdCategories = await InventoryCategory.insertMany(
+    categoriesToCreate
+  );
+  logger.info(`Seeded ${createdCategories.length} inventory categories`);
 }
 
 async function seedSuppliers() {
-  for (const seed of SUPPLIER_SEEDS) {
-    await Supplier.create({
-      name: seed.name,
-    });
+  const suppliersToCreate = SUPPLIER_SEEDS.map((seed) => ({
+    name: seed.name,
+  }));
 
-    logger.info(`Seeded supplier "${seed.name}"`);
-  }
+  const createdSuppliers = await Supplier.insertMany(suppliersToCreate);
+  logger.info(`Seeded ${createdSuppliers.length} suppliers`);
 }
 
 interface InventoryItemSeed {
@@ -206,6 +209,16 @@ async function seedInventoryItems() {
 
     logger.info(`Processing ${items.length} items from ${filename}...`);
 
+    // Collect all items to create in batch
+    const itemsToCreate: Array<
+      Omit<IInventoryItem, "_id" | "createdAt" | "updatedAt">
+    > = [];
+    const itemMetadata: Array<{
+      name: string;
+      currentStockInBaseUnits: number;
+      expiryDates: string[];
+    }> = [];
+
     for (const item of items) {
       // Map category
       const categoryData = categoryMap.get(item.category);
@@ -228,8 +241,7 @@ async function seedInventoryItems() {
           }
 
           return {
-            id: unitId.toString(),
-            presetId: unitId.toString(),
+            id: unitId,
             name: unit.name,
             plural: unit.plural,
             quantity: unit.quantity,
@@ -246,8 +258,19 @@ async function seedInventoryItems() {
         currentStockInBaseUnits = baseQuantity;
       }
 
-      // Create inventory item
-      const createdItem = await InventoryItem.create({
+      // Collect expiry dates for later stock movement creation
+      const expiryDates: string[] = [];
+      if (item.earliestExpiryDate && item.earliestExpiryDate.trim() !== "") {
+        expiryDates.push(item.earliestExpiryDate);
+      }
+      if (item.laterExpiryDates && item.laterExpiryDates.length > 0) {
+        expiryDates.push(
+          ...item.laterExpiryDates.filter((d) => d && d.trim() !== "")
+        );
+      }
+
+      // Add to batch creation array
+      itemsToCreate.push({
         name: item.name,
         category: categoryData,
         units: transformedUnits,
@@ -258,52 +281,63 @@ async function seedInventoryItems() {
         isDeleted: false,
       });
 
-      // Create initial stock movement entries for all expiry dates
-      if (currentStockInBaseUnits > 0) {
-        const expiryDates: string[] = [];
-
-        // Add earliest expiry date if it exists
-        if (item.earliestExpiryDate && item.earliestExpiryDate.trim() !== "") {
-          expiryDates.push(item.earliestExpiryDate);
-        }
-
-        // Add later expiry dates if they exist
-        if (item.laterExpiryDates && item.laterExpiryDates.length > 0) {
-          expiryDates.push(
-            ...item.laterExpiryDates.filter((d) => d && d.trim() !== "")
-          );
-        }
-
-        // Create a stock movement for the earliest expiry date with all the stock
-        // (In reality, stock would be distributed across batches, but for seeding we'll use one entry)
-        if (expiryDates.length > 0) {
-          try {
-            const expiryDate = new Date(expiryDates[0]);
-
-            await StockMovement.create({
-              inventoryItemId: createdItem._id,
-              operationType: "add",
-              supplier: null, // No supplier for seed data
-              costPrice: 0, // Default placeholder
-              sellingPrice: 0, // Default placeholder
-              expiryDate: expiryDate,
-              quantityInBaseUnits: currentStockInBaseUnits,
-              balance: currentStockInBaseUnits,
-              performerId: superAdmin._id,
-              performerName: "Seed Script",
-            });
-          } catch (error) {
-            logger.error(
-              `Failed to create stock movement for "${item.name}": ${error}`
-            );
-          }
-        }
-      }
-
-      totalCreated++;
+      // Store metadata for stock movements
+      itemMetadata.push({
+        name: item.name,
+        currentStockInBaseUnits,
+        expiryDates,
+      });
     }
 
-    logger.info(`Created ${totalCreated} items from ${filename}`);
+    // Batch create all items
+    const createdItems = await InventoryItem.insertMany(itemsToCreate);
+    logger.info(`Created ${createdItems.length} items from ${filename}`);
+    totalCreated += createdItems.length;
+
+    // Now create stock movements in batch
+    const stockMovementsToCreate: Array<
+      Omit<IStockMovement, "_id" | "createdAt" | "updatedAt">
+    > = [];
+
+    for (let i = 0; i < createdItems.length; i++) {
+      const createdItem = createdItems[i];
+      const metadata = itemMetadata[i];
+
+      // Create initial stock movement entries for all expiry dates
+      if (
+        metadata.currentStockInBaseUnits > 0 &&
+        metadata.expiryDates.length > 0
+      ) {
+        try {
+          const expiryDate = new Date(metadata.expiryDates[0]);
+
+          stockMovementsToCreate.push({
+            inventoryItemId: createdItem._id,
+            operationType: "add",
+            supplier: null, // No supplier for seed data
+            costPrice: 0, // Default placeholder
+            sellingPrice: 0, // Default placeholder
+            expiryDate: expiryDate,
+            quantityInBaseUnits: metadata.currentStockInBaseUnits,
+            balance: metadata.currentStockInBaseUnits,
+            performerId: superAdmin._id,
+            performerName: SUPER_ADMIN_NAME,
+          });
+        } catch (error) {
+          logger.error(
+            `Failed to prepare stock movement for "${metadata.name}": ${error}`
+          );
+        }
+      }
+    }
+
+    // Batch create stock movements
+    if (stockMovementsToCreate.length > 0) {
+      await StockMovement.insertMany(stockMovementsToCreate);
+      logger.info(
+        `Created ${stockMovementsToCreate.length} stock movements for ${filename}`
+      );
+    }
   }
 
   logger.info(`Total inventory items seeded: ${totalCreated}`);
