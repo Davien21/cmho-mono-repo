@@ -25,7 +25,7 @@ export async function getInventoryItems(
     stockFilter,
   } = req.query;
 
-  const items = await inventoryItemsService.list({
+  const result = await inventoryItemsService.list({
     sort: sort === "desc" ? -1 : 1,
     limit: parseInt(limit),
     page: parseInt(page),
@@ -39,7 +39,7 @@ export async function getInventoryItems(
       | undefined,
   });
 
-  res.send(successResponse("Inventory items fetched successfully", items));
+  res.send(successResponse("Inventory items fetched successfully", result));
 }
 
 export async function createInventoryItem(req: Request, res: Response) {
@@ -53,6 +53,10 @@ export async function createInventoryItem(req: Request, res: Response) {
 
   // Track the activity
   const itemName = item.name || data.name || "Unknown Item";
+  const categoryName =
+    typeof item.category === "object" && item.category
+      ? item.category.name
+      : "Unknown Category";
   const activityData = {
     type: ActivityTypes.CREATE_INVENTORY_ITEM,
     module: "inventory",
@@ -61,7 +65,7 @@ export async function createInventoryItem(req: Request, res: Response) {
     performerName: admin.name,
     description: `Created inventory item "${itemName}"`,
     metadata: {
-      category: data.category,
+      category: categoryName,
     },
   };
   await activityTrackingService.trackActivity(activityData);

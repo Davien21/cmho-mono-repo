@@ -7,20 +7,18 @@ export type InventoryStatus = "active" | "disabled" | "deleted";
 // ---- Units ----
 
 export interface IInventoryUnitBase {
-  id: string;
+  id: ObjectId;
   name: string;
   plural: string;
 }
 
 // Draft item units: can be partially specified
 export interface IInventoryUnitDraft extends IInventoryUnitBase {
-  presetId?: string;
   quantity?: number;
 }
 
 // Ready item units: must be fully specified
 export interface IInventoryUnitReady extends IInventoryUnitBase {
-  presetId: string;
   quantity: number;
 }
 
@@ -34,10 +32,15 @@ export interface IInventoryItemImage {
   mediaId: string;
 }
 
+export interface IInventoryCategory {
+  _id: ObjectId;
+  name: string;
+}
+
 export interface IInventoryItemBase {
   _id: ObjectId;
   name: string;
-  category: string;
+  category: IInventoryCategory;
   status: InventoryStatus;
   createdBy: ObjectId;
   currentStockInBaseUnits?: number;

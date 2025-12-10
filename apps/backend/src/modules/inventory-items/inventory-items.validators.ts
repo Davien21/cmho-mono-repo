@@ -22,10 +22,17 @@ export type GetInventoryItemsQuerySchema = yup.InferType<
 
 const inventoryUnitSchema = yup
   .object({
-    id: yup.string().required().label("Unit ID"),
+    id: yup
+      .string()
+      .required()
+      .label("Unit ID")
+      .test("is-valid-objectid", "Invalid unit ID", (value) => {
+        if (!value) return false;
+        // Must be valid ObjectId format (24 hex characters)
+        return /^[0-9a-fA-F]{24}$/.test(value);
+      }),
     name: yup.string().required().label("Unit name"),
     plural: yup.string().required().label("Unit plural"),
-    presetId: yup.string().optional().label("Preset ID"),
     quantity: yup.number().optional().label("Quantity"),
   })
   .required();
@@ -37,10 +44,24 @@ const imageSchema = yup
   })
   .optional();
 
+const categoryObjectSchema = yup
+  .object({
+    _id: yup
+      .string()
+      .required()
+      .label("Category ID")
+      .test("is-valid-objectid", "Invalid category ID", (value) => {
+        if (!value) return false;
+        return /^[0-9a-fA-F]{24}$/.test(value);
+      }),
+    name: yup.string().required().label("Category name"),
+  })
+  .required();
+
 export const createInventoryItemSchema = yup
   .object<IInventoryItemRequest>({
     name: yup.string().required().label("Name"),
-    category: yup.string().required().label("Category"),
+    category: categoryObjectSchema,
     units: yup.array(inventoryUnitSchema).min(1).required().label("Units"),
     lowStockValue: yup.number().optional().label("Low stock value"),
     status: yup
@@ -60,7 +81,7 @@ export const updateInventoryItemSchema = yup.object<
   Partial<IInventoryItemRequest>
 >({
   name: yup.string().label("Name"),
-  category: yup.string().label("Category"),
+  category: categoryObjectSchema.optional(),
   units: yup.array(inventoryUnitSchema).label("Units"),
   lowStockValue: yup.number().label("Low stock value"),
   status: yup

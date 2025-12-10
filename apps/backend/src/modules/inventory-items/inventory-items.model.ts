@@ -1,13 +1,20 @@
 import mongoose from "mongoose";
-import { IInventoryItem, IInventoryUnit } from "./inventory-items.types";
-import notificationsService from "../notifications/notifications.service";
+import {
+  IInventoryCategory,
+  IInventoryItem,
+  IInventoryUnit,
+} from "./inventory-items.types";
+import notificationsService from "../notifications/trigger_notifications.service";
 
 const { Schema, model } = mongoose;
 
 const inventoryUnitSchema = new Schema<IInventoryUnit>(
   {
-    id: { type: String, required: true },
-    presetId: { type: String, required: false },
+    id: {
+      type: Schema.Types.ObjectId,
+      ref: "InventoryUnit",
+      required: true,
+    },
     name: { type: String, required: true, trim: true },
     plural: { type: String, required: true, trim: true },
     quantity: { type: Number, required: false },
@@ -15,10 +22,25 @@ const inventoryUnitSchema = new Schema<IInventoryUnit>(
   { _id: false }
 );
 
+const categorySchema = new Schema<IInventoryCategory>(
+  {
+    _id: {
+      type: Schema.Types.ObjectId,
+      ref: "InventoryCategory",
+      required: true,
+    },
+    name: { type: String, required: true, trim: true },
+  },
+  { _id: false }
+);
+
 const inventoryItemSchema = new Schema<IInventoryItem>(
   {
     name: { type: String, required: true, trim: true },
-    category: { type: String, required: true, trim: true },
+    category: {
+      type: categorySchema,
+      required: true,
+    },
     units: { type: [inventoryUnitSchema], required: true },
     lowStockValue: { type: Number, required: false },
     status: {

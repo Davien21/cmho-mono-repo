@@ -20,29 +20,47 @@ class InventoryItemsService {
     category?: string;
     search?: string;
     stockFilter?: "outOfStock" | "lowStock" | "inStock";
-  }): Promise<IInventoryItem[]> {
+  }): Promise<{
+    data: IInventoryItem[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const skip = (page - 1) * limit;
     const now = new Date();
 
     const filter: Record<string, any> = { isDeleted: { $ne: true } };
     if (status) filter.status = status;
-    if (category) filter.category = category;
-    if (search) {
-      // If category is already filtered, only search by name
-      // Otherwise, search by name OR category
-      if (category) {
-        filter.name = { $regex: search, $options: "i" };
-      } else {
-        filter.$or = [
-          { name: { $regex: search, $options: "i" } },
-          { category: { $regex: search, $options: "i" } },
-        ];
-      }
+
+    // Handle category filter - match against embedded category.name
+    if (category) {
+      filter["category.name"] = category;
     }
 
-    // Use aggregation to calculate earliest expiry date dynamically from stock entries
-    const items = await InventoryItem.aggregate([
+    // Build the aggregation pipeline without pagination first to get total count
+    const basePipeline: any[] = [
       { $match: filter },
+      // Handle search - search by item name or category name
+      ...(search && !category
+        ? [
+            {
+              $match: {
+                $or: [
+                  { name: { $regex: search, $options: "i" } },
+                  { "category.name": { $regex: search, $options: "i" } },
+                ],
+              },
+            },
+          ]
+        : search && category
+        ? [
+            {
+              $match: {
+                name: { $regex: search, $options: "i" },
+              },
+            },
+          ]
+        : []),
       {
         $lookup: {
           from: "stock_movements",
@@ -159,13 +177,28 @@ class InventoryItemsService {
             },
           ]
         : []),
-      { $sort: { _id: sort } },
-      { $skip: skip },
-      { $limit: limit },
+    ];
+
+    // Execute aggregation with facet to get both count and data
+    const result = await InventoryItem.aggregate([
+      ...basePipeline,
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [{ $sort: { _id: sort } }, { $skip: skip }, { $limit: limit }],
+        },
+      },
     ]);
 
-    // Aggregation returns plain objects that match IInventoryItem interface
-    return items as IInventoryItem[];
+    const total = result[0]?.metadata[0]?.total || 0;
+    const items = result[0]?.data || [];
+
+    return {
+      data: items as IInventoryItem[],
+      total,
+      page,
+      limit,
+    };
   }
 
   async create(data: IInventoryItemRequest): Promise<IInventoryItem> {
@@ -230,7 +263,10 @@ class InventoryItemsService {
   }
 
   async findById(id: string | Types.ObjectId): Promise<IInventoryItem | null> {
-    return InventoryItem.findOne({ _id: id, isDeleted: { $ne: true } });
+    return InventoryItem.findOne({
+      _id: id,
+      isDeleted: { $ne: true },
+    });
   }
 
   async delete(id: string): Promise<IInventoryItem | null> {
