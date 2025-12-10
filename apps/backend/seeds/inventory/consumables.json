@@ -1,0 +1,1130 @@
+[
+  {
+    "name": "Cotton",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 6
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Em Vac set",
+    "category": "Consumable",
+    "earliestExpiryDate": "2024-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Romo Vac set",
+    "category": "Consumable",
+    "earliestExpiryDate": "2026-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "medivac",
+    "category": "Consumable",
+    "earliestExpiryDate": "2024-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Blood transfusion set",
+    "category": "Consumable",
+    "earliestExpiryDate": "2026-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 75
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Surgical glove elbow length",
+    "category": "Consumable",
+    "earliestExpiryDate": "2026-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 50
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Scalp Vein 21G(blue)",
+    "category": "Consumable",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Scalp Vein 21G(Green)",
+    "category": "Consumable",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 52
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Scalp Vein 22G Black",
+    "category": "Consumable",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "scalp Vein 23G Blue",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 152
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "NG tube(sizes not specified)",
+    "category": "Consumable",
+    "earliestExpiryDate": "2031-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 25
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Disposable Insulin syringe (1-100)",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Needle 23G blue",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 9
+      },
+      {
+        "name": "Unit",
+        "quantity": 900
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Needlle 21G green",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 7
+      },
+      {
+        "name": "Unit",
+        "quantity": 700
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Needle 22G Black",
+    "category": "Consumable",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Unit",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Catheter size 16",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Unit",
+        "quantity": 30
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Catheter size 18",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Unit",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Syringes 2ml",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 23
+      },
+      {
+        "name": "Unit",
+        "quantity": 2300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Syringes 5ml",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 11
+      },
+      {
+        "name": "Unit",
+        "quantity": 1100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Syringes 10ml",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Unit",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Umbilical cord clamp",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 76
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Disposable glove (nylon)",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 15
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cannula Blue",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 5
+      },
+      {
+        "name": "Unit",
+        "quantity": 250
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 50
+      }
+    ]
+  },
+  {
+    "name": "Cannula green",
+    "category": "Consumable",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 8
+      },
+      {
+        "name": "Unit",
+        "quantity": 400
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 50
+      }
+    ]
+  },
+  {
+    "name": "Cannula yellow",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Unit",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 50
+      }
+    ]
+  },
+  {
+    "name": "Plaster",
+    "category": "Consumable",
+    "earliestExpiryDate": "2028-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Unit",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 5
+      }
+    ]
+  },
+  {
+    "name": "Delivery mat",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 4
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Adult diaper",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 5
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Face mask",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 8
+      },
+      {
+        "name": "Unit",
+        "quantity": 400
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 50
+      }
+    ]
+  },
+  {
+    "name": "Sterile water for injection",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 15
+      },
+      {
+        "name": "Unit",
+        "quantity": 515
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 34
+      }
+    ]
+  },
+  {
+    "name": "TBC",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Surgical glove",
+    "category": "Consumable",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 3
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Bivatracin",
+    "category": "Consumable",
+    "earliestExpiryDate": "2028-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Lidocaine gel",
+    "category": "Consumable",
+    "earliestExpiryDate": "2026-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Gauze Rolls",
+    "category": "Consumable",
+    "earliestExpiryDate": "2030-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 8
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Chromic 2",
+    "category": "Consumable",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 12
+      },
+      {
+        "name": "Unit",
+        "quantity": 144
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Chromic 1",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Unit",
+        "quantity": 24
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Chromic 0",
+    "category": "Consumable",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Unit",
+        "quantity": 36
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Chromic 2/0",
+    "category": "Consumable",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 7
+      },
+      {
+        "name": "Unit",
+        "quantity": 84
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Vicryl 2",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Unit",
+        "quantity": 72
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Vicryl 1",
+    "category": "Consumable",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Unit",
+        "quantity": 48
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Vicryl 0",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 12
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Vicryl 2/0",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 7
+      },
+      {
+        "name": "Unit",
+        "quantity": 84
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Nylon 2",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 12
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Nylon 1",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Unit",
+        "quantity": 48
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Nylon 0",
+    "category": "Consumable",
+    "earliestExpiryDate": "2029-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Unit",
+        "quantity": 48
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Nylon 2/0",
+    "category": "Consumable",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 12
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Accu-Answer strip",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Unit",
+        "quantity": 1940
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 485
+      }
+    ]
+  },
+  {
+    "name": "Yellow cannula",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 50
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 50
+      }
+    ]
+  },
+  {
+    "name": "*Drip set",
+    "category": "Consumable",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 0
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Sufra Tulle",
+    "category": "Consumable",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  }
+]

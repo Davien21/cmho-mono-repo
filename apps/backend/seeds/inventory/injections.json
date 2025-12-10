@@ -1,0 +1,1106 @@
+[
+  {
+    "name": "Furosemide Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Chlorpromazine  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Ketamine  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 8
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 8
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "name": "Promethazine  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Tranexamic acid  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 5
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 25
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 5
+      }
+    ]
+  },
+  {
+    "name": "Adrenaline  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 5
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 50
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Hyosine  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2025-07-01",
+    "laterExpiryDates": [
+      "2025-11-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 30
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Piroxicam  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Omeprazole  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 25
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 282
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 11
+      }
+    ]
+  },
+  {
+    "name": "Gentamycin  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Ceftazidime  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Ceftran 1g",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 32
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Ceftriaxone 1g",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 13
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 8
+      }
+    ]
+  },
+  {
+    "name": "Hydrocortisone  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 130
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 43
+      }
+    ]
+  },
+  {
+    "name": "Analgin  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "C.pen inj",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [
+      "2027-10-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 13
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 130
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Dexamethasone  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Lidocaine + Adrenaline",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Lidocaine (plain)",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 9
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Quininine  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 80
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 80
+      }
+    ]
+  },
+  {
+    "name": "Aminophylline  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 40
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 40
+      }
+    ]
+  },
+  {
+    "name": "Arthemeter  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 29
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 180
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "name": "Diclofenac  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 8
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 800
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Paracetamol  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 223
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 2230
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "PABIOVITE(High potency 1+2)",
+    "category": "Injection",
+    "earliestExpiryDate": "2025-11-01",
+    "laterExpiryDates": [],
+    "quantities": [],
+    "units": []
+  },
+  {
+    "name": "Ceft-Sulbactam 1.5g",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Amoxicilline Injec",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 2
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "name": "Arthemeter  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 60
+      }
+    ]
+  },
+  {
+    "name": "pentazocine  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Sleepshot",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 4
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Diazepam  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Artheter 22.5mg",
+    "category": "Injection",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Vancomycin  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 10
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Abther 150mg  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 7
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 21
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 3
+      }
+    ]
+  },
+  {
+    "name": "Fortum  Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2029-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 3
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Acupan",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 22
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 110
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 5
+      }
+    ]
+  },
+  {
+    "name": "Ciducdyn",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 6
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "name": "Quinine",
+    "category": "Injection",
+    "earliestExpiryDate": "2029-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 40
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 400
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Swipip-T 4.5g Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2026-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 40
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Artesunate 60mg IV",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [],
+    "units": []
+  },
+  {
+    "name": "Artesunate 120mg IV",
+    "category": "Injection",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "EMAL injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2029-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 7
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 21
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 3
+      }
+    ]
+  },
+  {
+    "name": "Meropenem Injection",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 40
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Ergometrin",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Atropine",
+    "category": "Injection",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Ampoule/Vial",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 10
+      }
+    ]
+  }
+]

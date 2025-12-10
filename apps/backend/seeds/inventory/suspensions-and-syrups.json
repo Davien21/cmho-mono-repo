@@ -1,0 +1,665 @@
+[
+  {
+    "name": "Cyprigold Syr",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 13
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Vit C syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 40
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Mamaesteo syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "BeCombion (B.complex) syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 3
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Oplex syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 30
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cofta (Ammonium Chloride + Pecacuaha) syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 45
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Honey cov Beehive syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 21
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Evacid susp",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 13
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Lablin syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 30
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Ulcamed susp",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 0
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Ulgicid susp",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Labdrex (ibuprofen 100mg/5ml) syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 30
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Kiddimin syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 17
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Actiflu syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Novalyn(dextrometophan) syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Nospamin syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "PCM syrup (120/5ml)",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 40
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Rophegan(promethazine) syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Azithromycin susp 200mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 5
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Gremax azithromyxin 200mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 5
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Colibel drops",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 7
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Metronidazole susp 200mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 30
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Theramin syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 17
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Bunto blood tonic",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 4
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Haepler blood tonic",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 4
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Plexitone Tonic",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 30
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Lycofer syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 9
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Lycoset syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 16
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Galway's liquid paraffin",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 11
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Viscetrin(cetrizine) 5mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 61
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Loratidine syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 50
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "M/vite syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 40
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Aptizoom syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 15
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Bioflor",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 160
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Artemelum syrup",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 20
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cefexime susp. (Aquixim)",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 7
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cefexime Ezcef 100mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cefuroxime 125mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Ceezex (cefuroxime 125mg/5ml)",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 9
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Wormtac(Albendazole)",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 12
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Digiclav (Amoxiclav 400/57mg)",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 18
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Fleming (amoxicilin clavulinate 400/57mg",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 6
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Fleming (amoxicillin clav 228.5mg",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 5
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Oxyclav 228.5mg",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2026-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Ampicillin 125mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2025-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Erythromycin 125mg/5ml",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Arthemeter susp 18/120mg",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 15
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Orabiotic suspension",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 24
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Novadex(Ibuprofen) syr",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Rexifen(Pcm) syr",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Weldol PCM",
+    "category": "Suspension or Syrup",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Sachet or Bottle",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  }
+]

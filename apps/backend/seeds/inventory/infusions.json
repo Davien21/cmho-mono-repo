@@ -1,0 +1,299 @@
+[
+  {
+    "name": "Tinidazole Infusion",
+    "category": "Infusion",
+    "earliestExpiryDate": "07/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 3
+      },
+      {
+        "name": "Unit",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "5% D/W Infusion",
+    "category": "Infusion",
+    "earliestExpiryDate": "10/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 2
+      },
+      {
+        "name": "Unit",
+        "quantity": 40
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "R/L Infusion",
+    "category": "Infusion",
+    "earliestExpiryDate": "03/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 3
+      },
+      {
+        "name": "Unit",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "10% D/W  Infusion",
+    "category": "Infusion",
+    "earliestExpiryDate": "07/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "N/S Infusion",
+    "category": "Infusion",
+    "earliestExpiryDate": "08/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "10% Mannitol",
+    "category": "Infusion",
+    "earliestExpiryDate": "06/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 0
+      },
+      {
+        "name": "Unit",
+        "quantity": 11
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "4.3% D/S",
+    "category": "Infusion",
+    "earliestExpiryDate": "04/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "20% Mannitol",
+    "category": "Infusion",
+    "earliestExpiryDate": "12/27",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "5% D/S",
+    "category": "Infusion",
+    "earliestExpiryDate": "11/28",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 3
+      },
+      {
+        "name": "Unit",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "Cipro Infusion",
+    "category": "Infusion",
+    "earliestExpiryDate": "09/27",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 10
+      },
+      {
+        "name": "Unit",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Metro Infusion",
+    "category": "Infusion",
+    "earliestExpiryDate": "06/27",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Carton",
+        "quantity": 12
+      },
+      {
+        "name": "Unit",
+        "quantity": 120
+      }
+    ],
+    "units": [
+      {
+        "name": "Carton",
+        "plural": "Cartons",
+        "quantity": 1
+      },
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 10
+      }
+    ]
+  }
+]

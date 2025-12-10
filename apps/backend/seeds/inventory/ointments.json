@@ -1,0 +1,327 @@
+[
+  {
+    "name": "Gentamicin ear drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2026-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 16
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Amethocaine eyedrop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Timolol eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cipro/Dexa eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 8
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Moxifloxacin eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 8
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Dorzolamide eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 8
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Norfloxacin eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 7
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Beta N eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 15
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Chloramphenicol eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Maxi Tears eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2026-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Nepafenac eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 14
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Neomycin/Dexa eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2025-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 8
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cromolyn eye drop",
+    "category": "Ointment",
+    "earliestExpiryDate": "2026-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Chloramphenicol eye ointment",
+    "category": "Ointment",
+    "earliestExpiryDate": "2026-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Adult Nasal drops",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 6
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Paediatric Nasal drops",
+    "category": "Ointment",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 8
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Czocain (Lidocaine gel)",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 6
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Lofenac Gel",
+    "category": "Ointment",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 11
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Multi Action Topical Gel",
+    "category": "Ointment",
+    "earliestExpiryDate": "2026-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Noww-Noww",
+    "category": "Ointment",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 12
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "GeoDerm",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 12
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Funbact-A",
+    "category": "Ointment",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 24
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Benzydamine Difflam Spray",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 2
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "ABF-3 cream",
+    "category": "Ointment",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 37
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Zolamax (acetazolamide)",
+    "category": "Ointment",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Unit",
+        "quantity": 210
+      }
+    ],
+    "units": []
+  }
+]

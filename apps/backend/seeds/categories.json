@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Drug",
+    "unitPreset": "Pack -> Card -> Tablet",
+    "canBeSold": true
+  },
+  {
+    "name": "Ointment",
+    "unitPreset": "Unit",
+    "canBeSold": true
+  },
+  {
+    "name": "Injection",
+    "unitPreset": "Pack -> Ampoule/Vial",
+    "canBeSold": true
+  },
+  {
+    "name": "Suspension or Syrup",
+    "unitPreset": "Sachet or Bottle",
+    "canBeSold": true
+  },
+  {
+    "name": "Infusion",
+    "unitPreset": "Carton -> Unit",
+    "canBeSold": true
+  },
+  {
+    "name": "Consumable",
+    "unitPreset": "Unit",
+    "canBeSold": false
+  }
+]

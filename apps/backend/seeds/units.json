@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Container",
+    "plural": "Containers"
+  },
+  {
+    "name": "Pack",
+    "plural": "Packs"
+  },
+  {
+    "name": "Card",
+    "plural": "Cards"
+  },
+  {
+    "name": "Tablet",
+    "plural": "Tablets"
+  },
+  {
+    "name": "Unit",
+    "plural": "Units"
+  },
+  {
+    "name": "Ampoule",
+    "plural": "Ampoules"
+  },
+  {
+    "name": "Vial",
+    "plural": "Vials"
+  },
+  {
+    "name": "Ampoule/Vial",
+    "plural": "Ampoules/Vials"
+  },
+  {
+    "name": "Sachet or Bottle",
+    "plural": "Sachets or Bottles"
+  },
+  {
+    "name": "Carton",
+    "plural": "Cartons"
+  }
+]

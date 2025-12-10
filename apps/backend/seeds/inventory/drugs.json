@@ -1,0 +1,5673 @@
+[
+  {
+    "name": "Primprex [Co-Trimoxazole 80/480]",
+    "category": "Drug",
+    "earliestExpiryDate": "2030-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Lozetrim [Co-trimoxazole 80/480]",
+    "category": "Drug",
+    "earliestExpiryDate": "2029-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Card",
+        "quantity": 100
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Doxycap 100mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-11-01",
+    "laterExpiryDates": [
+      "2029-02-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 22
+      },
+      {
+        "name": "Card",
+        "quantity": 220
+      },
+      {
+        "name": "Tablet",
+        "quantity": 2200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Pregabalin 75mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-03-01",
+    "laterExpiryDates": [
+      "2027-03-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 420
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 14
+      }
+    ]
+  },
+  {
+    "name": "pregabalin 150mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Card",
+        "quantity": 9
+      },
+      {
+        "name": "Tablet",
+        "quantity": 90
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Gabapentin 300mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 500
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 500
+      }
+    ]
+  },
+  {
+    "name": "Glipvas 50/1000mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 20
+      },
+      {
+        "name": "Card",
+        "quantity": 60
+      },
+      {
+        "name": "Tablet",
+        "quantity": 600
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Diamet (metformin 500mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Dapagliflozin",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 22
+      },
+      {
+        "name": "Card",
+        "quantity": 66
+      },
+      {
+        "name": "Tablet",
+        "quantity": 660
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Trafix cefexime 200mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Trafix cefexime 100mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Dycolev levofloxacin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Card",
+        "quantity": 40
+      },
+      {
+        "name": "Tablet",
+        "quantity": 400
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Lebal Levofloxacin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 140
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 14
+      }
+    ]
+  },
+  {
+    "name": "Ciprobiotic ciprofloxacin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Nemoxil Amoxicilin 250mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Damoxen Amoxicillin 250mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Petsow Amoxicilin 250ng",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Fungkik ketoconazole 200mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Metrosan (metronidazole 200mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 2000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Metrozol (metronidazole 400mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2029-01-01",
+    "laterExpiryDates": [
+      "2030-02-01"
+    ],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 2000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Nitrofat (Nitrofurantoin 100mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Fluconazole (pinnacle) 200mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Hemafolin",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 25
+      },
+      {
+        "name": "Card",
+        "quantity": 250
+      },
+      {
+        "name": "Tablet",
+        "quantity": 7500
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Neurolab forte",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Card",
+        "quantity": 60
+      },
+      {
+        "name": "Tablet",
+        "quantity": 600
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Multivite with ginseng",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 18
+      },
+      {
+        "name": "Card",
+        "quantity": 108
+      },
+      {
+        "name": "Tablet",
+        "quantity": 540
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 5
+      }
+    ]
+  },
+  {
+    "name": "Xtrafit(M/vite, Ginseng, Aloe vera, a.acids",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 5
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 150
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 5
+      }
+    ]
+  },
+  {
+    "name": "Labralax(diclofenac potassium)",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 40
+      },
+      {
+        "name": "Card",
+        "quantity": 400
+      },
+      {
+        "name": "Tablet",
+        "quantity": 4000
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Diclofenac Na+",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Card",
+        "quantity": 100
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Cataflam",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 39
+      },
+      {
+        "name": "Tablet",
+        "quantity": 390
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Oxyphenac(Diclofenac k+)",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "quantity": 4000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Dolopain(Vit B1,6,12)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 8
+      },
+      {
+        "name": "Card",
+        "quantity": 80
+      },
+      {
+        "name": "Tablet",
+        "quantity": 800
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Oxyurea capsules (Hydroxyurea)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "quantity": 120
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Anorol",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Algafen Ibuprofen",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Celecoxib capsules",
+    "category": "Drug",
+    "earliestExpiryDate": "2025-09-01",
+    "laterExpiryDates": [
+      "2027-07-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 44
+      },
+      {
+        "name": "Card",
+        "quantity": 186
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1860
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Kinbrex Celecoxib",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Sirdalud 2mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 16
+      },
+      {
+        "name": "Card",
+        "quantity": 48
+      },
+      {
+        "name": "Tablet",
+        "quantity": 480
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Sirdalud4mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Card",
+        "quantity": 18
+      },
+      {
+        "name": "Tablet",
+        "quantity": 180
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Wormin( Mebendazole)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 13
+      },
+      {
+        "name": "Tablet",
+        "quantity": 13
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "name": "Wormex Albendazole",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 500
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Tagrol(Carbamazepine)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 5
+      },
+      {
+        "name": "Card",
+        "quantity": 50
+      },
+      {
+        "name": "Tablet",
+        "quantity": 500
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "stugeron",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Card",
+        "quantity": 16
+      },
+      {
+        "name": "Tablet",
+        "quantity": 160
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Stemetil",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-07-01",
+    "laterExpiryDates": [
+      "2027-02-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 600
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 15
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "Adullt ACT 80/480mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 15
+      },
+      {
+        "name": "Card",
+        "quantity": 150
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1540
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Havax Children ACT 20/120mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 28
+      },
+      {
+        "name": "Tablet",
+        "quantity": 672
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 28
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 24
+      }
+    ]
+  },
+  {
+    "name": "Malanther children ACT 20/120mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 240
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 24
+      }
+    ]
+  },
+  {
+    "name": "Nifedipine 20mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 170
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1700
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Carvedilol 6.25mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 15
+      },
+      {
+        "name": "Card",
+        "quantity": 60
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1680
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 28
+      }
+    ]
+  },
+  {
+    "name": "Carvedilol 12.5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "quantity": 30
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Propanolol 40mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 980
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 15
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 33
+      }
+    ]
+  },
+  {
+    "name": "Vasoprin 75mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Card",
+        "quantity": 60
+      },
+      {
+        "name": "Tablet",
+        "quantity": 600
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Clopidogrel 75mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 13
+      },
+      {
+        "name": "Card",
+        "quantity": 39
+      },
+      {
+        "name": "Tablet",
+        "quantity": 390
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Dovasat H 50mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 12
+      },
+      {
+        "name": "Card",
+        "quantity": 360
+      },
+      {
+        "name": "Tablet",
+        "quantity": 3600
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Methyldopa 250mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Card",
+        "quantity": 100
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Amlodipine 5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 8
+      },
+      {
+        "name": "Card",
+        "quantity": 24
+      },
+      {
+        "name": "Tablet",
+        "quantity": 240
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Amlodipine 10mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 9
+      },
+      {
+        "name": "Card",
+        "quantity": 66
+      },
+      {
+        "name": "Tablet",
+        "quantity": 642
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "HCTZ 25mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 5
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 280
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 28
+      }
+    ]
+  },
+  {
+    "name": "Digoxin 0.25mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 50
+      },
+      {
+        "name": "Tablet",
+        "quantity": 500
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 50
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Cotrimoxazole 200mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "name": "Signa Kit (Fluconazole+ azithromycin+Secnidazole)",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 58
+      },
+      {
+        "name": "Tablet",
+        "quantity": 241
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 4
+      }
+    ]
+  },
+  {
+    "name": "Cefexime 400mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 9
+      },
+      {
+        "name": "Tablet",
+        "quantity": 90
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 9
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Tinidazole",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 100
+      },
+      {
+        "name": "Tablet",
+        "quantity": 400
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 50
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 4
+      }
+    ]
+  },
+  {
+    "name": "Omeshal (omeprazole+Claritromycin+Tinidazole)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 17
+      },
+      {
+        "name": "Card",
+        "quantity": 111
+      },
+      {
+        "name": "Tablet",
+        "quantity": 111
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "name": "Tamduster",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 24
+      },
+      {
+        "name": "Card",
+        "quantity": 72
+      },
+      {
+        "name": "Tablet",
+        "quantity": 730
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Orabiotic",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 13
+      },
+      {
+        "name": "Card",
+        "quantity": 39
+      },
+      {
+        "name": "Tablet",
+        "quantity": 390
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "SITEX (Cefuroxime+clavulinic acid 500/125mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 9
+      },
+      {
+        "name": "Card",
+        "quantity": 9
+      },
+      {
+        "name": "Tablet",
+        "quantity": 90
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "SEALCOR-20 (Rosuvastatin 20mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Card",
+        "quantity": 18
+      },
+      {
+        "name": "Tablet",
+        "quantity": 180
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Glepid-plus(glimepiride 2mg + met 500mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 5
+      },
+      {
+        "name": "Card",
+        "quantity": 15
+      },
+      {
+        "name": "Tablet",
+        "quantity": 150
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Gremax azithromyxin 250mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "name": "Amartem softgel 80/480mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "name": "Amartem softgel 20/120mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2025-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 120
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Palodal 2.5mg (Bromocriptine)",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 8
+      },
+      {
+        "name": "Tablet",
+        "quantity": 240
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Amlodipine",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Aquart(SP 40/320)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 9
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 9
+      }
+    ]
+  },
+  {
+    "name": "Levokad  (levofloxacin)",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 100
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Loranax (Loratidine 10mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Card",
+        "quantity": 100
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Trafix(Cefixime 200mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 9
+      },
+      {
+        "name": "Card",
+        "quantity": 9
+      },
+      {
+        "name": "Tablet",
+        "quantity": 90
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Trafix (Cefixime 100mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 5
+      },
+      {
+        "name": "Tablet",
+        "quantity": 50
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Day by Day wellness",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 30
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Eficef (cefixime 200mg)",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 8
+      },
+      {
+        "name": "Tablet",
+        "quantity": 80
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Brexa(Silymarin)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 10
+      },
+      {
+        "name": "Card",
+        "quantity": 29
+      },
+      {
+        "name": "Tablet",
+        "quantity": 290
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Kamagold",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 200
+      }
+    ]
+  },
+  {
+    "name": "Hympashym (Oxytetracycycline)",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 8
+      },
+      {
+        "name": "Tablet",
+        "quantity": 96
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Green-sol cream",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 10
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Dequadin(Lozenges)",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 5
+      },
+      {
+        "name": "Tablet",
+        "quantity": 50
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Kinvox 750mg (levofloxacin)",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 15
+      },
+      {
+        "name": "Tablet",
+        "quantity": 150
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Alpha Beta 150mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 16
+      },
+      {
+        "name": "Tablet",
+        "quantity": 48
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 3
+      }
+    ]
+  },
+  {
+    "name": "Amoxicillin 875mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Lansoprazole 30mg delayed release",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Pantodom",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Amoxicillin125mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 8
+      },
+      {
+        "name": "Tablet",
+        "quantity": 80
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Gynotab 200mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 9
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Calcium multi",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 9
+      },
+      {
+        "name": "Tablet",
+        "quantity": 570
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 63
+      }
+    ]
+  },
+  {
+    "name": "CoQ10 + Omega 3",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Fleming Amoxiclav",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 5
+      },
+      {
+        "name": "Tablet",
+        "quantity": 70
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 14
+      }
+    ]
+  },
+  {
+    "name": "Amoksiklav",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "quantity": 105
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 15
+      }
+    ]
+  },
+  {
+    "name": "Telsartan 40/12.5/5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 280
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 280
+      }
+    ]
+  },
+  {
+    "name": "Glucorex",
+    "category": "Drug",
+    "earliestExpiryDate": "2029-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "quantity": 360
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 90
+      }
+    ]
+  },
+  {
+    "name": "Telsartan 80/12.5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 13
+      },
+      {
+        "name": "Tablet",
+        "quantity": 364
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 28
+      }
+    ]
+  },
+  {
+    "name": "Clindamycin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 12
+      },
+      {
+        "name": "Tablet",
+        "quantity": 120
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Glipta-M",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "quantity": 210
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Ocefix 200mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "quantity": 40
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "S-Amlo 5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 24
+      },
+      {
+        "name": "Tablet",
+        "quantity": 720
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "S-Amlo 2.5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "quantity": 120
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Risperidone 2mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 5
+      },
+      {
+        "name": "Tablet",
+        "quantity": 150
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Ofloxacin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 13
+      },
+      {
+        "name": "Tablet",
+        "quantity": 130
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Arthrocare",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Fexocalog",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 9
+      },
+      {
+        "name": "Tablet",
+        "quantity": 9
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "name": "Syrenev",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "quantity": 120
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Cocodamol",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "No-Ach",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Card",
+        "quantity": 12
+      },
+      {
+        "name": "Tablet",
+        "quantity": 120
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Clomiphene 50mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-06-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Methocarbamol",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 38
+      },
+      {
+        "name": "Tablet",
+        "quantity": 380
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Mega powa",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 20
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Neurotex forte",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "quantity": 600
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 100
+      }
+    ]
+  },
+  {
+    "name": "Nerveron",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 29
+      }
+    ]
+  },
+  {
+    "name": "Collomak",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 3
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Gabapentin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 17
+      },
+      {
+        "name": "Tablet",
+        "quantity": 170
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Aceclomon Forte",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 18
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1900
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 106
+      }
+    ]
+  },
+  {
+    "name": "Stugeron",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1300
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 433
+      }
+    ]
+  },
+  {
+    "name": "Tamsulosin",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 900
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Arthrotec (unbranded)",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 103
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1030
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 52
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Atorvastatin 20mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "quantity": 300
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 30
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Atorvastatin 10mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 11
+      },
+      {
+        "name": "Card",
+        "quantity": 33
+      },
+      {
+        "name": "Tablet",
+        "quantity": 330
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Rosuvastatin 10mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 16
+      },
+      {
+        "name": "Tablet",
+        "quantity": 480
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  },
+  {
+    "name": "Lipitor 80mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 28
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Sinemet 25/250mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 1100
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Cognitol 5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 61
+      },
+      {
+        "name": "Tablet",
+        "quantity": 710
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "name": "Ginkgo Biloba",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "quantity": 540
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 90
+      }
+    ]
+  },
+  {
+    "name": "Salbutamol",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 2000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Cyproheptadine",
+    "category": "Drug",
+    "earliestExpiryDate": "2029-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 18
+      },
+      {
+        "name": "Card",
+        "quantity": 53
+      },
+      {
+        "name": "Tablet",
+        "quantity": 530
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Rite Joint",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [
+      "2028-03-01"
+    ],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 16
+      },
+      {
+        "name": "Tablet",
+        "quantity": 470
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 29
+      }
+    ]
+  },
+  {
+    "name": "Vit C 500mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 2000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Vit A",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 3000
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 300
+      }
+    ]
+  },
+  {
+    "name": "Evening Primrose oil",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Desquadin Losenges",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 3
+      },
+      {
+        "name": "Card",
+        "quantity": 75
+      },
+      {
+        "name": "Tablet",
+        "quantity": 750
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 25
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Folic Acid",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 4
+      },
+      {
+        "name": "Tablet",
+        "quantity": 4000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Essel forte",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Card",
+        "quantity": 12
+      },
+      {
+        "name": "Tablet",
+        "quantity": 120
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Calcium 300",
+    "category": "Drug",
+    "earliestExpiryDate": "2029-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "quantity": 2700
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 900
+      }
+    ]
+  },
+  {
+    "name": "Mamaesteo",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Card",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "quantity": 105
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 15
+      }
+    ]
+  },
+  {
+    "name": "Vit E 1000iu",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 200
+      }
+    ]
+  },
+  {
+    "name": "Ferrous sulphate",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 280
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 14
+      }
+    ]
+  },
+  {
+    "name": "Vit B6",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Ascorbion C100",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "BCo",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-02-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "quantity": 6000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "M/vite tabs",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Cimetidine",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 400
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "Ranitidine 300mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Ranitidine 150mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 8
+      },
+      {
+        "name": "Card",
+        "quantity": 80
+      },
+      {
+        "name": "Tablet",
+        "quantity": 800
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Hyperex",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-02-01",
+    "laterExpiryDates": [
+      "2028-05-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 28
+      },
+      {
+        "name": "Tablet",
+        "quantity": 280
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 14
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Erythromycin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 500
+      }
+    ]
+  },
+  {
+    "name": "Clarithromycin",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 26
+      },
+      {
+        "name": "Tablet",
+        "quantity": 154
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "name": "Omeprazole",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-03-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 25
+      },
+      {
+        "name": "Card",
+        "quantity": 250
+      },
+      {
+        "name": "Tablet",
+        "quantity": 3500
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 14
+      }
+    ]
+  },
+  {
+    "name": "ORS",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 28
+      },
+      {
+        "name": "Tablet",
+        "quantity": 84
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 3
+      }
+    ]
+  },
+  {
+    "name": "Loperamide",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 13
+      },
+      {
+        "name": "Tablet",
+        "quantity": 130
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Zinc",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 100
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 100
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Amitriptyline",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1500
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 500
+      }
+    ]
+  },
+  {
+    "name": "Zopiclone",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Dexamethasone  0.5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-09-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Bromazepam 1.5mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-01-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 6
+      },
+      {
+        "name": "Tablet",
+        "quantity": 60
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Prednisolone",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 26
+      },
+      {
+        "name": "Card",
+        "quantity": 260
+      },
+      {
+        "name": "Tablet",
+        "quantity": 2600
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Loratidine",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 7
+      },
+      {
+        "name": "Card",
+        "quantity": 70
+      },
+      {
+        "name": "Tablet",
+        "quantity": 700
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Tranexmic Acid 500mg tab",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-08-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 2
+      },
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Bisacodyl",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 6
+      },
+      {
+        "name": "Card",
+        "quantity": 42
+      },
+      {
+        "name": "Tablet",
+        "quantity": 105
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "name": "Paracetamol tab",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "quantity": 3000
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1000
+      }
+    ]
+  },
+  {
+    "name": "Clarithromycin tablet",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1400
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 140
+      }
+    ]
+  },
+  {
+    "name": "Duphastone tab",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 40
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "name": "Allopurinol tab",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 2
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "name": "Rivaroxaban",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-11-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 4
+      },
+      {
+        "name": "Card",
+        "quantity": 11
+      },
+      {
+        "name": "Tablet",
+        "quantity": 110
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Saline Nasal Drops",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-12-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 3
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Avro Apetite( cyproheptadine + M/vite)",
+    "category": "Drug",
+    "earliestExpiryDate": "2029-05-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "quantity": 30
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Bone Flex forte",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-07-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Tablet",
+        "quantity": 30
+      }
+    ],
+    "units": []
+  },
+  {
+    "name": "Misoprostol",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "quantity": 12
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 2
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "name": "Tolterodine",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 20
+      },
+      {
+        "name": "Tablet",
+        "quantity": 200
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Azithromycin",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 7
+      },
+      {
+        "name": "Tablet",
+        "quantity": 270
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 39
+      }
+    ]
+  },
+  {
+    "name": "Biopentin",
+    "category": "Drug",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Card",
+        "quantity": 14
+      },
+      {
+        "name": "Tablet",
+        "quantity": 140
+      }
+    ],
+    "units": [
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Omega-3 DailyVit",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-03-01",
+    "laterExpiryDates": [
+      "2028-06-01"
+    ],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 7
+      },
+      {
+        "name": "Card",
+        "quantity": 21
+      },
+      {
+        "name": "Tablet",
+        "quantity": 450
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 3
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 21
+      }
+    ]
+  },
+  {
+    "name": "Clarithromycin",
+    "category": "Drug",
+    "earliestExpiryDate": "2028-11-01",
+    "laterExpiryDates": [
+      "2029-02-01"
+    ],
+    "quantities": [
+      {
+        "name": "Container",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "quantity": 600
+      }
+    ],
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 60
+      }
+    ]
+  },
+  {
+    "name": "Doxycap 100mg",
+    "category": "Drug",
+    "earliestExpiryDate": "2027-04-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 19
+      },
+      {
+        "name": "Card",
+        "quantity": 190
+      },
+      {
+        "name": "Tablet",
+        "quantity": 1900
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "name": "Hemafolin",
+    "category": "Drug",
+    "earliestExpiryDate": "2026-10-01",
+    "laterExpiryDates": [],
+    "quantities": [
+      {
+        "name": "Pack",
+        "quantity": 24
+      },
+      {
+        "name": "Card",
+        "quantity": 240
+      },
+      {
+        "name": "Tablet",
+        "quantity": 7200
+      }
+    ],
+    "units": [
+      {
+        "name": "Pack",
+        "plural": "Packs",
+        "quantity": 1
+      },
+      {
+        "name": "Card",
+        "plural": "Cards",
+        "quantity": 10
+      },
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 30
+      }
+    ]
+  }
+]
