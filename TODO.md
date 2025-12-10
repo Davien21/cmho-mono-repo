@@ -77,6 +77,36 @@
   - [ ] Test all modal functionality (open, close, form submission, data passing)
 - **Note**: `ImagePickerModal` should remain props-based as it's a sub-modal used within other modals
 
+6. **Switch inventory list to pagination style**
+
+- **Current state**: Inventory list currently uses continuous scrolling/loading without clear pagination controls
+- **Goal**: Implement pagination controls for better navigation, performance, and user experience
+- **Why pagination over infinite scroll**:
+  - Better for data-entry/analysis workflows (users can reference specific positions)
+  - Clearer context and position within the list
+  - Improved performance with large datasets (no DOM accumulation)
+  - Easier to bookmark and share specific pages
+  - Better accessibility to page footers and navigation elements
+- **Implementation requirements**:
+  - [ ] Add pagination state management to inventory slice or component state
+  - [ ] Implement page size selector dropdown (25, 50, 100 items per page)
+  - [ ] Add "Showing X-Y of Z items" display to show current position
+  - [ ] Create pagination controls component (Previous, Next, page numbers)
+  - [ ] Add jump-to-page input field for quick navigation
+  - [ ] Implement keyboard navigation support (arrow keys, Enter)
+  - [ ] Update backend API to support pagination parameters (page, limit)
+  - [ ] Update InventoryList component to use paginated data
+  - [ ] Persist pagination preferences in localStorage or user settings
+  - [ ] Ensure pagination works with existing filters and search
+  - [ ] Test with various dataset sizes (small, medium, large)
+  - [ ] Ensure responsive design works on mobile devices
+- **Files to update**:
+  - `apps/frontend/src/components/InventoryList.tsx` - Add pagination controls and logic
+  - `apps/frontend/src/store/inventory-slice.ts` - Add pagination state management
+  - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Update to use pagination
+  - `apps/backend/src/modules/inventory-items/inventory-items.controller.ts` - Add pagination support
+  - `apps/backend/src/modules/inventory-items/inventory-items.service.ts` - Implement pagination queries
+
 9. **Make UnitGroupingBuilder select adjust to content size**
 
 - Currently, the UnitDropdown components in UnitGroupingBuilder use a fixed width (`w-24` = 96px)
@@ -182,7 +212,95 @@
 
 ## Backend Features
 
-2. **Restrict deletions to super admin access only**
+1. **Normalize inventory item data inside stock movement**
+
+- **Current state**: Stock movement records currently contain references to inventory items, but detailed information (performer, prices, quantities, unit details, dates) may be scattered or not properly denormalized
+- **Goal**: Normalize inventory item data within stock movement records to improve data structure, querying efficiency, and reporting capabilities
+- **Implementation requirements**:
+  - [ ] Analyze current stock movement schema and identify what data needs normalization
+  - [ ] Design normalized structure for inventory item details within stock movements:
+    - [ ] Performer information (who performed the stock movement)
+    - [ ] Price information (purchase price, selling price, unit prices)
+    - [ ] Quantity details (quantities in different units, base unit quantities)
+    - [ ] Unit information (unit names, unit IDs, conversion factors)
+    - [ ] Date information (transaction date, expiry dates, created/updated dates)
+    - [ ] Item snapshot (item name, category, supplier at time of movement)
+  - [ ] Create migration to update existing stock movement records with normalized data
+  - [ ] Update stock movement service to store normalized data when creating new movements
+  - [ ] Update stock movement model/schema with new normalized fields
+  - [ ] Update stock movement queries to utilize normalized data
+  - [ ] Consider performance implications and add appropriate indexes
+  - [ ] Update API responses to leverage normalized data (reduce joins)
+  - [ ] Test data integrity and query performance after normalization
+- **Benefits**:
+  - Faster queries (reduced joins)
+  - Historical data preservation (item details at time of movement)
+  - Better reporting and analytics capabilities
+  - Clearer data structure for stock movements
+- **Files to update**:
+  - `apps/backend/src/modules/stock-movement/stock-movement.model.ts` - Update schema
+  - `apps/backend/src/modules/stock-movement/stock-movement.service.ts` - Update create/update logic
+  - `apps/backend/src/modules/stock-movement/stock-movement.types.ts` - Update types
+  - `apps/backend/migrations/` - Create migration for existing data
+
+2. **Audit and optimize all models and service queries**
+
+- **Goal**: Comprehensive review and optimization of all database models, schemas, and service queries across the entire backend
+- **Current state**: As the application has grown, there may be opportunities for better normalization, denormalization, indexing, and query optimization that haven't been systematically reviewed
+- **Scope**: Review all backend modules to identify optimization opportunities
+- **Implementation requirements**:
+  - [ ] Audit all database models and schemas:
+    - [ ] Inventory items model
+    - [ ] Stock entries model
+    - [ ] Stock movement model
+    - [ ] Transactions model
+    - [ ] Suppliers model
+    - [ ] Categories model
+    - [ ] Units model
+    - [ ] Admins/Employees model
+    - [ ] Activity tracking model
+    - [ ] Trigger notifications model
+    - [ ] Gallery model
+    - [ ] Any other models in the system
+  - [ ] For each model, identify:
+    - [ ] Fields that should be indexed for better query performance
+    - [ ] Data that should be normalized (reduce redundancy, improve consistency)
+    - [ ] Data that should be denormalized (improve query performance, reduce joins)
+    - [ ] Relationships that need optimization (references, embedded documents, etc.)
+    - [ ] Fields with missing validation or constraints
+    - [ ] Unused or redundant fields that should be removed
+  - [ ] Review all service queries:
+    - [ ] Identify N+1 query problems
+    - [ ] Find queries that could benefit from aggregation pipelines
+    - [ ] Look for missing or ineffective indexes
+    - [ ] Identify slow queries using profiling tools
+    - [ ] Find opportunities to use projections to reduce data transfer
+    - [ ] Review pagination implementations
+    - [ ] Check for inefficient sorting or filtering operations
+  - [ ] Create optimization plan with prioritized improvements
+  - [ ] Implement optimizations in phases:
+    - [ ] Phase 1: Critical performance improvements (indexes, N+1 fixes)
+    - [ ] Phase 2: Schema normalization/denormalization changes (with migrations)
+    - [ ] Phase 3: Query refactoring and cleanup
+  - [ ] Create database migrations for schema changes
+  - [ ] Add or update indexes for frequently queried fields
+  - [ ] Benchmark query performance before and after optimizations
+  - [ ] Document optimization decisions and trade-offs
+  - [ ] Test data integrity after schema changes
+- **Considerations**:
+  - Balance between normalization (data consistency) and denormalization (query performance)
+  - Consider read vs write patterns for each model
+  - Plan for data migration and backward compatibility
+  - Monitor database performance metrics
+  - Consider impact on existing API contracts
+- **Benefits**:
+  - Improved query performance and response times
+  - Better data consistency and integrity
+  - Reduced database load and resource usage
+  - Clearer data models and relationships
+  - Better scalability for future growth
+
+3. **Restrict deletions to super admin access only**
 
 - All deletion operations for critical entities should be restricted to super admins only
 - **Affected entities**: units, categories, suppliers, gallery items, inventory items
