@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "sonner";
@@ -22,11 +22,11 @@ import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { UnitGroupingBuilder } from "@/components/UnitGroupingBuilder";
 import { UnitLevel } from "@/types/inventory";
 import { cn } from "@/lib/utils";
+import SegmentedControl from "@/SegmentedControl";
 
 export const addCategorySchema = yup.object({
   name: yup.string().trim().required("Name is required"),
@@ -346,6 +346,7 @@ export function AddCategoryModal({
     handleSubmit,
     reset,
     watch,
+    control,
     formState: { errors },
   } = useForm<AddCategoryFormValues>({
     resolver: yupResolver(addCategorySchema),
@@ -373,7 +374,7 @@ export function AddCategoryModal({
   };
 
   const onCategoryFormSubmit = async (values: AddCategoryFormValues) => {
-    // Convert UnitLevel[] to unitPresetIds (extract id from each unit)
+    // Convert UnitLevel[] to unitPresetIds
     const unitPresetIds = units.length > 0 ? units.map((u) => u.id) : undefined;
     await onSubmit({ ...values, unitPresetIds });
     setUnits([]);
@@ -436,6 +437,28 @@ export function AddCategoryModal({
               />
             </div>
 
+            <div className="flex items-center gap-10 mt-4">
+              <Label className="text-base sm:text-sm text-gray-700">
+                Is this item for sale?
+              </Label>
+              <Controller
+                name="canBeSold"
+                control={control}
+                render={({ field }) => (
+                  <SegmentedControl
+                    size="small"
+                    minItemWidth={70}
+                    value={field.value ? "yes" : "no"}
+                    onChange={(value) => field.onChange(value === "yes")}
+                    options={[
+                      { id: "no", label: "No" },
+                      { id: "yes", label: "Yes" },
+                    ]}
+                  />
+                )}
+              />
+            </div>
+
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
@@ -473,7 +496,7 @@ export function EditCategoryModal({
     // Prefer populated unit presets if available
     if (category.unitPresets && category.unitPresets.length > 0) {
       return category.unitPresets.map((u, index) => ({
-        id: u._id,
+        id: u._id, // Use the preset ObjectId directly
         name: u.name,
         plural: u.plural,
         quantity: index === 0 ? 1 : undefined,
@@ -490,7 +513,7 @@ export function EditCategoryModal({
       .filter((u): u is IInventoryUnitDefinitionDto => Boolean(u));
 
     return presetUnits.map((u, index) => ({
-      id: u._id,
+      id: u._id, // Use the preset ObjectId directly
       name: u.name,
       plural: u.plural,
       quantity: index === 0 ? 1 : undefined,
@@ -505,6 +528,7 @@ export function EditCategoryModal({
     handleSubmit,
     reset,
     watch,
+    control,
     formState: { errors },
   } = useForm<AddCategoryFormValues>({
     resolver: yupResolver(addCategorySchema),
@@ -542,7 +566,7 @@ export function EditCategoryModal({
 
   const onCategoryFormSubmit = async (values: AddCategoryFormValues) => {
     try {
-      // Convert UnitLevel[] to unitPresetIds (extract id from each unit)
+      // Convert UnitLevel[] to unitPresetIds
       const unitPresetIds =
         units.length > 0 ? units.map((u) => u.id) : undefined;
       await updateCategory({
@@ -616,20 +640,26 @@ export function EditCategoryModal({
               />
             </div>
 
-            <div className="flex items-center space-x-2 mt-4">
-              <Checkbox
-                id="edit-can-be-sold"
-                checked={canBeSold}
-                onCheckedChange={(checked) => {
-                  reset({ ...watch(), canBeSold: checked === true });
-                }}
-              />
-              <Label
-                htmlFor="edit-can-be-sold"
-                className="text-sm font-normal cursor-pointer"
-              >
-                Click to mark this as an item that can be sold
+            <div className="flex items-center gap-10 mt-4">
+              <Label className="text-base sm:text-sm text-gray-700">
+                Is this item for sale?
               </Label>
+              <Controller
+                name="canBeSold"
+                control={control}
+                render={({ field }) => (
+                  <SegmentedControl
+                    size="small"
+                    minItemWidth={70}
+                    value={field.value ? "yes" : "no"}
+                    onChange={(value) => field.onChange(value === "yes")}
+                    options={[
+                      { id: "no", label: "No" },
+                      { id: "yes", label: "Yes" },
+                    ]}
+                  />
+                )}
+              />
             </div>
 
             <div className="flex justify-end gap-2 pt-2">

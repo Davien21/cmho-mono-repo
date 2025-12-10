@@ -42,12 +42,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const searchParams = new URLSearchParams(location.search);
 
     // Special handling for inventory stock overview + filtered-by-item routes
-    if (pathname === "/stock" || pathname === "/inventory/stock") {
+    if (pathname === "/inventory/stock-movement") {
       const itemId = searchParams.get("itemId") || "";
 
       let itemLabel: string | null = null;
-      if (itemId && inventoryItemsResponse?.data) {
-        const match = inventoryItemsResponse.data.find(
+      if (itemId && inventoryItemsResponse?.data?.data) {
+        const match = inventoryItemsResponse.data.data.find(
           (item) => item._id === itemId
         );
         if (match) {
@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       const baseCrumbs: BreadcrumbItem[] = [
         { label: "Inventory", url: "/inventory" },
-        { label: "Stock Movement", url: "/stock" },
+        { label: "Stock Movement", url: "/inventory/stock-movement" },
       ];
 
       if (itemLabel) {

@@ -99,11 +99,11 @@ export const navigationConfig = {
     },
     {
       title: "Stock Movement",
-      url: "/stock",
+      url: "/inventory/stock-movement",
       icon: History,
       breadcrumbs: [
         { label: "Inventory", url: "/inventory" },
-        { label: "Stock Movement", url: "/stock" },
+        { label: "Stock Movement", url: "/inventory/stock-movement" },
       ],
     },
     {
@@ -176,9 +176,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
 
-  const isInventoryPath =
-    location.pathname.startsWith("/inventory") ||
-    location.pathname.startsWith("/stock");
+  const isInventoryPath = location.pathname.startsWith("/inventory");
 
   // Fetch counts for inventory settings submenu items
   const { data: unitsSummary } = useGetInventoryUnitsQuery(undefined, {

@@ -72,11 +72,12 @@ export function UnitGroupingBuilder({
 
   const handleUnitSelect = useCallback(
     (unitId: string, value: string) => {
-      // Look up the plural from sorted presets
+      // Look up the preset from sorted presets
       const preset = sortedPresets.find((p) => p.name === value);
       const updates: Partial<UnitLevel> = {
         name: value,
-        ...(preset ? { plural: preset.plural } : {}),
+        // Update the id to match the preset's ObjectId
+        ...(preset ? { id: preset._id, plural: preset.plural } : {}),
       };
       updateUnit(unitId, updates);
     },

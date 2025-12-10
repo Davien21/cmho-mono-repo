@@ -58,13 +58,13 @@ export function hydrateUnits(units: readonly UnitLevel[]): UnitLevel[] {
   }));
 }
 
-export function getDefaultUnits(type: InventoryCategory): UnitLevel[] {
+export function getDefaultUnits(categoryName: string): UnitLevel[] {
   const categories = INVENTORY_CATEGORIES as Record<
     string,
     { id: string; name: string; units: readonly UnitLevel[] }
   >;
 
-  const category = categories[type];
+  const category = categories[categoryName];
   if (!category) return [];
 
   return hydrateUnits(category.units);

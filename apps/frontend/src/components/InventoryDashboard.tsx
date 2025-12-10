@@ -113,13 +113,12 @@ export function InventoryDashboard() {
     );
 
   const items: InventoryItem[] = useMemo(() => {
-    const dtos: IInventoryItemDto[] = inventoryData?.data || [];
+    const dtos: IInventoryItemDto[] = inventoryData?.data?.data || [];
     return dtos.map((dto) => ({
       id: dto._id,
       name: dto.name,
       description: "",
       category: dto.category,
-      inventoryCategory: dto.category,
       units: (dto.units || []).map((u) => ({
         id: u.id,
         name: u.name,

@@ -52,7 +52,6 @@ export interface IInventoryItemUnitDto {
   id: string;
   name: string;
   plural: string;
-  presetId?: string;
   quantity?: number;
 }
 
@@ -61,10 +60,15 @@ export interface IInventoryItemImageDto {
   mediaId: string;
 }
 
+export interface IInventoryItemCategoryDto {
+  _id: string;
+  name: string;
+}
+
 export interface IInventoryItemDto {
   _id: string;
   name: string;
-  category: string;
+  category: IInventoryItemCategoryDto;
   units: IInventoryItemUnitDto[];
   lowStockValue?: number;
   status: InventoryItemStatus;
@@ -145,7 +149,7 @@ export interface IUpdateSupplierRequest
 
 export interface ICreateInventoryItemRequest {
   name: string;
-  category: string;
+  category: string; // Send category ID (ObjectId as string)
   units: IInventoryItemUnitDto[];
   lowStockValue?: number;
   status: InventoryItemStatus;
@@ -366,7 +370,12 @@ export const inventoryApi = baseApi.injectEndpoints({
     }),
 
     getInventoryItems: builder.query<
-      IAPIResponse<IInventoryItemDto[]>,
+      IAPIResponse<{
+        data: IInventoryItemDto[];
+        total: number;
+        page: number;
+        limit: number;
+      }>,
       {
         stockFilter?: "outOfStock" | "lowStock" | "inStock";
         search?: string;
@@ -384,6 +393,54 @@ export const inventoryApi = baseApi.injectEndpoints({
           ...(params.category && { category: params.category }),
         },
       }),
+      providesTags: [TagTypes.INVENTORY_ITEMS],
+    }),
+    getInventoryItemsPages: builder.infiniteQuery<
+      IAPIResponse<{
+        data: IInventoryItemDto[];
+        total: number;
+        page: number;
+        limit: number;
+      }>,
+      {
+        stockFilter?: "outOfStock" | "lowStock" | "inStock";
+        search?: string;
+        category?: string;
+      },
+      number
+    >({
+      query: (arg) => {
+        const { pageParam, queryArg } = arg as {
+          pageParam: number;
+          queryArg: {
+            stockFilter?: "outOfStock" | "lowStock" | "inStock";
+            search?: string;
+            category?: string;
+          };
+        };
+        return {
+          url: "/inventory/items",
+          method: "GET",
+          params: {
+            sort: "desc",
+            page: pageParam,
+            limit: 20,
+            ...(queryArg?.stockFilter && { stockFilter: queryArg.stockFilter }),
+            ...(queryArg?.search && { search: queryArg.search }),
+            ...(queryArg?.category && { category: queryArg.category }),
+          },
+        };
+      },
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          const total = lastPage.data.total;
+          const limit = lastPage.data.limit;
+          const totalPages = Math.ceil(total / limit);
+          const currentPage = allPages.length;
+          return currentPage < totalPages ? currentPage + 1 : undefined;
+        },
+      },
       providesTags: [TagTypes.INVENTORY_ITEMS],
     }),
     createInventoryItem: builder.mutation<
@@ -436,16 +493,22 @@ export const inventoryApi = baseApi.injectEndpoints({
       Omit<IGetStockMovementQuery, "page" | "limit">,
       number
     >({
-      query: ({ pageParam, ...queryArg }) => ({
-        url: "/inventory/stock-movement",
-        method: "GET",
-        params: {
-          ...queryArg,
-          page: pageParam,
-          limit: 20,
-          sort: queryArg?.sort || "desc",
-        },
-      }),
+      query: (arg) => {
+        const { pageParam, queryArg } = arg as {
+          pageParam: number;
+          queryArg: Omit<IGetStockMovementQuery, "page" | "limit">;
+        };
+        return {
+          url: "/inventory/stock-movement",
+          method: "GET",
+          params: {
+            ...queryArg,
+            page: pageParam,
+            limit: 20,
+            sort: queryArg?.sort || "desc",
+          },
+        };
+      },
       infiniteQueryOptions: {
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
@@ -522,6 +585,7 @@ export const {
   useUpdateSupplierMutation,
   useDeleteSupplierMutation,
   useGetInventoryItemsQuery,
+  useGetInventoryItemsPagesInfiniteQuery,
   useCreateInventoryItemMutation,
   useUpdateInventoryItemMutation,
   useDeleteInventoryItemMutation,

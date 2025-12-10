@@ -1,13 +1,15 @@
 export interface UnitLevel {
-  id: string;
+  id: string; // ObjectId from inventory_units collection
   name: string;
   plural: string; // Optional, used in presets
   quantity?: number; // Runtime field for conversion factor (user input)
 }
 
-// InventoryCategory represents a human-readable category name, e.g. "Drug"
-// This is now backend-driven (via `inventory_categories`) rather than hard-coded.
-export type InventoryCategory = string;
+// InventoryCategory represents a category object with name and id
+export interface InventoryCategory {
+  _id: string;
+  name: string;
+}
 
 export interface StockEntry {
   id: string;
@@ -32,8 +34,7 @@ export interface InventoryItem {
   id: string;
   name: string;
   description: string;
-  category: string;
-  inventoryCategory: InventoryCategory;
+  category: InventoryCategory;
   units: UnitLevel[];
   lowStockValue?: number;
   stocks?: StockEntry[];

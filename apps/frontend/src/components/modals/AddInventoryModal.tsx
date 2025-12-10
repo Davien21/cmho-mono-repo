@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { UnitGroupingBuilder } from "../UnitGroupingBuilder";
-import { InventoryCategory, UnitLevel } from "@/types/inventory";
+import { UnitLevel } from "@/types/inventory";
 import { InventoryCategorySelect } from "@/components/InventoryCategorySelect";
 import {
   IInventoryCategoryDto,
@@ -73,7 +73,7 @@ export function AddInventoryModal({
   );
 
   const getDefaultUnitsForCategory = useCallback(
-    (categoryName: InventoryCategory): UnitLevel[] => {
+    (categoryName: string): UnitLevel[] => {
       const category = categories.find((c) => c.name === categoryName);
       if (!category) {
         return [];
@@ -82,7 +82,7 @@ export function AddInventoryModal({
       // Prefer populated unit presets if available from the API
       if (category.unitPresets && category.unitPresets.length > 0) {
         return category.unitPresets.map((u, index) => ({
-          id: u._id,
+          id: u._id, // Use the preset ObjectId directly
           name: u.name,
           plural: u.plural,
           // Top-level unit (first in array) defaults to 1, others default to undefined
@@ -100,7 +100,7 @@ export function AddInventoryModal({
         .filter((u): u is IInventoryUnitDefinitionDto => Boolean(u));
 
       return presetUnits.map((u, index) => ({
-        id: u._id,
+        id: u._id, // Use the preset ObjectId directly
         name: u.name,
         plural: u.plural,
         // Top-level unit (first in array) defaults to 1, others default to undefined
@@ -188,9 +188,7 @@ export function AddInventoryModal({
     // Reset the flag when a category is selected
     hasSetInitialCategory.current = true;
 
-    const defaultUnits = getDefaultUnitsForCategory(
-      inventoryCategory as InventoryCategory
-    );
+    const defaultUnits = getDefaultUnitsForCategory(inventoryCategory);
     setUnits(defaultUnits);
     setInitialUnits(defaultUnits);
     // Reset low stock value when units change
@@ -243,10 +241,22 @@ export function AddInventoryModal({
           )
         : undefined;
 
-      // Backend treats `category` as the inventory category name
+      // Find category from category name
+      const selectedCategory = categories.find(
+        (c) => c.name === values.inventoryCategory
+      );
+      if (!selectedCategory) {
+        toast.error("Invalid category selected");
+        return;
+      }
+
+      // Backend expects category as embedded object with _id and name
       const payload: any = {
         name: values.name.trim(),
-        category: values.inventoryCategory as InventoryCategory,
+        category: {
+          _id: selectedCategory._id,
+          name: selectedCategory.name,
+        },
         units: units.map((u) => ({
           id: u.id,
           name: u.name,
@@ -328,9 +338,7 @@ export function AddInventoryModal({
                         <InventoryCategorySelect
                           id="inventory-category"
                           value={field.value}
-                          onChange={(v) =>
-                            field.onChange(v as InventoryCategory)
-                          }
+                          onChange={field.onChange}
                           errorMessage={errors.inventoryCategory?.message}
                         />
                       )}

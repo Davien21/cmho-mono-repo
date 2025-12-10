@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Search,
   Package,
@@ -39,6 +39,9 @@ interface InventoryListProps {
   onImageClick?: (item: InventoryItem) => void;
   onEditImage?: (item: InventoryItem) => void;
   onPreviewImage?: (item: InventoryItem) => void;
+  onLoadMore?: () => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
 }
 
 type DisplayMode = "full" | "skipOne" | "baseOnly";
@@ -57,11 +60,41 @@ export function InventoryList({
   onImageClick,
   onEditImage,
   onPreviewImage,
+  onLoadMore,
+  hasMore = false,
+  isLoadingMore = false,
 }: InventoryListProps) {
   // Track display mode per item
   const [displayModes, setDisplayModes] = useState<Map<string, DisplayMode>>(
     new Map()
   );
+
+  // Intersection observer for infinite scroll
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!onLoadMore || !hasMore || isLoadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [onLoadMore, hasMore, isLoadingMore]);
 
   const getTotalStock = (item: InventoryItem): number => {
     return item.currentStockInBaseUnits ?? 0;
@@ -236,7 +269,7 @@ export function InventoryList({
         <div className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
-            placeholder="Search items by name or category..."
+            placeholder="Search by name or category..."
             value={search}
             onChange={(e) => onSearchChange?.(e.target.value)}
             className="pl-10 pr-10 text-base sm:text-sm h-10 sm:h-9"
@@ -323,7 +356,7 @@ export function InventoryList({
                         {item.name}
                       </h3>
                       <p className="text-sm sm:text-xs text-gray-600 mt-1">
-                        {item.inventoryCategory}
+                        {item.category.name}
                       </p>
                     </div>
                   </div>
@@ -477,7 +510,7 @@ export function InventoryList({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-600">
-                        {item.inventoryCategory}
+                        {item.category.name}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -550,6 +583,26 @@ export function InventoryList({
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Load more trigger and loading indicator */}
+      {items.length > 0 && (
+        <div ref={loadMoreRef} className="py-8 text-center">
+          {isLoadingMore ? (
+            <div className="flex items-center justify-center gap-2 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="text-sm">Loading more items...</span>
+            </div>
+          ) : hasMore ? (
+            <div className="text-sm text-muted-foreground">
+              Scroll to load more
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              No more items to load
+            </div>
+          )}
         </div>
       )}
     </div>

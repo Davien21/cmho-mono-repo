@@ -104,7 +104,7 @@ export function EditInventoryModal({
     resolver: yupResolver(editInventoryItemSchema),
     defaultValues: {
       name: item.name,
-      inventoryCategory: item.inventoryCategory,
+      inventoryCategory: item.category.name,
       lowStockValue: getInitialLowStockValue(),
       canBeSold: (item as any).canBeSold ?? true,
     },
@@ -185,7 +185,18 @@ export function EditInventoryModal({
         : undefined;
 
       const newName = values.name.trim();
-      const newCategory = values.inventoryCategory as InventoryCategory;
+      const newCategoryName = values.inventoryCategory;
+      const selectedCategory = categories.find(
+        (c) => c.name === newCategoryName
+      );
+      if (!selectedCategory) {
+        toast.error("Invalid category selected");
+        return;
+      }
+      const newCategory = {
+        _id: selectedCategory._id,
+        name: selectedCategory.name,
+      };
       const newUnits = units.map((u) => ({
         id: u.id,
         name: u.name,
@@ -210,11 +221,11 @@ export function EditInventoryModal({
         newValues.name = newName;
       }
 
-      // Compare category
-      if (newCategory !== initialValuesRef.current.category) {
+      // Compare category - compare by name
+      if (newCategoryName !== initialValuesRef.current.category.name) {
         changedFields.push("category");
-        oldValues.category = initialValuesRef.current.category;
-        newValues.category = newCategory;
+        oldValues.category = initialValuesRef.current.category.name;
+        newValues.category = newCategoryName;
       }
 
       // Compare units (simplified: check if array length or structure changed)
@@ -354,9 +365,7 @@ export function EditInventoryModal({
                         <InventoryCategorySelect
                           id="edit-inventory-category"
                           value={field.value}
-                          onChange={(v) =>
-                            field.onChange(v as InventoryCategory)
-                          }
+                          onChange={field.onChange}
                           errorMessage={errors.inventoryCategory?.message}
                         />
                       )}

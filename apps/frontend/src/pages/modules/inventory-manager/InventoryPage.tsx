@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
@@ -11,7 +11,7 @@ import { InventoryItem } from "@/types/inventory";
 import Layout from "@/components/Layout";
 import {
   IInventoryItemDto,
-  useGetInventoryItemsQuery,
+  useGetInventoryItemsPagesInfiniteQuery,
   useDeleteInventoryItemMutation,
 } from "@/store/inventory-slice";
 import { useModalContext } from "@/contexts/modal-context";
@@ -46,8 +46,8 @@ export default function InventoryPage() {
     return params;
   }, [filter, debouncedSearch]);
 
-  const { data, isLoading, isFetching } =
-    useGetInventoryItemsQuery(queryParams);
+  const { data, isLoading, isFetching, fetchNextPage, hasNextPage } =
+    useGetInventoryItemsPagesInfiniteQuery(queryParams);
 
   // Reset search flag when fetch completes
   useEffect(() => {
@@ -67,13 +67,15 @@ export default function InventoryPage() {
   const { openModal, closeModal } = useModalContext();
 
   const items: InventoryItem[] = useMemo(() => {
-    const dtos: IInventoryItemDto[] = data?.data || [];
+    if (!data?.pages) return [];
+    const dtos: IInventoryItemDto[] = data.pages.flatMap(
+      (page) => page.data.data || []
+    );
     return dtos.map((dto) => ({
       id: dto._id,
       name: dto.name,
       description: "",
       category: dto.category,
-      inventoryCategory: dto.category,
       units: (dto.units || []).map((u) => ({
         id: u.id,
         name: u.name,
@@ -87,6 +89,12 @@ export default function InventoryPage() {
       image: dto.image,
     }));
   }, [data]);
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetching, fetchNextPage]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddStockModal, setShowAddStockModal] = useState(false);
@@ -139,7 +147,7 @@ export default function InventoryPage() {
   };
 
   const handleViewStockEntries = (item: InventoryItem) => {
-    navigate(`/inventory/stock?itemId=${encodeURIComponent(item.id)}`);
+    navigate(`/inventory/stock-movement?itemId=${encodeURIComponent(item.id)}`);
   };
 
   const handleEditImage = (item: InventoryItem) => {
@@ -187,6 +195,9 @@ export default function InventoryPage() {
             onAddItem={() => setShowAddForm(true)}
             onEditImage={handleEditImage}
             onPreviewImage={handlePreviewImage}
+            onLoadMore={handleLoadMore}
+            hasMore={hasNextPage}
+            isLoadingMore={isFetching && !isSearchingRef.current}
           />
         )}
 

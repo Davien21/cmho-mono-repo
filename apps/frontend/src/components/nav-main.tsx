@@ -75,7 +75,7 @@ export function NavMain({ items }: { items: Item[] }) {
             ? location.pathname === "/admin"
             : isStockItem
             ? location.pathname.startsWith("/stock") ||
-              location.pathname.startsWith("/inventory/stock")
+              location.pathname.startsWith("/inventory/stock-movement")
             : isInventoryHome
             ? location.pathname === "/inventory"
             : isInventoryItems

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
@@ -11,10 +11,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetNotificationsQuery } from "@/store/notifications-slice";
 import { formatTimeAgo } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useInfiniteNotifications } from "@/hooks/use-infinite-notifications";
+import { NotificationType } from "../../../../../backend/src/modules/notifications/trigger_notifications.types";
 
 function getNotificationColor(type: string): string {
   if (type === "out_of_stock") return "bg-red-500";
@@ -28,27 +28,19 @@ function getPriorityColor(priority: string): string {
   return "bg-blue-100 text-blue-800";
 }
 
+// Notification type options for filtering
+const notificationTypeOptions = [
+  { value: NotificationType.OUT_OF_STOCK, label: "Out of Stock" },
+  { value: NotificationType.LOW_STOCK, label: "Low Stock" },
+];
+
 export default function NotificationsPage() {
-  const [titleFilter, setTitleFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const previousSearchRef = useRef<string | undefined>(undefined);
-  const previousTitleFilterRef = useRef<string>("all");
-
-  // Get unique titles from notifications for the filter
-  const { data: allNotificationsData } = useGetNotificationsQuery({
-    module: "inventory",
-    limit: 1000, // Get all to extract unique titles
-  });
-
-  const uniqueTitles = useMemo(() => {
-    const titles = new Set<string>();
-    allNotificationsData?.data?.data?.forEach((notif) => {
-      if (notif.title) titles.add(notif.title);
-    });
-    return Array.from(titles).sort();
-  }, [allNotificationsData]);
+  const previousTypeFilterRef = useRef<string>("all");
 
   const {
     notifications,
@@ -59,7 +51,7 @@ export default function NotificationsPage() {
   } = useInfiniteNotifications({
     loadMoreRef,
     module: "inventory",
-    title: titleFilter && titleFilter !== "all" ? titleFilter : undefined,
+    type: typeFilter && typeFilter !== "all" ? typeFilter : undefined,
     search: debouncedSearch || undefined,
     sort: "desc",
   });
@@ -68,12 +60,12 @@ export default function NotificationsPage() {
   useEffect(() => {
     if (
       previousSearchRef.current !== debouncedSearch ||
-      previousTitleFilterRef.current !== titleFilter
+      previousTypeFilterRef.current !== typeFilter
     ) {
       previousSearchRef.current = debouncedSearch;
-      previousTitleFilterRef.current = titleFilter;
+      previousTypeFilterRef.current = typeFilter;
     }
-  }, [debouncedSearch, titleFilter]);
+  }, [debouncedSearch, typeFilter]);
 
   return (
     <Layout>
@@ -103,19 +95,19 @@ export default function NotificationsPage() {
             )}
           </div>
           <Select
-            value={titleFilter}
+            value={typeFilter}
             onValueChange={(value) => {
-              setTitleFilter(value);
+              setTypeFilter(value);
             }}
           >
             <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue placeholder="Filter by title" />
+              <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Titles</SelectItem>
-              {uniqueTitles.map((title) => (
-                <SelectItem key={title} value={title}>
-                  {title}
+              <SelectItem value="all">All Types</SelectItem>
+              {notificationTypeOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -150,7 +142,7 @@ export default function NotificationsPage() {
               No notifications found
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {debouncedSearch || (titleFilter && titleFilter !== "all")
+              {debouncedSearch || (typeFilter && typeFilter !== "all")
                 ? "Try adjusting your search or filter terms"
                 : "Notifications will appear here when inventory issues are detected"}
             </p>

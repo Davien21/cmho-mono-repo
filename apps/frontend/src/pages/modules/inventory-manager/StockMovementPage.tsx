@@ -72,13 +72,12 @@ export default function StockMovementPage() {
   });
 
   const items = useMemo(() => {
-    const dtos: IInventoryItemDto[] = itemsResponse?.data || [];
+    const dtos: IInventoryItemDto[] = itemsResponse?.data?.data || [];
     return dtos.map((dto) => ({
       id: dto._id,
       name: dto.name,
       description: "",
       category: dto.category,
-      inventoryCategory: dto.category,
       units: (dto.units || []).map((u) => ({
         id: u.id,
         name: u.name,
