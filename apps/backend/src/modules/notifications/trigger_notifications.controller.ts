@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { successResponse } from "../../utils/response";
-import notificationsService from "./notifications.service";
-import { GetNotificationsQuerySchema } from "./notifications.validators";
-import { NotificationStatus } from "./notifications.types";
+import notificationsService from "./trigger_notifications.service";
+import { GetNotificationsQuerySchema } from "./trigger_notifications.validators";
+import { NotificationStatus } from "./trigger_notifications.types";
 
 export async function getNotifications(
   req: Request<{}, {}, {}, GetNotificationsQuerySchema>,

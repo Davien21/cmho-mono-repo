@@ -1,7 +1,24 @@
-export type NotificationType = "out_of_stock" | "low_stock";
-export type NotificationModule = "inventory" | "salary" | "admin";
-export type NotificationStatus = "active" | "resolved";
-export type NotificationPriority = "HIGH" | "MED" | "LOW";
+export enum NotificationType {
+  OUT_OF_STOCK = "out_of_stock",
+  LOW_STOCK = "low_stock",
+}
+
+export enum NotificationModule {
+  INVENTORY = "inventory",
+  SALARY = "salary",
+  ADMIN = "admin",
+}
+
+export enum NotificationStatus {
+  ACTIVE = "active",
+  RESOLVED = "resolved",
+}
+
+export enum NotificationPriority {
+  HIGH = "HIGH",
+  MED = "MED",
+  LOW = "LOW",
+}
 
 // Metadata types for known notification types
 export interface InventoryNotificationMetadata {

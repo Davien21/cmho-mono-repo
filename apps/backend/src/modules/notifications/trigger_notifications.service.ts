@@ -1,13 +1,14 @@
-import TriggerNotification from "./notifications.model";
+import TriggerNotification from "./trigger_notifications.model";
 import {
   ITriggerNotification,
   NotificationRequest,
   NotificationStatus,
   NotificationType,
   NotificationModule,
+  NotificationPriority,
   NotificationMetadata,
   InventoryNotificationMetadata,
-} from "./notifications.types";
+} from "./trigger_notifications.types";
 
 class NotificationsService {
   /**
@@ -17,7 +18,7 @@ class NotificationsService {
     module: NotificationModule,
     metadata: NotificationMetadata
   ): Record<string, any> {
-    if (module === "inventory") {
+    if (module === NotificationModule.INVENTORY) {
       const inventoryMeta = metadata as InventoryNotificationMetadata;
       if (inventoryMeta.inventoryId) {
         return { "metadata.inventoryId": inventoryMeta.inventoryId };
@@ -40,7 +41,7 @@ class NotificationsService {
     const existing = await TriggerNotification.findOne({
       ...entityQuery,
       type: data.type,
-      status: "active",
+      status: NotificationStatus.ACTIVE,
     });
 
     if (existing) {
@@ -70,19 +71,25 @@ class NotificationsService {
     // Only check for "ready" items with lowStockValue set
     if (!lowStockValue) {
       // If no lowStockValue, resolve any existing notifications
-      await this.resolveNotificationByInventoryId(itemId, "out_of_stock");
-      await this.resolveNotificationByInventoryId(itemId, "low_stock");
+      await this.resolveNotificationByInventoryId(
+        itemId,
+        NotificationType.OUT_OF_STOCK
+      );
+      await this.resolveNotificationByInventoryId(
+        itemId,
+        NotificationType.LOW_STOCK
+      );
       return;
     }
 
     // Check for out of stock (currentStock === 0)
     if (currentStock === 0) {
       await this.createOrUpdateNotification({
-        type: "out_of_stock",
-        module: "inventory",
+        type: NotificationType.OUT_OF_STOCK,
+        module: NotificationModule.INVENTORY,
         title: "OUT OF STOCK",
         description: `${itemName} is finished and needs immediate restocking.`,
-        priority: "HIGH",
+        priority: NotificationPriority.HIGH,
         metadata: {
           inventoryId: itemId,
           currentStock,
@@ -90,15 +97,18 @@ class NotificationsService {
         },
       });
       // Resolve low_stock if it exists (since we're now out of stock)
-      await this.resolveNotificationByInventoryId(itemId, "low_stock");
+      await this.resolveNotificationByInventoryId(
+        itemId,
+        NotificationType.LOW_STOCK
+      );
     } else if (currentStock > 0 && currentStock <= lowStockValue) {
       // Check for low stock
       await this.createOrUpdateNotification({
-        type: "low_stock",
-        module: "inventory",
+        type: NotificationType.LOW_STOCK,
+        module: NotificationModule.INVENTORY,
         title: "LOW STOCK",
         description: `${itemName} only has (${currentStock} units out of minimum ${lowStockValue} units).`,
-        priority: "MED",
+        priority: NotificationPriority.MED,
         metadata: {
           inventoryId: itemId,
           currentStock,
@@ -106,11 +116,20 @@ class NotificationsService {
         },
       });
       // Resolve out_of_stock if it exists (since we now have stock)
-      await this.resolveNotificationByInventoryId(itemId, "out_of_stock");
+      await this.resolveNotificationByInventoryId(
+        itemId,
+        NotificationType.OUT_OF_STOCK
+      );
     } else {
       // Stock is above threshold, resolve any existing notifications
-      await this.resolveNotificationByInventoryId(itemId, "out_of_stock");
-      await this.resolveNotificationByInventoryId(itemId, "low_stock");
+      await this.resolveNotificationByInventoryId(
+        itemId,
+        NotificationType.OUT_OF_STOCK
+      );
+      await this.resolveNotificationByInventoryId(
+        itemId,
+        NotificationType.LOW_STOCK
+      );
     }
   }
 
@@ -124,11 +143,11 @@ class NotificationsService {
     const notification = await TriggerNotification.findOne({
       "metadata.inventoryId": inventoryId,
       type,
-      status: "active",
+      status: NotificationStatus.ACTIVE,
     });
 
     if (notification) {
-      notification.status = "resolved";
+      notification.status = NotificationStatus.RESOLVED;
       await notification.save();
       return notification;
     }
@@ -202,7 +221,7 @@ class NotificationsService {
   ): Promise<ITriggerNotification[]> {
     return TriggerNotification.find({
       "metadata.inventoryId": inventoryId,
-      status: "active",
+      status: NotificationStatus.ACTIVE,
     })
       .sort({ updatedAt: -1 })
       .lean() as Promise<ITriggerNotification[]>;

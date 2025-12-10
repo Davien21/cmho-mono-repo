@@ -17,7 +17,7 @@ import mediaRouter from "../modules/media/media.router";
 import galleryRouter from "../modules/gallery/gallery.router";
 import adminsRouter from "../modules/admins/admins.router";
 import activityTrackingRouter from "../modules/activity-tracking/activity-tracking.router";
-import notificationsRouter from "../modules/notifications/notifications.router";
+import notificationsRouter from "../modules/notifications/trigger_notifications.router";
 
 router.use(authRouter);
 router.use(banksRouter);

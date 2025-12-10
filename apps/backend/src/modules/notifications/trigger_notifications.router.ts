@@ -3,9 +3,9 @@ const router = express.Router();
 
 import { authenticate, hasRole } from "../../middlewares/authentication";
 import { AdminRole } from "../admins/admins.types";
-import { getNotifications } from "./notifications.controller";
+import { getNotifications } from "./trigger_notifications.controller";
 import validator from "../../middlewares/validator";
-import { getNotificationsQuerySchema } from "./notifications.validators";
+import { getNotificationsQuerySchema } from "./trigger_notifications.validators";
 
 router.get(
   "/notifications",
@@ -18,4 +18,3 @@ router.get(
 );
 
 export default router;
-
