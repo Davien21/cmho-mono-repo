@@ -63,7 +63,7 @@ export const createInventoryItemSchema = yup
     name: yup.string().required().label("Name"),
     category: categoryObjectSchema,
     units: yup.array(inventoryUnitSchema).min(1).required().label("Units"),
-    lowStockValue: yup.number().optional().label("Low stock value"),
+    lowStockValue: yup.number().required().label("Low stock value"),
     status: yup
       .mixed<InventoryStatus>()
       .oneOf(["active", "disabled", "deleted"])
@@ -83,7 +83,7 @@ export const updateInventoryItemSchema = yup.object<
   name: yup.string().label("Name"),
   category: categoryObjectSchema.optional(),
   units: yup.array(inventoryUnitSchema).label("Units"),
-  lowStockValue: yup.number().label("Low stock value"),
+  lowStockValue: yup.number().required().label("Low stock value"),
   status: yup
     .mixed<InventoryStatus>()
     .oneOf(["active", "disabled", "deleted"])

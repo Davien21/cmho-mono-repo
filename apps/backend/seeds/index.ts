@@ -292,6 +292,7 @@ async function seedInventoryItems() {
         name: item.name,
         category: categoryData,
         units: transformedUnits,
+        lowStockValue: 10,
         status: "active",
         createdBy: superAdmin._id,
         currentStockInBaseUnits,

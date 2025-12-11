@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import {
   IInventoryCategory,
   IInventoryItem,
+  IInventoryItemImage,
   IInventoryUnit,
 } from "./inventory-items.types";
 import notificationsService from "../notifications/trigger_notifications.service";
@@ -34,6 +35,14 @@ const categorySchema = new Schema<IInventoryCategory>(
   { _id: false }
 );
 
+const inventoryItemImageSchema = new Schema<IInventoryItemImage>(
+  {
+    url: { type: String, required: true },
+    mediaId: { type: String, required: true },
+  },
+  { _id: false }
+);
+
 const inventoryItemSchema = new Schema<IInventoryItem>(
   {
     name: { type: String, required: true, trim: true },
@@ -42,7 +51,7 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
       required: true,
     },
     units: { type: [inventoryUnitSchema], required: true },
-    lowStockValue: { type: Number, required: false },
+    lowStockValue: { type: Number, required: true, default: 10 },
     status: {
       type: String,
       enum: ["active", "disabled", "deleted"],
@@ -65,9 +74,9 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
       default: null,
     },
     image: {
-      url: { type: String, required: false },
-      mediaId: { type: String, required: false },
-      _id: false,
+      type: inventoryItemImageSchema,
+      required: false,
+      default: null,
     },
     canBeSold: {
       type: Boolean,

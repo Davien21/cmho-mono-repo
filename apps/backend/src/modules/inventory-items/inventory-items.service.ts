@@ -27,7 +27,6 @@ class InventoryItemsService {
     limit: number;
   }> {
     const skip = (page - 1) * limit;
-    const now = new Date();
 
     const filter: Record<string, any> = { isDeleted: { $ne: true } };
     if (status) filter.status = status;
@@ -73,7 +72,6 @@ class InventoryItemsService {
                     return {
                       $and: [
                         { currentStockInBaseUnits: { $gt: 0 } },
-                        { lowStockValue: { $exists: true, $ne: null } },
                         {
                           $expr: {
                             $lte: [
@@ -89,18 +87,9 @@ class InventoryItemsService {
                       $and: [
                         { currentStockInBaseUnits: { $gt: 0 } },
                         {
-                          $or: [
-                            { lowStockValue: { $exists: false } },
-                            { lowStockValue: null },
-                            {
-                              $expr: {
-                                $gt: [
-                                  "$currentStockInBaseUnits",
-                                  "$lowStockValue",
-                                ],
-                              },
-                            },
-                          ],
+                          $expr: {
+                            $gt: ["$currentStockInBaseUnits", "$lowStockValue"],
+                          },
                         },
                       ],
                     };
@@ -240,6 +229,70 @@ class InventoryItemsService {
     await InventoryItem.findByIdAndUpdate(itemId, { earliestExpiryDate });
 
     return earliestExpiryDate;
+  }
+
+  /**
+   * Get dashboard statistics for inventory items
+   * Returns counts for total items, in stock, low stock, and out of stock
+   */
+  async getDashboardStats(): Promise<{
+    totalItems: number;
+    inStock: number;
+    lowStock: number;
+    outOfStock: number;
+  }> {
+    const result = await InventoryItem.aggregate([
+      // Filter out deleted items
+      { $match: { isDeleted: { $ne: true } } },
+      {
+        $facet: {
+          totalItems: [{ $count: "count" }],
+          outOfStock: [
+            { $match: { currentStockInBaseUnits: { $eq: 0 } } },
+            { $count: "count" },
+          ],
+          lowStock: [
+            {
+              $match: {
+                $and: [
+                  { currentStockInBaseUnits: { $gt: 0 } },
+                  {
+                    $expr: {
+                      $lt: ["$currentStockInBaseUnits", "$lowStockValue"],
+                    },
+                  },
+                ],
+              },
+            },
+            { $count: "count" },
+          ],
+          inStock: [
+            {
+              $match: {
+                $and: [
+                  { currentStockInBaseUnits: { $gt: 0 } },
+                  {
+                    $expr: {
+                      $gte: ["$currentStockInBaseUnits", "$lowStockValue"],
+                    },
+                  },
+                ],
+              },
+            },
+            { $count: "count" },
+          ],
+        },
+      },
+    ]);
+
+    const stats = result[0];
+
+    return {
+      totalItems: stats.totalItems[0]?.count || 0,
+      outOfStock: stats.outOfStock[0]?.count || 0,
+      lowStock: stats.lowStock[0]?.count || 0,
+      inStock: stats.inStock[0]?.count || 0,
+    };
   }
 }
 

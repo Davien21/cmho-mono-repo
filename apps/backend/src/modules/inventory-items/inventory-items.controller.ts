@@ -156,3 +156,8 @@ export async function deleteInventoryItem(req: Request, res: Response) {
 
   res.send(successResponse("Inventory item deleted successfully"));
 }
+
+export async function getDashboardStats(_req: Request, res: Response) {
+  const stats = await inventoryItemsService.getDashboardStats();
+  res.send(successResponse("Dashboard stats fetched successfully", stats));
+}

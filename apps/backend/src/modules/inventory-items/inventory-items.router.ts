@@ -11,6 +11,7 @@ import validator from "../../middlewares/validator";
 import {
   createInventoryItem,
   deleteInventoryItem,
+  getDashboardStats,
   getInventoryItems,
   updateInventoryItem,
 } from "./inventory-items.controller";
@@ -20,6 +21,12 @@ import {
   updateInventoryItemSchema,
 } from "./inventory-items.validators";
 import validateById from "../../middlewares/validateById";
+
+router.get(
+  "/inventory/dashboard/stats",
+  [authenticate, hasRole(AdminRole.INVENTORY_MANAGER)],
+  getDashboardStats
+);
 
 router.get(
   "/inventory/items",

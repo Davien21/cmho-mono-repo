@@ -45,7 +45,7 @@ export interface IInventoryItemBase {
   createdBy: ObjectId;
   currentStockInBaseUnits?: number;
   earliestExpiryDate?: Date | null;
-  image?: IInventoryItemImage;
+  image: IInventoryItemImage | null;
   canBeSold?: boolean;
   isDeleted?: boolean;
   deletedAt?: Date;
@@ -56,7 +56,7 @@ export interface IInventoryItemBase {
 export interface IInventoryItem extends IInventoryItemBase {
   status: InventoryStatus;
   units: IInventoryUnit[];
-  lowStockValue?: number;
+  lowStockValue: number;
 }
 
 // Type used for request bodies (client-provided data) – server fills these
