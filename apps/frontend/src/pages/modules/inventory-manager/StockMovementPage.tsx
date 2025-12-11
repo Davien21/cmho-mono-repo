@@ -9,12 +9,13 @@ import { Search, Loader2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { UnitLevel } from "@/types/inventory";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
+import { Pagination } from "@/components/Pagination";
 import {
   IInventoryItemDto,
   IStockMovementDto,
   useGetInventoryItemsQuery,
+  useGetStockMovementQuery,
 } from "@/store/inventory-slice";
-import { useInfiniteStockMovement } from "@/hooks/use-infinite-stock-movement";
 
 // Flattened display structure for the table
 interface StockChangeRow {
@@ -56,31 +57,63 @@ function formatExpiryDate(dateString: string | null) {
   });
 }
 
+// Key for localStorage
+const STOCK_PAGINATION_STORAGE_KEY = "stockMovementPaginationPrefs";
+
+// Load pagination preferences from localStorage
+const loadStockPaginationPrefs = (): { pageSize: number } => {
+  try {
+    const stored = localStorage.getItem(STOCK_PAGINATION_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return { pageSize: parsed.pageSize || 10 };
+    }
+  } catch (error) {
+    console.error("Failed to load pagination preferences:", error);
+  }
+  return { pageSize: 10 };
+};
+
+// Save pagination preferences to localStorage
+const saveStockPaginationPrefs = (prefs: { pageSize: number }) => {
+  try {
+    localStorage.setItem(STOCK_PAGINATION_STORAGE_KEY, JSON.stringify(prefs));
+  } catch (error) {
+    console.error("Failed to save pagination preferences:", error);
+  }
+};
+
 export default function StockMovementPage() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [searchInitialized, setSearchInitialized] = useState(false);
   const [selectedRow, setSelectedRow] = useState<StockChangeRow | null>(null);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
   const previousFilterItemIdRef = useRef<string | null>(null);
   const previousSearchRef = useRef<string | undefined>(undefined);
   const isSearchingRef = useRef(false);
 
+  // Pagination state with localStorage persistence
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(
+    () => loadStockPaginationPrefs().pageSize
+  );
+
   const filterItemId = searchParams.get("itemId");
   const debouncedSearch = useDebounce(search, 300);
 
+  // Reset to page 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterItemId, debouncedSearch]);
+
   const { data: itemsResponse } = useGetInventoryItemsQuery({});
-  const {
-    stockMovements: allStockMovements,
-    isLoading,
-    isFetching,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteStockMovement({
-    loadMoreRef,
+  
+  const { data: stockMovementResponse, isLoading, isFetching } = useGetStockMovementQuery({
     inventoryItemId: filterItemId || undefined,
     sort: "desc",
     search: debouncedSearch.trim() || undefined,
+    page: currentPage,
+    limit: pageSize,
   });
 
   const items = useMemo(() => {
@@ -149,7 +182,7 @@ export default function StockMovementPage() {
       itemById.set(item.id, { name: item.name, units: item.units || [] });
     });
 
-    const entries: IStockMovementDto[] = allStockMovements;
+    const entries: IStockMovementDto[] = stockMovementResponse?.data?.data || [];
 
     const all: StockChangeRow[] = entries.map((entry) => {
       const meta = itemById.get(entry.inventoryItem.id);
@@ -176,7 +209,22 @@ export default function StockMovementPage() {
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [items, allStockMovements]);
+  }, [items, stockMovementResponse]);
+
+  // Pagination metadata
+  const totalItems = stockMovementResponse?.data?.total || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1);
+    saveStockPaginationPrefs({ pageSize: newPageSize });
+  };
 
   // No client-side filtering needed - search is handled by API
   const filteredRows = rows;
@@ -265,24 +313,17 @@ export default function StockMovementPage() {
               ))}
             </div>
 
-            {/* Loading indicator at bottom for infinite scroll */}
-            {isFetchingNextPage && (
-              <div className="flex justify-center py-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
-                  Loading more stock movement...
-                </div>
-              </div>
-            )}
-
-            {/* Intersection observer target - only show when there's more to load */}
-            {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
-
-            {/* End of list indicator - only show when we're done and not fetching */}
-            {!hasNextPage && rows.length > 0 && !isFetching && (
-              <div className="text-center py-4 text-sm text-muted-foreground">
-                No more stock movement to load
-              </div>
+            {/* Pagination controls */}
+            {rows.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                isLoading={isFetching}
+              />
             )}
           </>
         )}

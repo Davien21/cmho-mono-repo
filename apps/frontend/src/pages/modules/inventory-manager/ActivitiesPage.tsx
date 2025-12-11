@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Search, Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { IActivityRecordDto } from "@/store/activity-slice";
+import { Pagination } from "@/components/Pagination";
+import { IActivityRecordDto, useGetActivitiesQuery } from "@/store/activity-slice";
 import { formatTimeAgo } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useInfiniteActivities } from "@/hooks/use-infinite-activities";
 
 function getActivityColor(type: string): string {
   if (type.includes("add") || type.includes("create")) return "bg-green-500";
@@ -16,20 +16,56 @@ function getActivityColor(type: string): string {
   return "bg-gray-400";
 }
 
+// Key for localStorage
+const ACTIVITIES_PAGINATION_STORAGE_KEY = "inventoryActivitiesPaginationPrefs";
+
+// Load pagination preferences from localStorage
+const loadActivitiesPaginationPrefs = (): { pageSize: number } => {
+  try {
+    const stored = localStorage.getItem(ACTIVITIES_PAGINATION_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return { pageSize: parsed.pageSize || 10 };
+    }
+  } catch (error) {
+    console.error("Failed to load pagination preferences:", error);
+  }
+  return { pageSize: 10 };
+};
+
+// Save pagination preferences to localStorage
+const saveActivitiesPaginationPrefs = (prefs: { pageSize: number }) => {
+  try {
+    localStorage.setItem(ACTIVITIES_PAGINATION_STORAGE_KEY, JSON.stringify(prefs));
+  } catch (error) {
+    console.error("Failed to save pagination preferences:", error);
+  }
+};
+
 export default function ActivitiesPage() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
   const previousSearchRef = useRef<string | undefined>(undefined);
   const isSearchingRef = useRef(false);
 
-  const { activities, isLoading, isFetching, isFetchingNextPage, hasNextPage } =
-    useInfiniteActivities({
-      loadMoreRef,
-      module: "inventory",
-      search: debouncedSearch || undefined,
-      sort: "desc",
-    });
+  // Pagination state with localStorage persistence
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(
+    () => loadActivitiesPaginationPrefs().pageSize
+  );
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
+
+  const { data: activitiesResponse, isLoading, isFetching } = useGetActivitiesQuery({
+    module: "inventory",
+    search: debouncedSearch || undefined,
+    sort: "desc",
+    page: currentPage,
+    limit: pageSize,
+  });
 
   // Reset search flag when fetch completes
   useEffect(() => {
@@ -45,6 +81,25 @@ export default function ActivitiesPage() {
       isSearchingRef.current = true;
     }
   }, [debouncedSearch]);
+
+  const activities = useMemo(() => {
+    return activitiesResponse?.data?.data || [];
+  }, [activitiesResponse]);
+
+  // Pagination metadata
+  const totalItems = activitiesResponse?.data?.total || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1);
+    saveActivitiesPaginationPrefs({ pageSize: newPageSize });
+  };
 
   return (
     <Layout>
@@ -135,24 +190,17 @@ export default function ActivitiesPage() {
               ))}
             </div>
 
-            {/* Loading indicator at bottom for infinite scroll */}
-            {isFetchingNextPage && (
-              <div className="flex justify-center py-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
-                  Loading more activities...
-                </div>
-              </div>
-            )}
-
-            {/* Intersection observer target - only show when there's more to load */}
-            {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
-
-            {/* End of list indicator - only show when we're done and not fetching */}
-            {!hasNextPage && activities.length > 0 && !isFetching && (
-              <div className="text-center py-4 text-sm text-muted-foreground">
-                No more activities to load
-              </div>
+            {/* Pagination controls */}
+            {activities.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                isLoading={isFetching}
+              />
             )}
           </>
         )}

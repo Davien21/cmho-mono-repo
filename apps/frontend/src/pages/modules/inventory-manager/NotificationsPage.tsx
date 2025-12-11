@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Search, Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
@@ -13,7 +13,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTimeAgo } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useInfiniteNotifications } from "@/hooks/use-infinite-notifications";
+import { Pagination } from "@/components/Pagination";
+import { useGetNotificationsQuery } from "@/store/notifications-slice";
 import { NotificationType } from "../../../../../backend/src/modules/notifications/trigger_notifications.types";
 
 function getNotificationColor(type: string): string {
@@ -34,27 +35,66 @@ const notificationTypeOptions = [
   { value: NotificationType.LOW_STOCK, label: "Low Stock" },
 ];
 
+// Key for localStorage
+const NOTIFICATIONS_PAGINATION_STORAGE_KEY = "notificationsPaginationPrefs";
+
+// Load pagination preferences from localStorage
+const loadNotificationsPaginationPrefs = (): { pageSize: number } => {
+  try {
+    const stored = localStorage.getItem(NOTIFICATIONS_PAGINATION_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return { pageSize: parsed.pageSize || 10 };
+    }
+  } catch (error) {
+    console.error("Failed to load pagination preferences:", error);
+  }
+  return { pageSize: 10 };
+};
+
+// Save pagination preferences to localStorage
+const saveNotificationsPaginationPrefs = (prefs: { pageSize: number }) => {
+  try {
+    localStorage.setItem(NOTIFICATIONS_PAGINATION_STORAGE_KEY, JSON.stringify(prefs));
+  } catch (error) {
+    console.error("Failed to save pagination preferences:", error);
+  }
+};
+
 export default function NotificationsPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
   const previousSearchRef = useRef<string | undefined>(undefined);
   const previousTypeFilterRef = useRef<string>("all");
+  const isSearchingRef = useRef(false);
 
-  const {
-    notifications,
-    isLoading,
-    isFetching,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteNotifications({
-    loadMoreRef,
+  // Pagination state with localStorage persistence
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(
+    () => loadNotificationsPaginationPrefs().pageSize
+  );
+
+  // Reset to page 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [typeFilter, debouncedSearch]);
+
+  const { data: notificationsResponse, isLoading, isFetching } = useGetNotificationsQuery({
     module: "inventory",
     type: typeFilter && typeFilter !== "all" ? typeFilter : undefined,
     search: debouncedSearch || undefined,
     sort: "desc",
+    page: currentPage,
+    limit: pageSize,
   });
+
+  // Reset search flag when fetch completes
+  useEffect(() => {
+    if (!isFetching && isSearchingRef.current) {
+      isSearchingRef.current = false;
+    }
+  }, [isFetching]);
 
   // Track search/filter changes
   useEffect(() => {
@@ -64,8 +104,28 @@ export default function NotificationsPage() {
     ) {
       previousSearchRef.current = debouncedSearch;
       previousTypeFilterRef.current = typeFilter;
+      isSearchingRef.current = true;
     }
   }, [debouncedSearch, typeFilter]);
+
+  const notifications = useMemo(() => {
+    return notificationsResponse?.data?.data || [];
+  }, [notificationsResponse]);
+
+  // Pagination metadata
+  const totalItems = notificationsResponse?.data?.total || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1);
+    saveNotificationsPaginationPrefs({ pageSize: newPageSize });
+  };
 
   return (
     <Layout>
@@ -90,7 +150,7 @@ export default function NotificationsPage() {
               placeholder="Search by description..."
               className="pl-8 pr-8"
             />
-            {(isLoading || isFetching) && (
+            {(isLoading || (isFetching && isSearchingRef.current)) && (
               <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
             )}
           </div>
@@ -202,24 +262,17 @@ export default function NotificationsPage() {
               ))}
             </div>
 
-            {/* Loading indicator at bottom for infinite scroll */}
-            {isFetchingNextPage && (
-              <div className="flex justify-center py-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
-                  Loading more notifications...
-                </div>
-              </div>
-            )}
-
-            {/* Intersection observer target - only show when there's more to load */}
-            {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
-
-            {/* End of list indicator */}
-            {!hasNextPage && notifications.length > 0 && (
-              <div className="text-center py-4 text-sm text-muted-foreground">
-                No more notifications to load
-              </div>
+            {/* Pagination controls */}
+            {notifications.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                isLoading={isFetching}
+              />
             )}
           </>
         )}
