@@ -69,6 +69,7 @@ export function Step1Details({
                 supplier ? { id: supplier.id, name: supplier.name } : null
               );
             }}
+            // clearable
           />
         </div>
 

@@ -14,6 +14,8 @@ interface InventorySupplierSelectProps {
   placeholder?: string;
   disabled?: boolean;
   errorMessage?: string;
+  clearable?: boolean;
+  onClear?: () => void;
 }
 
 export function InventorySupplierSelect({
@@ -23,6 +25,8 @@ export function InventorySupplierSelect({
   placeholder = "Select a supplier",
   disabled,
   errorMessage,
+  clearable = true,
+  onClear,
 }: InventorySupplierSelectProps) {
   const { data, isLoading, isError } = useGetSuppliersQuery();
 
@@ -39,14 +43,24 @@ export function InventorySupplierSelect({
     onChange({ id: sup._id, name: sup.name });
   };
 
+  const handleClear = () => {
+    onChange(null);
+    onClear?.();
+  };
+
   return (
     <div className="space-y-1">
       <Select
+        key={value || "empty"}
         value={value ?? undefined}
         onValueChange={handleChange}
         disabled={disabled || isLoading}
       >
-        <SelectTrigger id={id}>
+        <SelectTrigger
+          id={id}
+          showClear={clearable && !!value}
+          onClear={handleClear}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

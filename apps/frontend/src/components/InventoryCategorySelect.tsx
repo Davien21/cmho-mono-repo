@@ -17,6 +17,8 @@ interface InventoryCategorySelectProps {
   placeholder?: string;
   disabled?: boolean;
   errorMessage?: string;
+  clearable?: boolean;
+  onClear?: () => void;
 }
 
 export function InventoryCategorySelect({
@@ -26,27 +28,41 @@ export function InventoryCategorySelect({
   placeholder = "Select a category",
   disabled,
   errorMessage,
+  clearable = false,
+  onClear,
 }: InventoryCategorySelectProps) {
   const { data, isLoading, isError } = useGetInventoryCategoriesQuery();
   // Sort categories by order (ascending), then by name as fallback
   // Create a copy of the array before sorting to avoid mutating the read-only array from RTK Query
-  const categories: IInventoryCategoryDto[] = [...(data?.data || [])].sort((a, b) => {
-    const orderA = a.order ?? 0;
-    const orderB = b.order ?? 0;
-    if (orderA !== orderB) {
-      return orderA - orderB;
+  const categories: IInventoryCategoryDto[] = [...(data?.data || [])].sort(
+    (a, b) => {
+      const orderA = a.order ?? 0;
+      const orderB = b.order ?? 0;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.name.localeCompare(b.name);
     }
-    return a.name.localeCompare(b.name);
-  });
+  );
+
+  const handleClear = () => {
+    onChange("");
+    onClear?.();
+  };
 
   return (
     <div className="space-y-1">
       <Select
-        value={value}
+        key={value || "empty"}
+        value={value || undefined}
         onValueChange={onChange}
         disabled={disabled || isLoading}
       >
-        <SelectTrigger id={id}>
+        <SelectTrigger
+          id={id}
+          showClear={clearable && !!value}
+          onClear={handleClear}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

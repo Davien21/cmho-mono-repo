@@ -14,6 +14,8 @@ interface UnitDropdownProps {
   className?: string;
   maxHeight?: number | string;
   onSelect: (unitId: string, value: string) => void;
+  clearable?: boolean;
+  onClear?: (unitId: string) => void;
 }
 
 const UnitDropdown = React.memo(
@@ -24,13 +26,25 @@ const UnitDropdown = React.memo(
     className,
     maxHeight = 180,
     onSelect,
+    clearable = false,
+    onClear,
   }: UnitDropdownProps) => {
+    const handleClear = () => {
+      onSelect(unitId, "");
+      onClear?.(unitId);
+    };
+
     return (
       <Select
-        value={value}
+        key={`${unitId}-${value || "empty"}`}
+        value={value || undefined}
         onValueChange={(newValue) => onSelect(unitId, newValue)}
       >
-        <SelectTrigger className={className}>
+        <SelectTrigger
+          className={className}
+          showClear={clearable && !!value}
+          onClear={handleClear}
+        >
           <SelectValue placeholder="Pick unit" />
         </SelectTrigger>
         <SelectContent
