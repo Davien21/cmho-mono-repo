@@ -32,7 +32,6 @@ app.use(morgan("dev"));
 
 const allowedOrigins = [
   env.CLIENT_URL,
-  env.MOBILE_BETA_CLIENT_URL,
   "https://cmho.xyz",
   "https://www.cmho.xyz",
   "https://salary.cmho.xyz",

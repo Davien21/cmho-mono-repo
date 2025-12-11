@@ -35,7 +35,6 @@ const schema = z.object({
   }),
   CLOUDINARY_FOLDER: z.string(),
   CLIENT_URL: z.string(),
-  MOBILE_BETA_CLIENT_URL: z.string(),
   // Paystack Config
   PAYSTACK_SECRET_KEY: z.string(),
   // PAYSTACK_PUBLIC_KEY: z.string(),
@@ -91,7 +90,6 @@ const common = {
   PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
   // Platform Config
   PLATFORM_PASSWORD: process.env.PLATFORM_PASSWORD,
-  MOBILE_BETA_CLIENT_URL: process.env.MOBILE_BETA_CLIENT_URL,
 };
 
 const development: z.infer<typeof schema> = {

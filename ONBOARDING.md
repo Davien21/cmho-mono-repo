@@ -240,7 +240,6 @@ The application needs environment variables to run. These are configuration valu
 
    # Client URL (where the frontend runs)
    CLIENT_URL=http://localhost:3000
-   MOBILE_BETA_CLIENT_URL=http://localhost:3000
 
    # Paystack (for payments - get from https://paystack.com/)
    PAYSTACK_SECRET_KEY=your-paystack-secret-key
