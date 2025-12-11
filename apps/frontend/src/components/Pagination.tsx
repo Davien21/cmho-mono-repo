@@ -1,6 +1,17 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { Button } from "./ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Input } from "./ui/input";
 import { useState, useEffect, useRef } from "react";
 
@@ -24,7 +35,7 @@ export function Pagination({
   pageSize,
   onPageChange,
   onPageSizeChange,
-  pageSizeOptions = [25, 50, 100],
+  pageSizeOptions = [10, 25, 50, 100],
   showJumpToPage = true,
   showPageSizeSelector = true,
   isLoading = false,
@@ -69,7 +80,9 @@ export function Pagination({
     }
   };
 
-  const handleJumpToPageKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleJumpToPageKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleJumpToPage();
@@ -119,7 +132,9 @@ export function Pagination({
         </span>
         {showPageSizeSelector && (
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline whitespace-nowrap">Items per page:</span>
+            <span className="hidden sm:inline whitespace-nowrap">
+              Items per page:
+            </span>
             <Select
               value={pageSize.toString()}
               onValueChange={(value) => onPageSizeChange(parseInt(value))}

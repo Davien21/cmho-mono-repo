@@ -24,12 +24,12 @@ const loadPaginationPrefs = (): { pageSize: number } => {
     const stored = localStorage.getItem(PAGINATION_STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      return { pageSize: parsed.pageSize || 25 };
+      return { pageSize: parsed.pageSize || 10 };
     }
   } catch (error) {
     console.error("Failed to load pagination preferences:", error);
   }
-  return { pageSize: 25 };
+  return { pageSize: 10 };
 };
 
 // Save pagination preferences to localStorage
@@ -55,7 +55,9 @@ export default function InventoryPage() {
 
   // Pagination state with localStorage persistence
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(() => loadPaginationPrefs().pageSize);
+  const [pageSize, setPageSize] = useState(
+    () => loadPaginationPrefs().pageSize
+  );
 
   // Reset to page 1 when filters or search change
   useEffect(() => {
@@ -82,7 +84,8 @@ export default function InventoryPage() {
     return params;
   }, [filter, debouncedSearch, currentPage, pageSize]);
 
-  const { data, isLoading, isFetching } = useGetInventoryItemsQuery(queryParams);
+  const { data, isLoading, isFetching } =
+    useGetInventoryItemsQuery(queryParams);
 
   // Reset search flag when fetch completes
   useEffect(() => {

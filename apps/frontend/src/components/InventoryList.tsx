@@ -69,7 +69,7 @@ export function InventoryList({
   currentPage = 1,
   totalPages = 1,
   totalItems = 0,
-  pageSize = 25,
+  pageSize = 10,
   onPageChange,
   onPageSizeChange,
 }: InventoryListProps) {

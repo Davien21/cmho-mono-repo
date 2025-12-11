@@ -403,7 +403,7 @@ export const inventoryApi = baseApi.injectEndpoints({
         params: {
           sort: "desc",
           page: params.page || 1,
-          limit: params.limit || 25,
+          limit: params.limit || 10,
           ...(params.stockFilter && { stockFilter: params.stockFilter }),
           ...(params.search && { search: params.search }),
           ...(params.category && { category: params.category }),
