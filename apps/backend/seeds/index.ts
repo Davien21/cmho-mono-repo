@@ -269,6 +269,24 @@ async function seedInventoryItems() {
         );
       }
 
+      // Find the earliest expiry date from all dates
+      let earliestExpiryDate: Date | null = null;
+      if (expiryDates.length > 0 && currentStockInBaseUnits > 0) {
+        try {
+          const validDates = expiryDates
+            .map((d) => new Date(d))
+            .filter((d) => !isNaN(d.getTime()));
+
+          if (validDates.length > 0) {
+            earliestExpiryDate = new Date(
+              Math.min(...validDates.map((d) => d.getTime()))
+            );
+          }
+        } catch (error) {
+          logger.error(`Invalid expiry date for "${item.name}": ${error}`);
+        }
+      }
+
       // Add to batch creation array
       itemsToCreate.push({
         name: item.name,
@@ -277,6 +295,7 @@ async function seedInventoryItems() {
         status: "active",
         createdBy: superAdmin._id,
         currentStockInBaseUnits,
+        earliestExpiryDate,
         canBeSold: categoryData.name !== "Consumable",
         isDeleted: false,
       });
@@ -312,16 +331,23 @@ async function seedInventoryItems() {
           const expiryDate = new Date(metadata.expiryDates[0]);
 
           stockMovementsToCreate.push({
-            inventoryItemId: createdItem._id,
+            inventoryItem: {
+              id: createdItem._id,
+              name: createdItem.name,
+            },
             operationType: "add",
             supplier: null, // No supplier for seed data
-            costPrice: 0, // Default placeholder
-            sellingPrice: 0, // Default placeholder
+            prices: {
+              costPrice: 0, // Default placeholder
+              sellingPrice: 0, // Default placeholder
+            },
             expiryDate: expiryDate,
             quantityInBaseUnits: metadata.currentStockInBaseUnits,
             balance: metadata.currentStockInBaseUnits,
-            performerId: superAdmin._id,
-            performerName: SUPER_ADMIN_NAME,
+            performer: {
+              id: superAdmin._id,
+              name: SUPER_ADMIN_NAME,
+            },
           });
         } catch (error) {
           logger.error(
