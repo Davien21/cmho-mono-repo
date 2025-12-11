@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
-import { StockEntry, UnitLevel } from "@/types/inventory";
+import { StockMovement, UnitLevel } from "@/types/inventory";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
 import {
   IInventoryItemDto,
@@ -16,7 +16,7 @@ import {
 } from "@/store/inventory-slice";
 import { useInfiniteStockMovement } from "@/hooks/use-infinite-stock-movement";
 
-type StockChangeRow = StockEntry & {
+type StockChangeRow = StockMovement & {
   itemName: string;
   units: UnitLevel[];
 };
@@ -85,7 +85,6 @@ export default function StockMovementPage() {
         quantity: u.quantity,
       })),
       lowStockValue: dto.lowStockValue,
-      stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       image: dto.image,
     }));

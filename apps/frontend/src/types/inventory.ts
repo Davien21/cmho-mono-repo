@@ -11,7 +11,7 @@ export interface InventoryCategory {
   name: string;
 }
 
-export interface StockEntry {
+export interface StockMovement {
   id: string;
   inventoryItemId: string;
   operationType: "add" | "reduce";
@@ -37,7 +37,6 @@ export interface InventoryItem {
   category: InventoryCategory;
   units: UnitLevel[];
   lowStockValue?: number;
-  stocks?: StockEntry[];
   currentStockInBaseUnits?: number;
   earliestExpiryDate?: string | null;
   image?: InventoryItemImage;

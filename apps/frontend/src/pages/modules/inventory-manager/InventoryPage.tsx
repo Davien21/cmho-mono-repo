@@ -83,7 +83,6 @@ export default function InventoryPage() {
         quantity: u.quantity,
       })),
       lowStockValue: dto.lowStockValue,
-      stocks: [],
       currentStockInBaseUnits: dto.currentStockInBaseUnits,
       earliestExpiryDate: dto.earliestExpiryDate ?? null,
       image: dto.image,
