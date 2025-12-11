@@ -10,7 +10,13 @@
         "quantity": 6
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Em Vac set",
@@ -23,7 +29,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Romo Vac set",
@@ -36,7 +48,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "medivac",
@@ -49,7 +67,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Blood transfusion set",
@@ -62,7 +86,13 @@
         "quantity": 75
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Surgical glove elbow length",
@@ -75,7 +105,13 @@
         "quantity": 50
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Scalp Vein 21G(blue)",
@@ -116,7 +152,13 @@
         "quantity": 52
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Scalp Vein 22G Black",
@@ -157,7 +199,13 @@
         "quantity": 152
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "NG tube(sizes not specified)",
@@ -170,7 +218,13 @@
         "quantity": 25
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Disposable Insulin syringe (1-100)",
@@ -435,7 +489,13 @@
         "quantity": 76
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Disposable glove (nylon)",
@@ -448,7 +508,13 @@
         "quantity": 15
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cannula Blue",
@@ -573,7 +639,13 @@
         "quantity": 4
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Adult diaper",
@@ -586,7 +658,13 @@
         "quantity": 5
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Face mask",
@@ -655,7 +733,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Surgical glove",
@@ -668,7 +752,13 @@
         "quantity": 3
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Bivatracin",
@@ -681,7 +771,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Lidocaine gel",
@@ -694,7 +790,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Gauze Rolls",
@@ -707,7 +809,13 @@
         "quantity": 8
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Chromic 2",
@@ -1112,7 +1220,13 @@
         "quantity": 0
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Sufra Tulle",
@@ -1125,6 +1239,12 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   }
 ]

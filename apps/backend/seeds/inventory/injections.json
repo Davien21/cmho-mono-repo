@@ -320,7 +320,13 @@
         "quantity": 32
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Ceftriaxone 1g",
@@ -475,7 +481,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Lidocaine (plain)",
@@ -488,7 +500,13 @@
         "quantity": 9
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Quininine  Injection",
@@ -649,7 +667,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Amoxicilline Injec",
@@ -718,7 +742,13 @@
         "quantity": 100
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Sleepshot",
@@ -731,7 +761,13 @@
         "quantity": 4
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Diazepam  Injection",
@@ -856,7 +892,13 @@
         "quantity": 3
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Acupan",
@@ -989,7 +1031,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Ampoule/Vial",
+        "plural": "Ampoules/Vials",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "EMAL injection",

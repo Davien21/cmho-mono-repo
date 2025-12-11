@@ -10,7 +10,13 @@
         "quantity": 16
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Amethocaine eyedrop",
@@ -23,7 +29,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Timolol eye drop",
@@ -36,7 +48,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cipro/Dexa eye drop",
@@ -49,7 +67,13 @@
         "quantity": 8
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Moxifloxacin eye drop",
@@ -62,7 +86,13 @@
         "quantity": 8
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Dorzolamide eye drop",
@@ -75,7 +105,13 @@
         "quantity": 8
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Norfloxacin eye drop",
@@ -88,7 +124,13 @@
         "quantity": 7
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Beta N eye drop",
@@ -101,7 +143,13 @@
         "quantity": 15
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Chloramphenicol eye drop",
@@ -114,7 +162,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Maxi Tears eye drop",
@@ -127,7 +181,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Nepafenac eye drop",
@@ -140,7 +200,13 @@
         "quantity": 14
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Neomycin/Dexa eye drop",
@@ -153,7 +219,13 @@
         "quantity": 8
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cromolyn eye drop",
@@ -166,7 +238,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Chloramphenicol eye ointment",
@@ -179,7 +257,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Adult Nasal drops",
@@ -192,7 +276,13 @@
         "quantity": 6
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Paediatric Nasal drops",
@@ -205,7 +295,13 @@
         "quantity": 8
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Czocain (Lidocaine gel)",
@@ -218,7 +314,13 @@
         "quantity": 6
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Lofenac Gel",
@@ -231,7 +333,13 @@
         "quantity": 11
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Multi Action Topical Gel",
@@ -244,7 +352,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Noww-Noww",
@@ -257,7 +371,13 @@
         "quantity": 12
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "GeoDerm",
@@ -270,7 +390,13 @@
         "quantity": 12
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Funbact-A",
@@ -283,7 +409,13 @@
         "quantity": 24
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Benzydamine Difflam Spray",
@@ -296,7 +428,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "ABF-3 cream",
@@ -309,7 +447,13 @@
         "quantity": 37
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Zolamax (acetazolamide)",
@@ -322,6 +466,12 @@
         "quantity": 210
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Unit",
+        "plural": "Units",
+        "quantity": 1
+      }
+    ]
   }
 ]

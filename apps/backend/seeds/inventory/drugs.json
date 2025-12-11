@@ -1389,7 +1389,13 @@
         "quantity": 500
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Tagrol(Carbamazepine)",
@@ -2487,7 +2493,13 @@
         "quantity": 120
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Palodal 2.5mg (Bromocriptine)",
@@ -2714,7 +2726,13 @@
         "quantity": 30
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Eficef (cefixime 200mg)",
@@ -2847,7 +2865,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Dequadin(Lozenges)",
@@ -2944,7 +2968,13 @@
         "quantity": 200
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Lansoprazole 30mg delayed release",
@@ -2956,7 +2986,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Pantodom",
@@ -3025,7 +3061,13 @@
         "quantity": 9
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Container",
+        "plural": "Containers",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Calcium multi",
@@ -3728,7 +3770,13 @@
         "quantity": 3
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Gabapentin",
@@ -3992,7 +4040,13 @@
         "quantity": 28
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Sinemet 25/250mg",
@@ -4005,7 +4059,13 @@
         "quantity": 1100
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cognitol 5mg",
@@ -5367,7 +5427,13 @@
         "quantity": 3
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Avro Apetite( cyproheptadine + M/vite)",
@@ -5408,7 +5474,13 @@
         "quantity": 30
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Tablet",
+        "plural": "Tablets",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Misoprostol",

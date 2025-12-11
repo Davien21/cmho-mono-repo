@@ -10,7 +10,13 @@
         "quantity": 13
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Vit C syrup",
@@ -23,7 +29,13 @@
         "quantity": 40
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Mamaesteo syrup",
@@ -36,7 +48,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "BeCombion (B.complex) syrup",
@@ -49,7 +67,13 @@
         "quantity": 3
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Oplex syrup",
@@ -62,7 +86,13 @@
         "quantity": 30
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cofta (Ammonium Chloride + Pecacuaha) syrup",
@@ -75,7 +105,13 @@
         "quantity": 45
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Honey cov Beehive syrup",
@@ -88,7 +124,13 @@
         "quantity": 21
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Evacid susp",
@@ -101,7 +143,13 @@
         "quantity": 13
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Lablin syrup",
@@ -114,7 +162,13 @@
         "quantity": 30
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Ulcamed susp",
@@ -127,7 +181,13 @@
         "quantity": 0
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Ulgicid susp",
@@ -140,7 +200,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Labdrex (ibuprofen 100mg/5ml) syrup",
@@ -153,7 +219,13 @@
         "quantity": 30
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Kiddimin syrup",
@@ -166,7 +238,13 @@
         "quantity": 17
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Actiflu syrup",
@@ -179,7 +257,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Novalyn(dextrometophan) syrup",
@@ -192,7 +276,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Nospamin syrup",
@@ -205,7 +295,13 @@
         "quantity": 1
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "PCM syrup (120/5ml)",
@@ -218,7 +314,13 @@
         "quantity": 40
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Rophegan(promethazine) syrup",
@@ -231,7 +333,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Azithromycin susp 200mg/5ml",
@@ -244,7 +352,13 @@
         "quantity": 5
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Gremax azithromyxin 200mg/5ml",
@@ -257,7 +371,13 @@
         "quantity": 5
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Colibel drops",
@@ -270,7 +390,13 @@
         "quantity": 7
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Metronidazole susp 200mg/5ml",
@@ -283,7 +409,13 @@
         "quantity": 30
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Theramin syrup",
@@ -296,7 +428,13 @@
         "quantity": 17
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Bunto blood tonic",
@@ -309,7 +447,13 @@
         "quantity": 4
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Haepler blood tonic",
@@ -322,7 +466,13 @@
         "quantity": 4
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Plexitone Tonic",
@@ -335,7 +485,13 @@
         "quantity": 30
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Lycofer syrup",
@@ -348,7 +504,13 @@
         "quantity": 9
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Lycoset syrup",
@@ -361,7 +523,13 @@
         "quantity": 16
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Galway's liquid paraffin",
@@ -374,7 +542,13 @@
         "quantity": 11
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Viscetrin(cetrizine) 5mg/5ml",
@@ -387,7 +561,13 @@
         "quantity": 61
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Loratidine syrup",
@@ -400,7 +580,13 @@
         "quantity": 50
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "M/vite syrup",
@@ -413,7 +599,13 @@
         "quantity": 40
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Aptizoom syrup",
@@ -426,7 +618,13 @@
         "quantity": 15
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Bioflor",
@@ -439,7 +637,13 @@
         "quantity": 160
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Artemelum syrup",
@@ -452,7 +656,13 @@
         "quantity": 20
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cefexime susp. (Aquixim)",
@@ -465,7 +675,13 @@
         "quantity": 7
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cefexime Ezcef 100mg/5ml",
@@ -478,7 +694,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Cefuroxime 125mg/5ml",
@@ -491,7 +713,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Ceezex (cefuroxime 125mg/5ml)",
@@ -504,7 +732,13 @@
         "quantity": 9
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Wormtac(Albendazole)",
@@ -517,7 +751,13 @@
         "quantity": 12
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Digiclav (Amoxiclav 400/57mg)",
@@ -530,7 +770,13 @@
         "quantity": 18
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Fleming (amoxicilin clavulinate 400/57mg",
@@ -543,7 +789,13 @@
         "quantity": 6
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Fleming (amoxicillin clav 228.5mg",
@@ -556,7 +808,13 @@
         "quantity": 5
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Oxyclav 228.5mg",
@@ -569,7 +827,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Ampicillin 125mg/5ml",
@@ -582,7 +846,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Erythromycin 125mg/5ml",
@@ -595,7 +865,13 @@
         "quantity": 2
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Arthemeter susp 18/120mg",
@@ -608,7 +884,13 @@
         "quantity": 15
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Orabiotic suspension",
@@ -621,7 +903,13 @@
         "quantity": 24
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Novadex(Ibuprofen) syr",
@@ -634,7 +922,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Rexifen(Pcm) syr",
@@ -647,7 +941,13 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   },
   {
     "name": "Weldol PCM",
@@ -660,6 +960,12 @@
         "quantity": 10
       }
     ],
-    "units": []
+    "units": [
+      {
+        "name": "Sachet or Bottle",
+        "plural": "Sachets or Bottles",
+        "quantity": 1
+      }
+    ]
   }
 ]
