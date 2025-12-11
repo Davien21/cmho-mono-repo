@@ -32,7 +32,7 @@ export interface IStockMovement {
   prices: IPriceStockMovementSnapshot | null;
   expiryDate: Date;
   quantityInBaseUnits: number;
-  balance?: number;
+  balance: number;
   performer: IPerformerStockMovementSnapshot;
   createdAt?: Date;
   updatedAt?: Date;

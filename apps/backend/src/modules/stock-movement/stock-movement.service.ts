@@ -137,6 +137,11 @@ class StockMovementService {
     const normalizedExpiryDate = normalizeExpiryDate(data.expiryDate);
 
     // Create stock movement with operationType: "add"
+    // Calculate balance BEFORE creating entry
+    const currentStock = item.currentStockInBaseUnits ?? 0;
+    const quantityToAdd = Math.abs(data.quantityInBaseUnits);
+    const nextStock = currentStock + quantityToAdd;
+
     const entry = await StockMovement.create({
       inventoryItem: {
         id: item._id,
@@ -149,7 +154,8 @@ class StockMovementService {
         sellingPrice: data.sellingPrice,
       },
       expiryDate: normalizedExpiryDate || data.expiryDate,
-      quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
+      quantityInBaseUnits: quantityToAdd,
+      balance: nextStock,
       performer: {
         id: performerId,
         name: performerName,
@@ -157,9 +163,6 @@ class StockMovementService {
     });
 
     // Update inventory item stock
-    const currentStock = item.currentStockInBaseUnits ?? 0;
-    const nextStock = currentStock + entry.quantityInBaseUnits;
-
     item.currentStockInBaseUnits = nextStock;
 
     // Update earliestExpiryDate if this new stock has an earlier expiry
@@ -171,10 +174,6 @@ class StockMovementService {
     }
 
     await item.save();
-
-    // Update entry with balance
-    entry.balance = nextStock;
-    await entry.save();
 
     return entry;
   }
@@ -199,6 +198,12 @@ class StockMovementService {
       ? normalizeExpiryDate(data.expiryDate)
       : null;
 
+    // Calculate balance BEFORE creating entry
+    const currentStock = item.currentStockInBaseUnits ?? 0;
+    const quantityToReduce = Math.abs(data.quantityInBaseUnits);
+    const nextStock = currentStock - quantityToReduce;
+    const finalStock = Math.max(0, nextStock);
+
     // Create stock movement with operationType: "reduce"
     const entry = await StockMovement.create({
       inventoryItem: {
@@ -217,19 +222,15 @@ class StockMovementService {
       expiryDate:
         normalizedExpiryDate ??
         new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
+      quantityInBaseUnits: quantityToReduce,
+      balance: finalStock,
       performer: {
         id: performerId,
         name: performerName,
       },
     });
 
-    // Update inventory item stock (subtract quantity)
-    const currentStock = item.currentStockInBaseUnits ?? 0;
-    const nextStock = currentStock - entry.quantityInBaseUnits;
-
-    // Ensure stock doesn't go negative (or handle as needed)
-    const finalStock = Math.max(0, nextStock);
+    // Update inventory item stock
     item.currentStockInBaseUnits = finalStock;
 
     // If we have stock left, recalculate earliestExpiryDate
@@ -246,10 +247,6 @@ class StockMovementService {
     }
 
     await item.save();
-
-    // Update entry with balance
-    entry.balance = finalStock;
-    await entry.save();
 
     return entry;
   }
@@ -286,6 +283,13 @@ class StockMovementService {
     const quantityToStore = Math.abs(data.quantityInBaseUnits);
 
     // Create stock movement
+    // Calculate balance BEFORE creating entry
+    const currentStock = item.currentStockInBaseUnits ?? 0;
+    // For reduce operations, subtract the quantity; for add, add it
+    const quantityDelta =
+      data.operationType === "reduce" ? -quantityToStore : quantityToStore;
+    const nextStock = currentStock + quantityDelta;
+
     const entry = await StockMovement.create({
       inventoryItem: {
         id: item._id,
@@ -296,24 +300,13 @@ class StockMovementService {
       prices: data.prices || null,
       expiryDate: normalizedExpiryDate || data.expiryDate,
       quantityInBaseUnits: quantityToStore,
+      balance: nextStock,
       performer: data.performer,
     });
 
-    // Incrementally update currentStockInBaseUnits
-    const currentStock = item.currentStockInBaseUnits ?? 0;
-    // For reduce operations, subtract the quantity; for add, add it
-    const quantityDelta =
-      entry.operationType === "reduce"
-        ? -entry.quantityInBaseUnits
-        : entry.quantityInBaseUnits;
-    const nextStock = currentStock + quantityDelta;
-
+    // Update inventory item stock
     item.currentStockInBaseUnits = nextStock;
     await item.save();
-
-    // Update entry with balance
-    entry.balance = nextStock;
-    await entry.save();
 
     return entry;
   }

@@ -62,7 +62,7 @@ const stockMovementSchema = new Schema<IStockMovement>(
     prices: { type: priceSnapshotSchema, required: false, default: null },
     expiryDate: { type: Date, required: true },
     quantityInBaseUnits: { type: Number, required: true },
-    balance: { type: Number, required: false },
+    balance: { type: Number, required: true },
     performer: {
       type: performerSnapshotSchema,
       required: true,
