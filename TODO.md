@@ -53,31 +53,7 @@
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
 
-5. **Migrate inventory modals to use context-based approach**
-
-- **Current state**: Inventory modals (AddInventoryModal, EditInventoryModal, UpdateStockModal) use props-based approach with local state management in InventoryPage
-- **Goal**: Migrate to context-based modal system (like admin/employee modals) for consistency and better code organization
-- **Benefits**:
-  - Less boilerplate (no multiple useState calls in parent components)
-  - No prop drilling (can open modals from anywhere - tables, dropdowns, buttons)
-  - Consistent pattern across the app
-  - Centralized modal management
-- **Implementation steps**:
-  - [ ] Add modal types to `ModalDataMap` in `apps/frontend/src/contexts/modal-context.tsx`:
-    - `"add-inventory": undefined`
-    - `"edit-inventory": InventoryItem`
-    - `"update-stock": InventoryItem`
-  - [ ] Update `AddInventoryModal` to use `useModalContext` instead of props
-  - [ ] Update `EditInventoryModal` to use `useModalContext` instead of props
-  - [ ] Update `AddStockModal` and `RemoveStockModal` to use `useModalContext` instead of props
-  - [ ] Add all three modals to `apps/frontend/src/components/modals/index.tsx`
-  - [ ] Update `InventoryPage` to use `openModal()` calls instead of local state
-  - [ ] Remove local state management (`showAddForm`, `showEditModal`, `showStockModal`, `selectedItem`) from InventoryPage
-  - [ ] Update any other components that open inventory modals to use context
-  - [ ] Test all modal functionality (open, close, form submission, data passing)
-- **Note**: `ImagePickerModal` should remain props-based as it's a sub-modal used within other modals
-
-6. **Switch inventory list to pagination style**
+5. **Switch inventory list to pagination style**
 
 - **Current state**: Inventory list currently uses continuous scrolling/loading without clear pagination controls
 - **Goal**: Implement pagination controls for better navigation, performance, and user experience
@@ -155,16 +131,6 @@
   - All service files to ensure consistent pagination query implementation
   - All controller files to ensure pagination parameters are properly handled
   - Consider creating shared pagination utilities/helpers
-
-9. **Make UnitGroupingBuilder select adjust to content size**
-
-- Currently, the UnitDropdown components in UnitGroupingBuilder use a fixed width (`w-24` = 96px)
-- This can cause issues with longer unit names being truncated or having too much empty space for shorter names
-- [ ] Update UnitDropdown className in UnitGroupingBuilder to use dynamic width based on content
-- [ ] Consider using `min-w-fit` or `w-auto` with appropriate min/max width constraints
-- [ ] Ensure the select dropdown content also adjusts appropriately
-- [ ] Test with various unit name lengths to ensure proper display
-- [ ] Update both root unit and nested unit dropdowns in UnitGroupingBuilder
 
 10. **Add clear functionality to select components**
 
