@@ -3,10 +3,8 @@ const router = express.Router();
 
 import { generalMulter } from "../../lib/multer";
 import validateBy from "../../middlewares/validator";
-import {
-  authenticate,
-  requireSuperAdmin,
-} from "../../middlewares/authentication";
+import { authenticate, hasRole } from "../../middlewares/authentication";
+import { AdminRole } from "../admins/admins.types";
 import {
   createGalleryItem,
   deleteGalleryItem,
@@ -44,7 +42,7 @@ router.put(
 
 router.delete(
   "/gallery/:id",
-  [authenticate, requireSuperAdmin],
+  [authenticate, hasRole(AdminRole.INVENTORY_EDITOR)],
   deleteGalleryItem
 );
 

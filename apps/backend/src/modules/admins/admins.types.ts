@@ -6,6 +6,7 @@ export type AdminStatus = "active" | "inactive" | "deleted";
 
 export enum AdminRole {
   INVENTORY_MANAGER = "INVENTORY_MANAGER",
+  INVENTORY_EDITOR = "INVENTORY_EDITOR",
 }
 
 export interface IAdmin {

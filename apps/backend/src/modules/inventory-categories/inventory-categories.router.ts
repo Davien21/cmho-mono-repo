@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { authenticate, hasRole, requireSuperAdmin } from "../../middlewares/authentication";
+import { authenticate, hasRole } from "../../middlewares/authentication";
 import { AdminRole } from "../admins/admins.types";
 import validator from "../../middlewares/validator";
 import {
@@ -45,7 +45,7 @@ router.put(
 
 router.delete(
   "/inventory/categories/:id",
-  [authenticate, requireSuperAdmin],
+  [authenticate, hasRole(AdminRole.INVENTORY_EDITOR)],
   deleteInventoryCategory
 );
 
