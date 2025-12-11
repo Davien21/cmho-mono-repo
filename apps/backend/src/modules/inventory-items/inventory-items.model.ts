@@ -59,6 +59,11 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
       required: false,
       default: 0,
     },
+    earliestExpiryDate: {
+      type: Date,
+      required: false,
+      default: null,
+    },
     image: {
       url: { type: String, required: false },
       mediaId: { type: String, required: false },

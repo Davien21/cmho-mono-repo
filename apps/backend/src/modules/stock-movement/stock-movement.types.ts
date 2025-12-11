@@ -9,30 +9,38 @@ export interface IStockSupplierSnapshot {
   name: string;
 }
 
-export interface IStockMovement {
-  _id: ObjectId;
-  inventoryItemId: ObjectId;
-  operationType: StockOperationType;
-  supplier: IStockSupplierSnapshot | null;
+export interface IInventoryItemStockMovementSnapshot {
+  id: ObjectId;
+  name: string;
+}
+
+export interface IPerformerStockMovementSnapshot {
+  id: ObjectId;
+  name: string;
+}
+
+export interface IPriceStockMovementSnapshot {
   costPrice: number;
   sellingPrice: number;
+}
+
+export interface IStockMovement {
+  _id: ObjectId;
+  inventoryItem: IInventoryItemStockMovementSnapshot;
+  operationType: StockOperationType;
+  supplier: IStockSupplierSnapshot | null;
+  prices: IPriceStockMovementSnapshot | null;
   expiryDate: Date;
   quantityInBaseUnits: number;
   balance?: number;
-  performerId: ObjectId;
-  performerName: string;
+  performer: IPerformerStockMovementSnapshot;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 // Shape used for request bodies (client-provided data)
-// For reduce operations, costPrice, sellingPrice, and expiryDate are optional
+// For reduce operations, prices and expiryDate are optional
 export type StockMovementRequest = Omit<
   IStockMovement,
-  "_id" | "performerId" | "performerName" | "createdAt" | "updatedAt"
-> & {
-  costPrice?: number;
-  sellingPrice?: number;
-  expiryDate?: Date;
-};
-
+  "_id" | "createdAt" | "updatedAt"
+>;
