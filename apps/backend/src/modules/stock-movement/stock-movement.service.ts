@@ -68,64 +68,33 @@ class StockMovementService {
 
     // Build base filter
     const baseFilter: Record<string, any> = {};
-    if (inventoryItemId) baseFilter.inventoryItemId = inventoryItemId;
+    if (inventoryItemId) baseFilter["inventoryItem.id"] = inventoryItemId;
     if (operationType) baseFilter.operationType = operationType;
 
-    // If search is provided, use aggregation with $lookup to search by item name or performer name
+    // If search is provided, search by item name or performer name
     if (search) {
-      const pipeline: any[] = [
-        { $match: baseFilter },
-        {
-          $lookup: {
-            from: "inventory_items",
-            localField: "inventoryItemId",
-            foreignField: "_id",
-            as: "inventoryItem",
-          },
-        },
-        {
-          $unwind: {
-            path: "$inventoryItem",
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-      ];
-
-      // Add search filter
       const searchFilter: any[] = [];
-      if (search) {
-        searchFilter.push(
-          { "inventoryItem.name": { $regex: search, $options: "i" } },
-          { performerName: { $regex: search, $options: "i" } }
-        );
-      }
-      if (searchFilter.length > 0) {
-        pipeline.push({ $match: { $or: searchFilter } });
-      }
-
-      // Get total count
-      const countPipeline = [...pipeline, { $count: "total" }];
-      const countResult = await StockMovement.aggregate(countPipeline);
-      const total = countResult[0]?.total || 0;
-
-      // Add sorting, skip, and limit
-      pipeline.push(
-        { $sort: { _id: sort } },
-        { $skip: skip },
-        { $limit: limit }
+      searchFilter.push(
+        { "inventoryItem.name": { $regex: search, $options: "i" } },
+        { "performer.name": { $regex: search, $options: "i" } }
       );
 
-      // Remove inventoryItem from output (we don't need it in the response)
-      pipeline.push({
-        $project: {
-          inventoryItem: 0,
-        },
-      });
+      const searchQuery = {
+        ...baseFilter,
+        $or: searchFilter,
+      };
 
-      const data = await StockMovement.aggregate(pipeline);
+      // Get total count
+      const total = await StockMovement.countDocuments(searchQuery);
+
+      // Fetch data
+      const data = await StockMovement.find(searchQuery)
+        .sort({ _id: sort })
+        .limit(limit)
+        .skip(skip);
 
       return {
-        data: data as IStockMovement[],
+        data,
         total,
         page,
         limit,
@@ -154,35 +123,58 @@ class StockMovementService {
     performerId: Types.ObjectId,
     performerName: string
   ): Promise<IStockMovement> {
+    // Get the inventory item to create snapshot
+    const item = await InventoryItem.findOne({
+      _id: data.inventoryItemId,
+      isDeleted: { $ne: true },
+    });
+
+    if (!item) {
+      throw new Error("Inventory item not found");
+    }
+
     // Normalize expiry date to first day of month
     const normalizedExpiryDate = normalizeExpiryDate(data.expiryDate);
 
     // Create stock movement with operationType: "add"
     const entry = await StockMovement.create({
-      ...data,
-      expiryDate: normalizedExpiryDate || data.expiryDate,
+      inventoryItem: {
+        id: item._id,
+        name: item.name,
+      },
       operationType: "add",
+      supplier: data.supplier || null,
+      prices: {
+        costPrice: data.costPrice,
+        sellingPrice: data.sellingPrice,
+      },
+      expiryDate: normalizedExpiryDate || data.expiryDate,
       quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
-      performerId,
-      performerName,
+      performer: {
+        id: performerId,
+        name: performerName,
+      },
     });
 
     // Update inventory item stock
-    const item = await InventoryItem.findOne({
-      _id: entry.inventoryItemId,
-      isDeleted: { $ne: true },
-    });
-    if (item) {
-      const currentStock = item.currentStockInBaseUnits ?? 0;
-      const nextStock = currentStock + entry.quantityInBaseUnits;
+    const currentStock = item.currentStockInBaseUnits ?? 0;
+    const nextStock = currentStock + entry.quantityInBaseUnits;
 
-      item.currentStockInBaseUnits = nextStock;
-      await item.save();
+    item.currentStockInBaseUnits = nextStock;
 
-      // Update entry with balance
-      entry.balance = nextStock;
-      await entry.save();
+    // Update earliestExpiryDate if this new stock has an earlier expiry
+    const newExpiryDate = normalizedExpiryDate || data.expiryDate;
+    const currentEarliestExpiry = item.earliestExpiryDate;
+
+    if (!currentEarliestExpiry || newExpiryDate < currentEarliestExpiry) {
+      item.earliestExpiryDate = newExpiryDate;
     }
+
+    await item.save();
+
+    // Update entry with balance
+    entry.balance = nextStock;
+    await entry.save();
 
     return entry;
   }
@@ -192,48 +184,72 @@ class StockMovementService {
     performerId: Types.ObjectId,
     performerName: string
   ): Promise<IStockMovement> {
+    // Get the inventory item to create snapshot
+    const item = await InventoryItem.findOne({
+      _id: data.inventoryItemId,
+      isDeleted: { $ne: true },
+    });
+
+    if (!item) {
+      throw new Error("Inventory item not found");
+    }
+
     // Normalize expiry date to first day of month if provided
     const normalizedExpiryDate = data.expiryDate
       ? normalizeExpiryDate(data.expiryDate)
       : null;
 
-    // Set default values for reduce operations
-    const entryData = {
-      ...data,
-      costPrice: data.costPrice ?? 0,
-      sellingPrice: data.sellingPrice ?? 0,
+    // Create stock movement with operationType: "reduce"
+    const entry = await StockMovement.create({
+      inventoryItem: {
+        id: item._id,
+        name: item.name,
+      },
+      operationType: "reduce",
+      supplier: data.supplier || null,
+      prices:
+        data.costPrice != null && data.sellingPrice != null
+          ? {
+              costPrice: data.costPrice,
+              sellingPrice: data.sellingPrice,
+            }
+          : null,
       expiryDate:
         normalizedExpiryDate ??
         new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    };
-
-    // Create stock movement with operationType: "reduce"
-    const entry = await StockMovement.create({
-      ...entryData,
-      operationType: "reduce",
       quantityInBaseUnits: Math.abs(data.quantityInBaseUnits),
-      performerId,
-      performerName,
+      performer: {
+        id: performerId,
+        name: performerName,
+      },
     });
 
     // Update inventory item stock (subtract quantity)
-    const item = await InventoryItem.findOne({
-      _id: entry.inventoryItemId,
-      isDeleted: { $ne: true },
-    });
-    if (item) {
-      const currentStock = item.currentStockInBaseUnits ?? 0;
-      const nextStock = currentStock - entry.quantityInBaseUnits;
+    const currentStock = item.currentStockInBaseUnits ?? 0;
+    const nextStock = currentStock - entry.quantityInBaseUnits;
 
-      // Ensure stock doesn't go negative (or handle as needed)
-      const finalStock = Math.max(0, nextStock);
-      item.currentStockInBaseUnits = finalStock;
-      await item.save();
+    // Ensure stock doesn't go negative (or handle as needed)
+    const finalStock = Math.max(0, nextStock);
+    item.currentStockInBaseUnits = finalStock;
 
-      // Update entry with balance
-      entry.balance = finalStock;
-      await entry.save();
+    // If we have stock left, recalculate earliestExpiryDate
+    // (in case we consumed the earliest expiring stock)
+    if (finalStock > 0) {
+      const inventoryItemsService = (
+        await import("../inventory-items/inventory-items.service")
+      ).default;
+      item.earliestExpiryDate =
+        await inventoryItemsService.recalculateEarliestExpiryDate(item._id);
+    } else {
+      // No stock left, clear the expiry date
+      item.earliestExpiryDate = null;
     }
+
+    await item.save();
+
+    // Update entry with balance
+    entry.balance = finalStock;
+    await entry.save();
 
     return entry;
   }
@@ -243,6 +259,16 @@ class StockMovementService {
   }
 
   async create(data: StockMovementRequest): Promise<IStockMovement> {
+    // Get the inventory item to create snapshot
+    const item = await InventoryItem.findOne({
+      _id: data.inventoryItem.id,
+      isDeleted: { $ne: true },
+    });
+
+    if (!item) {
+      throw new Error("Inventory item not found");
+    }
+
     // Normalize expiry date to first day of month if provided
     let normalizedExpiryDate: Date | undefined = undefined;
     if (data.expiryDate) {
@@ -256,45 +282,38 @@ class StockMovementService {
       );
     }
 
-    // For reduce operations, set default values if not provided
-    const entryData: StockMovementRequest = {
-      ...data,
-      ...(normalizedExpiryDate && { expiryDate: normalizedExpiryDate }),
-      ...(data.operationType === "reduce" && {
-        costPrice: data.costPrice ?? 0,
-        sellingPrice: data.sellingPrice ?? 0,
-      }),
-    };
-
     // Ensure quantity is stored as positive in the database for clarity
-    // (we'll handle the sign when updating stock)
-    const quantityToStore = Math.abs(entryData.quantityInBaseUnits);
+    const quantityToStore = Math.abs(data.quantityInBaseUnits);
+
+    // Create stock movement
     const entry = await StockMovement.create({
-      ...entryData,
+      inventoryItem: {
+        id: item._id,
+        name: item.name,
+      },
+      operationType: data.operationType,
+      supplier: data.supplier || null,
+      prices: data.prices || null,
+      expiryDate: normalizedExpiryDate || data.expiryDate,
       quantityInBaseUnits: quantityToStore,
+      performer: data.performer,
     });
 
     // Incrementally update currentStockInBaseUnits
-    const item = await InventoryItem.findOne({
-      _id: entry.inventoryItemId,
-      isDeleted: { $ne: true },
-    });
-    if (item) {
-      const currentStock = item.currentStockInBaseUnits ?? 0;
-      // For reduce operations, subtract the quantity; for add, add it
-      const quantityDelta =
-        entry.operationType === "reduce"
-          ? -entry.quantityInBaseUnits
-          : entry.quantityInBaseUnits;
-      const nextStock = currentStock + quantityDelta;
+    const currentStock = item.currentStockInBaseUnits ?? 0;
+    // For reduce operations, subtract the quantity; for add, add it
+    const quantityDelta =
+      entry.operationType === "reduce"
+        ? -entry.quantityInBaseUnits
+        : entry.quantityInBaseUnits;
+    const nextStock = currentStock + quantityDelta;
 
-      item.currentStockInBaseUnits = nextStock;
-      await item.save();
+    item.currentStockInBaseUnits = nextStock;
+    await item.save();
 
-      // Update entry with balance
-      entry.balance = nextStock;
-      await entry.save();
-    }
+    // Update entry with balance
+    entry.balance = nextStock;
+    await entry.save();
 
     return entry;
   }

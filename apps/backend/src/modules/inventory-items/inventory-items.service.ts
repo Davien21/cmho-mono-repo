@@ -61,72 +61,6 @@ class InventoryItemsService {
             },
           ]
         : []),
-      {
-        $lookup: {
-          from: "stock_movements",
-          let: { itemId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$inventoryItemId", "$$itemId"] },
-                    { $eq: ["$operationType", "add"] },
-                    { $gte: ["$expiryDate", now] },
-                  ],
-                },
-              },
-            },
-            { $sort: { expiryDate: 1 } },
-            { $limit: 1 },
-            { $project: { expiryDate: 1 } },
-          ],
-          as: "earliestExpiryEntry",
-        },
-      },
-      {
-        $lookup: {
-          from: "stock_movements",
-          let: { itemId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$inventoryItemId", "$$itemId"] },
-                    { $eq: ["$operationType", "add"] },
-                  ],
-                },
-              },
-            },
-            { $limit: 1 },
-          ],
-          as: "hasAnyStockMovement",
-        },
-      },
-      {
-        $addFields: {
-          earliestExpiryDate: {
-            $cond: {
-              if: { $gt: [{ $size: "$earliestExpiryEntry" }, 0] },
-              then: { $arrayElemAt: ["$earliestExpiryEntry.expiryDate", 0] },
-              else: {
-                $cond: {
-                  if: {
-                    $and: [
-                      { $gt: [{ $size: "$hasAnyStockMovement" }, 0] },
-                      { $gt: ["$currentStockInBaseUnits", 0] },
-                    ],
-                  },
-                  then: "ALL EXPIRED",
-                  else: null,
-                },
-              },
-            },
-          },
-        },
-      },
-      { $unset: ["earliestExpiryEntry", "hasAnyStockMovement"] },
       // Apply stock filter if provided
       ...(stockFilter
         ? [
@@ -275,6 +209,37 @@ class InventoryItemsService {
       { isDeleted: true, deletedAt: new Date() },
       { new: true }
     );
+  }
+
+  /**
+   * Recalculates and updates the earliestExpiryDate for an inventory item
+   * by querying stock movements with "add" operations and future expiry dates
+   */
+  async recalculateEarliestExpiryDate(
+    itemId: string | Types.ObjectId
+  ): Promise<Date | null> {
+    const StockMovement = (
+      await import("../stock-movement/stock-movement.model")
+    ).default;
+
+    const now = new Date();
+
+    // Find the earliest expiry date from "add" stock movements that haven't expired
+    const earliestEntry = await StockMovement.findOne({
+      "inventoryItem.id": itemId,
+      operationType: "add",
+      expiryDate: { $gte: now },
+    })
+      .sort({ expiryDate: 1 })
+      .select("expiryDate")
+      .lean();
+
+    const earliestExpiryDate = earliestEntry?.expiryDate || null;
+
+    // Update the inventory item
+    await InventoryItem.findByIdAndUpdate(itemId, { earliestExpiryDate });
+
+    return earliestExpiryDate;
   }
 }
 
