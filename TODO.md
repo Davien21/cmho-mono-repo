@@ -437,47 +437,163 @@
 
 1. **Create packages/shared folder for all apps to use shared types and interfaces**
 
-   - **Current state**: Apps currently have their own type definitions, which can lead to duplication and inconsistencies across frontend and backend
+   - **Current state**: Apps currently have their own type definitions, which can lead to duplication and inconsistencies across frontend and backend. Analysis found **100+ duplicate type definitions** across the codebase.
    - **Goal**: Create a shared package that contains common types, interfaces, DTOs, and validation schemas that can be used by both frontend and backend applications
    - **Benefits**:
+
      - Single source of truth for shared types and interfaces
      - Reduced duplication of type definitions
      - Better type safety between frontend and backend
      - Easier to maintain and update shared data structures
      - Centralized validation schemas and DTOs
+     - Eliminates type mismatches (e.g., Admin roles: frontend uses `string[]` while backend uses `AdminRole[]`)
+
+   - **Critical duplications found**:
+
+     1. **Stock Movement Types**: `StockEntry` (frontend) vs `IStockMovement` (backend) - similar structures, different field names
+     2. **Admin Types**: `IAdmin` duplicated with type mismatch - frontend has `roles: string[]`, backend has `roles: AdminRole[]`
+     3. **Employee & Bank Types**: `IUserBank` (frontend) vs `IEmployeeBank` (backend) - identical structure, different names
+     4. **API Response Types**: `IAPIResponse<T>` and `IAPIError` - duplicated EXACTLY in both apps
+     5. **Inventory Categories**: `InventoryCategory` (frontend) vs `IInventoryCategory` (backend)
+     6. **Unit Types**: `UnitLevel` (frontend) vs `IInventoryUnitDefinition` (backend)
+     7. **Supplier Types**: Duplicated across frontend slice and backend types
+     8. **Activity Tracking**: `IActivityRecordDto` (frontend) vs `IActivityRecord` (backend)
+     9. **Common Enums**: `ESortOrder`, `AdminRole`, status enums scattered across files
+     10. **Request DTOs**: 20+ request interfaces in `inventory-slice.ts` that mirror backend types
+
    - **Implementation requirements**:
+
      - [ ] Create `packages/shared` directory in the monorepo root
      - [ ] Set up TypeScript configuration for the shared package
      - [ ] Configure package.json with appropriate exports and build configuration
-     - [ ] Identify common types/interfaces that should be moved to shared package:
-       - [ ] Inventory types (InventoryItem, StockEntry, StockMovement, etc.)
-       - [ ] User/Admin types (Admin, Employee, User, etc.)
-       - [ ] Category and Unit types
-       - [ ] Supplier types
-       - [ ] Activity tracking types
-       - [ ] Gallery types
-       - [ ] API request/response DTOs
-       - [ ] Validation schemas (if using shared validation library)
-     - [ ] Move common types to packages/shared
+     - [ ] Identify and migrate common types/interfaces to shared package:
+       - [ ] **API Response Types** (`packages/shared/types/common.ts`):
+         - `IAPIResponse<T>` (currently in `apps/frontend/src/types/index.ts` and `apps/backend/src/lib/interfaces.ts`)
+         - `IAPIError`
+         - `IQueryMeta` (pagination metadata)
+       - [ ] **Inventory Types** (`packages/shared/types/inventory.ts`):
+         - `IInventoryItem` (merge frontend `InventoryItem` and backend `IInventoryItem`)
+         - `IInventoryItemImage` (exists in both)
+         - `InventoryStatus` enum
+       - [ ] **Stock Movement Types** (`packages/shared/types/stock.ts`):
+         - `IStockMovement` (unify `StockEntry` and backend `IStockMovement`)
+         - `StockOperationType` type
+         - Stock snapshot interfaces (`IStockSupplierSnapshot`, `IInventoryItemStockMovementSnapshot`, `IPerformerStockMovementSnapshot`, `IPriceStockMovementSnapshot`)
+       - [ ] **Category Types** (`packages/shared/types/categories.ts`):
+         - `IInventoryCategory` (merge frontend and backend versions)
+         - `IInventoryCategoryUnitPresetPopulated`
+         - `IInventoryCategoryWithUnitPresetsPopulated`
+       - [ ] **Unit Types** (`packages/shared/types/units.ts`):
+         - `IInventoryUnitDefinition` (merge `UnitLevel` and backend version)
+         - `IInventoryUnitBase`, `IInventoryUnitDraft`, `IInventoryUnitReady`
+       - [ ] **Supplier Types** (`packages/shared/types/suppliers.ts`):
+         - `ISupplier`
+         - `SupplierStatus` enum
+       - [ ] **User/Admin Types** (`packages/shared/types/users.ts`):
+         - `IAdmin` (fix type mismatch: standardize `roles` field)
+         - `IEmployee` (merge `IUserBank` and `IEmployeeBank`)
+         - `IEmployeeBank` / `IUserBank` (consolidate into one)
+         - `IEmployeeWithBank`
+         - `AdminStatus` enum
+         - `AdminRole` enum (ensure consistent usage)
+         - `IAdminLogin`
+       - [ ] **Bank/Payment Types** (`packages/shared/types/payments.ts`):
+         - `IBank`
+         - `BankAccountVerificationResult`
+         - `ITransfer`, `ITransaction`, `ITransferDetails`
+         - `ITransactionStatus` enum
+       - [ ] **Activity Tracking Types** (`packages/shared/types/activity.ts`):
+         - `IActivityRecord` (merge frontend and backend)
+         - `ActivityTypes` constants
+         - `ActivityType` type
+       - [ ] **Gallery Types** (`packages/shared/types/gallery.ts`):
+         - `IGallery`
+       - [ ] **Notification Types** (`packages/shared/types/notifications.ts`):
+         - Notification interfaces from frontend and backend
+       - [ ] **Media Types** (`packages/shared/types/media.ts`):
+         - `IMediaDto` and related interfaces
+       - [ ] **Common Enums** (`packages/shared/enums/index.ts`):
+         - `ESortOrder` (currently duplicated)
+         - `ETransferType`
+         - All status enums
+       - [ ] **Request/Response DTOs** (`packages/shared/dtos/`):
+         - Inventory DTOs: `ICreateInventoryItemRequest`, `IUpdateInventoryItemRequest`
+         - Category DTOs: `ICreateInventoryCategoryRequest`, `IUpdateInventoryCategoryRequest`, `IReorderInventoryCategoriesRequest`
+         - Unit DTOs: `ICreateInventoryUnitRequest`, `IUpdateInventoryUnitRequest`, `IReorderInventoryUnitsRequest`
+         - Supplier DTOs: `ICreateSupplierRequest`, `IUpdateSupplierRequest`
+         - Stock DTOs: `IAddStockRequest`, `IReduceStockRequest`, `ICreateStockMovementRequest`
+         - Admin DTOs: `IAddAdminRequest`, `IUpdateAdminRequest`
+         - Employee DTOs: `IAddEmployeeRequest`, `IUpdateEmployeeRequest`
+     - [ ] Create shared package structure:
+       ```
+       packages/shared/
+       ├── types/
+       │   ├── inventory.ts
+       │   ├── stock.ts
+       │   ├── users.ts
+       │   ├── categories.ts
+       │   ├── units.ts
+       │   ├── suppliers.ts
+       │   ├── activity.ts
+       │   ├── gallery.ts
+       │   ├── notifications.ts
+       │   ├── media.ts
+       │   ├── payments.ts
+       │   └── common.ts
+       ├── dtos/
+       │   ├── inventory.dto.ts
+       │   ├── admin.dto.ts
+       │   ├── stock.dto.ts
+       │   └── index.ts
+       ├── enums/
+       │   ├── status.enum.ts
+       │   ├── roles.enum.ts
+       │   └── index.ts
+       ├── index.ts
+       ├── package.json
+       ├── tsconfig.json
+       └── README.md
+       ```
+     - [ ] Move common types from frontend to packages/shared:
+       - From `apps/frontend/src/types/index.ts` (IAPIResponse, IEmployee, IAdmin, etc.)
+       - From `apps/frontend/src/types/inventory.ts` (all inventory types)
+       - From `apps/frontend/src/store/inventory-slice.ts` (all DTO interfaces)
+       - From `apps/frontend/src/store/admins-slice.ts` (admin request interfaces)
+       - From `apps/frontend/src/store/activity-slice.ts`, `gallery-slice.ts`, `notifications-slice.ts`
+     - [ ] Move common types from backend to packages/shared:
+       - From `apps/backend/src/lib/interfaces.ts` (IAPIResponse, payment types)
+       - From `apps/backend/src/modules/*/*.types.ts` files (all module types)
      - [ ] Update both frontend and backend to import from packages/shared
      - [ ] Configure build process to compile shared package before apps
      - [ ] Update import paths across all apps
-     - [ ] Consider using path aliases for cleaner imports (e.g., `@shared/types`)
+     - [ ] Consider using path aliases for cleaner imports (e.g., `@shared/types`, `@shared/dtos`)
      - [ ] Add shared package to workspace dependencies in apps' package.json
+     - [ ] Fix type mismatches during migration (e.g., Admin roles field)
+     - [ ] Ensure ObjectId handling works for both apps (frontend uses strings, backend uses mongoose ObjectIds)
      - [ ] Test that both apps can properly import and use shared types
      - [ ] Update tsconfig paths if needed for monorepo resolution
+     - [ ] Remove old type files after successful migration
+
    - **Files to create**:
+
      - `packages/shared/package.json`
      - `packages/shared/tsconfig.json`
-     - `packages/shared/src/types/` - Type definitions
-     - `packages/shared/src/interfaces/` - Interface definitions
-     - `packages/shared/src/dtos/` - Data Transfer Objects
-     - `packages/shared/src/schemas/` - Validation schemas (if applicable)
-     - `packages/shared/src/index.ts` - Main export file
+     - `packages/shared/types/` - Type definitions (10+ files)
+     - `packages/shared/dtos/` - Data Transfer Objects (5+ files)
+     - `packages/shared/enums/` - Enums (2+ files)
+     - `packages/shared/index.ts` - Main export file
+     - `packages/shared/README.md` - Documentation
+
    - **Files to update**:
      - `apps/frontend/package.json` - Add shared package dependency
      - `apps/backend/package.json` - Add shared package dependency
-     - All files importing types that have been moved to shared package
+     - `apps/frontend/src/types/index.ts` - Remove duplicated types
+     - `apps/frontend/src/types/inventory.ts` - Remove (moved to shared)
+     - `apps/frontend/src/store/inventory-slice.ts` - Update imports
+     - `apps/frontend/src/store/admins-slice.ts` - Update imports
+     - `apps/backend/src/lib/interfaces.ts` - Remove duplicated types
+     - `apps/backend/src/modules/*/*.types.ts` - Remove or update to extend shared types
+     - All files importing types (100+ files estimated)
 
 ## Documentation
 
