@@ -433,6 +433,52 @@
   - `apps/backend/src/modules/activity-tracking/activity-tracking.model.ts` - Update model if needed
   - All controllers that call `trackActivity` - Update to use typed metadata structures
 
+## Architecture
+
+1. **Create packages/shared folder for all apps to use shared types and interfaces**
+
+   - **Current state**: Apps currently have their own type definitions, which can lead to duplication and inconsistencies across frontend and backend
+   - **Goal**: Create a shared package that contains common types, interfaces, DTOs, and validation schemas that can be used by both frontend and backend applications
+   - **Benefits**:
+     - Single source of truth for shared types and interfaces
+     - Reduced duplication of type definitions
+     - Better type safety between frontend and backend
+     - Easier to maintain and update shared data structures
+     - Centralized validation schemas and DTOs
+   - **Implementation requirements**:
+     - [ ] Create `packages/shared` directory in the monorepo root
+     - [ ] Set up TypeScript configuration for the shared package
+     - [ ] Configure package.json with appropriate exports and build configuration
+     - [ ] Identify common types/interfaces that should be moved to shared package:
+       - [ ] Inventory types (InventoryItem, StockEntry, StockMovement, etc.)
+       - [ ] User/Admin types (Admin, Employee, User, etc.)
+       - [ ] Category and Unit types
+       - [ ] Supplier types
+       - [ ] Activity tracking types
+       - [ ] Gallery types
+       - [ ] API request/response DTOs
+       - [ ] Validation schemas (if using shared validation library)
+     - [ ] Move common types to packages/shared
+     - [ ] Update both frontend and backend to import from packages/shared
+     - [ ] Configure build process to compile shared package before apps
+     - [ ] Update import paths across all apps
+     - [ ] Consider using path aliases for cleaner imports (e.g., `@shared/types`)
+     - [ ] Add shared package to workspace dependencies in apps' package.json
+     - [ ] Test that both apps can properly import and use shared types
+     - [ ] Update tsconfig paths if needed for monorepo resolution
+   - **Files to create**:
+     - `packages/shared/package.json`
+     - `packages/shared/tsconfig.json`
+     - `packages/shared/src/types/` - Type definitions
+     - `packages/shared/src/interfaces/` - Interface definitions
+     - `packages/shared/src/dtos/` - Data Transfer Objects
+     - `packages/shared/src/schemas/` - Validation schemas (if applicable)
+     - `packages/shared/src/index.ts` - Main export file
+   - **Files to update**:
+     - `apps/frontend/package.json` - Add shared package dependency
+     - `apps/backend/package.json` - Add shared package dependency
+     - All files importing types that have been moved to shared package
+
 ## Documentation
 
 8. **Create a tutorial library for the entire project**
