@@ -197,10 +197,10 @@ export function Pagination({
           size="sm"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1 || isLoading}
-          className="h-8 w-8 p-0"
+          className="h-10 w-10 sm:h-8 sm:w-8 p-0"
           title="Previous page (←)"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-5 w-5 sm:h-4 sm:w-4" />
         </Button>
 
         {/* Page numbers (desktop only) */}
@@ -242,10 +242,10 @@ export function Pagination({
           size="sm"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages || isLoading}
-          className="h-8 w-8 p-0"
+          className="h-10 w-10 sm:h-8 sm:w-8 p-0"
           title="Next page (→)"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-5 w-5 sm:h-4 sm:w-4" />
         </Button>
 
         {/* Last page button */}
