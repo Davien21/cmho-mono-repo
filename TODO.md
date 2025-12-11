@@ -151,19 +151,20 @@
   - Clearer data models and relationships
   - Better scalability for future growth
 
-3. **Restrict deletions to super admin access only**
+3. **Restrict deletions to super admin or inventory editor access**
 
-- All deletion operations for critical entities should be restricted to super admins only
-- **Affected entities**: units, categories, suppliers, gallery items, inventory items
+- All deletion operations are now restricted to super admins or users with the INVENTORY_EDITOR role
+- **Affected entities**: inventory items, categories, units, suppliers, gallery items
 - **Implementation**:
   - [x] Create `requireSuperAdmin` middleware in authentication.ts
-  - [x] Apply middleware to all deletion routes:
-    - [x] Inventory units deletion route
-    - [x] Inventory categories deletion route
-    - [x] Suppliers deletion route
-    - [x] Gallery items deletion route (also added authentication)
+  - [x] Add `INVENTORY_EDITOR` role to AdminRole enum (backend and frontend)
+  - [x] Apply `hasRole(AdminRole.INVENTORY_EDITOR)` middleware to all deletion routes:
     - [x] Inventory items deletion route
-- **Security**: Prevents accidental or unauthorized deletions of critical data
+    - [x] Inventory categories deletion route
+    - [x] Inventory units deletion route
+    - [x] Suppliers deletion route
+    - [x] Gallery items deletion route
+- **Security**: Prevents accidental or unauthorized deletions while allowing designated editors to manage inventory and gallery
 
 3. **Allow users to choose session duration for auth/login**
 
