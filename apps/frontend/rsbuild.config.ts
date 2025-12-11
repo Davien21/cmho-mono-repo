@@ -26,6 +26,8 @@ export default defineConfig({
   server: {
     // History API fallback for react-router
     historyApiFallback: true,
+    host: "0.0.0.0",
     port: 3000,
+    strictPort: true,
   },
 });
