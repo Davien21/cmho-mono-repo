@@ -66,22 +66,8 @@ class NotificationsService {
     itemId: string,
     itemName: string,
     currentStock: number,
-    lowStockValue?: number
+    lowStockValue: number
   ): Promise<void> {
-    // Only check for "ready" items with lowStockValue set
-    if (!lowStockValue) {
-      // If no lowStockValue, resolve any existing notifications
-      await this.resolveNotificationByInventoryId(
-        itemId,
-        NotificationType.OUT_OF_STOCK
-      );
-      await this.resolveNotificationByInventoryId(
-        itemId,
-        NotificationType.LOW_STOCK
-      );
-      return;
-    }
-
     // Check for out of stock (currentStock === 0)
     if (currentStock === 0) {
       await this.createOrUpdateNotification({
