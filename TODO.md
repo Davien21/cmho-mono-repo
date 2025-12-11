@@ -166,6 +166,24 @@
 - [ ] Test with various unit name lengths to ensure proper display
 - [ ] Update both root unit and nested unit dropdowns in UnitGroupingBuilder
 
+10. **Add clear functionality to select components**
+
+- **Goal**: Give select components a way to clear their value/selection
+- **Current state**: Select components don't have a built-in way to clear their values once selected
+- **Implementation approaches**:
+  - [ ] Add optional `onClear` prop that can be passed to select components
+  - [ ] Implement local clear functionality within the select component (e.g., clear button/icon when value is present)
+  - [ ] Design clear button UI (small 'x' icon on the right side of select, shown when value exists)
+  - [ ] Ensure clear functionality works with both single and multi-select components
+  - [ ] Handle clearing behavior with controlled vs uncontrolled select components
+  - [ ] Add visual feedback (hover state for clear button)
+  - [ ] Ensure accessibility (keyboard support for clear action, screen reader announcements)
+  - [ ] Test clearing behavior with various select configurations
+- **Files to update**:
+  - Select component(s) in `apps/frontend/src/components/ui/` (e.g., `select.tsx` or custom select components)
+  - Any custom select wrappers or dropdown components
+  - Update usages where clearable select is needed
+
 11. **Show all suppliers of an inventory item as an option in inventory item actions**
 
 - Add a new action option in the inventory item actions dropdown menu to view all suppliers associated with an inventory item
