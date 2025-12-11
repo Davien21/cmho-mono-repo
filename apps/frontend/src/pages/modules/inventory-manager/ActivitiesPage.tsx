@@ -5,7 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/Pagination";
-import { IActivityRecordDto, useGetActivitiesQuery } from "@/store/activity-slice";
+import {
+  IActivityRecordDto,
+  useGetActivitiesQuery,
+} from "@/store/activity-slice";
 import { formatTimeAgo } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -36,7 +39,10 @@ const loadActivitiesPaginationPrefs = (): { pageSize: number } => {
 // Save pagination preferences to localStorage
 const saveActivitiesPaginationPrefs = (prefs: { pageSize: number }) => {
   try {
-    localStorage.setItem(ACTIVITIES_PAGINATION_STORAGE_KEY, JSON.stringify(prefs));
+    localStorage.setItem(
+      ACTIVITIES_PAGINATION_STORAGE_KEY,
+      JSON.stringify(prefs)
+    );
   } catch (error) {
     console.error("Failed to save pagination preferences:", error);
   }
@@ -59,7 +65,11 @@ export default function ActivitiesPage() {
     setCurrentPage(1);
   }, [debouncedSearch]);
 
-  const { data: activitiesResponse, isLoading, isFetching } = useGetActivitiesQuery({
+  const {
+    data: activitiesResponse,
+    isLoading,
+    isFetching,
+  } = useGetActivitiesQuery({
     module: "inventory",
     search: debouncedSearch || undefined,
     sort: "desc",

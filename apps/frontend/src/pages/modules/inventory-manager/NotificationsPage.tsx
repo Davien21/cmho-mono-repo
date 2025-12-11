@@ -55,7 +55,10 @@ const loadNotificationsPaginationPrefs = (): { pageSize: number } => {
 // Save pagination preferences to localStorage
 const saveNotificationsPaginationPrefs = (prefs: { pageSize: number }) => {
   try {
-    localStorage.setItem(NOTIFICATIONS_PAGINATION_STORAGE_KEY, JSON.stringify(prefs));
+    localStorage.setItem(
+      NOTIFICATIONS_PAGINATION_STORAGE_KEY,
+      JSON.stringify(prefs)
+    );
   } catch (error) {
     console.error("Failed to save pagination preferences:", error);
   }
@@ -80,7 +83,11 @@ export default function NotificationsPage() {
     setCurrentPage(1);
   }, [typeFilter, debouncedSearch]);
 
-  const { data: notificationsResponse, isLoading, isFetching } = useGetNotificationsQuery({
+  const {
+    data: notificationsResponse,
+    isLoading,
+    isFetching,
+  } = useGetNotificationsQuery({
     module: "inventory",
     type: typeFilter && typeFilter !== "all" ? typeFilter : undefined,
     search: debouncedSearch || undefined,

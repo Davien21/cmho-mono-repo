@@ -107,8 +107,12 @@ export default function StockMovementPage() {
   }, [filterItemId, debouncedSearch]);
 
   const { data: itemsResponse } = useGetInventoryItemsQuery({});
-  
-  const { data: stockMovementResponse, isLoading, isFetching } = useGetStockMovementQuery({
+
+  const {
+    data: stockMovementResponse,
+    isLoading,
+    isFetching,
+  } = useGetStockMovementQuery({
     inventoryItemId: filterItemId || undefined,
     sort: "desc",
     search: debouncedSearch.trim() || undefined,
@@ -182,7 +186,8 @@ export default function StockMovementPage() {
       itemById.set(item.id, { name: item.name, units: item.units || [] });
     });
 
-    const entries: IStockMovementDto[] = stockMovementResponse?.data?.data || [];
+    const entries: IStockMovementDto[] =
+      stockMovementResponse?.data?.data || [];
 
     const all: StockChangeRow[] = entries.map((entry) => {
       const meta = itemById.get(entry.inventoryItem.id);
