@@ -110,7 +110,7 @@ export interface IStockMovementDto {
   prices: IPriceSnapshotDto | null;
   expiryDate: string;
   quantityInBaseUnits: number;
-  balance?: number;
+  balance: number;
   performer: IPerformerSnapshotDto;
   createdAt?: string;
   updatedAt?: string;
