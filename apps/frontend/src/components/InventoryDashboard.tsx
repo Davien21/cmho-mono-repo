@@ -8,21 +8,12 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useGetInventoryItemsQuery } from "@/store/inventory-slice";
+import { useGetInventoryDashboardStatsQuery } from "@/store/inventory-slice";
 import { useGetActivitiesQuery } from "@/store/activity-slice";
 import { useGetNotificationsQuery } from "@/store/notifications-slice";
 import { formatTimeAgo } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
-import { InventoryItem } from "@/types/inventory";
-import { IInventoryItemDto } from "@/store/inventory-slice";
-
-interface InventoryStats {
-  totalItems: number;
-  inStock: number;
-  lowStock: number;
-  outOfStock: number;
-}
 
 interface ActivityItem {
   id: string;
@@ -39,27 +30,6 @@ interface NotificationItem {
   priority: "HIGH" | "MED" | "LOW";
   timeAgo: string;
   type: "out_of_stock" | "low_stock" | "system";
-}
-
-function calculateStats(items: InventoryItem[]): InventoryStats {
-  const totalItems = items.length;
-  let inStock = 0;
-  let lowStock = 0;
-  let outOfStock = 0;
-
-  items.forEach((item) => {
-    const currentStock = item.currentStockInBaseUnits || 0;
-
-    if (currentStock === 0) {
-      outOfStock++;
-    } else if (item.lowStockValue && currentStock <= item.lowStockValue) {
-      lowStock++;
-    } else {
-      inStock++;
-    }
-  });
-
-  return { totalItems, inStock, lowStock, outOfStock };
 }
 
 function getActivityType(type: string): ActivityItem["type"] {
@@ -86,8 +56,8 @@ function getActivityColor(type: ActivityItem["type"]): string {
 
 export function InventoryDashboard() {
   const navigate = useNavigate();
-  const { data: inventoryData, isLoading: isLoadingInventory } =
-    useGetInventoryItemsQuery();
+  const { data: statsData, isLoading: isLoadingStats } =
+    useGetInventoryDashboardStatsQuery();
   const { data: activitiesData, isLoading: isLoadingActivities } =
     useGetActivitiesQuery(
       {
@@ -112,27 +82,12 @@ export function InventoryDashboard() {
       }
     );
 
-  const items: InventoryItem[] = useMemo(() => {
-    const dtos: IInventoryItemDto[] = inventoryData?.data?.data || [];
-    return dtos.map((dto) => ({
-      id: dto._id,
-      name: dto.name,
-      description: "",
-      category: dto.category,
-      units: (dto.units || []).map((u) => ({
-        id: u.id,
-        name: u.name,
-        plural: u.plural,
-        quantity: u.quantity,
-      })),
-      lowStockValue: dto.lowStockValue,
-      currentStockInBaseUnits: dto.currentStockInBaseUnits,
-      earliestExpiryDate: dto.earliestExpiryDate ?? null,
-      image: dto.image,
-    }));
-  }, [inventoryData]);
-
-  const stats = useMemo(() => calculateStats(items), [items]);
+  const stats = statsData?.data || {
+    totalItems: 0,
+    inStock: 0,
+    lowStock: 0,
+    outOfStock: 0,
+  };
 
   const activities: ActivityItem[] = useMemo(() => {
     if (!activitiesData?.data?.data) return [];
@@ -158,7 +113,7 @@ export function InventoryDashboard() {
     }));
   }, [notificationsData]);
 
-  if (isLoadingInventory) {
+  if (isLoadingStats) {
     return <InventoryDashboardSkeleton />;
   }
 

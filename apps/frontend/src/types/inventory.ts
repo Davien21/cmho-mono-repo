@@ -55,7 +55,7 @@ export interface InventoryItem {
   description: string;
   category: InventoryCategory;
   units: UnitLevel[];
-  lowStockValue?: number;
+  lowStockValue: number;
   currentStockInBaseUnits?: number;
   earliestExpiryDate?: string | null;
   image?: InventoryItemImage;

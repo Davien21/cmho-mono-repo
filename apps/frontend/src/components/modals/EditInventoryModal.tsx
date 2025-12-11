@@ -206,7 +206,7 @@ export function EditInventoryModal({
       const newLowStockValue =
         lowStockValueInBaseUnits && lowStockValueInBaseUnits > 0
           ? lowStockValueInBaseUnits
-          : undefined;
+          : item.lowStockValue;
       const newCanBeSold = values.canBeSold;
 
       // Detect changes by comparing with initial values

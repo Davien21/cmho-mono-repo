@@ -215,7 +215,6 @@ export function InventoryList({
   };
 
   const isLowStock = (item: InventoryItem): boolean => {
-    if (!item.lowStockValue) return false;
     const currentStock = getTotalStock(item);
     return currentStock <= item.lowStockValue;
   };

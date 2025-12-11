@@ -70,7 +70,7 @@ export interface IInventoryItemDto {
   name: string;
   category: IInventoryItemCategoryDto;
   units: IInventoryItemUnitDto[];
-  lowStockValue?: number;
+  lowStockValue: number;
   status: InventoryItemStatus;
   currentStockInBaseUnits?: number;
   earliestExpiryDate?: string;
@@ -164,7 +164,7 @@ export interface ICreateInventoryItemRequest {
   name: string;
   category: string; // Send category ID (ObjectId as string)
   units: IInventoryItemUnitDto[];
-  lowStockValue?: number;
+  lowStockValue: number;
   status: InventoryItemStatus;
   currentStockInBaseUnits?: number;
   image?: IInventoryItemImageDto;
@@ -408,6 +408,21 @@ export const inventoryApi = baseApi.injectEndpoints({
       }),
       providesTags: [TagTypes.INVENTORY_ITEMS],
     }),
+    getInventoryDashboardStats: builder.query<
+      IAPIResponse<{
+        totalItems: number;
+        inStock: number;
+        lowStock: number;
+        outOfStock: number;
+      }>,
+      void
+    >({
+      query: () => ({
+        url: "/inventory/dashboard/stats",
+        method: "GET",
+      }),
+      providesTags: [TagTypes.INVENTORY_ITEMS],
+    }),
     getInventoryItemsPages: builder.infiniteQuery<
       IAPIResponse<{
         data: IInventoryItemDto[];
@@ -598,6 +613,7 @@ export const {
   useUpdateSupplierMutation,
   useDeleteSupplierMutation,
   useGetInventoryItemsQuery,
+  useGetInventoryDashboardStatsQuery,
   useGetInventoryItemsPagesInfiniteQuery,
   useCreateInventoryItemMutation,
   useUpdateInventoryItemMutation,

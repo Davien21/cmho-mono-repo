@@ -266,7 +266,7 @@ export function AddInventoryModal({
         lowStockValue:
           lowStockValueInBaseUnits && lowStockValueInBaseUnits > 0
             ? lowStockValueInBaseUnits
-            : undefined,
+            : 10,
         status: "active" as const,
         currentStockInBaseUnits: 0,
         canBeSold: values.canBeSold,
