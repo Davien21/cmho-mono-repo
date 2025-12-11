@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import Admin from "./admins.model";
 import { IAdmin } from "./admins.types";
 
@@ -9,7 +9,7 @@ class AdminService {
     return Admin.findOne({ email }) as Promise<AdminDocument | null>;
   }
 
-  findById(id: string): Promise<AdminDocument | null> {
+  findById(id: string | Types.ObjectId): Promise<AdminDocument | null> {
     return Admin.findById(id) as Promise<AdminDocument | null>;
   }
 
@@ -42,5 +42,3 @@ class AdminService {
 }
 
 export default new AdminService();
-
-

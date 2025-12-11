@@ -9,8 +9,6 @@ export async function getActivities(
 ) {
   const { sort = "desc", limit = "10", page = "1", module, search } = req.query;
 
-  console.log(req.query?.queryArg.toString());
-
   const activities = await activityTrackingService.list({
     module: module,
     search: search,
