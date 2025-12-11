@@ -6,7 +6,7 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, X } from "lucide-react";
 
 const Select = SelectPrimitive.Root;
 
@@ -14,24 +14,58 @@ const SelectGroup = SelectPrimitive.Group;
 
 const SelectValue = SelectPrimitive.Value;
 
+interface SelectTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
+  showClear?: boolean;
+  onClear?: () => void;
+}
+
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      className
-    )}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronsUpDown className="h-3 w-3 opacity-50" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-));
+  SelectTriggerProps
+>(({ className, children, showClear, onClear, ...props }, ref) => {
+  // Prevent the select from toggling when clicking the clear button
+  const stopEvent = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleClearClick = (e: React.MouseEvent) => {
+    stopEvent(e);
+    onClear?.();
+  };
+
+  return (
+    <SelectPrimitive.Trigger
+      ref={ref}
+      className={cn(
+        "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <div className="flex items-center gap-1">
+        {showClear && onClear && (
+          <button
+            type="button"
+            onClick={handleClearClick}
+            onPointerDown={stopEvent}
+            onMouseDown={stopEvent}
+            className="flex items-center justify-center h-4 w-4 rounded-sm opacity-50 hover:opacity-100 hover:bg-accent transition-all"
+            aria-label="Clear selection"
+            tabIndex={-1}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        )}
+        <SelectPrimitive.Icon asChild>
+          <ChevronsUpDown className="h-3 w-3 opacity-50" />
+        </SelectPrimitive.Icon>
+      </div>
+    </SelectPrimitive.Trigger>
+  );
+});
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 const SelectScrollUpButton = React.forwardRef<
