@@ -57,7 +57,7 @@ export default function StockMovementPage() {
   const filterItemId = searchParams.get("itemId");
   const debouncedSearch = useDebounce(search, 300);
 
-  const { data: itemsResponse } = useGetInventoryItemsQuery();
+  const { data: itemsResponse } = useGetInventoryItemsQuery({});
   const {
     stockMovements: allStockMovements,
     isLoading,
@@ -141,21 +141,21 @@ export default function StockMovementPage() {
     const entries: IStockMovementDto[] = allStockMovements;
 
     const all: StockChangeRow[] = entries.map((entry) => {
-      const meta = itemById.get(entry.inventoryItemId);
+      const meta = itemById.get(entry.inventoryItem.id);
       return {
         id: entry._id,
-        inventoryItemId: entry.inventoryItemId,
+        inventoryItemId: entry.inventoryItem.id,
         operationType: entry.operationType,
         supplier: entry.supplier?.name ?? null,
-        costPrice: entry.costPrice,
-        sellingPrice: entry.sellingPrice,
+        costPrice: entry.prices?.costPrice ?? 0,
+        sellingPrice: entry.prices?.sellingPrice ?? 0,
         expiryDate: entry.expiryDate.toString(),
         quantityInBaseUnits: entry.quantityInBaseUnits,
         createdAt: entry.createdAt
           ? entry.createdAt.toString()
           : new Date().toISOString(),
-        performedBy: entry.performerName || "Admin",
-        itemName: meta?.name ?? "Unknown item",
+        performedBy: entry.performer.name || "Admin",
+        itemName: entry.inventoryItem.name,
         units: meta?.units || [],
       };
     });

@@ -87,18 +87,31 @@ export interface IStockSupplierSnapshotDto {
   name: string;
 }
 
-export interface IStockMovementDto {
-  _id: string;
-  inventoryItemId: string;
-  operationType: StockOperationType;
-  supplier: IStockSupplierSnapshotDto | null;
+export interface IInventoryItemSnapshotDto {
+  id: string;
+  name: string;
+}
+
+export interface IPerformerSnapshotDto {
+  id: string;
+  name: string;
+}
+
+export interface IPriceSnapshotDto {
   costPrice: number;
   sellingPrice: number;
+}
+
+export interface IStockMovementDto {
+  _id: string;
+  inventoryItem: IInventoryItemSnapshotDto;
+  operationType: StockOperationType;
+  supplier: IStockSupplierSnapshotDto | null;
+  prices: IPriceSnapshotDto | null;
   expiryDate: string;
   quantityInBaseUnits: number;
   balance?: number;
-  performerId: string;
-  performerName: string;
+  performer: IPerformerSnapshotDto;
   createdAt?: string;
   updatedAt?: string;
 }
