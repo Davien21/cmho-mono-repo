@@ -11,18 +11,37 @@ export interface InventoryCategory {
   name: string;
 }
 
-export interface StockMovement {
+export interface StockMovementInventoryItem {
   id: string;
-  inventoryItemId: string;
-  operationType: "add" | "reduce";
-  supplier: string | null;
+  name: string;
+}
+
+export interface StockMovementPerformer {
+  id: string;
+  name: string;
+}
+
+export interface StockMovementPrices {
   costPrice: number;
   sellingPrice: number;
+}
+
+export interface StockMovementSupplier {
+  id: string;
+  name: string;
+}
+
+export interface StockMovement {
+  id: string;
+  inventoryItem: StockMovementInventoryItem;
+  operationType: "add" | "reduce";
+  supplier: StockMovementSupplier | null;
+  prices: StockMovementPrices | null;
   expiryDate: string;
   quantityInBaseUnits: number;
   balance: number;
+  performer: StockMovementPerformer;
   createdAt: string;
-  performedBy?: string;
 }
 
 export interface InventoryItemImage {

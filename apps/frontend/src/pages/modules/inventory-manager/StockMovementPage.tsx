@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
-import { StockMovement, UnitLevel } from "@/types/inventory";
+import { UnitLevel } from "@/types/inventory";
 import { StockUpdateBadge } from "@/components/StockUpdateBadge";
 import {
   IInventoryItemDto,
@@ -16,10 +16,22 @@ import {
 } from "@/store/inventory-slice";
 import { useInfiniteStockMovement } from "@/hooks/use-infinite-stock-movement";
 
-type StockChangeRow = StockMovement & {
+// Flattened display structure for the table
+interface StockChangeRow {
+  id: string;
+  inventoryItemId: string;
+  operationType: "add" | "reduce";
+  supplier: string | null;
+  costPrice: number;
+  sellingPrice: number;
+  expiryDate: string;
+  quantityInBaseUnits: number;
+  balance: number;
+  createdAt: string;
+  performedBy: string;
   itemName: string;
   units: UnitLevel[];
-};
+}
 
 function formatDateTime(iso: string) {
   const date = new Date(iso);
@@ -150,6 +162,7 @@ export default function StockMovementPage() {
         sellingPrice: entry.prices?.sellingPrice ?? 0,
         expiryDate: entry.expiryDate.toString(),
         quantityInBaseUnits: entry.quantityInBaseUnits,
+        balance: entry.balance,
         createdAt: entry.createdAt
           ? entry.createdAt.toString()
           : new Date().toISOString(),
