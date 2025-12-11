@@ -107,6 +107,55 @@
   - `apps/backend/src/modules/inventory-items/inventory-items.controller.ts` - Add pagination support
   - `apps/backend/src/modules/inventory-items/inventory-items.service.ts` - Implement pagination queries
 
+7. **Streamline and migrate all tables to consistent pagination approach**
+
+- **Current state**: Different tables across the application may use inconsistent approaches (some with pagination, some with infinite scroll, some without clear data loading strategies)
+- **Goal**: Standardize all data tables throughout the application to use a consistent, paginated approach for better UX, performance, and maintainability
+- **Scope**: Apply pagination across all major data tables in the application:
+  - Inventory items table
+  - Stock movements/entries table
+  - Employees table
+  - Admins table
+  - Suppliers table
+  - Categories table
+  - Units table
+  - Payments/transactions tables
+  - Activity tracking table
+  - Gallery items table
+  - Any other data-heavy list views
+- **Implementation requirements**:
+  - [ ] Audit all tables/list views in the application to identify which ones need pagination
+  - [ ] Create a reusable pagination component or pattern that can be shared across all tables
+  - [ ] Ensure backend APIs for all tables support pagination parameters (page, limit, offset)
+  - [ ] Standardize pagination controls UI/UX across all tables:
+    - [ ] Consistent page size options (e.g., 25, 50, 100 items per page)
+    - [ ] Uniform "Showing X-Y of Z items" display
+    - [ ] Consistent Previous/Next/page number controls
+    - [ ] Optional jump-to-page functionality
+  - [ ] Implement consistent state management for pagination (Redux slices, React Query, or context)
+  - [ ] Ensure pagination works seamlessly with filters, search, and sorting
+  - [ ] Persist pagination preferences per table (localStorage or user settings)
+  - [ ] Test performance improvements across all tables
+  - [ ] Ensure responsive design for pagination controls on mobile
+  - [ ] Document pagination patterns for future development
+- **Benefits**:
+  - Consistent user experience across the entire application
+  - Better performance with large datasets
+  - Easier maintenance with reusable pagination components
+  - Improved scalability as data grows
+  - Clearer code patterns for developers
+- **Files to create**:
+  - `apps/frontend/src/components/common/Pagination.tsx` - Reusable pagination component
+  - `apps/frontend/src/hooks/usePagination.ts` - Custom hook for pagination logic (if needed)
+- **Files to update (frontend)**:
+  - All table components (AdminsTable, EmployeesTable, SuppliersTable, etc.)
+  - All Redux slices that manage table data
+  - All pages that render tables
+- **Files to update (backend)**:
+  - All service files to ensure consistent pagination query implementation
+  - All controller files to ensure pagination parameters are properly handled
+  - Consider creating shared pagination utilities/helpers
+
 9. **Make UnitGroupingBuilder select adjust to content size**
 
 - Currently, the UnitDropdown components in UnitGroupingBuilder use a fixed width (`w-24` = 96px)
