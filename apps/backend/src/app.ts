@@ -46,6 +46,7 @@ const isDevelopmentIP = (origin: string): boolean => {
     /^https?:\/\/(\d{1,3}\.){3}\d{1,3}(:\d+)?$/, // IPv4
     /^https?:\/\/localhost(:\d+)?$/, // localhost
     /^https?:\/\/\[?[0-9a-fA-F:]+\]?(:\d+)?$/, // IPv6
+    /^https?:\/\/[a-zA-Z0-9-]+\.local(:\d+)?$/, // .local domains (mDNS)
   ];
 
   return patterns.some((pattern) => pattern.test(origin));
@@ -95,7 +96,7 @@ app.use((_req: Request, _res: Response, next: NextFunction) => {
 });
 app.use(errorMiddleware);
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, "0.0.0.0", () => {
   logger.info(`app listening at port ${PORT} in ${mode} mode`);
 });
 
