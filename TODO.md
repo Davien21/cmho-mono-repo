@@ -47,48 +47,7 @@
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
 
-5. **Switch inventory list to pagination style** ✅ COMPLETED
-
-- **Current state**: ~~Inventory list currently uses continuous scrolling/loading without clear pagination controls~~ Now uses pagination with full controls
-- **Goal**: ~~Implement pagination controls for better navigation, performance, and user experience~~ COMPLETED
-- **Why pagination over infinite scroll**:
-  - Better for data-entry/analysis workflows (users can reference specific positions)
-  - Clearer context and position within the list
-  - Improved performance with large datasets (no DOM accumulation)
-  - Easier to bookmark and share specific pages
-  - Better accessibility to page footers and navigation elements
-- **Implementation requirements**:
-  - [x] Add pagination state management to inventory slice or component state
-  - [x] Implement page size selector dropdown (25, 50, 100 items per page)
-  - [x] Add "Showing X-Y of Z items" display to show current position
-  - [x] Create pagination controls component (Previous, Next, page numbers)
-  - [x] Add jump-to-page input field for quick navigation
-  - [x] Implement keyboard navigation support (arrow keys, Enter)
-  - [x] Update backend API to support pagination parameters (page, limit) - Already supported
-  - [x] Update InventoryList component to use paginated data
-  - [x] Persist pagination preferences in localStorage or user settings
-  - [x] Ensure pagination works with existing filters and search
-  - [x] Test with various dataset sizes (small, medium, large)
-  - [x] Ensure responsive design works on mobile devices
-- **Files updated**:
-  - `apps/frontend/src/components/Pagination.tsx` - NEW: Reusable pagination component with keyboard navigation
-  - `apps/frontend/src/components/InventoryList.tsx` - Updated to use pagination controls
-  - `apps/frontend/src/store/inventory-slice.ts` - Updated query to support page and limit parameters
-  - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Updated to use server-side pagination
-- **Features implemented**:
-  - Server-side pagination for better performance with large datasets
-  - Page size selector (25, 50, 100 items per page)
-  - "Showing X-Y of Z items" display
-  - First, Previous, Next, Last navigation buttons
-  - Page number buttons with ellipsis for large page counts
-  - Jump-to-page input field (desktop only)
-  - Keyboard navigation (Arrow Left/Right for prev/next page)
-  - localStorage persistence for page size preference
-  - Responsive design for mobile and desktop
-  - Automatic scroll to top on page change
-  - Works seamlessly with filters and search
-
-11. **Show all suppliers of an inventory item as an option in inventory item actions**
+5. **Show all suppliers of an inventory item as an option in inventory item actions**
 
 - Add a new action option in the inventory item actions dropdown menu to view all suppliers associated with an inventory item
 - **Current state**: Inventory items have supplier information, but there's no easy way to view all suppliers for an item from the actions menu
@@ -103,22 +62,6 @@
   - `apps/frontend/src/components/InventoryList.tsx` - Add new dropdown menu item
   - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Add handler for viewing suppliers
   - Potentially create a new modal/component to display suppliers list
-
-13. **Better design the app selection UI**
-
-- **Current state**: AppSelectionPage has a basic design with two app cards in a grid layout
-- **Goal**: Improve the visual design, layout, and user experience of the app selection page
-- **Considerations**:
-  - [ ] Review current design and identify areas for improvement (spacing, typography, colors, animations)
-  - [ ] Consider modern design patterns for app selection/dashboard interfaces
-  - [ ] Improve visual hierarchy and information architecture
-  - [ ] Enhance hover states and interactions
-  - [ ] Ensure responsive design works well on all screen sizes
-  - [ ] Consider adding visual elements like illustrations, better gradients, or background patterns
-  - [ ] Improve accessibility (contrast, focus states, keyboard navigation)
-  - [ ] Consider adding app previews or additional context for each app
-- **Files to update**:
-  - `apps/frontend/src/pages/AppSelectionPage.tsx` - Redesign the app selection interface
 
 15. **Automatically expand sidebar when moving from mobile back to desktop view**
 
