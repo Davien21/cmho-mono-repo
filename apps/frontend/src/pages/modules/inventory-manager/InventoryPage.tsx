@@ -1,10 +1,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { InventoryList } from "@/components/InventoryList";
-import { AddStockModal } from "@/components/modals/AddStockModal";
-import { ReduceStockModal } from "@/components/modals/ReduceStockModal";
-import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
 import { AddInventoryImageModal } from "@/components/modals/AddInventoryImageModal";
 import { ImagePreviewModal } from "@/components/ImagePreviewModal";
 import { InventoryItem } from "@/types/inventory";
@@ -94,10 +90,7 @@ export default function InventoryPage() {
       fetchNextPage();
     }
   }, [hasNextPage, isFetching, fetchNextPage]);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showAddStockModal, setShowAddStockModal] = useState(false);
-  const [showReduceStockModal, setShowReduceStockModal] = useState(false);
+
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageModalMode, setImageModalMode] = useState<"add" | "edit">("add");
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -108,18 +101,15 @@ export default function InventoryPage() {
   const navigate = useNavigate();
 
   const handleAddStock = (item: InventoryItem) => {
-    setSelectedItem(item);
-    setShowAddStockModal(true);
+    openModal("add-stock", item);
   };
 
   const handleReduceStock = (item: InventoryItem) => {
-    setSelectedItem(item);
-    setShowReduceStockModal(true);
+    openModal("reduce-stock", item);
   };
 
   const handleEdit = (item: InventoryItem) => {
-    setSelectedItem(item);
-    setShowEditModal(true);
+    openModal("edit-inventory", item);
   };
 
   const handleDelete = (item: InventoryItem) => {
@@ -191,53 +181,12 @@ export default function InventoryPage() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onViewStockEntries={handleViewStockEntries}
-            onAddItem={() => setShowAddForm(true)}
+            onAddItem={() => openModal("add-inventory", undefined)}
             onEditImage={handleEditImage}
             onPreviewImage={handlePreviewImage}
             onLoadMore={handleLoadMore}
             hasMore={hasNextPage}
             isLoadingMore={isFetching && !isSearchingRef.current}
-          />
-        )}
-
-        <AddInventoryModal open={showAddForm} onOpenChange={setShowAddForm} />
-
-        {selectedItem && (
-          <EditInventoryModal
-            item={selectedItem}
-            open={showEditModal}
-            onOpenChange={(open) => {
-              setShowEditModal(open);
-              if (!open) {
-                setSelectedItem(null);
-              }
-            }}
-          />
-        )}
-
-        {selectedItem && (
-          <AddStockModal
-            inventoryItem={selectedItem}
-            open={showAddStockModal}
-            onOpenChange={(open) => {
-              setShowAddStockModal(open);
-              if (!open) {
-                setSelectedItem(null);
-              }
-            }}
-          />
-        )}
-
-        {selectedItem && (
-          <ReduceStockModal
-            inventoryItem={selectedItem}
-            open={showReduceStockModal}
-            onOpenChange={(open) => {
-              setShowReduceStockModal(open);
-              if (!open) {
-                setSelectedItem(null);
-              }
-            }}
           />
         )}
 

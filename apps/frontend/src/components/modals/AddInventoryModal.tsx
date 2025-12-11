@@ -21,11 +21,7 @@ import { UnitBasedInput } from "@/components/UnitBasedInput";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import SegmentedControl from "@/SegmentedControl";
-
-interface AddInventoryModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import { useModalContext } from "@/contexts/modal-context";
 
 interface QuantityInput {
   unitId: string;
@@ -49,12 +45,12 @@ const inventoryItemSchema = yup.object({
 
 type InventoryItemFormValues = yup.InferType<typeof inventoryItemSchema>;
 
-export function AddInventoryModal({
-  open,
-  onOpenChange,
-}: AddInventoryModalProps) {
+export function AddInventoryModal() {
+  const { modals, closeModal } = useModalContext();
+  const open = modals["add-inventory"]?.isOpen || false;
+
   const handleClose = () => {
-    onOpenChange(false);
+    closeModal("add-inventory");
   };
   const isMobile = useMediaQuery("mobile");
   const hasSetInitialCategory = useRef(false);
@@ -285,7 +281,10 @@ export function AddInventoryModal({
   };
 
   return (
-    <ResponsiveDialog.Root open={open} onOpenChange={onOpenChange}>
+    <ResponsiveDialog.Root
+      open={open}
+      onOpenChange={(isOpen) => !isOpen && closeModal("add-inventory")}
+    >
       <ResponsiveDialog.Portal>
         <ResponsiveDialog.Overlay />
         <ResponsiveDialog.Content className="max-w-[550px] w-full max-h-[90vh] flex flex-col">

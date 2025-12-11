@@ -3,7 +3,6 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import { InventoryItem } from "@/types/inventory";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import {
   useAddStockMutation,
@@ -16,12 +15,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { Step1Details } from "./AddStockModal/Step1Details";
 import { Step2Quantity } from "./AddStockModal/Step2Quantity";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface AddStockModalProps {
-  inventoryItem: InventoryItem;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import { useModalContext } from "@/contexts/modal-context";
 
 interface QuantityInput {
   unitId: string;
@@ -91,17 +85,28 @@ const getExpiryDate = (date: Date | undefined): Date | undefined => {
   return new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
 };
 
-export function AddStockModal({
-  inventoryItem,
-  open,
-  onOpenChange,
-}: AddStockModalProps) {
+export function AddStockModal() {
+  const { modals, closeModal } = useModalContext();
+  const modalState = modals["add-stock"];
+  const open = modalState?.isOpen || false;
+  const inventoryItem = modalState?.data;
+
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [currentStep, setCurrentStep] = useState(1);
   const [supplierId, setSupplierId] = useState<string | null>(null);
   const [supplierName, setSupplierName] = useState<string | null>(null);
-  const { refetch: refetchItems } = useGetInventoryItemsQuery();
-  const { refetch: refetchStockMovement } = useGetStockMovementQuery();
+  const { refetch: refetchItems } = useGetInventoryItemsQuery(
+    {},
+    {
+      skip: !open,
+    }
+  );
+  const { refetch: refetchStockMovement } = useGetStockMovementQuery(
+    undefined,
+    {
+      skip: !open,
+    }
+  );
   const [addStock, { isLoading: isAddingStock }] = useAddStockMutation();
 
   const getInitialQuantity = useCallback((): QuantityInput[] => {
@@ -220,7 +225,7 @@ export function AddStockModal({
       await Promise.all([refetchItems(), refetchStockMovement()]);
 
       toast.success("Stock added successfully");
-      onOpenChange(false);
+      closeModal("add-stock");
     } catch (error: unknown) {
       const message = getRTKQueryErrorMessage(
         error,
@@ -248,7 +253,10 @@ export function AddStockModal({
   const showSteps = isMobile;
 
   return (
-    <ResponsiveDialog.Root open={open} onOpenChange={onOpenChange}>
+    <ResponsiveDialog.Root
+      open={open}
+      onOpenChange={(isOpen) => !isOpen && closeModal("add-stock")}
+    >
       <ResponsiveDialog.Portal>
         <ResponsiveDialog.Overlay />
         <ResponsiveDialog.Content
@@ -351,7 +359,7 @@ export function AddStockModal({
                     type="button"
                     variant="outline"
                     size="lg"
-                    onClick={() => onOpenChange(false)}
+                    onClick={() => closeModal("add-stock")}
                     className="flex-1 sm:flex-initial"
                   >
                     Cancel
@@ -372,7 +380,7 @@ export function AddStockModal({
                     type="button"
                     variant="outline"
                     size={isMobile ? "lg" : "default"}
-                    onClick={() => onOpenChange(false)}
+                    onClick={() => closeModal("add-stock")}
                     className="flex-1"
                   >
                     Cancel

@@ -3,7 +3,6 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import { InventoryItem } from "@/types/inventory";
 import { formatUnitName, getRTKQueryErrorMessage } from "@/lib/utils";
 import {
   useReduceStockMutation,
@@ -14,12 +13,7 @@ import { toast } from "sonner";
 import { UnitBasedInput } from "@/components/UnitBasedInput";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
-
-interface ReduceStockModalProps {
-  inventoryItem: InventoryItem;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import { useModalContext } from "@/contexts/modal-context";
 
 interface QuantityInput {
   unitId: string;
@@ -53,14 +47,25 @@ type ReduceStockFormValues = {
   quantity: QuantityInput[];
 };
 
-export function ReduceStockModal({
-  inventoryItem,
-  open,
-  onOpenChange,
-}: ReduceStockModalProps) {
+export function ReduceStockModal() {
+  const { modals, closeModal } = useModalContext();
+  const modalState = modals["reduce-stock"];
+  const open = modalState?.isOpen || false;
+  const inventoryItem = modalState?.data;
+
   const isMobile = useMediaQuery("(max-width: 640px)");
-  const { refetch: refetchItems } = useGetInventoryItemsQuery();
-  const { refetch: refetchStockMovement } = useGetStockMovementQuery();
+  const { refetch: refetchItems } = useGetInventoryItemsQuery(
+    {},
+    {
+      skip: !open,
+    }
+  );
+  const { refetch: refetchStockMovement } = useGetStockMovementQuery(
+    undefined,
+    {
+      skip: !open,
+    }
+  );
   const [reduceStock, { isLoading: isReducingStock }] =
     useReduceStockMutation();
 
@@ -158,7 +163,7 @@ export function ReduceStockModal({
       await Promise.all([refetchItems(), refetchStockMovement()]);
 
       toast.success("Stock reduced successfully");
-      onOpenChange(false);
+      closeModal("reduce-stock");
     } catch (error: unknown) {
       const message = getRTKQueryErrorMessage(
         error,
@@ -176,7 +181,10 @@ export function ReduceStockModal({
   if (!inventoryItem) return null;
 
   return (
-    <ResponsiveDialog.Root open={open} onOpenChange={onOpenChange}>
+    <ResponsiveDialog.Root
+      open={open}
+      onOpenChange={(isOpen) => !isOpen && closeModal("reduce-stock")}
+    >
       <ResponsiveDialog.Portal>
         <ResponsiveDialog.Overlay />
         <ResponsiveDialog.Content className="max-w-[550px] w-full max-h-[90vh] flex flex-col border-red-200">
@@ -252,7 +260,7 @@ export function ReduceStockModal({
                 type="button"
                 variant="outline"
                 size={isMobile ? "lg" : "default"}
-                onClick={() => onOpenChange(false)}
+                onClick={() => closeModal("reduce-stock")}
               >
                 Cancel
               </Button>

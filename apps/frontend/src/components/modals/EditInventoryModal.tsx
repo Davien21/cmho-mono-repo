@@ -22,12 +22,7 @@ import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { UnitBasedInput } from "@/components/UnitBasedInput";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import SegmentedControl from "@/SegmentedControl";
-
-interface EditInventoryModalProps {
-  item: InventoryItem;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import { useModalContext } from "@/contexts/modal-context";
 
 interface QuantityInput {
   unitId: string;
@@ -51,25 +46,26 @@ const editInventoryItemSchema = yup.object({
 
 type EditInventoryFormValues = yup.InferType<typeof editInventoryItemSchema>;
 
-export function EditInventoryModal({
-  item,
-  open,
-  onOpenChange,
-}: EditInventoryModalProps) {
+export function EditInventoryModal() {
+  const { modals, closeModal } = useModalContext();
+  const modalState = modals["edit-inventory"];
+  const open = modalState?.isOpen || false;
+  const item = modalState?.data;
+
   const handleClose = () => {
-    onOpenChange(false);
+    closeModal("edit-inventory");
   };
   const isMobile = useMediaQuery("mobile");
-  const [units, setUnits] = useState<UnitLevel[]>(item.units || []);
-  const [initialUnits] = useState<UnitLevel[]>(item.units || []);
+  const [units, setUnits] = useState<UnitLevel[]>(item?.units || []);
+  const [initialUnits] = useState<UnitLevel[]>(item?.units || []);
 
   // Store initial values for change detection
   const initialValuesRef = useRef({
-    name: item.name,
-    category: item.category,
-    units: item.units || [],
-    lowStockValue: item.lowStockValue,
-    canBeSold: (item as any).canBeSold ?? true,
+    name: item?.name || "",
+    category: item?.category || { _id: "", name: "" },
+    units: item?.units || [],
+    lowStockValue: item?.lowStockValue || 0,
+    canBeSold: (item as any)?.canBeSold ?? true,
   });
 
   const { refetch } = useGetInventoryItemsQuery();
@@ -99,16 +95,37 @@ export function EditInventoryModal({
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<EditInventoryFormValues>({
     resolver: yupResolver(editInventoryItemSchema),
     defaultValues: {
-      name: item.name,
-      inventoryCategory: item.category.name,
+      name: item?.name || "",
+      inventoryCategory: item?.category.name || "",
       lowStockValue: getInitialLowStockValue(),
-      canBeSold: (item as any).canBeSold ?? true,
+      canBeSold: (item as any)?.canBeSold ?? true,
     },
   });
+
+  // Update form when item changes
+  useEffect(() => {
+    if (item) {
+      setUnits(item.units || []);
+      reset({
+        name: item.name,
+        inventoryCategory: item.category.name,
+        lowStockValue: getInitialLowStockValue(),
+        canBeSold: (item as any).canBeSold ?? true,
+      });
+      initialValuesRef.current = {
+        name: item.name,
+        category: item.category,
+        units: item.units || [],
+        lowStockValue: item.lowStockValue,
+        canBeSold: (item as any).canBeSold ?? true,
+      };
+    }
+  }, [item, reset]);
 
   const inventoryCategory = watch("inventoryCategory");
 
@@ -280,7 +297,7 @@ export function EditInventoryModal({
       }
 
       const updatePayload: any = {
-        id: item.id,
+        id: item!.id,
         name: newName,
         category: newCategory,
         units: newUnits,
@@ -311,8 +328,13 @@ export function EditInventoryModal({
     }
   };
 
+  if (!item) return null;
+
   return (
-    <ResponsiveDialog.Root open={open} onOpenChange={onOpenChange}>
+    <ResponsiveDialog.Root
+      open={open}
+      onOpenChange={(isOpen) => !isOpen && closeModal("edit-inventory")}
+    >
       <ResponsiveDialog.Portal>
         <ResponsiveDialog.Overlay />
         <ResponsiveDialog.Content className="max-w-[550px] w-full max-h-[90vh] flex flex-col">

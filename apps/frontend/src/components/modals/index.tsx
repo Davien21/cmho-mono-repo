@@ -5,6 +5,11 @@ import FailedUploadsModal from "@/components/modals/FailedUploadsModal";
 import { AddAdminModal } from "@/components/modals/AddAdminModal";
 import { EditAdminModal } from "@/components/modals/EditAdminModal";
 import { DisableAdminModal } from "@/components/modals/DisableAdminModal";
+import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
+import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
+import { AddStockModal } from "@/components/modals/AddStockModal";
+import { ReduceStockModal } from "@/components/modals/ReduceStockModal";
+
 export const Modals = () => {
   return (
     <>
@@ -15,6 +20,10 @@ export const Modals = () => {
       <AddAdminModal />
       <EditAdminModal />
       <DisableAdminModal />
+      <AddInventoryModal />
+      <EditInventoryModal />
+      <AddStockModal />
+      <ReduceStockModal />
     </>
   );
 };

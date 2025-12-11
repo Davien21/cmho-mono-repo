@@ -1,6 +1,7 @@
 // modal context
 import { IEmployee, IAdmin } from "@/types";
 import { IConfirmationDialog, IAddEmployeeRequest } from "@/types";
+import { InventoryItem } from "@/types/inventory";
 import { createContext, useState, useContext, ReactNode, useMemo } from "react";
 
 // Types for specific modal data
@@ -12,6 +13,10 @@ type FailedUploadsModalData = {
   failedFiles: Array<{ file: File; preview: string }>;
 };
 type EditAdminModalData = IAdmin;
+type AddInventoryModalData = undefined;
+type EditInventoryModalData = InventoryItem;
+type AddStockModalData = InventoryItem;
+type ReduceStockModalData = InventoryItem;
 
 export type ModalDataMap = {
   "sign-up": SignUpModalData;
@@ -20,6 +25,10 @@ export type ModalDataMap = {
   "update-employee": UpdateEmployeeModalData;
   "failed-uploads": FailedUploadsModalData;
   "edit-admin": EditAdminModalData;
+  "add-inventory": AddInventoryModalData;
+  "edit-inventory": EditInventoryModalData;
+  "add-stock": AddStockModalData;
+  "reduce-stock": ReduceStockModalData;
 };
 
 type ModalState<T> = { isOpen: boolean; data?: T };
