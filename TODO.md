@@ -2,12 +2,6 @@
 
 ## UI/UX Improvements
 
-1. **Align vertical spacing and style between inventory and stock modals**
-
-   - [ ] Review spacing in AddInventoryModal, EditInventoryModal, and UpdateStockModal
-   - [ ] Standardize padding, margins, and gap values across all modals
-   - [ ] Ensure consistent styling for form fields, buttons, and layout
-
 2. **Find a better way to present name of item in update stock modal**
 
    - [ ] Review current implementation in UpdateStockModal
@@ -53,10 +47,10 @@
    - [ ] Update AddInventoryModal and EditInventoryModal accordingly
    - [ ] Test with various category configurations
 
-5. **Switch inventory list to pagination style**
+5. **Switch inventory list to pagination style** ✅ COMPLETED
 
-- **Current state**: Inventory list currently uses continuous scrolling/loading without clear pagination controls
-- **Goal**: Implement pagination controls for better navigation, performance, and user experience
+- **Current state**: ~~Inventory list currently uses continuous scrolling/loading without clear pagination controls~~ Now uses pagination with full controls
+- **Goal**: ~~Implement pagination controls for better navigation, performance, and user experience~~ COMPLETED
 - **Why pagination over infinite scroll**:
   - Better for data-entry/analysis workflows (users can reference specific positions)
   - Clearer context and position within the list
@@ -64,24 +58,35 @@
   - Easier to bookmark and share specific pages
   - Better accessibility to page footers and navigation elements
 - **Implementation requirements**:
-  - [ ] Add pagination state management to inventory slice or component state
-  - [ ] Implement page size selector dropdown (25, 50, 100 items per page)
-  - [ ] Add "Showing X-Y of Z items" display to show current position
-  - [ ] Create pagination controls component (Previous, Next, page numbers)
-  - [ ] Add jump-to-page input field for quick navigation
-  - [ ] Implement keyboard navigation support (arrow keys, Enter)
-  - [ ] Update backend API to support pagination parameters (page, limit)
-  - [ ] Update InventoryList component to use paginated data
-  - [ ] Persist pagination preferences in localStorage or user settings
-  - [ ] Ensure pagination works with existing filters and search
-  - [ ] Test with various dataset sizes (small, medium, large)
-  - [ ] Ensure responsive design works on mobile devices
-- **Files to update**:
-  - `apps/frontend/src/components/InventoryList.tsx` - Add pagination controls and logic
-  - `apps/frontend/src/store/inventory-slice.ts` - Add pagination state management
-  - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Update to use pagination
-  - `apps/backend/src/modules/inventory-items/inventory-items.controller.ts` - Add pagination support
-  - `apps/backend/src/modules/inventory-items/inventory-items.service.ts` - Implement pagination queries
+  - [x] Add pagination state management to inventory slice or component state
+  - [x] Implement page size selector dropdown (25, 50, 100 items per page)
+  - [x] Add "Showing X-Y of Z items" display to show current position
+  - [x] Create pagination controls component (Previous, Next, page numbers)
+  - [x] Add jump-to-page input field for quick navigation
+  - [x] Implement keyboard navigation support (arrow keys, Enter)
+  - [x] Update backend API to support pagination parameters (page, limit) - Already supported
+  - [x] Update InventoryList component to use paginated data
+  - [x] Persist pagination preferences in localStorage or user settings
+  - [x] Ensure pagination works with existing filters and search
+  - [x] Test with various dataset sizes (small, medium, large)
+  - [x] Ensure responsive design works on mobile devices
+- **Files updated**:
+  - `apps/frontend/src/components/Pagination.tsx` - NEW: Reusable pagination component with keyboard navigation
+  - `apps/frontend/src/components/InventoryList.tsx` - Updated to use pagination controls
+  - `apps/frontend/src/store/inventory-slice.ts` - Updated query to support page and limit parameters
+  - `apps/frontend/src/pages/modules/inventory-manager/InventoryPage.tsx` - Updated to use server-side pagination
+- **Features implemented**:
+  - Server-side pagination for better performance with large datasets
+  - Page size selector (25, 50, 100 items per page)
+  - "Showing X-Y of Z items" display
+  - First, Previous, Next, Last navigation buttons
+  - Page number buttons with ellipsis for large page counts
+  - Jump-to-page input field (desktop only)
+  - Keyboard navigation (Arrow Left/Right for prev/next page)
+  - localStorage persistence for page size preference
+  - Responsive design for mobile and desktop
+  - Automatic scroll to top on page change
+  - Works seamlessly with filters and search
 
 7. **Streamline and migrate all tables to consistent pagination approach**
 
@@ -132,24 +137,6 @@
   - All controller files to ensure pagination parameters are properly handled
   - Consider creating shared pagination utilities/helpers
 
-10. **Add clear functionality to select components**
-
-- **Goal**: Give select components a way to clear their value/selection
-- **Current state**: Select components don't have a built-in way to clear their values once selected
-- **Implementation approaches**:
-  - [ ] Add optional `onClear` prop that can be passed to select components
-  - [ ] Implement local clear functionality within the select component (e.g., clear button/icon when value is present)
-  - [ ] Design clear button UI (small 'x' icon on the right side of select, shown when value exists)
-  - [ ] Ensure clear functionality works with both single and multi-select components
-  - [ ] Handle clearing behavior with controlled vs uncontrolled select components
-  - [ ] Add visual feedback (hover state for clear button)
-  - [ ] Ensure accessibility (keyboard support for clear action, screen reader announcements)
-  - [ ] Test clearing behavior with various select configurations
-- **Files to update**:
-  - Select component(s) in `apps/frontend/src/components/ui/` (e.g., `select.tsx` or custom select components)
-  - Any custom select wrappers or dropdown components
-  - Update usages where clearable select is needed
-
 11. **Show all suppliers of an inventory item as an option in inventory item actions**
 
 - Add a new action option in the inventory item actions dropdown menu to view all suppliers associated with an inventory item
@@ -182,38 +169,6 @@
 - **Files to update**:
   - `apps/frontend/src/pages/AppSelectionPage.tsx` - Redesign the app selection interface
 
-14. **Change action buttons everywhere to match the one in inventory table**
-
-- **Current state**: Different tables/components use inconsistent action button styles:
-  - InventoryList uses: `variant="outline"` with `className="h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50"` and `MoreHorizontal` icon
-  - AdminsTable uses: `variant="ghost"` with `className="h-8 w-8 p-0"` and `MoreVertical` icon
-  - EmployeesTable uses: Separate buttons (Edit and Pay) instead of dropdown menu
-  - SuppliersSection uses: `variant="ghost"` with `MoreVertical` icon
-- **Goal**: Standardize all action buttons to match the inventory table pattern for consistency across the application
-- **Reference pattern** (from InventoryList):
-  - Button: `variant="outline"` with `className="h-10 w-10 sm:h-8 sm:w-8 p-0 border-gray-300 hover:bg-gray-50"`
-  - Icon: `MoreHorizontal` (not `MoreVertical`)
-  - Dropdown menu items: `className="text-base sm:text-sm py-2.5 sm:py-2"`
-  - Icons in menu items: `className="mr-2 h-5 w-5 sm:h-4 sm:w-4"`
-- **Implementation requirements**:
-  - [ ] Update AdminsTable to use `variant="outline"` with proper styling and `MoreHorizontal` icon
-  - [ ] Update AdminsTable dropdown menu items to use responsive text sizing (`text-base sm:text-sm py-2.5 sm:py-2`)
-  - [ ] Update AdminsTable menu item icons to use responsive sizing (`h-5 w-5 sm:h-4 sm:w-4`)
-  - [ ] Convert EmployeesTable to use dropdown menu pattern (instead of separate buttons)
-  - [ ] Update EmployeesTable action button to match inventory table style
-  - [ ] Update SuppliersSection to use `variant="outline"` with proper styling and `MoreHorizontal` icon
-  - [ ] Check and update any other tables/components with action buttons (PaymentsTable, ListedPaymentsTable, GroupedPaymentsTable, RecentEmployeesTable, etc.)
-  - [ ] Ensure mobile views also use consistent styling
-  - [ ] Test all action buttons across different screen sizes
-- **Files to update**:
-  - `apps/frontend/src/components/tables/AdminsTable.tsx` - Update action button styling
-  - `apps/frontend/src/components/tables/EmployeesTable.tsx` - Convert to dropdown menu pattern
-  - `apps/frontend/src/features/inventory-settings/InventorySettingsPage/suppliers.tsx` - Update action button styling
-  - `apps/frontend/src/components/tables/PaymentsTable.tsx` - Check and update if needed
-  - `apps/frontend/src/components/tables/ListedPaymentsTable.tsx` - Check and update if needed
-  - `apps/frontend/src/components/tables/GroupedPaymentsTable.tsx` - Check and update if needed
-  - `apps/frontend/src/components/tables/RecentEmployeesTable.tsx` - Check and update if needed
-
 15. **Automatically expand sidebar when moving from mobile back to desktop view**
 
 - **Current state**: When transitioning from mobile view to desktop view, the sidebar stays hidden/collapsed instead of automatically expanding
@@ -244,37 +199,6 @@
   - Backend/media service - Ensure thumbnail generation and URL provision (if not already available)
 
 ## Backend Features
-
-1. **Normalize inventory item data inside stock movement**
-
-- **Current state**: Stock movement records currently contain references to inventory items, but detailed information (performer, prices, quantities, unit details, dates) may be scattered or not properly denormalized
-- **Goal**: Normalize inventory item data within stock movement records to improve data structure, querying efficiency, and reporting capabilities
-- **Implementation requirements**:
-  - [ ] Analyze current stock movement schema and identify what data needs normalization
-  - [ ] Design normalized structure for inventory item details within stock movements:
-    - [ ] Performer information (who performed the stock movement)
-    - [ ] Price information (purchase price, selling price, unit prices)
-    - [ ] Quantity details (quantities in different units, base unit quantities)
-    - [ ] Unit information (unit names, unit IDs, conversion factors)
-    - [ ] Date information (transaction date, expiry dates, created/updated dates)
-    - [ ] Item snapshot (item name, category, supplier at time of movement)
-  - [ ] Create migration to update existing stock movement records with normalized data
-  - [ ] Update stock movement service to store normalized data when creating new movements
-  - [ ] Update stock movement model/schema with new normalized fields
-  - [ ] Update stock movement queries to utilize normalized data
-  - [ ] Consider performance implications and add appropriate indexes
-  - [ ] Update API responses to leverage normalized data (reduce joins)
-  - [ ] Test data integrity and query performance after normalization
-- **Benefits**:
-  - Faster queries (reduced joins)
-  - Historical data preservation (item details at time of movement)
-  - Better reporting and analytics capabilities
-  - Clearer data structure for stock movements
-- **Files to update**:
-  - `apps/backend/src/modules/stock-movement/stock-movement.model.ts` - Update schema
-  - `apps/backend/src/modules/stock-movement/stock-movement.service.ts` - Update create/update logic
-  - `apps/backend/src/modules/stock-movement/stock-movement.types.ts` - Update types
-  - `apps/backend/migrations/` - Create migration for existing data
 
 2. **Audit and optimize all models and service queries**
 

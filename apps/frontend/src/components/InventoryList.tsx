@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   Search,
   Package,
@@ -24,6 +24,7 @@ import {
 import { formatUnitName } from "@/lib/utils";
 import { InventoryQtyLevelBadge } from "@/components/InventoryQtyLevelBadge";
 import { BorderedOptions } from "@/components/BorderedOptions";
+import { Pagination } from "@/components/Pagination";
 
 interface InventoryListProps {
   items: InventoryItem[];
@@ -39,9 +40,13 @@ interface InventoryListProps {
   onImageClick?: (item: InventoryItem) => void;
   onEditImage?: (item: InventoryItem) => void;
   onPreviewImage?: (item: InventoryItem) => void;
-  onLoadMore?: () => void;
-  hasMore?: boolean;
-  isLoadingMore?: boolean;
+  // Pagination props
+  currentPage?: number;
+  totalPages?: number;
+  totalItems?: number;
+  pageSize?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
 }
 
 type DisplayMode = "full" | "skipOne" | "baseOnly";
@@ -60,41 +65,18 @@ export function InventoryList({
   onImageClick,
   onEditImage,
   onPreviewImage,
-  onLoadMore,
-  hasMore = false,
-  isLoadingMore = false,
+  // Pagination props
+  currentPage = 1,
+  totalPages = 1,
+  totalItems = 0,
+  pageSize = 25,
+  onPageChange,
+  onPageSizeChange,
 }: InventoryListProps) {
   // Track display mode per item
   const [displayModes, setDisplayModes] = useState<Map<string, DisplayMode>>(
     new Map()
   );
-
-  // Intersection observer for infinite scroll
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!onLoadMore || !hasMore || isLoadingMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          onLoadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const currentRef = loadMoreRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
-    };
-  }, [onLoadMore, hasMore, isLoadingMore]);
 
   const getTotalStock = (item: InventoryItem): number => {
     return item.currentStockInBaseUnits ?? 0;
@@ -585,24 +567,17 @@ export function InventoryList({
         </div>
       )}
 
-      {/* Load more trigger and loading indicator */}
-      {items.length > 0 && (
-        <div ref={loadMoreRef} className="py-8 text-center">
-          {isLoadingMore ? (
-            <div className="flex items-center justify-center gap-2 text-muted-foreground">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="text-sm">Loading more items...</span>
-            </div>
-          ) : hasMore ? (
-            <div className="text-sm text-muted-foreground">
-              Scroll to load more
-            </div>
-          ) : (
-            <div className="text-sm text-muted-foreground">
-              No more items to load
-            </div>
-          )}
-        </div>
+      {/* Pagination controls */}
+      {items.length > 0 && onPageChange && onPageSizeChange && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          pageSize={pageSize}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={isFetching}
+        />
       )}
     </div>
   );

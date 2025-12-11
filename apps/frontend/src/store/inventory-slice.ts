@@ -393,6 +393,8 @@ export const inventoryApi = baseApi.injectEndpoints({
         stockFilter?: "outOfStock" | "lowStock" | "inStock";
         search?: string;
         category?: string;
+        page?: number;
+        limit?: number;
       }
     >({
       query: (params = {}) => ({
@@ -400,7 +402,8 @@ export const inventoryApi = baseApi.injectEndpoints({
         method: "GET",
         params: {
           sort: "desc",
-          limit: 100,
+          page: params.page || 1,
+          limit: params.limit || 25,
           ...(params.stockFilter && { stockFilter: params.stockFilter }),
           ...(params.search && { search: params.search }),
           ...(params.category && { category: params.category }),

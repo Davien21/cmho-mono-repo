@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { InventoryList } from "@/components/InventoryList";
 import { AddInventoryImageModal } from "@/components/modals/AddInventoryImageModal";
@@ -7,13 +7,39 @@ import { InventoryItem } from "@/types/inventory";
 import Layout from "@/components/Layout";
 import {
   IInventoryItemDto,
-  useGetInventoryItemsPagesInfiniteQuery,
+  useGetInventoryItemsQuery,
   useDeleteInventoryItemMutation,
 } from "@/store/inventory-slice";
 import { useModalContext } from "@/contexts/modal-context";
 import { toast } from "sonner";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
+
+// Key for localStorage
+const PAGINATION_STORAGE_KEY = "inventoryPaginationPrefs";
+
+// Load pagination preferences from localStorage
+const loadPaginationPrefs = (): { pageSize: number } => {
+  try {
+    const stored = localStorage.getItem(PAGINATION_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return { pageSize: parsed.pageSize || 25 };
+    }
+  } catch (error) {
+    console.error("Failed to load pagination preferences:", error);
+  }
+  return { pageSize: 25 };
+};
+
+// Save pagination preferences to localStorage
+const savePaginationPrefs = (prefs: { pageSize: number }) => {
+  try {
+    localStorage.setItem(PAGINATION_STORAGE_KEY, JSON.stringify(prefs));
+  } catch (error) {
+    console.error("Failed to save pagination preferences:", error);
+  }
+};
 
 export default function InventoryPage() {
   const [searchParams] = useSearchParams();
@@ -27,23 +53,36 @@ export default function InventoryPage() {
   const previousSearchRef = useRef<string | undefined>(undefined);
   const isSearchingRef = useRef(false);
 
+  // Pagination state with localStorage persistence
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => loadPaginationPrefs().pageSize);
+
+  // Reset to page 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, debouncedSearch]);
+
   const queryParams = useMemo(() => {
     const params: {
       stockFilter?: "outOfStock" | "lowStock" | "inStock";
       search?: string;
-    } = {};
+      category?: string;
+      page: number;
+      limit: number;
+    } = {
+      page: currentPage,
+      limit: pageSize,
+    };
     if (filter) {
       params.stockFilter = filter;
     }
     if (debouncedSearch.trim()) {
       params.search = debouncedSearch.trim();
     }
-    // Always return an object to ensure consistent caching
     return params;
-  }, [filter, debouncedSearch]);
+  }, [filter, debouncedSearch, currentPage, pageSize]);
 
-  const { data, isLoading, isFetching, fetchNextPage, hasNextPage } =
-    useGetInventoryItemsPagesInfiniteQuery(queryParams);
+  const { data, isLoading, isFetching } = useGetInventoryItemsQuery(queryParams);
 
   // Reset search flag when fetch completes
   useEffect(() => {
@@ -59,14 +98,14 @@ export default function InventoryPage() {
       isSearchingRef.current = true;
     }
   }, [debouncedSearch]);
+
   const [deleteInventoryItem] = useDeleteInventoryItemMutation();
   const { openModal, closeModal } = useModalContext();
 
+  // Transform DTOs to InventoryItems
   const items: InventoryItem[] = useMemo(() => {
-    if (!data?.pages) return [];
-    const dtos: IInventoryItemDto[] = data.pages.flatMap(
-      (page) => page.data.data || []
-    );
+    if (!data?.data?.data) return [];
+    const dtos: IInventoryItemDto[] = data.data.data;
     return dtos.map((dto) => ({
       id: dto._id,
       name: dto.name,
@@ -85,11 +124,21 @@ export default function InventoryPage() {
     }));
   }, [data]);
 
-  const handleLoadMore = useCallback(() => {
-    if (hasNextPage && !isFetching) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, isFetching, fetchNextPage]);
+  // Server-side pagination metadata
+  const totalItems = data?.data?.total || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1); // Reset to first page when changing page size
+    savePaginationPrefs({ pageSize: newPageSize });
+  };
 
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageModalMode, setImageModalMode] = useState<"add" | "edit">("add");
@@ -184,9 +233,12 @@ export default function InventoryPage() {
             onAddItem={() => openModal("add-inventory", undefined)}
             onEditImage={handleEditImage}
             onPreviewImage={handlePreviewImage}
-            onLoadMore={handleLoadMore}
-            hasMore={hasNextPage}
-            isLoadingMore={isFetching && !isSearchingRef.current}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
           />
         )}
 
