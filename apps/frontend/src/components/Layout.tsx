@@ -81,6 +81,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         baseCrumbs.push({ label: "Low Stock", url: null });
       } else if (filter === "inStock") {
         baseCrumbs.push({ label: "In Stock", url: null });
+      } else if (filter === "expired") {
+        baseCrumbs.push({ label: "Expired", url: null });
       }
 
       return baseCrumbs;

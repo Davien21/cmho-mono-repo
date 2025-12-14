@@ -10,18 +10,36 @@ export interface InputProps
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, labelClassName, className, type, id, formError, autoComplete, ...rest }, ref) => {
+  (
+    {
+      label,
+      labelClassName,
+      className,
+      type,
+      id,
+      formError,
+      autoComplete,
+      ...rest
+    },
+    ref
+  ) => {
     if (type === "file") {
-      return <input type="file" ref={ref} hidden autoComplete="off" {...rest} />;
+      return (
+        <input type="file" ref={ref} hidden autoComplete="off" {...rest} />
+      );
     }
 
     // Use "new-password" for password fields as it's more effective at disabling autocomplete
+    // For email fields, use "off" but also rely on the explicit prop passed
     // Allow override via props if needed
-    const autoCompleteValue = autoComplete !== undefined
-      ? autoComplete
-      : type === "password"
+    const autoCompleteValue =
+      autoComplete !== undefined
+        ? autoComplete
+        : type === "password"
         ? "new-password"
-        : "off";
+        : type === "email"
+        ? "off"
+        : undefined;
 
     return (
       <div className="flex flex-col gap-1">

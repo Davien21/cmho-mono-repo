@@ -16,6 +16,7 @@ import ActivitiesPage from "@/pages/modules/inventory-manager/ActivitiesPage";
 import AdminActivitiesPage from "@/pages/modules/salary-manager/ActivitiesPage";
 import NotificationsPage from "@/pages/modules/inventory-manager/NotificationsPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import LockedScreenPage from "@/pages/LockedScreenPage";
 
 export const AppRoutes = () => {
   return (
@@ -29,6 +30,7 @@ export const AppRoutes = () => {
         }
       />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/locked" element={<LockedScreenPage />} />
       <Route path="/admin" element={<DashboardPage />} />
       <Route path="/admin/employees" element={<EmployeesPage />} />
       <Route path="/admin/payments" element={<PaymentHistoryPage />} />

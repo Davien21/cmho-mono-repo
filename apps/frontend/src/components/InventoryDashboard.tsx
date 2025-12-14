@@ -6,6 +6,7 @@ import {
   Clock,
   AlertCircle,
   ExternalLink,
+  Calendar,
 } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useGetInventoryDashboardStatsQuery } from "@/store/inventory-slice";
@@ -87,6 +88,7 @@ export function InventoryDashboard() {
     inStock: 0,
     lowStock: 0,
     outOfStock: 0,
+    expiredItems: 0,
   };
 
   const activities: ActivityItem[] = useMemo(() => {
@@ -148,6 +150,13 @@ export function InventoryDashboard() {
             onClick={() => navigate("/inventory/items?filter=lowStock")}
           />
           <StatCard
+            icon={Calendar}
+            label="Expired Items"
+            value={stats.expiredItems.toLocaleString()}
+            color="bg-purple-500"
+            onClick={() => navigate("/inventory/items?filter=expired")}
+          />
+          <StatCard
             icon={CheckCircle2}
             label="In Stock"
             value={stats.inStock.toLocaleString()}
@@ -164,7 +173,7 @@ export function InventoryDashboard() {
         </div>
       </div>
       {/* Desktop: Grid layout */}
-      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           icon={AlertCircle}
           label="Out of Stock"
@@ -178,6 +187,13 @@ export function InventoryDashboard() {
           value={stats.lowStock.toLocaleString()}
           color="bg-orange-500"
           onClick={() => navigate("/inventory/items?filter=lowStock")}
+        />
+        <StatCard
+          icon={Calendar}
+          label="Expired Items"
+          value={stats.expiredItems.toLocaleString()}
+          color="bg-purple-500"
+          onClick={() => navigate("/inventory/items?filter=expired")}
         />
         <StatCard
           icon={CheckCircle2}
@@ -397,8 +413,8 @@ function InventoryDashboardSkeleton() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-4 w-96" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-24" />
         ))}
       </div>

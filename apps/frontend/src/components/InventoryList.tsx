@@ -253,7 +253,7 @@ export function InventoryList({
             placeholder="Search by name or category..."
             value={search}
             onChange={(e) => onSearchChange?.(e.target.value)}
-            className="pl-10 pr-10 text-base sm:text-sm h-10 sm:h-9"
+            className="pl-10 pr-10 text-base sm:text-sm h-10 sm:h-9 bg-white"
           />
           {isFetching && (
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-4 sm:w-4 animate-spin text-muted-foreground" />
