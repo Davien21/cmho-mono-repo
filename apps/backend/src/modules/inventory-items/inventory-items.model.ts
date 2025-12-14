@@ -68,6 +68,11 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
       required: false,
       default: 0,
     },
+    currentSellingPrice: {
+      type: Number,
+      required: false,
+      default: null,
+    },
     earliestExpiryDate: {
       type: Date,
       required: false,

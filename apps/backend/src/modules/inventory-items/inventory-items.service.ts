@@ -19,7 +19,7 @@ class InventoryItemsService {
     status?: string;
     category?: string;
     search?: string;
-    stockFilter?: "outOfStock" | "lowStock" | "inStock";
+    stockFilter?: "outOfStock" | "lowStock" | "inStock" | "expired";
   }): Promise<{
     data: IInventoryItem[];
     total: number;
@@ -27,6 +27,7 @@ class InventoryItemsService {
     limit: number;
   }> {
     const skip = (page - 1) * limit;
+    const now = new Date();
 
     const filter: Record<string, any> = { isDeleted: { $ne: true } };
     if (status) filter.status = status;
@@ -91,6 +92,14 @@ class InventoryItemsService {
                             $gt: ["$currentStockInBaseUnits", "$lowStockValue"],
                           },
                         },
+                      ],
+                    };
+                  case "expired":
+                    return {
+                      $and: [
+                        { earliestExpiryDate: { $ne: null } },
+                        { earliestExpiryDate: { $lt: now } },
+                        { currentStockInBaseUnits: { $gt: 0 } },
                       ],
                     };
                   default:
@@ -233,14 +242,17 @@ class InventoryItemsService {
 
   /**
    * Get dashboard statistics for inventory items
-   * Returns counts for total items, in stock, low stock, and out of stock
+   * Returns counts for total items, in stock, low stock, out of stock, and expired
    */
   async getDashboardStats(): Promise<{
     totalItems: number;
     inStock: number;
     lowStock: number;
     outOfStock: number;
+    expiredItems: number;
   }> {
+    const now = new Date();
+
     const result = await InventoryItem.aggregate([
       // Filter out deleted items
       { $match: { isDeleted: { $ne: true } } },
@@ -281,6 +293,18 @@ class InventoryItemsService {
             },
             { $count: "count" },
           ],
+          expiredItems: [
+            {
+              $match: {
+                $and: [
+                  { earliestExpiryDate: { $ne: null } },
+                  { earliestExpiryDate: { $lt: now } },
+                  { currentStockInBaseUnits: { $gt: 0 } },
+                ],
+              },
+            },
+            { $count: "count" },
+          ],
         },
       },
     ]);
@@ -292,6 +316,7 @@ class InventoryItemsService {
       outOfStock: stats.outOfStock[0]?.count || 0,
       lowStock: stats.lowStock[0]?.count || 0,
       inStock: stats.inStock[0]?.count || 0,
+      expiredItems: stats.expiredItems[0]?.count || 0,
     };
   }
 }

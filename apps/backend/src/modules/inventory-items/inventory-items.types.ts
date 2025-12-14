@@ -44,6 +44,7 @@ export interface IInventoryItemBase {
   status: InventoryStatus;
   createdBy: ObjectId;
   currentStockInBaseUnits?: number;
+  currentSellingPrice?: number | null;
   earliestExpiryDate?: Date | null;
   image: IInventoryItemImage | null;
   canBeSold?: boolean;

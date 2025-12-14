@@ -36,6 +36,7 @@ export async function getInventoryItems(
       | "outOfStock"
       | "lowStock"
       | "inStock"
+      | "expired"
       | undefined,
   });
 

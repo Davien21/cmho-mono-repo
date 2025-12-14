@@ -11,7 +11,7 @@ export const getInventoryItemsSchema = paginationQuerySchema.shape({
   search: yup.string().optional().label("Search query"),
   stockFilter: yup
     .string()
-    .oneOf(["outOfStock", "lowStock", "inStock"])
+    .oneOf(["outOfStock", "lowStock", "inStock", "expired"])
     .optional()
     .label("Stock filter"),
 });
