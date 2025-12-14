@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
-  ExternalLink,
   Calendar,
 } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -351,44 +350,23 @@ interface StatCardProps {
 }
 
 function StatCard({ icon: Icon, label, value, color, onClick }: StatCardProps) {
-  const isDesktop = useMediaQuery("desktop");
-
   const cardContent = (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center flex-1 min-w-0">
-        <div className={`${color} p-2 sm:p-3 rounded-lg flex-shrink-0`}>
-          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div className="ml-3 sm:ml-4 min-w-0 flex-1 overflow-hidden">
-          <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
-            {label}
-          </p>
-          <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
-            {value}
-          </p>
-        </div>
+    <div className="flex items-center">
+      <div className={`${color} p-2 sm:p-3 rounded-lg flex-shrink-0`}>
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
       </div>
-      {onClick && !isDesktop && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick();
-          }}
-          className="ml-2 flex-shrink-0 p-1 rounded hover:bg-gray-100 transition-colors cursor-pointer"
-          aria-label={`View ${label}`}
-        >
-          <ExternalLink className="w-6 h-6 lg:w-5 lg:h-5 text-gray-400 hover:text-gray-600" />
-        </button>
-      )}
-      {onClick && isDesktop && (
-        <div className="ml-2 flex-shrink-0">
-          <ExternalLink className="w-6 h-6 lg:w-5 lg:h-5 text-gray-400" />
-        </div>
-      )}
+      <div className="ml-3 sm:ml-4 min-w-0 flex-1 overflow-hidden">
+        <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
+          {label}
+        </p>
+        <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
+          {value}
+        </p>
+      </div>
     </div>
   );
 
-  if (onClick && isDesktop) {
+  if (onClick) {
     return (
       <div
         onClick={onClick}
