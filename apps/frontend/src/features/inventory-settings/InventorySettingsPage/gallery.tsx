@@ -993,7 +993,7 @@ export function GallerySection({
             placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-9 bg-white"
           />
         </div>
 

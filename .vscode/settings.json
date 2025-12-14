@@ -8,8 +8,6 @@
   "editor.rulers": [100],
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "files.eol": "\n",
-  "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
 
   // Language-specific settings
@@ -46,4 +44,3 @@
     "*.json": "jsonc"
   }
 }
-
