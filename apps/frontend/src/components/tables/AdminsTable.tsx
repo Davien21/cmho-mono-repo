@@ -4,16 +4,17 @@ import { IAdmin } from "../../types";
 import { useModalContext } from "@/contexts/modal-context";
 import { Badge } from "@/components/ui/badge";
 import { BorderedOptions } from "@/components/BorderedOptions";
-import {
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { useDisableAdminMutation } from "@/store/admins-slice";
+import { toast } from "sonner";
 
 interface AdminsTableProps {
   admins: IAdmin[];
 }
 
 export function AdminsTable({ admins }: AdminsTableProps) {
-  const { openModal } = useModalContext();
+  const { openModal, closeModal } = useModalContext();
+  const [disableAdmin] = useDisableAdminMutation();
 
   const handleEditAdmin = (admin: IAdmin) => {
     openModal("edit-admin", admin);
@@ -24,8 +25,18 @@ export function AdminsTable({ admins }: AdminsTableProps) {
       type: "warning",
       title: "Disable Admin",
       message: `Are you sure you want to disable ${admin.name}? They will not be able to access the system.`,
-      onConfirm: () => {
-        openModal("disable-admin", admin);
+      onConfirm: async () => {
+        try {
+          await disableAdmin(admin._id).unwrap();
+          toast.success("Admin disabled successfully");
+          closeModal("confirmation-dialog");
+        } catch (error: any) {
+          if (error.data?.message) {
+            toast.error(error.data.message);
+          } else {
+            toast.error("Failed to disable admin");
+          }
+        }
       },
     });
   };
@@ -69,9 +80,14 @@ export function AdminsTable({ admins }: AdminsTableProps) {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-gray-900">{admin.name}</h3>
+                      <h3 className="font-medium text-gray-900">
+                        {admin.name}
+                      </h3>
                       {admin.isSuperAdmin && (
-                        <Crown className="h-4 w-4 text-yellow-500" title="Super Admin" />
+                        <Crown
+                          className="h-4 w-4 text-yellow-500"
+                          title="Super Admin"
+                        />
                       )}
                     </div>
                     <p className="text-sm text-gray-600 mt-1">{admin.email}</p>
@@ -84,7 +100,10 @@ export function AdminsTable({ admins }: AdminsTableProps) {
                   </div>
                   <div className="flex-shrink-0 ml-2">
                     <BorderedOptions>
-                      <DropdownMenuItem onClick={() => handleEditAdmin(admin)} className="text-base sm:text-sm py-2.5 sm:py-2">
+                      <DropdownMenuItem
+                        onClick={() => handleEditAdmin(admin)}
+                        className="text-base sm:text-sm py-2.5 sm:py-2"
+                      >
                         <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                         Edit
                       </DropdownMenuItem>
@@ -136,7 +155,10 @@ export function AdminsTable({ admins }: AdminsTableProps) {
                         {admin.name}
                       </div>
                       {admin.isSuperAdmin && (
-                        <Crown className="h-4 w-4 text-yellow-500" title="Super Admin" />
+                        <Crown
+                          className="h-4 w-4 text-yellow-500"
+                          title="Super Admin"
+                        />
                       )}
                     </div>
                   </td>
@@ -154,7 +176,10 @@ export function AdminsTable({ admins }: AdminsTableProps) {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end">
                       <BorderedOptions>
-                        <DropdownMenuItem onClick={() => handleEditAdmin(admin)} className="text-base sm:text-sm py-2.5 sm:py-2">
+                        <DropdownMenuItem
+                          onClick={() => handleEditAdmin(admin)}
+                          className="text-base sm:text-sm py-2.5 sm:py-2"
+                        >
                           <Edit2 className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
                           Edit
                         </DropdownMenuItem>
@@ -179,4 +204,3 @@ export function AdminsTable({ admins }: AdminsTableProps) {
     </div>
   );
 }
-
