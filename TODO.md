@@ -94,46 +94,6 @@
 
 ## Backend Features
 
-1. **Implement auto-logout after 10 minutes of inactivity**
-
-- Automatically log users out after 10 minutes of inactivity to enhance security
-- **Current state**: Users remain logged in indefinitely until they manually log out or their session token expires
-- **Goal**: Detect user inactivity (no API calls, no user interactions) and automatically log them out after 10 minutes
-- **Implementation requirements**:
-  - [ ] **Backend**: Track last activity timestamp for each authenticated session
-    - [ ] Update session/token on each API request with current timestamp
-    - [ ] Add middleware to check if last activity was > 10 minutes ago
-    - [ ] Return appropriate response (401/403) when session is inactive too long
-    - [ ] Consider using Redis or in-memory store for activity tracking
-  - [ ] **Frontend**: Implement inactivity detection and auto-logout
-    - [ ] Track user interactions (mouse movement, keyboard input, clicks, API calls)
-    - [ ] Reset inactivity timer on each interaction
-    - [ ] Start countdown when no activity is detected
-    - [ ] Show warning modal before auto-logout (e.g., "You'll be logged out in 60 seconds due to inactivity")
-    - [ ] Provide "Stay logged in" button in warning modal to prevent logout
-    - [ ] Automatically redirect to login page when inactivity timeout is reached
-    - [ ] Clear all auth tokens/cookies on auto-logout
-    - [ ] Show notification explaining why they were logged out
-  - [ ] Consider edge cases:
-    - [ ] Background tabs (should they be logged out?)
-    - [ ] Long-running operations (should activity tracking pause?)
-    - [ ] Multiple tabs/windows (sync logout across all tabs)
-    - [ ] "Remember me" option (should it extend inactivity timeout?)
-  - [ ] Make timeout duration configurable (environment variable)
-  - [ ] Test inactivity detection with various scenarios
-  - [ ] Ensure graceful handling when server detects inactive session before frontend
-- **Benefits**:
-  - Enhanced security by reducing risk of unauthorized access from unattended sessions
-  - Compliance with security best practices
-  - Protects sensitive salary and inventory data
-- **Files to update**:
-  - `apps/frontend/src/hooks/use-inactivity-timer.ts` (create new hook)
-  - `apps/frontend/src/App.tsx` or `apps/frontend/src/main.tsx` - Add inactivity detection
-  - `apps/backend/src/middlewares/authentication.ts` - Add inactivity checking
-  - `apps/backend/src/modules/auth/auth.service.ts` - Track session activity
-  - Create warning modal component for inactivity notification
-  - Update API interceptors to handle inactivity-based 401s differently
-
 2. **Audit and optimize all models and service queries**
 
 - **Goal**: Comprehensive review and optimization of all database models, schemas, and service queries across the entire backend

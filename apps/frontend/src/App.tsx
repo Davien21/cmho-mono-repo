@@ -20,8 +20,8 @@ const Modals = lazy(() =>
 );
 
 function AppContent() {
-  const INACTIVITY_TIMEOUT = 1 * 60 * 1000; // 10 minutes
-  const WARNING_TIME = 50 * 1000; // 1 minute warning
+  const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+  const WARNING_TIME = 3 * 60 * 1000; // 3 minute warning
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === "/login";
