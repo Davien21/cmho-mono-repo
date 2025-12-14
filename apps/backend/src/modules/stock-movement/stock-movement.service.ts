@@ -165,6 +165,9 @@ class StockMovementService {
     // Update inventory item stock
     item.currentStockInBaseUnits = nextStock;
 
+    // Update currentSellingPrice with the latest selling price
+    item.currentSellingPrice = data.sellingPrice;
+
     // Update earliestExpiryDate if this new stock has an earlier expiry
     const newExpiryDate = normalizedExpiryDate || data.expiryDate;
     const currentEarliestExpiry = item.earliestExpiryDate;
