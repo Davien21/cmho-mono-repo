@@ -9,6 +9,15 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: "360px",
+        sm: "768px",
+        md: "1024px",
+        lg: "1280px",
+        xl: "1440px",
+        "2xl": "1536px",
+        "3xl": "1920px",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
