@@ -285,6 +285,72 @@
   - `apps/backend/src/modules/activity-tracking/activity-tracking.model.ts` - Update model if needed
   - All controllers that call `trackActivity` - Update to use typed metadata structures
 
+7. **Implement edit and revert functionality for stock movements**
+
+- **Current state**: Stock movements can be created (ADD_STOCK, REDUCE_STOCK) but cannot be edited or reverted once created, which can be problematic if incorrect data is entered
+- **Goal**: Allow authorized users to edit or revert stock movements with proper permissions and audit trail
+- **Permissions**: Restrict edit/revert operations to:
+  - Users with the INVENTORY_EDITOR role (can edit/revert any stock movement)
+  - The creator/performer of the stock movement (can edit/revert their own movements)
+- **Implementation requirements**:
+  - [ ] Design edit functionality for stock movements:
+    - [ ] Allow modification of quantity, unit, expiry date, notes, and other relevant fields
+    - [ ] Recalculate inventory totals when stock movement is edited
+    - [ ] Validate that edited values don't cause negative inventory
+    - [ ] Track changes in activity log with before/after values
+  - [ ] Design revert functionality for stock movements:
+    - [ ] Create reverse transaction that undoes the original stock movement
+    - [ ] Update inventory quantities to pre-movement state
+    - [ ] Mark original movement as "reverted" with reference to reversal transaction
+    - [ ] Track revert action in activity log with reason and details
+  - [ ] Implement permission middleware:
+    - [ ] Create `canEditStockMovement` middleware that checks if user has INVENTORY_EDITOR role OR is the creator
+    - [ ] Apply middleware to edit and revert routes
+    - [ ] Return 403 Forbidden if user lacks permissions
+  - [ ] Backend API routes:
+    - [ ] `PATCH /api/stock-movement/:id` - Edit stock movement (with permission check)
+    - [ ] `POST /api/stock-movement/:id/revert` - Revert stock movement (with permission check)
+  - [ ] Update stock movement model:
+    - [ ] Add `isReverted` boolean field
+    - [ ] Add `revertedBy` reference to admin who reverted
+    - [ ] Add `revertedAt` timestamp
+    - [ ] Add `reversalMovementId` reference to the reversal transaction
+    - [ ] Add `editHistory` array to track all edits made to the movement
+  - [ ] Frontend UI:
+    - [ ] Add "Edit" action button to stock movement entries (conditionally shown based on permissions)
+    - [ ] Add "Revert" action button to stock movement entries (conditionally shown based on permissions)
+    - [ ] Create edit modal/form for stock movements with validation
+    - [ ] Create confirmation dialog for revert action with reason input
+    - [ ] Show visual indicator for reverted movements (e.g., strikethrough, "Reverted" badge)
+    - [ ] Display edit history when viewing movement details
+  - [ ] Activity tracking:
+    - [ ] Track "EDIT_STOCK_MOVEMENT" activity with before/after values
+    - [ ] Track "REVERT_STOCK_MOVEMENT" activity with reason and original movement details
+  - [ ] Edge cases to handle:
+    - [ ] Prevent editing/reverting already reverted movements
+    - [ ] Handle concurrent edits (optimistic locking or last-write-wins)
+    - [ ] Validate inventory consistency after edit/revert operations
+    - [ ] Consider time limits for edits/reverts (e.g., can only edit within 24 hours)
+  - [ ] Testing:
+    - [ ] Test edit functionality updates inventory correctly
+    - [ ] Test revert functionality restores inventory to original state
+    - [ ] Test permissions for INVENTORY_EDITOR users
+    - [ ] Test permissions for movement creators
+    - [ ] Test that unauthorized users cannot edit/revert movements
+    - [ ] Test activity tracking for edit and revert operations
+- **Files to create/update**:
+  - `apps/backend/src/modules/stock-movement/stock-movement.controller.ts` - Add edit and revert endpoints
+  - `apps/backend/src/modules/stock-movement/stock-movement.service.ts` - Implement edit and revert logic
+  - `apps/backend/src/modules/stock-movement/stock-movement.model.ts` - Add revert and edit history fields
+  - `apps/backend/src/modules/stock-movement/stock-movement.routes.ts` - Add new routes with permissions
+  - `apps/backend/src/modules/stock-movement/stock-movement.validator.ts` - Add validation for edit requests
+  - `apps/backend/src/middlewares/authentication.ts` - Create `canEditStockMovement` middleware
+  - `apps/frontend/src/store/inventory-slice.ts` - Add edit and revert API calls
+  - `apps/frontend/src/components/StockMovementActions.tsx` (or similar) - Add edit/revert UI buttons
+  - `apps/frontend/src/components/EditStockMovementModal.tsx` (create) - Edit modal component
+  - `apps/frontend/src/components/RevertStockMovementDialog.tsx` (create) - Revert confirmation dialog
+  - `apps/frontend/src/pages/modules/inventory-manager/StockMovementPage.tsx` - Integrate edit/revert functionality
+
 ## Architecture
 
 1. **Create packages/shared folder for all apps to use shared types and interfaces**
