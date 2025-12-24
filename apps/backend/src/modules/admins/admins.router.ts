@@ -21,12 +21,7 @@ router.get(
   validator(getAdminsSchema, "query"),
   getAdmins
 );
-router.post(
-  "/admins",
-  authenticate,
-  validator(createAdminSchema),
-  createAdmin
-);
+router.post("/admins", authenticate, validator(createAdminSchema), createAdmin);
 
 router.put(
   "/admins/:id",
@@ -38,9 +33,3 @@ router.put(
 router.patch("/admins/:id/disable", authenticate, disableAdmin);
 
 export default router;
-
-
-
-
-
-

@@ -68,9 +68,3 @@ export const {
   useDisableAdminMutation,
   useGetAdminsQuery,
 } = adminApi;
-
-
-
-
-
-
