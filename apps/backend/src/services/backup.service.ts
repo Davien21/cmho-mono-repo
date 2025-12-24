@@ -1,16 +1,16 @@
 import cron from "node-cron";
-import { exec } from "child_process";
-import { promisify } from "util";
 import { Octokit } from "@octokit/rest";
+import mongoose from "mongoose";
 import fs from "fs";
+import { promisify } from "util";
+import { exec } from "child_process";
 import logger from "../config/logger";
-import { env } from "../config/env";
 
 const execAsync = promisify(exec);
 
 class BackupService {
   private backupDir = "/tmp/backups";
-  private maxBackups = 2; // Keep only 2 backups
+  private maxBackups = 2;
   private octokit: Octokit | null = null;
   private githubOwner: string = "";
   private githubRepo: string = "";
@@ -22,7 +22,7 @@ class BackupService {
   private initializeGitHub() {
     try {
       const githubToken = process.env.GITHUB_BACKUP_TOKEN;
-      const githubRepoPath = process.env.GITHUB_BACKUP_REPO; // Format: "owner/repo"
+      const githubRepoPath = process.env.GITHUB_BACKUP_REPO;
 
       if (!githubToken || !githubRepoPath) {
         logger.error(
@@ -63,15 +63,42 @@ class BackupService {
       logger.info(`🔄 Starting backup: ${backupName}`);
 
       // Create backup directory
-      await execAsync(`mkdir -p ${this.backupDir}`);
+      await execAsync(`mkdir -p ${backupPath}`);
 
-      // Run mongodump
-      logger.info("📦 Running mongodump...");
-      await execAsync(
-        `mongodump --uri="${env.DATABASE_URL}" --out="${backupPath}" --gzip`
+      // Check database connection
+      if (!mongoose.connection.db) {
+        throw new Error("Database connection not established");
+      }
+
+      // Export all collections using Mongoose
+      logger.info("📦 Exporting database collections...");
+      const db = mongoose.connection.db;
+      const collections = await db.listCollections().toArray();
+
+      for (const collectionInfo of collections) {
+        const collectionName = collectionInfo.name;
+        logger.info(`  - Exporting collection: ${collectionName}`);
+
+        const collection = db.collection(collectionName);
+        const documents = await collection.find({}).toArray();
+
+        // Write collection to JSON file
+        const filePath = `${backupPath}/${collectionName}.json`;
+        fs.writeFileSync(filePath, JSON.stringify(documents, null, 2));
+      }
+
+      // Create metadata file
+      const metadata = {
+        backupDate: new Date().toISOString(),
+        databaseName: mongoose.connection.name,
+        collections: collections.map((c) => c.name),
+        totalCollections: collections.length,
+      };
+      fs.writeFileSync(
+        `${backupPath}/metadata.json`,
+        JSON.stringify(metadata, null, 2)
       );
 
-      // Create zip
       logger.info("🗜️  Creating zip archive...");
       await execAsync(
         `cd ${this.backupDir} && zip -r ${backupName}.zip ${backupName}`
@@ -92,7 +119,6 @@ class BackupService {
           `❌ Backup too large for GitHub (${fileSizeMB} MB > 100 MB)`
         );
         logger.error("💡 Database backup exceeds GitHub's 100MB file limit");
-        // Cleanup the too-large backup
         await execAsync(`rm -f ${zipPath}`);
         throw new Error(`Backup file too large: ${fileSizeMB} MB`);
       }
@@ -120,10 +146,8 @@ class BackupService {
     try {
       logger.info(`☁️  Uploading to GitHub: ${fileName}`);
 
-      // Read file as base64
       const content = fs.readFileSync(filePath, { encoding: "base64" });
 
-      // Check if file already exists
       let sha: string | undefined;
       try {
         const { data } = await this.octokit!.repos.getContent({
@@ -141,7 +165,6 @@ class BackupService {
         logger.info(`📝 Creating new file: ${fileName}`);
       }
 
-      // Upload/update file
       await this.octokit!.repos.createOrUpdateFileContents({
         owner: this.githubOwner,
         repo: this.githubRepo,
@@ -153,7 +176,6 @@ class BackupService {
 
       logger.info(`✅ Uploaded to GitHub: ${fileName}`);
 
-      // Cleanup old backups
       await this.cleanupOldGitHubBackups();
     } catch (error) {
       logger.error(`❌ Failed to upload to GitHub: ${error}`);
@@ -163,7 +185,6 @@ class BackupService {
 
   private async cleanupOldGitHubBackups() {
     try {
-      // List all files in the repo
       const { data } = await this.octokit!.repos.getContent({
         owner: this.githubOwner,
         repo: this.githubRepo,
@@ -172,14 +193,12 @@ class BackupService {
 
       if (!Array.isArray(data)) return;
 
-      // Filter backup files and sort by name (which includes date)
       const backupFiles = data
         .filter(
           (file) => file.name.startsWith("cmho-") && file.name.endsWith(".zip")
         )
-        .sort((a, b) => b.name.localeCompare(a.name)); // Newest first
+        .sort((a, b) => b.name.localeCompare(a.name));
 
-      // Delete old backups (keep only maxBackups)
       if (backupFiles.length > this.maxBackups) {
         const filesToDelete = backupFiles.slice(this.maxBackups);
 
@@ -206,7 +225,6 @@ class BackupService {
       return;
     }
 
-    // Run daily at 2:00 AM UTC
     cron.schedule("0 2 * * *", async () => {
       logger.info("⏰ Scheduled backup triggered");
       try {
@@ -218,7 +236,6 @@ class BackupService {
 
     logger.info("✅ Backup scheduler started (runs daily at 2:00 AM UTC)");
 
-    // Optional: Run backup on startup (for testing)
     if (process.env.BACKUP_ON_STARTUP === "true") {
       logger.info("🚀 Running initial backup on startup...");
       setTimeout(
@@ -231,7 +248,6 @@ class BackupService {
     }
   }
 
-  // Manual backup trigger
   async triggerManualBackup() {
     logger.info("🔧 Manual backup triggered");
     return await this.performBackup();
