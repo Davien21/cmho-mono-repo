@@ -319,6 +319,64 @@ This will create initial data like admin users, inventory items, etc.
 
 ---
 
+## Database Backups
+
+The application includes an **automated daily backup system** that stores database backups to a private GitHub repository.
+
+### 🎯 Features
+
+- ✅ **Automated daily backups** at 2:00 AM UTC
+- ✅ **Keeps only 2 most recent backups** (auto-deletes older)
+- ✅ **Named format**: `cmho-YYYY-MM-DD.zip`
+- ✅ **Stored in private repo**: https://github.com/Davien21/cmho-backups
+- ✅ **Manual trigger** via API endpoint
+- ✅ **100 MB file limit** (perfect for most databases)
+
+### Setup (Production Only)
+
+Backups are configured for production deployment. To enable:
+
+1. **Create GitHub token:** https://github.com/settings/tokens
+
+   - Token type: Classic
+   - Scopes: ✅ `repo` (Full control of private repositories)
+   - Copy the token
+
+2. **Add environment variables** (on Railway or your hosting platform):
+   ```bash
+   ENABLE_BACKUPS=true
+   GITHUB_BACKUP_TOKEN=ghp_xxxxxxxxxxxxx
+   GITHUB_BACKUP_REPO=Davien21/cmho-backups
+   ```
+
+### Manual Backup Trigger
+
+```bash
+# Check status
+curl https://your-backend-url/api/v1/backups/status
+
+# Trigger backup
+curl -X POST https://your-backend-url/api/v1/backups/trigger
+```
+
+### Accessing Backups
+
+Go to https://github.com/Davien21/cmho-backups and download any `cmho-*.zip` file.
+
+### Restoring from Backup
+
+```bash
+# 1. Download and unzip
+unzip cmho-2024-12-24.zip
+
+# 2. Restore to MongoDB
+mongorestore --uri="your-mongodb-uri" --gzip --dir=./cmho-2024-12-24 --drop
+```
+
+**Note:** You don't need to configure backups for local development - this is for production only.
+
+---
+
 ## Running the Application
 
 ### Option 1: Run Everything from Root (Recommended)
