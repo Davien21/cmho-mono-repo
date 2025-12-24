@@ -325,53 +325,107 @@ The application includes an **automated daily backup system** that stores databa
 
 ### 🎯 Features
 
-- ✅ **Automated daily backups** at 2:00 AM UTC
+- ✅ **Automated daily backups** at 2:00 AM UTC using node-cron
 - ✅ **Keeps only 2 most recent backups** (auto-deletes older)
 - ✅ **Named format**: `cmho-YYYY-MM-DD.zip`
 - ✅ **Stored in private repo**: https://github.com/Davien21/cmho-backups
 - ✅ **Manual trigger** via API endpoint
-- ✅ **100 MB file limit** (perfect for most databases)
+- ✅ **100 MB file limit** (GitHub's file size limit)
+- ✅ **Pure Node.js solution** - Uses Mongoose to export collections to JSON
+- ✅ **No external tools required** - Works on any hosting platform
+
+### How It Works
+
+The backup system:
+1. Connects to MongoDB using Mongoose
+2. Exports all collections to JSON files
+3. Creates a metadata file with backup information
+4. Zips everything using the `archiver` package
+5. Uploads to GitHub via API
+6. Automatically deletes old backups (keeps 2 most recent)
 
 ### Setup (Production Only)
 
-Backups are configured for production deployment. To enable:
+Backups run automatically in production or when `ENABLE_BACKUPS=true` is set.
 
-1. **Create GitHub token:** https://github.com/settings/tokens
+**Step 1: Create GitHub Token**
 
-   - Token type: Classic
-   - Scopes: ✅ `repo` (Full control of private repositories)
-   - Copy the token
+Go to https://github.com/settings/tokens and create a new token:
+- Token type: **Classic**
+- Scopes: ✅ **`repo`** (Full control of private repositories)
+- Copy the token immediately
 
-2. **Add environment variables** (on Railway or your hosting platform):
-   ```bash
-   ENABLE_BACKUPS=true
-   GITHUB_BACKUP_TOKEN=ghp_xxxxxxxxxxxxx
-   GITHUB_BACKUP_REPO=Davien21/cmho-backups
-   ```
+**Step 2: Configure Environment Variables**
 
-### Manual Backup Trigger
+Add these to your hosting platform (Railway, Heroku, etc.):
 
 ```bash
-# Check status
-curl https://your-backend-url/api/v1/backups/status
+ENABLE_BACKUPS=true
+GITHUB_BACKUP_TOKEN=ghp_xxxxxxxxxxxxx
+GITHUB_BACKUP_REPO=Davien21/cmho-backups
+```
 
-# Trigger backup
-curl -X POST https://your-backend-url/api/v1/backups/trigger
+### API Endpoints
+
+**Check Status (includes list of available backups):**
+```bash
+curl https://api.cmho.xyz/api/v1/backups/status
+```
+
+Response includes:
+- Configuration status
+- Backup schedule
+- List of all available backups with sizes and download URLs
+- Total backup count
+
+**Trigger Manual Backup:**
+```bash
+curl -X POST https://api.cmho.xyz/api/v1/backups/trigger
 ```
 
 ### Accessing Backups
 
-Go to https://github.com/Davien21/cmho-backups and download any `cmho-*.zip` file.
+**Option 1: GitHub Web Interface**
+- Go to https://github.com/Davien21/cmho-backups
+- Click on any `cmho-*.zip` file
+- Download it
+
+**Option 2: Via API (using status endpoint)**
+- Get the list of backups from `/api/v1/backups/status`
+- Use the `downloadUrl` from the response
+
+**Option 3: Git Clone**
+```bash
+git clone https://github.com/Davien21/cmho-backups.git
+cd cmho-backups
+ls -lh  # View all backups
+```
 
 ### Restoring from Backup
+
+Backups are in JSON format (not binary). To restore:
 
 ```bash
 # 1. Download and unzip
 unzip cmho-2024-12-24.zip
+cd cmho-2024-12-24
 
-# 2. Restore to MongoDB
-mongorestore --uri="your-mongodb-uri" --gzip --dir=./cmho-2024-12-24 --drop
+# 2. Each collection is a separate JSON file
+# Import using mongoimport for each collection
+mongoimport --uri="your-mongodb-uri" \
+  --collection=collectionName \
+  --file=collectionName.json \
+  --jsonArray \
+  --drop
+
+# Or create a restore script to import all collections
 ```
+
+The backup includes a `metadata.json` file with:
+- Backup date and time
+- Database name
+- List of all collections
+- Total collection count
 
 **Note:** You don't need to configure backups for local development - this is for production only.
 
