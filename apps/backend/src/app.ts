@@ -14,9 +14,17 @@ import logger from "../src/config/logger";
 import { openDBConnection, closeDBConnection } from "../src/config/db";
 import { CookieNames } from "./utils/cookie-names";
 import { extraHeaders } from "./middlewares/extra-headers";
+import backupService from "./services/backup.service";
 
 const app = express();
 openDBConnection();
+
+// Start backup scheduler in production or if explicitly enabled
+if (env.NODE_ENV === "production" || env.ENABLE_BACKUPS === "true") {
+  backupService.startScheduledBackups();
+} else {
+  logger.info("⚠️  Backup scheduler disabled (set ENABLE_BACKUPS=true to enable)");
+}
 
 parseEnv();
 
