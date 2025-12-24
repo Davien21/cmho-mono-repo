@@ -248,8 +248,7 @@ class BackupService {
       return;
     }
 
-    // TESTING: Run every 3 minutes instead of daily
-    cron.schedule("*/3 * * * *", async () => {
+    cron.schedule("0 2 * * *", async () => {
       logger.info("⏰ Scheduled backup triggered");
       try {
         await this.performBackup();
@@ -258,7 +257,7 @@ class BackupService {
       }
     });
 
-    logger.info("✅ Backup scheduler started (runs every 3 minutes - TESTING)");
+    logger.info("✅ Backup scheduler started (runs daily at 2:00 AM UTC)");
 
     if (process.env.BACKUP_ON_STARTUP === "true") {
       logger.info("🚀 Running initial backup on startup...");

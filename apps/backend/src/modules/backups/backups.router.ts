@@ -47,10 +47,7 @@ router.get("/backups/status", async (_req, res) => {
       configured: isConfigured,
       repository: process.env.GITHUB_BACKUP_REPO || "Not set",
       maxBackups: 2,
-      schedule:
-        process.env.NODE_ENV === "production"
-          ? "Every 3 minutes (TESTING)"
-          : "Every 3 minutes (TESTING)",
+      schedule: "Daily at 2:00 AM UTC",
       availableBackups: availableBackups,
       totalBackups: availableBackups.length,
     });
