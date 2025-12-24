@@ -337,6 +337,7 @@ The application includes an **automated daily backup system** that stores databa
 ### How It Works
 
 The backup system:
+
 1. Connects to MongoDB using Mongoose
 2. Exports all collections to JSON files
 3. Creates a metadata file with backup information
@@ -351,6 +352,7 @@ Backups run automatically in production or when `ENABLE_BACKUPS=true` is set.
 **Step 1: Create GitHub Token**
 
 Go to https://github.com/settings/tokens and create a new token:
+
 - Token type: **Classic**
 - Scopes: ✅ **`repo`** (Full control of private repositories)
 - Copy the token immediately
@@ -368,17 +370,20 @@ GITHUB_BACKUP_REPO=Davien21/cmho-backups
 ### API Endpoints
 
 **Check Status (includes list of available backups):**
+
 ```bash
 curl https://api.cmho.xyz/api/v1/backups/status
 ```
 
 Response includes:
+
 - Configuration status
 - Backup schedule
 - List of all available backups with sizes and download URLs
 - Total backup count
 
 **Trigger Manual Backup:**
+
 ```bash
 curl -X POST https://api.cmho.xyz/api/v1/backups/trigger
 ```
@@ -386,15 +391,18 @@ curl -X POST https://api.cmho.xyz/api/v1/backups/trigger
 ### Accessing Backups
 
 **Option 1: GitHub Web Interface**
+
 - Go to https://github.com/Davien21/cmho-backups
 - Click on any `cmho-*.zip` file
 - Download it
 
 **Option 2: Via API (using status endpoint)**
+
 - Get the list of backups from `/api/v1/backups/status`
 - Use the `downloadUrl` from the response
 
 **Option 3: Git Clone**
+
 ```bash
 git clone https://github.com/Davien21/cmho-backups.git
 cd cmho-backups
@@ -422,6 +430,7 @@ mongoimport --uri="your-mongodb-uri" \
 ```
 
 The backup includes a `metadata.json` file with:
+
 - Backup date and time
 - Database name
 - List of all collections
