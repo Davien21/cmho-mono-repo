@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import fs from "fs";
 import { promisify } from "util";
 import { exec } from "child_process";
+import archiver from "archiver";
 import logger from "../config/logger";
 
 const execAsync = promisify(exec);
@@ -100,9 +101,7 @@ class BackupService {
       );
 
       logger.info("🗜️  Creating zip archive...");
-      await execAsync(
-        `cd ${this.backupDir} && zip -r ${backupName}.zip ${backupName}`
-      );
+      await this.createZipArchive(backupPath, zipPath);
 
       // Cleanup uncompressed backup
       await execAsync(`rm -rf ${backupPath}`);
@@ -140,6 +139,30 @@ class BackupService {
       logger.error(`❌ Backup failed: ${error}`);
       throw error;
     }
+  }
+
+  private async createZipArchive(
+    sourceDir: string,
+    outputPath: string
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const output = fs.createWriteStream(outputPath);
+      const archive = archiver("zip", {
+        zlib: { level: 9 }, // Maximum compression
+      });
+
+      output.on("close", () => {
+        resolve();
+      });
+
+      archive.on("error", (err) => {
+        reject(err);
+      });
+
+      archive.pipe(output);
+      archive.directory(sourceDir, false);
+      archive.finalize();
+    });
   }
 
   private async uploadToGitHub(filePath: string, fileName: string) {
