@@ -6,7 +6,7 @@ const router = Router();
 
 // Manual backup trigger
 // TODO: Add authentication middleware to protect this endpoint
-router.post("/api/backups/trigger", async (_req, res) => {
+router.post("/backups/trigger", async (_req, res) => {
   try {
     // Add your auth check here
     // Example: if (!req.user?.isAdmin) return res.status(403).json({ error: "Forbidden" });
@@ -30,7 +30,7 @@ router.post("/api/backups/trigger", async (_req, res) => {
 });
 
 // Health check endpoint
-router.get("/api/backups/status", (_req, res) => {
+router.get("/backups/status", (_req, res) => {
   const isConfigured = !!(
     process.env.GITHUB_BACKUP_TOKEN && process.env.GITHUB_BACKUP_REPO
   );
