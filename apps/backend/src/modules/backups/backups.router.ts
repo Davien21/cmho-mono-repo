@@ -29,23 +29,39 @@ router.post("/backups/trigger", async (_req, res) => {
   }
 });
 
-// Health check endpoint
-router.get("/backups/status", (_req, res) => {
-  const isConfigured = !!(
-    process.env.GITHUB_BACKUP_TOKEN && process.env.GITHUB_BACKUP_REPO
-  );
+// Health check endpoint with available backups
+router.get("/backups/status", async (_req, res) => {
+  try {
+    const isConfigured = !!(
+      process.env.GITHUB_BACKUP_TOKEN && process.env.GITHUB_BACKUP_REPO
+    );
 
-  res.json({
-    success: true,
-    message: isConfigured
-      ? "Backup service is running"
-      : "Backup service not configured",
-    storage: "github",
-    configured: isConfigured,
-    repository: process.env.GITHUB_BACKUP_REPO || "Not set",
-    maxBackups: 2,
-    schedule: "Daily at 2:00 AM UTC",
-  });
+    const availableBackups = await backupService.listAvailableBackups();
+
+    res.json({
+      success: true,
+      message: isConfigured
+        ? "Backup service is running"
+        : "Backup service not configured",
+      storage: "github",
+      configured: isConfigured,
+      repository: process.env.GITHUB_BACKUP_REPO || "Not set",
+      maxBackups: 2,
+      schedule:
+        process.env.NODE_ENV === "production"
+          ? "Every 3 minutes (TESTING)"
+          : "Every 3 minutes (TESTING)",
+      availableBackups: availableBackups,
+      totalBackups: availableBackups.length,
+    });
+  } catch (error: any) {
+    logger.error(`Status endpoint error: ${error.message || error}`);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch backup status",
+      message: error.message,
+    });
+  }
 });
 
 export default router;

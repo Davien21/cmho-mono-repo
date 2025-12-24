@@ -276,6 +276,41 @@ class BackupService {
     logger.info("🔧 Manual backup triggered");
     return await this.performBackup();
   }
+
+  async listAvailableBackups() {
+    if (!this.octokit) {
+      return [];
+    }
+
+    try {
+      const { data } = await this.octokit.repos.getContent({
+        owner: this.githubOwner,
+        repo: this.githubRepo,
+        path: "",
+      });
+
+      if (!Array.isArray(data)) return [];
+
+      const backupFiles = data
+        .filter(
+          (file) => file.name.startsWith("cmho-") && file.name.endsWith(".zip")
+        )
+        .sort((a, b) => b.name.localeCompare(a.name))
+        .map((file) => ({
+          name: file.name,
+          size: file.size,
+          sizeMB: (file.size / (1024 * 1024)).toFixed(2),
+          downloadUrl: file.download_url,
+          htmlUrl: file.html_url,
+          sha: file.sha,
+        }));
+
+      return backupFiles;
+    } catch (error) {
+      logger.error(`❌ Failed to list backups: ${error}`);
+      return [];
+    }
+  }
 }
 
 export default new BackupService();
