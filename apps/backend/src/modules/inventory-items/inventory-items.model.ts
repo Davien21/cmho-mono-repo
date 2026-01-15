@@ -45,7 +45,7 @@ const inventoryItemImageSchema = new Schema<IInventoryItemImage>(
 
 const inventoryItemSchema = new Schema<IInventoryItem>(
   {
-    name: { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true, unique: true },
     category: {
       type: categorySchema,
       required: true,

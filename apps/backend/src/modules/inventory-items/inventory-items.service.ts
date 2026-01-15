@@ -1,6 +1,10 @@
-import InventoryItem from "./inventory-items.model";
-import { IInventoryItem, IInventoryItemRequest } from "./inventory-items.types";
-import galleryService from "../gallery/gallery.service";
+import InventoryItem from "./inventory-items.model.js";
+import {
+  IInventoryItem,
+  IInventoryItemRequest,
+} from "./inventory-items.types.js";
+import galleryService from "../gallery/gallery.service.js";
+import algoliaInventoryService from "../../services/algolia.service.js";
 import { Types } from "mongoose";
 
 class InventoryItemsService {
@@ -140,99 +144,15 @@ class InventoryItemsService {
     query: string;
     limit?: number;
   }): Promise<Array<{ _id: string; name: string; category: string }>> {
-    // Robust fuzzy autocomplete with maximum typo tolerance
-    // Note: Wildcard and regex disabled temporarily for debugging
-    const results = await InventoryItem.aggregate([
-      {
-        $search: {
-          index: "inventory_items_search",
-          compound: {
-            should: [
-              // Level 1: Exact prefix match (highest priority)
-              {
-                autocomplete: {
-                  query: query,
-                  path: "name",
-                  tokenOrder: "sequential",
-                  score: { boost: { value: 10 } },
-                },
-              },
-              // Level 2: Aggressive fuzzy autocomplete (2 edits - Atlas max)
-              {
-                autocomplete: {
-                  query: query,
-                  path: "name",
-                  fuzzy: {
-                    maxEdits: 2,
-                    prefixLength: 0,
-                    maxExpansions: 100,
-                  },
-                  tokenOrder: "sequential",
-                  score: { boost: { value: 7 } },
-                },
-              },
-              // Level 3: Fuzzy text search (2 edits - MongoDB max)
-              {
-                text: {
-                  query: query,
-                  path: "name",
-                  fuzzy: {
-                    maxEdits: 2,
-                    prefixLength: 0,
-                    maxExpansions: 100,
-                  },
-                  score: { boost: { value: 5 } },
-                },
-              },
-            ],
-            // must: [
-            //   // Only active items
-            //   {
-            //     equals: {
-            //       path: "status",
-            //       value: "active",
-            //     },
-            //   },
-            //   // Not deleted
-            //   {
-            //     equals: {
-            //       path: "isDeleted",
-            //       value: false,
-            //     },
-            //   },
-            // ],
-            minimumShouldMatch: 1,
-          },
-        },
-      },
-      // Add search metadata for analysis
-      {
-        $addFields: {
-          score: { $meta: "searchScore" },
-        },
-      },
-      // Return minimal fields for performance
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          category: "$category.name",
-          score: 1,
-        },
-      },
-      // Sort by relevance
-      {
-        $sort: { score: -1 },
-      },
-      // Limit results
-      { $limit: limit },
-    ]);
-
-    return results;
+    // Use Algolia for fast, typo-tolerant autocomplete search
+    return await algoliaInventoryService.search(query, limit);
   }
 
   async create(data: IInventoryItemRequest): Promise<IInventoryItem> {
     const item = await InventoryItem.create(data);
+
+    // Index in Algolia for search
+    await algoliaInventoryService.indexItem(item);
 
     // If image is attached, check if gallery item needs renaming
     if (data.image?.mediaId) {
@@ -251,6 +171,11 @@ class InventoryItemsService {
       data,
       { new: true }
     );
+
+    // Reindex in Algolia if item was updated successfully
+    if (item) {
+      await algoliaInventoryService.indexItem(item);
+    }
 
     // If image is attached, check if gallery item needs renaming
     // Use the new name if provided, otherwise use the existing item name
@@ -300,11 +225,18 @@ class InventoryItemsService {
   }
 
   async delete(id: string): Promise<IInventoryItem | null> {
-    return InventoryItem.findByIdAndUpdate(
+    const item = await InventoryItem.findByIdAndUpdate(
       id,
       { isDeleted: true, deletedAt: new Date() },
       { new: true }
     );
+
+    // Remove from Algolia index
+    if (item) {
+      await algoliaInventoryService.deleteItem(id);
+    }
+
+    return item;
   }
 
   /**
