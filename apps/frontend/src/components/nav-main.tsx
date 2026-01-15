@@ -69,13 +69,12 @@ export function NavMain({ items }: { items: Item[] }) {
           const isSalaryRoot = item.url === "/admin";
           const isInventoryHome = item.url === "/inventory";
           const isInventoryItems = item.url === "/inventory/items";
-          const isStockItem = item.url === "/stock";
+          const isStockItem = item.url === "/inventory/stock";
 
           const isActive = isSalaryRoot
             ? location.pathname === "/admin"
             : isStockItem
-            ? location.pathname.startsWith("/stock") ||
-              location.pathname.startsWith("/inventory/stock-movement")
+            ? location.pathname.startsWith("/inventory/stock")
             : isInventoryHome
             ? location.pathname === "/inventory"
             : isInventoryItems

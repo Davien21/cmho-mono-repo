@@ -14,6 +14,8 @@ import {
   Shield,
   Activity,
   Bell,
+  Scale,
+  TrendingUp,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -98,12 +100,29 @@ export const navigationConfig = {
       ],
     },
     {
-      title: "Stock Movement",
-      url: "/inventory/stock-movement",
+      title: "Stock",
+      url: "/inventory/stock",
       icon: History,
       breadcrumbs: [
         { label: "Inventory", url: "/inventory" },
-        { label: "Stock Movement", url: "/inventory/stock-movement" },
+        { label: "Stock", url: "/inventory/stock" },
+      ],
+      submenu: [
+        {
+          title: "Balance Stock",
+          url: "/inventory/stock/balance",
+          icon: Scale,
+        },
+        {
+          title: "Update Stock",
+          url: "/inventory/stock/update",
+          icon: TrendingUp,
+        },
+        {
+          title: "View Activities",
+          url: "/inventory/stock/activities",
+          icon: Activity,
+        },
       ],
     },
     {

@@ -11,7 +11,10 @@ import AppSelectionPage from "@/pages/AppSelectionPage";
 import InventoryHomePage from "@/pages/modules/inventory-manager/InventoryHomePage";
 import InventoryPage from "@/pages/modules/inventory-manager/InventoryPage";
 import InventorySettingsPage from "@/pages/modules/inventory-manager/InventorySettingsPage";
-import StockMovementPage from "@/pages/modules/inventory-manager/StockMovementPage";
+import StockOptionsPage from "@/pages/modules/inventory-manager/StockOptionsPage";
+import BalanceStockPage from "@/pages/modules/inventory-manager/BalanceStockPage";
+import UpdateStockPage from "@/pages/modules/inventory-manager/UpdateStockPage";
+import StockActivitiesPage from "@/pages/modules/inventory-manager/StockActivitiesPage";
 import ActivitiesPage from "@/pages/modules/inventory-manager/ActivitiesPage";
 import AdminActivitiesPage from "@/pages/modules/salary-manager/ActivitiesPage";
 import NotificationsPage from "@/pages/modules/inventory-manager/NotificationsPage";
@@ -40,7 +43,10 @@ export const AppRoutes = () => {
       <Route path="/inventory" element={<InventoryHomePage />} />
       <Route path="/inventory/items" element={<InventoryPage />} />
       <Route path="/inventory/settings" element={<InventorySettingsPage />} />
-      <Route path="/inventory/stock-movement" element={<StockMovementPage />} />
+      <Route path="/inventory/stock" element={<StockOptionsPage />} />
+      <Route path="/inventory/stock/balance" element={<BalanceStockPage />} />
+      <Route path="/inventory/stock/update" element={<UpdateStockPage />} />
+      <Route path="/inventory/stock/activities" element={<StockActivitiesPage />} />
       <Route path="/inventory/activities" element={<ActivitiesPage />} />
       <Route path="/inventory/notifications" element={<NotificationsPage />} />
       <Route path="*" element={<NotFoundPage />} />
