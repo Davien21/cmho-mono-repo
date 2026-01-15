@@ -3,11 +3,13 @@ import {
   useGetGalleryPagesInfiniteQuery,
   IGalleryDto,
 } from "@/store/gallery-slice";
+import { MediaCategory } from "@/store/media-slice";
 import { useInfiniteScrollRTK } from "./use-infinite-scroll-rtk";
 
 interface UseInfiniteGalleryOptions {
   loadMoreRef: RefObject<HTMLElement>;
   limit?: number;
+  category?: MediaCategory;
   rootMargin?: string;
   threshold?: number;
 }
@@ -30,7 +32,7 @@ interface UseInfiniteGalleryReturn {
 export function useInfiniteGallery(
   options: UseInfiniteGalleryOptions
 ): UseInfiniteGalleryReturn {
-  const { loadMoreRef, limit, rootMargin = "200px", threshold = 0.1 } = options;
+  const { loadMoreRef, limit, category, rootMargin = "200px", threshold = 0.1 } = options;
 
   const {
     data,
@@ -43,6 +45,7 @@ export function useInfiniteGallery(
     error,
   } = useGetGalleryPagesInfiniteQuery({
     limit,
+    category,
   });
 
   // Flatten all pages into a single array
