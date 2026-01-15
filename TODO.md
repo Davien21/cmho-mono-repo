@@ -68,3 +68,15 @@
 - [ ] Identify and remove redundant RTK Query endpoints that overlap between Media and Gallery.
   - [ ] Audit `gallery-slice.ts` and `media-slice.ts` for duplicate functionality.
 - [ ] Centralize "Select from Gallery" modal logic to avoid re-implementing `ImagePickerModal` state everywhere.
+
+## Env.sample File Generator
+- [ ] **Website & VSCode Extension**
+  - [ ] Create a website that accepts `.env` file content and generates `.env.sample` files.
+  - [ ] Build a VSCode extension with the same functionality.
+  - [ ] Parse environment variable names (left side of `=` sign) from input.
+  - [ ] Generate placeholder values in standard format:
+    - Example: `CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name`
+    - Example: `ALGOLIA_APP_ID="your_algolia_app_id"`
+  - [ ] Add AI-powered realistic fake value generation for more believable samples.
+  - [ ] Support different value formats (quoted, unquoted, multiline values).
+  - [ ] Preserve comments and structure from original `.env` file.

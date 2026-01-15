@@ -302,44 +302,6 @@ If it's not running:
 4. Get your connection string (Connect → Connect your application)
 5. Update `DATABASE_URL` in `apps/backend/.env` with your Atlas connection string
 
-### Setting up Local Atlas Search Setup (Docker - Fast Track)
-
-If you need Atlas Search functionality for local development, you can set up a local MongoDB instance with Atlas Search using Docker.
-
-**Requirements:**
-
-- **Docker Desktop:** Installed and running
-- **Atlas CLI:** Install with `brew install mongodb-atlas-cli` (Mac) or download from [MongoDB Atlas CLI](https://www.mongodb.com/docs/atlas/cli/stable/install-atlas-cli/)
-- **MongoDB Compass:** Installed (optional but helpful)
-
-**Setup Instance (Docker Compose):**
-
-The instance is managed via `docker-compose.yml`. The container is named **mongo** and receives connections on port **27018**.
-
-```bash
-docker compose up -d
-```
-
-**Connect to Compass:**
-
-Run these commands to link the Atlas CLI to the **mongo** container and enable Atlas Search visibility in Compass:
-
-```bash
-atlas deployments setup --type local --name mongo --port 27018 --bindIpAll
-atlas deployments connect mongo
-```
-
-- Select **`compass`** from the list
-- Compass will launch automatically with the **Search Indexes** tab enabled
-
-**Update Environment Variables:**
-
-If using this Docker setup, update your `apps/backend/.env`:
-
-```env
-DATABASE_URL=mongodb://localhost:27018/cmho
-```
-
 ### Creating the Database
 
 The database will be created automatically when you first run the backend. The default database name is `cmho`.
