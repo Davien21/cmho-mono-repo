@@ -28,6 +28,7 @@ interface SearchableSelectProps {
   className?: string;
   disabled?: boolean;
   formError?: string;
+  hideOutsideHoverOrFocus?: boolean;
 }
 
 export function SearchableSelect({
@@ -40,8 +41,10 @@ export function SearchableSelect({
   className,
   disabled = false,
   formError,
+  hideOutsideHoverOrFocus = false,
 }: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const selectedOption = options.find((option) => option.value === value);
 
@@ -60,9 +63,15 @@ export function SearchableSelect({
                 "border-destructive ring-destructive/20 dark:ring-destructive/40",
               className,
               open &&
-                "outline outline-2 outline-blue-500 outline-offset-4 ring-2 ring-blue-600"
+                "outline outline-2 outline-blue-500 outline-offset-4 ring-2 ring-blue-600",
+              hideOutsideHoverOrFocus &&
+                !isHovered &&
+                !open &&
+                "border-transparent bg-transparent hover:border-input hover:bg-background"
             )}
             disabled={disabled}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
             {selectedOption ? selectedOption.label : placeholder}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

@@ -8,6 +8,7 @@ import { AddInventoryModal } from "@/components/modals/AddInventoryModal";
 import { EditInventoryModal } from "@/components/modals/EditInventoryModal";
 import { AddStockModal } from "@/components/modals/AddStockModal";
 import { ReduceStockModal } from "@/components/modals/ReduceStockModal";
+import { AIPreviewModal } from "@/components/modals/AIPreviewModal";
 
 export const Modals = () => {
   return (
@@ -22,6 +23,7 @@ export const Modals = () => {
       <EditInventoryModal />
       <AddStockModal />
       <ReduceStockModal />
+      <AIPreviewModal />
     </>
   );
 };
