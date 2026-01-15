@@ -13,4 +13,5 @@ export enum TagTypes {
   ADMIN = "Admin",
   ACTIVITY_RECORDS = "Activity_Records",
   NOTIFICATIONS = "Notifications",
+  INVENTORY_BALANCES = "Inventory_Balances",
 }

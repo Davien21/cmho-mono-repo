@@ -25,5 +25,6 @@ export const baseApi = createApi({
     TagTypes.ADMIN,
     TagTypes.ACTIVITY_RECORDS,
     TagTypes.NOTIFICATIONS,
+    TagTypes.INVENTORY_BALANCES,
   ],
 });

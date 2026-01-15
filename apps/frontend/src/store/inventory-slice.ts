@@ -46,7 +46,7 @@ export interface ISupplierDto {
   updatedAt?: string;
 }
 
-export type InventoryItemStatus = "active" | "disabled" | "deleted";
+export type InventoryItemStatus = "active" | "disabled";
 
 export interface IInventoryItemUnitDto {
   id: string;
@@ -382,6 +382,20 @@ export const inventoryApi = baseApi.injectEndpoints({
       invalidatesTags: [TagTypes.SUPPLIERS],
     }),
 
+    searchInventoryItems: builder.query<
+      IAPIResponse<Array<{ _id: string; name: string; category: string }>>,
+      string
+    >({
+      query: (query) => ({
+        url: "/inventory/items/search",
+        method: "GET",
+        params: {
+          query,
+          limit: 20,
+        },
+      }),
+      providesTags: [TagTypes.INVENTORY_ITEMS],
+    }),
     getInventoryItems: builder.query<
       IAPIResponse<{
         data: IInventoryItemDto[];
@@ -390,7 +404,7 @@ export const inventoryApi = baseApi.injectEndpoints({
         limit: number;
       }>,
       {
-        stockFilter?: "outOfStock" | "lowStock" | "inStock";
+        stockFilter?: "outOfStock" | "lowStock" | "inStock" | "expired";
         search?: string;
         category?: string;
         page?: number;
@@ -417,6 +431,7 @@ export const inventoryApi = baseApi.injectEndpoints({
         inStock: number;
         lowStock: number;
         outOfStock: number;
+        expiredItems: number;
       }>,
       void
     >({
@@ -434,7 +449,7 @@ export const inventoryApi = baseApi.injectEndpoints({
         limit: number;
       }>,
       {
-        stockFilter?: "outOfStock" | "lowStock" | "inStock";
+        stockFilter?: "outOfStock" | "lowStock" | "inStock" | "expired";
         search?: string;
         category?: string;
       },
@@ -444,7 +459,7 @@ export const inventoryApi = baseApi.injectEndpoints({
         const { pageParam, queryArg } = arg as {
           pageParam: number;
           queryArg: {
-            stockFilter?: "outOfStock" | "lowStock" | "inStock";
+            stockFilter?: "outOfStock" | "lowStock" | "inStock" | "expired";
             search?: string;
             category?: string;
           };
@@ -615,6 +630,7 @@ export const {
   useCreateSupplierMutation,
   useUpdateSupplierMutation,
   useDeleteSupplierMutation,
+  useSearchInventoryItemsQuery,
   useGetInventoryItemsQuery,
   useGetInventoryDashboardStatsQuery,
   useGetInventoryItemsPagesInfiniteQuery,
