@@ -86,7 +86,7 @@ export async function createGalleryItem(req: Request, res: Response) {
 
   // Track the activity
   const activityData = {
-    type: ActivityTypes.CREATE_GALLERY_ITEM,
+    type: ActivityTypes.CREATE_MEDIA_ITEM,
     module: "inventory",
     entities: [
       { id: galleryItem._id, name: "gallery-item" },
@@ -122,7 +122,7 @@ export async function updateGalleryItem(req: Request, res: Response) {
   const galleryName = galleryItem.name || "Unknown Gallery Item";
   const changedFields = Object.keys(data);
   const activityData = {
-    type: ActivityTypes.UPDATE_GALLERY_ITEM,
+    type: ActivityTypes.UPDATE_MEDIA_ITEM,
     module: "inventory",
     entities: [{ id: id, name: "gallery-item" }],
     performerId: admin._id,
@@ -177,7 +177,7 @@ export async function deleteGalleryItem(req: Request, res: Response) {
     const admin = getAdminFromReq(req);
     const galleryName = galleryItemRaw.name || "Unknown Gallery Item";
     const activityData = {
-      type: ActivityTypes.DELETE_GALLERY_ITEM,
+      type: ActivityTypes.DELETE_MEDIA_ITEM,
       module: "inventory",
       entities: [
         { id: id, name: "gallery-item" },
