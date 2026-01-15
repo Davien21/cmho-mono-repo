@@ -80,11 +80,6 @@ export function GallerySection({
     });
   }, [galleryList, searchQuery]);
 
-  // Handle item selection - adapter to convert IGalleryDto to id string
-  const handleItemSelect = (item: typeof galleryList[0]) => {
-    toggleSelection(item._id);
-  };
-
   // Handle item deletion with display name
   const handleItemDelete = (item: typeof galleryList[0]) => {
     const media = typeof item.media_id === "object" ? item.media_id : null;
@@ -211,7 +206,7 @@ export function GallerySection({
         hasNextPage={hasNextPage}
         isFetching={isFetching}
         loadMoreRef={loadMoreRef}
-        onSelect={handleItemSelect}
+        onSelect={toggleSelection}
         onZoom={(index) => setSlideshowIndex(index)}
         onEmptyAction={() => {
           // Trigger file input click
