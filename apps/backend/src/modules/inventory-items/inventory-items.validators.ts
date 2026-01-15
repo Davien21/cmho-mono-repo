@@ -20,6 +20,19 @@ export type GetInventoryItemsQuerySchema = yup.InferType<
   typeof getInventoryItemsSchema
 >;
 
+export const searchInventoryItemsSchema = yup.object({
+  query: yup.string().required().min(2).max(100).label("Search query"),
+  limit: yup
+    .string()
+    .optional()
+    .matches(/^\d+$/, "Limit must be a number")
+    .label("Limit"),
+});
+
+export type SearchInventoryItemsQuerySchema = yup.InferType<
+  typeof searchInventoryItemsSchema
+>;
+
 const inventoryUnitSchema = yup
   .object({
     id: yup

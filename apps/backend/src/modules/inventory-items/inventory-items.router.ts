@@ -9,11 +9,13 @@ import {
   deleteInventoryItem,
   getDashboardStats,
   getInventoryItems,
+  searchInventoryItems,
   updateInventoryItem,
 } from "./inventory-items.controller";
 import {
   createInventoryItemSchema,
   getInventoryItemsSchema,
+  searchInventoryItemsSchema,
   updateInventoryItemSchema,
 } from "./inventory-items.validators";
 import validateById from "../../middlewares/validateById";
@@ -22,6 +24,16 @@ router.get(
   "/inventory/dashboard/stats",
   [authenticate, hasRole(AdminRole.INVENTORY_MANAGER)],
   getDashboardStats
+);
+
+router.get(
+  "/inventory/items/search",
+  [
+    authenticate,
+    hasRole(AdminRole.INVENTORY_MANAGER),
+    validator(searchInventoryItemsSchema, "query"),
+  ],
+  searchInventoryItems
 );
 
 router.get(

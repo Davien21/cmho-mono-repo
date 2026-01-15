@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import inventoryItemsService from "./inventory-items.service";
 import { successResponse } from "../../utils/response";
-import { GetInventoryItemsQuerySchema } from "./inventory-items.validators";
+import {
+  GetInventoryItemsQuerySchema,
+  SearchInventoryItemsQuerySchema,
+} from "./inventory-items.validators";
 import { IInventoryItemRequest } from "./inventory-items.types";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
 import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
@@ -41,6 +44,24 @@ export async function getInventoryItems(
   });
 
   res.send(successResponse("Inventory items fetched successfully", result));
+}
+
+export async function searchInventoryItems(
+  req: Request<{}, {}, {}, SearchInventoryItemsQuerySchema>,
+  res: Response
+) {
+  const { query, limit = "20" } = req.query;
+
+  if (!query || query.trim().length < 2) {
+    return res.send(successResponse("Search results", []));
+  }
+
+  const results = await inventoryItemsService.autocompleteSearch({
+    query: query.trim(),
+    limit: parseInt(limit),
+  });
+
+  res.send(successResponse("Search results", results));
 }
 
 export async function createInventoryItem(req: Request, res: Response) {

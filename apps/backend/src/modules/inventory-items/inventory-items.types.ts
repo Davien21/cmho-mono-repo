@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export type ObjectId = mongoose.Types.ObjectId;
 
-export type InventoryStatus = "active" | "disabled" | "deleted";
+export type InventoryStatus = "active" | "disabled";
 
 // ---- Units ----
 
