@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IGallery } from "./gallery.types";
+import { IGallery, GalleryCategory } from "./gallery.types";
 
 const { Schema, model } = mongoose;
 
@@ -19,6 +19,12 @@ const gallerySchema = new Schema<IGallery>(
       type: String,
       required: false,
     },
+    category: {
+      type: String,
+      enum: Object.values(GalleryCategory),
+      default: GalleryCategory.INVENTORY,
+      required: true,
+    },
     isDeleted: { type: Boolean, required: false, default: false },
     deletedAt: { type: Date, required: false, default: null },
   },
@@ -27,6 +33,8 @@ const gallerySchema = new Schema<IGallery>(
     collection: "gallery",
   }
 );
+
+gallerySchema.index({ category: 1, isDeleted: 1 });
 
 export default model<IGallery>("Gallery", gallerySchema);
 
