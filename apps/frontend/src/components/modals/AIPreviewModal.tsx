@@ -34,7 +34,7 @@ export function AIPreviewModal() {
   // Debounce the search query
   const searchQuery =
     activeItemIndex !== null ? itemSelections[activeItemIndex] : "";
-  const debouncedQuery = useDebounce(searchQuery, 300);
+  const debouncedQuery = useDebounce(searchQuery, 200);
 
   // Fetch search results (only when query has at least 2 characters)
   const { data: searchResponse } = useSearchInventoryItemsQuery(
