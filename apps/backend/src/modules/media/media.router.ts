@@ -18,4 +18,6 @@ router.post("/media/delete", mediaController.delete);
 
 router.post("/media/delete-by-url", mediaController.deleteByUrl);
 
+router.post("/media/transcribe", mediaController.transcribeImage);
+
 export default router;
