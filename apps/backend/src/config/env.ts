@@ -43,6 +43,12 @@ const schema = z.object({
   PLATFORM_PASSWORD: z.string(),
   // Gemini AI Config
   GEMINI_API_KEY: z.string().optional(),
+  // Algolia Config
+  ALGOLIA_APP_ID: z.string(),
+  ALGOLIA_ADMIN_API_KEY: z.string(),
+  ALGOLIA_SEARCH_API_KEY: z.string(),
+  // Backup Config
+  ENABLE_BACKUPS: z.string().optional(),
 });
 
 declare global {
@@ -94,6 +100,12 @@ const common = {
   PLATFORM_PASSWORD: process.env.PLATFORM_PASSWORD,
   // Gemini AI Config
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  // Algolia Config
+  ALGOLIA_APP_ID: process.env.ALGOLIA_APP_ID,
+  ALGOLIA_ADMIN_API_KEY: process.env.ALGOLIA_ADMIN_API_KEY,
+  ALGOLIA_SEARCH_API_KEY: process.env.ALGOLIA_SEARCH_API_KEY,
+  // Backup Config
+  ENABLE_BACKUPS: process.env.ENABLE_BACKUPS,
 };
 
 const development: z.infer<typeof schema> = {
