@@ -23,7 +23,9 @@ openDBConnection();
 if (env.NODE_ENV === "production" || env.ENABLE_BACKUPS === "true") {
   backupService.startScheduledBackups();
 } else {
-  logger.info("⚠️  Backup scheduler disabled (set ENABLE_BACKUPS=true to enable)");
+  logger.info(
+    "⚠️  Backup scheduler disabled (set ENABLE_BACKUPS=true to enable)"
+  );
 }
 
 parseEnv();
