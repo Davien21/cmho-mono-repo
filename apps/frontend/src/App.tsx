@@ -59,11 +59,14 @@ function AppContent() {
     }
   };
 
+  const isInactivityTimeEnabled =
+    isAuthenticated && !isLoginPage && !isLockedPage && import.meta.env.PROD;
+
   const { showWarning, resetTimer } = useInactivityTimer({
     timeout: INACTIVITY_TIMEOUT,
     warningTime: WARNING_TIME,
     onTimeout: handleLockScreen,
-    enabled: isAuthenticated && !isLoginPage && !isLockedPage,
+    enabled: isInactivityTimeEnabled,
   });
 
   return (

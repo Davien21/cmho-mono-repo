@@ -17,6 +17,10 @@ type AddInventoryModalData = undefined;
 type EditInventoryModalData = InventoryItem;
 type AddStockModalData = InventoryItem;
 type ReduceStockModalData = InventoryItem;
+type AIPreviewModalData = {
+  imageUrl: string;
+  items: Array<{ name: string; quantity_details: string }>;
+};
 
 export type ModalDataMap = {
   "sign-up": SignUpModalData;
@@ -29,6 +33,7 @@ export type ModalDataMap = {
   "edit-inventory": EditInventoryModalData;
   "add-stock": AddStockModalData;
   "reduce-stock": ReduceStockModalData;
+  "ai-preview": AIPreviewModalData;
 };
 
 type ModalState<T> = { isOpen: boolean; data?: T };
@@ -38,6 +43,10 @@ type ModalContextType = {
   openModal: <K extends keyof ModalDataMap>(
     name: K,
     data: ModalDataMap[K]
+  ) => void;
+  updateModal: <K extends keyof ModalDataMap>(
+    name: K,
+    data: Partial<ModalDataMap[K]>
   ) => void;
   closeModal: (name: keyof ModalDataMap) => void;
   modals: {
@@ -57,6 +66,19 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setModals((prev) => ({ ...prev, [name]: { isOpen: true, data } }));
   };
 
+  const updateModal = <K extends keyof ModalDataMap>(
+    name: K,
+    data: Partial<ModalDataMap[K]>
+  ) => {
+    setModals((prev) => ({
+      ...prev,
+      [name]: {
+        isOpen: prev[name]?.isOpen ?? true,
+        data: { ...prev[name]?.data, ...data } as ModalDataMap[K],
+      },
+    }));
+  };
+
   const closeModal = (name: keyof ModalDataMap) => {
     setModals((prev) => ({
       ...prev,
@@ -67,6 +89,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo(
     () => ({
       openModal,
+      updateModal,
       closeModal,
       modals,
     }),

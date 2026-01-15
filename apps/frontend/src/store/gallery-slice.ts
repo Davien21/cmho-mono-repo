@@ -3,11 +3,18 @@ import { IAPIResponse, IQueryMeta } from "@/types";
 import { TagTypes } from "@/store/tags";
 import { IMediaDto } from "./media-slice";
 
+export enum GalleryCategory {
+  INVENTORY = "inventory",
+  BALANCES = "balance_sheet",
+  STOCK_UPDATES = "stock_update",
+}
+
 export interface IGalleryDto {
   _id: string;
   media_id: IMediaDto | string; // Can be populated media object or just the ID
   name?: string;
   imageUrl?: string;
+  category?: GalleryCategory;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -21,12 +28,12 @@ export const galleryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getGallery: builder.query<
       IAPIResponse<IGalleryResponse>,
-      { page?: number; limit?: number }
+      { page?: number; limit?: number; category?: GalleryCategory }
     >({
-      query: ({ page = 1, limit = 100 } = {}) => ({
+      query: ({ page = 1, limit = 100, category } = {}) => ({
         url: "/gallery",
         method: "GET",
-        params: { page, limit },
+        params: { page, limit, ...(category && { category }) },
       }),
       providesTags: [TagTypes.GALLERY],
       serializeQueryArgs: ({ endpointName }) => {
@@ -47,13 +54,14 @@ export const galleryApi = baseApi.injectEndpoints({
       forceRefetch({ currentArg, previousArg }) {
         return (
           currentArg?.page !== previousArg?.page ||
-          currentArg?.limit !== previousArg?.limit
+          currentArg?.limit !== previousArg?.limit ||
+          currentArg?.category !== previousArg?.category
         );
       },
     }),
     getGalleryPages: builder.infiniteQuery<
       IAPIResponse<IGalleryResponse>,
-      { limit?: number },
+      { limit?: number; category?: GalleryCategory },
       number
     >({
       query: ({ pageParam, ...queryArg }) => ({
@@ -62,6 +70,7 @@ export const galleryApi = baseApi.injectEndpoints({
         params: {
           page: pageParam,
           limit: queryArg?.limit || 100,
+          ...(queryArg?.category && { category: queryArg.category }),
         },
       }),
       infiniteQueryOptions: {
@@ -83,13 +92,40 @@ export const galleryApi = baseApi.injectEndpoints({
     }),
     uploadGallery: builder.mutation<
       IAPIResponse<IGalleryDto>,
-      { formData: FormData; name?: string }
+      {
+        file?: File;
+        formData?: FormData;
+        name?: string;
+        category?: GalleryCategory;
+      }
     >({
-      query: ({ formData, name }) => {
-        // Append name to formData if provided
-        if (name) {
-          formData.append("name", name);
+      query: ({
+        file: newFile,
+        formData: originalFormData,
+        name,
+        category,
+      }) => {
+        const formData = new FormData();
+
+        // 1. Get values from either params or existing formData
+        const finalName = name || (originalFormData?.get("name") as string);
+        const finalCategory =
+          category || (originalFormData?.get("category") as GalleryCategory);
+        const finalFile = newFile || (originalFormData?.get("file") as File);
+
+        // 2. Append text fields FIRST (critical for backend multipart parsing)
+        if (finalName) {
+          formData.append("name", finalName);
         }
+        if (finalCategory) {
+          formData.append("category", finalCategory);
+        }
+
+        // 3. Append file LAST
+        if (finalFile) {
+          formData.append("file", finalFile);
+        }
+
         return {
           url: "/gallery",
           method: "POST",

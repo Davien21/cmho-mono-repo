@@ -6,6 +6,7 @@ import { promisify } from "util";
 import { exec } from "child_process";
 import archiver from "archiver";
 import logger from "../config/logger";
+import { env } from "../config/env";
 
 const execAsync = promisify(exec);
 
@@ -17,7 +18,9 @@ class BackupService {
   private githubRepo: string = "";
 
   constructor() {
-    this.initializeGitHub();
+    if (env.ENABLE_BACKUPS && env.NODE_ENV === "production") {
+      this.initializeGitHub();
+    }
   }
 
   private initializeGitHub() {
@@ -311,5 +314,12 @@ class BackupService {
     }
   }
 }
+const backupService = new BackupService();
 
-export default new BackupService();
+const handleBackups = () => {
+  if (env.NODE_ENV !== "production") return;
+  if (env.ENABLE_BACKUPS) backupService.startScheduledBackups();
+  else logger.info("⚠️  Backup scheduler disabled (ENABLE_BACKUPS is not set)");
+};
+
+export { backupService, handleBackups };

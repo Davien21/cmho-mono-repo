@@ -1,5 +1,5 @@
 import { Router } from "express";
-import backupService from "../../services/backup.service";
+import { backupService } from "../../services/backup.service";
 import logger from "../../config/logger";
 
 const router = Router();

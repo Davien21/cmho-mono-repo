@@ -83,7 +83,7 @@ const saveStockPaginationPrefs = (prefs: { pageSize: number }) => {
   }
 };
 
-export default function StockMovementPage() {
+export default function StockActivitiesPage() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [searchInitialized, setSearchInitialized] = useState(false);
@@ -239,12 +239,12 @@ export default function StockMovementPage() {
       <div className="flex flex-col gap-4 sm:gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="hidden lg:block text-xl sm:text-2xl font-semibold tracking-tight">
-            Stock Movement
+            Stock Activities
           </h1>
           <p className="text-base sm:text-sm text-muted-foreground">
             {filteredItem
-              ? `All stock movement for "${filteredItem.name}".`
-              : "All stock movement across inventory items."}
+              ? `All stock activities for "${filteredItem.name}".`
+              : "All stock activities across inventory items."}
           </p>
         </div>
 
@@ -264,15 +264,15 @@ export default function StockMovementPage() {
         {isLoading ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <p className="text-base font-medium text-foreground">
-              Loading stock movement...
+              Loading stock activities...
             </p>
           </Card>
         ) : rows.length === 0 && !isFetching ? (
           <Card className="p-8 flex flex-col items-center justify-center text-center">
             <p className="text-base font-medium text-foreground">
               {debouncedSearch
-                ? `No stock movement found for "${debouncedSearch}"`
-                : "No stock movement yet"}
+                ? `No stock activities found for "${debouncedSearch}"`
+                : "No stock activities yet"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
               {debouncedSearch
@@ -340,7 +340,7 @@ export default function StockMovementPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold">
-                  Stock Movement Details
+                  Stock Activity Details
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {formatDateTime(selectedRow.createdAt)}
@@ -419,3 +419,4 @@ export default function StockMovementPage() {
     </Layout>
   );
 }
+

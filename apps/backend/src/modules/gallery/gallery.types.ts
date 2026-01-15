@@ -2,11 +2,18 @@ import mongoose from "mongoose";
 
 export type ObjectId = mongoose.Types.ObjectId;
 
+export enum GalleryCategory {
+  INVENTORY = "inventory",
+  BALANCES = "balance_sheet",
+  STOCK_UPDATES = "stock_update",
+}
+
 export interface IGallery {
   _id: ObjectId;
   media_id: ObjectId;
   name?: string;
   imageUrl?: string;
+  category: GalleryCategory;
   isDeleted?: boolean;
   deletedAt?: Date;
   createdAt?: Date;

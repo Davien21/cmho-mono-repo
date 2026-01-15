@@ -45,7 +45,7 @@ const inventoryItemImageSchema = new Schema<IInventoryItemImage>(
 
 const inventoryItemSchema = new Schema<IInventoryItem>(
   {
-    name: { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true, unique: true },
     category: {
       type: categorySchema,
       required: true,
@@ -54,7 +54,7 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
     lowStockValue: { type: Number, required: true, default: 10 },
     status: {
       type: String,
-      enum: ["active", "disabled", "deleted"],
+      enum: ["active", "disabled"],
       required: true,
       default: "active",
     },
@@ -100,7 +100,7 @@ const inventoryItemSchema = new Schema<IInventoryItem>(
 // Post-save hook to check stock notifications
 inventoryItemSchema.post("save", async function (doc) {
   // Only check for items that are not deleted
-  if (doc.isDeleted !== true && doc.status !== "deleted") {
+  if (doc.isDeleted !== true) {
     try {
       const currentStock = doc.currentStockInBaseUnits ?? 0;
       const lowStockValue = doc.lowStockValue;

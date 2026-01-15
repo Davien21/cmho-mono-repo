@@ -4,13 +4,14 @@ import mediaService from "../media/media.service";
 import { successResponse } from "../../utils/response";
 import { GalleryRequest } from "./gallery.types";
 import { getMediaType, uploadFncs } from "../../utils/helpers";
-import { deleteFromCloud } from "../../lib/cloudinary";
+import { uploadToCloudHighQuality } from "../../lib/cloudinary";
 import * as fs from "fs/promises";
 import { BadRequestError, NotFoundError } from "../../config/errors";
 import activityTrackingService from "../activity-tracking/activity-tracking.service";
 import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
 import { getAdminFromReq } from "../../utils/request-helpers";
 import { GetGalleryItemsQuerySchema } from "./gallery.validators";
+import { MediaCategory } from "../media/media.types";
 
 export async function getGalleryItems(
   req: Request<{}, {}, {}, GetGalleryItemsQuerySchema>,
@@ -18,8 +19,9 @@ export async function getGalleryItems(
 ) {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "100");
+  const { category } = req.query as any;
 
-  const result = await galleryService.list({ page, limit });
+  const result = await galleryService.list({ page, limit, category });
   res.send(successResponse("Gallery items fetched successfully", result));
 }
 
@@ -35,7 +37,11 @@ export async function getGalleryItem(req: Request, res: Response) {
 export async function createGalleryItem(req: Request, res: Response) {
   const admin = getAdminFromReq(req);
   const { file } = req;
-  const { name } = req.body;
+  const { name, category } = req.body;
+
+  console.log(
+    `[GalleryController] Received upload request: name="${name}", category="${category}"`
+  );
 
   if (!file) {
     throw new BadRequestError("File is required");
@@ -43,7 +49,14 @@ export async function createGalleryItem(req: Request, res: Response) {
 
   // Upload file using media service logic
   const fileType = getMediaType(file.mimetype);
-  const uploader = uploadFncs[fileType];
+
+  // Use high-quality upload for balance sheets, standard for others
+  const isBalanceSheet = category === "balance_sheet";
+  const uploader =
+    isBalanceSheet && fileType === "image"
+      ? uploadToCloudHighQuality
+      : uploadFncs[fileType];
+
   const upload = await uploader(file.path);
 
   // Create media document using media service
@@ -53,6 +66,7 @@ export async function createGalleryItem(req: Request, res: Response) {
     size: upload.bytes,
     type: upload.format,
     url: upload.url,
+    category: (category as any) || MediaCategory.INVENTORY,
     duration: upload.duration || null,
   });
 
@@ -67,6 +81,7 @@ export async function createGalleryItem(req: Request, res: Response) {
     media_id: media._id.toString(),
     name: galleryName,
     imageUrl: upload.url,
+    category: category,
   });
 
   // Track the activity
@@ -84,6 +99,7 @@ export async function createGalleryItem(req: Request, res: Response) {
       imageUrl: upload.url,
       filename: upload.filename,
       public_id: upload.public_id,
+      category: galleryItem.category,
     },
   };
   await activityTrackingService.trackActivity(activityData);
@@ -141,20 +157,15 @@ export async function deleteGalleryItem(req: Request, res: Response) {
         (galleryItemRaw.media_id as any).toString()
       : String(galleryItemRaw.media_id);
 
-  // Fetch the media document to get public_id
+  // Fetch the media document to get public_id and delete from both Cloudinary and DB
   const media = await mediaService.findById(mediaId);
   if (media && media.public_id) {
     try {
-      await deleteFromCloud(media.public_id);
+      await mediaService.deleteByPublicId(media.public_id);
     } catch (error) {
       // Log error but continue with deletion - Cloudinary deletion failure shouldn't block DB deletion
-      console.error("Error deleting from cloudinary:", error);
+      console.error("Error deleting media:", error);
     }
-  }
-
-  // Delete the media document
-  if (media) {
-    await mediaService.delete(media._id.toString());
   }
 
   // Delete the gallery document (soft delete)

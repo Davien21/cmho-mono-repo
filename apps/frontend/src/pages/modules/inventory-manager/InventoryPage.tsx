@@ -188,7 +188,7 @@ export default function InventoryPage() {
   };
 
   const handleViewStockEntries = (item: InventoryItem) => {
-    navigate(`/inventory/stock-movement?itemId=${encodeURIComponent(item.id)}`);
+    navigate(`/inventory/stock/activities?itemId=${encodeURIComponent(item.id)}`);
   };
 
   const handleEditImage = (item: InventoryItem) => {

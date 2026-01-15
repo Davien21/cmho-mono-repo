@@ -41,8 +41,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const pathname = location.pathname;
     const searchParams = new URLSearchParams(location.search);
 
-    // Special handling for inventory stock overview + filtered-by-item routes
-    if (pathname === "/inventory/stock-movement") {
+    // Special handling for inventory stock activities + filtered-by-item routes
+    if (pathname === "/inventory/stock/activities") {
       const itemId = searchParams.get("itemId") || "";
 
       let itemLabel: string | null = null;
@@ -57,7 +57,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       const baseCrumbs: BreadcrumbItem[] = [
         { label: "Inventory", url: "/inventory" },
-        { label: "Stock Movement", url: "/inventory/stock-movement" },
+        { label: "Stock", url: "/inventory/stock" },
+        { label: "Activities", url: "/inventory/stock/activities" },
       ];
 
       if (itemLabel) {
@@ -65,6 +66,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
 
       return baseCrumbs;
+    }
+
+    // Special handling for other stock routes
+    if (pathname === "/inventory/stock") {
+      return [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Stock", url: "/inventory/stock" },
+      ];
+    }
+
+    if (pathname === "/inventory/stock/balance") {
+      return [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Stock", url: "/inventory/stock" },
+        { label: "Balance Stock", url: null },
+      ];
+    }
+
+    if (pathname === "/inventory/stock/update") {
+      return [
+        { label: "Inventory", url: "/inventory" },
+        { label: "Stock", url: "/inventory/stock" },
+        { label: "Update Stock", url: null },
+      ];
     }
 
     // Special handling for inventory items page with filter query parameter

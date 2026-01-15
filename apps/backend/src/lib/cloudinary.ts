@@ -59,6 +59,62 @@ export const uploadToCloud = async function (filepath: string) {
   }
 };
 
+/**
+ * High-quality upload for balance sheets and documents requiring AI transcription
+ * Preserves image quality and resolution for better OCR/text recognition
+ */
+export const uploadToCloudHighQuality = async function (filepath: string) {
+  try {
+    const result = await cloudinary.uploader.upload(filepath, {
+      folder: `${env.CLOUDINARY_FOLDER}/balance-sheets`,
+      allowed_formats: ["jpg", "jpeg", "png", "webp", "gif", "heic", "heif"],
+      use_filename: true,
+      format: "webp", // WebP provides excellent text clarity with smaller file sizes
+      // High-quality transformations for text recognition
+      transformation: [
+        {
+          // Allow much larger dimensions for text clarity
+          width: 2048,
+          height: 2048,
+          crop: "limit", // Maintains aspect ratio, only resizes if exceeds dimensions
+          quality: 100, // High quality for text clarity (90-100 range)
+          fetch_format: "webp", // WebP for crisp text with better compression
+        },
+      ],
+      // Eager transformations to generate high-quality version immediately
+      eager: [
+        {
+          width: 2048,
+          height: 2048,
+          crop: "limit",
+          quality: 100,
+          fetch_format: "webp",
+        },
+      ],
+    });
+
+    // Use the eager transformation URL if available (optimized version)
+    // Otherwise fall back to secure_url (which will have transformations applied on-the-fly)
+    const optimizedUrl = result.eager?.[0]?.secure_url || result.secure_url;
+
+    return {
+      url: optimizedUrl,
+      public_id: result.public_id,
+      bytes: result.bytes,
+      format: result.format,
+      filename:
+        result.original_filename || result.public_id.split("/").pop() || "",
+      duration: undefined,
+    };
+  } catch (error: unknown) {
+    let errorMessage = "Error uploading file";
+    if (error instanceof Error) errorMessage = error.message;
+    else errorMessage = String(error);
+
+    throw new Error(errorMessage);
+  }
+};
+
 export async function uploadFileByUrl(imageUrl: string) {
   const publicId = imageUrl.split("/image/upload/")[1].replace(/[\w_-]*\//, "");
   try {

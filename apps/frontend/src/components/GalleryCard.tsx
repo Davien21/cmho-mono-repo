@@ -40,8 +40,7 @@ export function GalleryCard({
   onDoubleClick,
 }: GalleryCardProps) {
   const [imageError, setImageError] = useState(false);
-  const media =
-    typeof item.media_id === "object" ? item.media_id : null;
+  const media = typeof item.media_id === "object" ? item.media_id : null;
   const mediaUrl = item.imageUrl || media?.url || "";
   const displayName = getDisplayName(item.name || media?.filename);
   const mediaType = media?.type || "";
@@ -52,10 +51,9 @@ export function GalleryCard({
     !imageError;
 
   const checkboxSizeClasses =
-    checkboxSize === "medium"
-      ? "h-8 w-8 sm:h-7 sm:w-7"
-      : "h-6 w-6";
-  const checkIconSize = checkboxSize === "medium" ? "h-4 w-4 sm:h-3.5 sm:w-3.5" : "h-3.5 w-3.5";
+    checkboxSize === "medium" ? "h-8 w-8 sm:h-7 sm:w-7" : "h-6 w-6";
+  const checkIconSize =
+    checkboxSize === "medium" ? "h-4 w-4 sm:h-3.5 sm:w-3.5" : "h-3.5 w-3.5";
 
   const handleClick = () => {
     onSelect(item);
@@ -148,7 +146,9 @@ export function GalleryCard({
           "absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1.5 truncate",
           viewMode === "list" &&
             "static bg-transparent text-foreground flex-1 min-w-0",
-          showZoomButton && viewMode === "grid" && "flex items-center justify-between gap-2",
+          showZoomButton &&
+            viewMode === "grid" &&
+            "flex items-center justify-between gap-2",
           viewMode === "list" && "flex items-center justify-between gap-2"
         )}
       >
@@ -169,4 +169,3 @@ export function GalleryCard({
     </div>
   );
 }
-

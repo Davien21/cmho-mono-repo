@@ -41,6 +41,14 @@ const schema = z.object({
   // PAYSTACK_BASE_URL: z.string(),
   // Platform Config
   PLATFORM_PASSWORD: z.string(),
+  // Gemini AI Config
+  GEMINI_API_KEY: z.string().optional(),
+  // Algolia Config
+  ALGOLIA_APP_ID: z.string(),
+  ALGOLIA_ADMIN_API_KEY: z.string(),
+  ALGOLIA_SEARCH_API_KEY: z.string(),
+  // Backup Config
+  ENABLE_BACKUPS: z.string().optional(),
 });
 
 declare global {
@@ -90,13 +98,21 @@ const common = {
   PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
   // Platform Config
   PLATFORM_PASSWORD: process.env.PLATFORM_PASSWORD,
+  // Gemini AI Config
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  // Algolia Config
+  ALGOLIA_APP_ID: process.env.ALGOLIA_APP_ID,
+  ALGOLIA_ADMIN_API_KEY: process.env.ALGOLIA_ADMIN_API_KEY,
+  ALGOLIA_SEARCH_API_KEY: process.env.ALGOLIA_SEARCH_API_KEY,
+  // Backup Config
+  ENABLE_BACKUPS: process.env.ENABLE_BACKUPS,
 };
 
 const development: z.infer<typeof schema> = {
   ...common,
   CLOUDINARY_FOLDER: `${common.APP_NAME}_dev`,
   NODE_ENV: "development",
-  DATABASE_URL: `mongodb://localhost:27017/${common.APP_NAME}`,
+  DATABASE_URL: `mongodb://localhost:27018/${common.APP_NAME}?directConnection=true`,
   // Cookie Config for development - allows access from localhost and IP addresses
   COOKIE_CONFIG: {
     httpOnly: false,
@@ -112,7 +128,7 @@ const test: z.infer<typeof schema> = {
   ...common,
   CLOUDINARY_FOLDER: `${common.APP_NAME}_test`,
   NODE_ENV: "test",
-  DATABASE_URL: `mongodb://localhost:27017/${common.APP_NAME}_test`,
+  DATABASE_URL: `mongodb://localhost:27018/${common.APP_NAME}_test`,
   PORT: 3002,
 };
 
