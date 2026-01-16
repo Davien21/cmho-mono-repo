@@ -6,6 +6,7 @@ type DestinationCallback = (error: Error | null, destination: string) => void;
 type FileNameCallback = (error: Error | null, filename: string) => void;
 
 import fs from "fs";
+import crypto from "crypto";
 import { BadRequestError } from "../config/errors";
 import { DocMimeTypes, MediaMimeTypes, allMimeTypes } from "../utils/helpers";
 import { env } from "../config/env";
@@ -36,7 +37,10 @@ const storage = multer.diskStorage({
     fs.mkdir(dir, { recursive: true }, (err) => cb(err, dir));
   },
   filename: function (req, file, callback: FileNameCallback) {
-    callback(null, Date.now() + "_" + file.originalname);
+    // Generate shorter unique ID: base36 timestamp + 4 random hex chars
+    const timestamp = Date.now().toString(36); // 8-9 characters, chronological
+    const random = crypto.randomBytes(2).toString('hex'); // 4 characters, collision-resistant
+    callback(null, `${timestamp}${random}_${file.originalname}`);
   },
 });
 
