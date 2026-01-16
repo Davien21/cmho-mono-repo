@@ -1,18 +1,7 @@
 # Migration & Refactoring Roadmap
 
-## Media & Gallery Consolidation
-- [ ] **Backend: Gallery to Media Migration**
-  - [ ] Migrate all existing `Gallery` records to the `Media` model using the `category` property.
-  - [ ] Update Activity Tracking to reference `Media` directly instead of `Gallery`.
-  - [ ] Deprecate and remove the `Gallery` module (model, service, controller, routes).
-  - [ ] Add a `name` property to the `Media` model for better identification.
-- [ ] **Frontend: Unified Media Logic**
-  - [ ] **REFACTOR CRITICAL**: Remove re-implemented logic in `InventorySettingsPage/gallery.tsx` (e.g., `processInBatches`, `isSafari`, `tryNativeHeicConversion`) and import from `image-utils.ts`.
-  - [ ] Create a reusable `useMediaManager` hook to handle fetching, selection, and filtering.
-  - [ ] Extract shared components for Media/Gallery grids, selection overlays, and upload zones.
-  - [ ] Update all features (Inventory Settings, Balance Sheet, etc.) to use the unified media logic.
-
 ## Balance Sheet Page Refactoring
+
 - [ ] **Logic Extraction**
   - [ ] Move drag-and-drop state and handlers to a reusable hook (`useDragAndDrop`).
   - [ ] Abstract the "Upload -> Optimize -> Process" flow into a custom hook or service.
@@ -22,6 +11,7 @@
   - [ ] Reduce component-level bloat by breaking down the 500+ line file into smaller sub-components.
 
 ## Upload & Image Processing Improvements
+
 - [ ] **HEIC Upload Policy**
   - [ ] **Frontend**: Disable HEIC/HEIF uploads on non-Safari browsers.
   - [ ] **UX**: Implement a toast or alert informing the user to use Safari for HEIC uploads to ensure client-side optimization.
@@ -33,6 +23,7 @@
   - [ ] Improve error handling and progress reporting for multi-file uploads.
 
 ## Inventory Balances to Stock Routes Migration
+
 - [ ] **Backend: Consolidate Inventory Balances into Stock Movement**
   - [ ] Move all inventory balances API endpoints from `inventory-balances.router.ts` to `stock-movement.router.ts`.
   - [ ] Integrate `inventory-balances.controller.ts` logic into `stock-movement.controller.ts`.
@@ -46,6 +37,7 @@
   - [ ] Test all inventory balance-related features to ensure functionality remains intact.
 
 ## Modal Management Improvements
+
 - [ ] **Replace Nested `openModal` Calls with `updateModal`**
   - [ ] Search codebase for patterns where `openModal` is called inside another `openModal`'s `onConfirm`/`onCancel` handlers.
   - [ ] Refactor to use `updateModal` for partial state updates (e.g., loading states) instead of re-opening modals with duplicate props.
@@ -53,6 +45,7 @@
   - [ ] Standardize modal state management across all features.
 
 ## Rename AIInventoryBalanceItem to ScannedInventoryItemData
+
 - [ ] **Backend Changes**
   - [ ] `inventory-balances.model.ts`: Rename model from `AIInventoryBalanceItem` to `ScannedInventoryItemData`
   - [ ] `inventory-balances.types.ts`: Rename `IAIInventoryBalanceItem` → `IScannedInventoryItemData` and `AIInventoryBalanceStatus` → `ScannedInventoryStatus`
@@ -65,11 +58,13 @@
 - [ ] **Testing**: Search for remaining `AIInventoryBalanceItem` references and test all balance sheet features
 
 ## General Bloat Reduction
+
 - [ ] Identify and remove redundant RTK Query endpoints that overlap between Media and Gallery.
   - [ ] Audit `gallery-slice.ts` and `media-slice.ts` for duplicate functionality.
 - [ ] Centralize "Select from Gallery" modal logic to avoid re-implementing `ImagePickerModal` state everywhere.
 
 ## Env.sample File Generator
+
 - [ ] **Website & VSCode Extension**
   - [ ] Create a website that accepts `.env` file content and generates `.env.sample` files.
   - [ ] Build a VSCode extension with the same functionality.
