@@ -49,7 +49,7 @@ import {
 } from "lucide-react";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { GallerySection } from "@/features/inventory-settings/InventorySettingsPage/gallery";
-import { useGetGalleryQuery } from "@/store/gallery-slice";
+import { useGetMediaQuery, MediaCategory } from "@/store/media-slice";
 import SegmentedControl from "@/SegmentedControl";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -63,8 +63,8 @@ export default function InventorySettingsPage() {
   const { data: suppliersSummary } = useGetSuppliersQuery();
   // Use the same query as GallerySection - RTK Query will share the cache
   // Only fetch if gallery section is active or we need the count
-  const { data: galleryData } = useGetGalleryQuery(
-    { page: 1, limit: 100 },
+  const { data: mediaData } = useGetMediaQuery(
+    { page: 1, limit: 100, category: MediaCategory.INVENTORY },
     { skip: false } // Always fetch to get count for badge
   );
   const [createUnit, { isLoading: isCreatingUnit }] =
@@ -79,7 +79,7 @@ export default function InventorySettingsPage() {
   const unitsCount = unitsSummary?.data?.length ?? 0;
   const categoriesCount = categoriesSummary?.data?.length ?? 0;
   const suppliersCount = suppliersSummary?.data?.length ?? 0;
-  const galleryCount = galleryData?.data?.meta?.total ?? 0;
+  const galleryCount = mediaData?.data?.meta?.total ?? 0;
 
   // Get active section from URL params, default to "Units"
   const sectionParam = searchParams.get("section");

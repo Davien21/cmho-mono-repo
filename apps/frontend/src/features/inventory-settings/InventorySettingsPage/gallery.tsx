@@ -4,7 +4,7 @@ import { useMediaManager } from "@/hooks/use-media-manager";
 import { MediaGrid } from "@/components/MediaGrid";
 import { MediaUploadZone } from "@/components/MediaUploadZone";
 import { MediaSearchBar } from "@/components/MediaSearchBar";
-import { useInfiniteGallery } from "@/hooks/use-infinite-gallery";
+import { useInfiniteMedia } from "@/hooks/use-infinite-media";
 import { MediaCategory } from "@/store/media-slice";
 import { cn } from "@/lib/utils";
 
@@ -28,14 +28,14 @@ export function GallerySection({
 }) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Fetch gallery items with category filter
+  // Fetch media items with category filter
   const {
-    galleryItems: galleryList,
+    mediaItems: galleryList,
     isLoading,
     isFetching,
     isFetchingNextPage,
     hasNextPage,
-  } = useInfiniteGallery({
+  } = useInfiniteMedia({
     loadMoreRef,
     limit: 100,
     category: MediaCategory.INVENTORY,
@@ -68,10 +68,10 @@ export function GallerySection({
     if (!searchQuery.trim()) return galleryList;
     const query = searchQuery.toLowerCase();
     return galleryList.filter((item) => {
-      const media = typeof item.media_id === "object" ? item.media_id : null;
-      const storedName = item.name || media?.filename || "";
+      // item is IMediaDto directly (no media_id wrapper)
+      const storedName = item.name || item.filename || "";
       const displayName = getDisplayName(storedName);
-      const url = media?.url || "";
+      const url = item.url || "";
       return (
         storedName.toLowerCase().includes(query) ||
         displayName.toLowerCase().includes(query) ||
@@ -80,15 +80,14 @@ export function GallerySection({
     });
   }, [galleryList, searchQuery]);
 
-  // Handle item selection - adapter to convert IGalleryDto to id string
+  // Handle item selection - adapter to convert IMediaDto to id string
   const handleItemSelect = (item: typeof galleryList[0]) => {
     toggleSelection(item._id);
   };
 
   // Handle item deletion with display name
   const handleItemDelete = (item: typeof galleryList[0]) => {
-    const media = typeof item.media_id === "object" ? item.media_id : null;
-    const displayName = getDisplayName(item.name || media?.filename || "this image");
+    const displayName = getDisplayName(item.name || item.filename || "this image");
     handleDelete(item, displayName);
   };
 
@@ -261,13 +260,10 @@ export function GallerySection({
             <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
               {(() => {
                 const currentItem = filteredMedia[slideshowIndex];
-                const media =
-                  typeof currentItem.media_id === "object"
-                    ? currentItem.media_id
-                    : null;
-                const mediaUrl = currentItem.imageUrl || media?.url || "";
+                // currentItem is IMediaDto directly
+                const mediaUrl = currentItem.url || "";
                 const displayName = getDisplayName(
-                  currentItem.name || media?.filename
+                  currentItem.name || currentItem.filename
                 );
 
                 return (
