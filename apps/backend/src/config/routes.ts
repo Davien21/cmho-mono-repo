@@ -14,7 +14,6 @@ import inventoryItemsRouter from "../modules/inventory-items/inventory-items.rou
 import stockMovementRouter from "../modules/stock-movement/stock-movement.router";
 import suppliersRouter from "../modules/suppliers/suppliers.router";
 import mediaRouter from "../modules/media/media.router";
-import galleryRouter from "../modules/gallery/gallery.router";
 import adminsRouter from "../modules/admins/admins.router";
 import activityTrackingRouter from "../modules/activity-tracking/activity-tracking.router";
 import notificationsRouter from "../modules/notifications/trigger_notifications.router";
@@ -34,7 +33,6 @@ router.use(inventoryItemsRouter);
 router.use(stockMovementRouter);
 router.use(suppliersRouter);
 router.use(mediaRouter);
-router.use(galleryRouter);
 router.use(adminsRouter);
 router.use(activityTrackingRouter);
 router.use(notificationsRouter);
