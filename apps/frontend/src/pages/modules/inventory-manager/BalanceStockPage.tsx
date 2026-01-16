@@ -9,7 +9,6 @@ import {
   MousePointer2,
   Scale,
   Plus,
-  History,
   CheckSquare,
   Trash2,
 } from "lucide-react";
@@ -21,11 +20,9 @@ import {
 import {
   useGetMediaQuery,
   MediaCategory,
-  IMediaDto,
   useDeleteMediaMutation,
   useUploadMediaMutation,
 } from "@/store/media-slice";
-import { Badge } from "@/components/ui/badge";
 import { GalleryCard } from "@/components/GalleryCard";
 import { useModalContext } from "@/contexts/modal-context";
 
@@ -36,12 +33,8 @@ interface ProcessedImage {
 }
 
 export default function BalanceStockPage() {
-  const [showUnfinished, setShowUnfinished] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<ProcessedImage[]>([]);
   const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
-  const [selectedUnfinishedIds, setSelectedUnfinishedIds] = useState<string[]>(
-    []
-  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -57,29 +50,22 @@ export default function BalanceStockPage() {
   });
   const { openModal, updateModal, closeModal } = useModalContext();
 
-  // Split media items into two categories:
-  // 1. Unprocessed: Media items with NO AIInventoryBalanceItems (never processed)
-  // 2. Unfinished: Media items with at least 1 AIInventoryBalanceItem (partially processed)
+  // All media items with processing status
+  const allMediaWithStatus = (mediaData?.data.items || []).map((media) => {
+    const hasProcessedItems = stagedData?.data.items.some(
+      (staged) => staged.media.id === media._id
+    );
+    const stagedItems =
+      stagedData?.data.items.filter(
+        (staged) => staged.media.id === media._id
+      ) || [];
 
-  const unprocessedMedia: IMediaDto[] =
-    mediaData?.data.items.filter(
-      (media) =>
-        !stagedData?.data.items.some((staged) => staged.media.id === media._id)
-    ) || [];
-
-  const unfinishedImages =
-    mediaData?.data.items
-      .filter((media) =>
-        stagedData?.data.items.some((staged) => staged.media.id === media._id)
-      )
-      .map((media) => ({
-        id: media._id,
-        url: media.url,
-        name: media.filename,
-      })) || [];
-
-  // Convert media to gallery-like format for GalleryCard
-  // Media items are already in the correct format for GalleryCard (IMediaDto)
+    return {
+      media,
+      isProcessed: hasProcessedItems,
+      stagedItems,
+    };
+  });
 
   const handleUpload = async (files: File[]) => {
     if (files.length === 0) return;
@@ -195,11 +181,10 @@ export default function BalanceStockPage() {
 
       if (successCount > 0) {
         toast.success(
-          `Successfully processed ${successCount} image(s)! They are now in the 'Unfinished' list.`,
+          `Successfully processed ${successCount} image(s)! You can now review them (marked with checkmark).`,
           { id: toastId }
         );
         setSelectedFiles([]);
-        setShowUnfinished(true);
 
         // Show preview modal for the first successfully processed image
         const firstSuccess = results.find((r) => r.status === "fulfilled");
@@ -226,19 +211,10 @@ export default function BalanceStockPage() {
   };
 
   const handleDeleteSelected = () => {
-    const totalSelected =
-      selectedMediaIds.length + selectedUnfinishedIds.length;
+    const totalSelected = selectedMediaIds.length;
     if (totalSelected === 0) return;
 
     const itemText = totalSelected === 1 ? "image" : "images";
-
-    // Get items to delete
-    const unprocessedToDelete = unprocessedMedia.filter((media) =>
-      selectedMediaIds.includes(media._id)
-    );
-    const unfinishedToDelete = unfinishedImages.filter((img) =>
-      selectedUnfinishedIds.includes(img.id!)
-    );
 
     openModal("confirmation-dialog", {
       title: "Delete images",
@@ -253,27 +229,16 @@ export default function BalanceStockPage() {
         });
 
         try {
-          // Delete unprocessed media
-          const unprocessedDeletePromises = unprocessedToDelete.map((media) =>
-            deleteMedia(media._id).unwrap()
+          const deletePromises = selectedMediaIds.map((mediaId) =>
+            deleteMedia(mediaId).unwrap()
           );
 
-          // Delete unfinished media (use id directly from unfinishedImages)
-          const unfinishedDeletePromises = unfinishedToDelete.map((img) => {
-            if (!img.id) throw new Error("Media ID not found");
-            return deleteMedia(img.id).unwrap();
-          });
-
-          await Promise.all([
-            ...unprocessedDeletePromises,
-            ...unfinishedDeletePromises,
-          ]);
+          await Promise.all(deletePromises);
 
           toast.success(`${totalSelected} ${itemText} deleted successfully`, {
             duration: 3000,
           });
           setSelectedMediaIds([]);
-          setSelectedUnfinishedIds([]);
           setShowCheckboxes(false);
           closeModal("confirmation-dialog");
         } catch (error: any) {
@@ -328,7 +293,6 @@ export default function BalanceStockPage() {
                 if (showCheckboxes) {
                   // When hiding checkboxes, clear selection
                   setSelectedMediaIds([]);
-                  setSelectedUnfinishedIds([]);
                 }
               }}
               disabled={isProcessing}
@@ -350,34 +314,54 @@ export default function BalanceStockPage() {
               className="hidden"
             />
 
-            {selectedMediaIds.length > 0 &&
-            selectedUnfinishedIds.length === 0 ? (
-              <Button
-                onClick={async () => {
-                  // Convert selected media IDs to ProcessedImage format
-                  const filesToProcess = unprocessedMedia
-                    .filter((media) => selectedMediaIds.includes(media._id))
-                    .map((media) => ({
-                      id: media._id,
-                      url: media.url,
-                      name: media.filename,
-                    }));
-                  setSelectedMediaIds([]);
-                  setShowCheckboxes(false);
+            {selectedMediaIds.length > 0 ? (
+              <>
+                {/* Check if any selected items are unprocessed */}
+                {allMediaWithStatus.some(
+                  ({ media, isProcessed }) =>
+                    selectedMediaIds.includes(media._id) && !isProcessed
+                ) && (
+                  <Button
+                    onClick={async () => {
+                      // Convert selected unprocessed media to ProcessedImage format
+                      const filesToProcess = allMediaWithStatus
+                        .filter(
+                          ({ media, isProcessed }) =>
+                            selectedMediaIds.includes(media._id) && !isProcessed
+                        )
+                        .map(({ media }) => ({
+                          id: media._id,
+                          url: media.url,
+                          name: media.filename,
+                        }));
+                      setSelectedMediaIds([]);
+                      setShowCheckboxes(false);
 
-                  // Process the selected files
-                  await handleProcessImages(filesToProcess);
-                }}
-                disabled={isProcessing}
-                className="bg-blue-600 hover:bg-blue-700 h-10 px-6"
-              >
-                {isProcessing ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Scale className="h-4 w-4 mr-2" />
+                      // Process the selected files
+                      await handleProcessImages(filesToProcess);
+                    }}
+                    disabled={isProcessing}
+                    className="bg-blue-600 hover:bg-blue-700 h-10 px-6"
+                  >
+                    {isProcessing ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Scale className="h-4 w-4 mr-2" />
+                    )}
+                    Process {selectedMediaIds.length === 1 ? "image" : "images"}
+                  </Button>
                 )}
-                Process {selectedMediaIds.length === 1 ? "image" : "images"}
-              </Button>
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={handleDeleteSelected}
+                  disabled={isDeleting}
+                  title={`Delete ${selectedMediaIds.length} selected`}
+                  className="h-10 w-10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
             ) : (
               <Button
                 onClick={() => fileInputRef.current?.click()}
@@ -392,22 +376,6 @@ export default function BalanceStockPage() {
                 Upload File
               </Button>
             )}
-            {showCheckboxes &&
-              (selectedMediaIds.length > 0 ||
-                selectedUnfinishedIds.length > 0) && (
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={handleDeleteSelected}
-                  disabled={isDeleting}
-                  title={`Delete ${
-                    selectedMediaIds.length + selectedUnfinishedIds.length
-                  } selected`}
-                  className="h-10 w-10"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
           </div>
         </div>
 
@@ -415,130 +383,65 @@ export default function BalanceStockPage() {
         <div className="flex-1 flex flex-col gap-6">
           {selectedFiles.length === 0 ? (
             <>
-              {/* Unprocessed Images Section */}
-              {unprocessedMedia.length > 0 ? (
+              {allMediaWithStatus.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {isLoadingMedia ? (
                     <div className="col-span-full py-10 flex items-center justify-center text-muted-foreground">
                       <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                      Loading unprocessed sheets...
+                      Loading balance sheets...
                     </div>
                   ) : (
-                    unprocessedMedia.map((mediaItem) => (
-                      <GalleryCard
-                        key={mediaItem._id}
-                        item={mediaItem}
-                        isSelected={selectedMediaIds.includes(mediaItem._id)}
-                        viewMode="grid"
-                        showCheckbox={showCheckboxes}
-                        showZoomButton={false}
-                        checkboxSize="medium"
-                        onSelect={(item) => {
-                          const isCurrentlySelected = selectedMediaIds.includes(
-                            item._id
-                          );
-                          setSelectedMediaIds((prev) =>
-                            isCurrentlySelected
-                              ? prev.filter((id) => id !== item._id)
-                              : [...prev, item._id]
-                          );
-                        }}
-                      />
-                    ))
+                    allMediaWithStatus.map(
+                      ({ media, isProcessed, stagedItems }) => (
+                        <GalleryCard
+                          key={media._id}
+                          item={media}
+                          isSelected={selectedMediaIds.includes(media._id)}
+                          viewMode="grid"
+                          showCheckbox={showCheckboxes}
+                          showZoomButton={isProcessed}
+                          checkboxSize="medium"
+                          showProcessedIndicator={isProcessed}
+                          onSelect={(item) => {
+                            const isCurrentlySelected =
+                              selectedMediaIds.includes(item._id);
+                            setSelectedMediaIds((prev) =>
+                              isCurrentlySelected
+                                ? prev.filter((id) => id !== item._id)
+                                : [...prev, item._id]
+                            );
+                          }}
+                          onDoubleClick={
+                            isProcessed
+                              ? () => {
+                                  // Open preview modal with staged items
+                                  openModal("ai-preview", {
+                                    imageUrl: media.url,
+                                    items: stagedItems.map((item) => ({
+                                      name: item.name,
+                                      quantity_details: item.quantity_details,
+                                    })),
+                                  });
+                                }
+                              : undefined
+                          }
+                          onZoomClick={
+                            isProcessed
+                              ? () => window.open(media.url, "_blank")
+                              : undefined
+                          }
+                        />
+                      )
+                    )
                   )}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 border border-dashed rounded-xl bg-muted/5">
                   <ImageIcon className="h-12 w-12 text-muted-foreground/40 mb-4" />
                   <p className="text-sm text-muted-foreground text-center max-w-xs">
-                    No unprocessed images. Upload new ones or pick from your
-                    gallery to start processing.
+                    No balance sheets found. Upload new images to start
+                    processing.
                   </p>
-                </div>
-              )}
-
-              {/* Toggle for Unfinished Balance Sheets */}
-              {unfinishedImages.length > 0 && (
-                <div className="flex flex-col gap-4">
-                  <Button
-                    variant="ghost"
-                    className="w-fit text-muted-foreground hover:text-foreground p-0 h-auto font-normal flex items-center gap-2"
-                    onClick={() => setShowUnfinished(!showUnfinished)}
-                  >
-                    <History
-                      className={`h-4 w-4 transition-transform ${
-                        showUnfinished ? "rotate-180" : ""
-                      }`}
-                    />
-                    {showUnfinished ? "Hide" : "Show"} unfinished balance sheets
-                    <Badge
-                      variant="secondary"
-                      className="ml-1 px-1.5 h-4 text-[10px]"
-                    >
-                      {unfinishedImages.length}
-                    </Badge>
-                  </Button>
-
-                  {showUnfinished && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {isLoadingMedia ? (
-                        <div className="col-span-full py-10 flex items-center justify-center text-muted-foreground">
-                          <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                          Loading unfinished sheets...
-                        </div>
-                      ) : (
-                        unfinishedImages.map((file) => {
-                          // Find the full media object for this unfinished item
-                          const mediaItem = mediaData?.data.items.find(
-                            (m: IMediaDto) => m._id === file.id
-                          );
-                          if (!mediaItem) return null;
-
-                          // Find staged items for this media
-                          const stagedItems =
-                            stagedData?.data.items.filter(
-                              (staged) => staged.media.id === file.id
-                            ) || [];
-
-                          return (
-                            <GalleryCard
-                              key={file.id}
-                              item={mediaItem}
-                              isSelected={selectedUnfinishedIds.includes(
-                                file.id!
-                              )}
-                              viewMode="grid"
-                              showCheckbox={showCheckboxes}
-                              showZoomButton={true}
-                              checkboxSize="medium"
-                              onSelect={(item) => {
-                                const isCurrentlySelected =
-                                  selectedUnfinishedIds.includes(item._id);
-                                setSelectedUnfinishedIds((prev) =>
-                                  isCurrentlySelected
-                                    ? prev.filter((id) => id !== item._id)
-                                    : [...prev, item._id]
-                                );
-                              }}
-                              onDoubleClick={() => {
-                                // Open preview modal with staged items
-                                openModal("ai-preview", {
-                                  imageUrl: file.url,
-                                  items: stagedItems.map((item) => ({
-                                    name: item.name,
-                                    quantity_details: item.quantity_details,
-                                  })),
-                                });
-                              }}
-                              onZoomClick={() =>
-                                window.open(file.url, "_blank")
-                              }
-                            />
-                          );
-                        })
-                      )}
-                    </div>
-                  )}
                 </div>
               )}
             </>

@@ -25,6 +25,8 @@ export interface GalleryCardProps {
   checkboxSize?: "small" | "medium";
   hoverBehavior?: boolean; // Show checkbox on hover (desktop only)
   onDoubleClick?: (item: IMediaDto) => void;
+  className?: string;
+  showProcessedIndicator?: boolean; // Show green checkmark for processed items
 }
 
 export function GalleryCard({
@@ -38,6 +40,8 @@ export function GalleryCard({
   checkboxSize = "small",
   hoverBehavior = false,
   onDoubleClick,
+  className,
+  showProcessedIndicator = false,
 }: GalleryCardProps) {
   const [imageError, setImageError] = useState(false);
   const mediaUrl = item.url || "";
@@ -69,7 +73,8 @@ export function GalleryCard({
       className={cn(
         "relative group rounded-lg overflow-hidden border transition-all",
         viewMode === "grid" ? "aspect-square" : "flex items-center gap-3 p-2",
-        showCheckbox && "cursor-pointer"
+        showCheckbox && "cursor-pointer",
+        className
       )}
       onClick={showCheckbox ? handleClick : undefined}
       onDoubleClick={onDoubleClick ? handleDoubleClick : undefined}
@@ -107,6 +112,13 @@ export function GalleryCard({
               <Check className={cn(checkIconSize, "text-black")} />
             )}
           </div>
+        </div>
+      )}
+
+      {/* Processed Indicator */}
+      {showProcessedIndicator && (
+        <div className="absolute top-3 right-3 bg-white/95 rounded-full p-1.5 shadow-sm">
+          <Check className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
         </div>
       )}
 
