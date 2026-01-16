@@ -3,7 +3,7 @@ import {
   IInventoryItem,
   IInventoryItemRequest,
 } from "./inventory-items.types.js";
-import galleryService from "../gallery/gallery.service.js";
+import mediaService from "../media/media.service.js";
 import algoliaInventoryService from "../../services/algolia.service.js";
 import { Types } from "mongoose";
 
@@ -154,9 +154,9 @@ class InventoryItemsService {
     // Index in Algolia for search
     await algoliaInventoryService.indexItem(item);
 
-    // If image is attached, check if gallery item needs renaming
+    // If image is attached, check if media item needs renaming
     if (data.image?.mediaId) {
-      await this.updateGalleryItemNameIfNeeded(data.image.mediaId, data.name);
+      await this.updateMediaItemNameIfNeeded(data.image.mediaId, data.name);
     }
 
     return item;
@@ -177,11 +177,11 @@ class InventoryItemsService {
       await algoliaInventoryService.indexItem(item);
     }
 
-    // If image is attached, check if gallery item needs renaming
+    // If image is attached, check if media item needs renaming
     // Use the new name if provided, otherwise use the existing item name
     if (data.image?.mediaId && item) {
       const inventoryItemName = data.name || item.name;
-      await this.updateGalleryItemNameIfNeeded(
+      await this.updateMediaItemNameIfNeeded(
         data.image.mediaId,
         inventoryItemName
       );
@@ -191,29 +191,29 @@ class InventoryItemsService {
   }
 
   /**
-   * Updates gallery item name if it starts with "cmho_temp" or "cmho-temp_"
+   * Updates media item name if it starts with "cmho_temp" or "cmho-temp_"
    * to match the inventory item name
    */
-  private async updateGalleryItemNameIfNeeded(
+  private async updateMediaItemNameIfNeeded(
     mediaId: string,
     inventoryItemName: string
   ): Promise<void> {
     try {
-      const galleryItem = await galleryService.findByMediaId(mediaId);
+      const mediaItem = await mediaService.findById(mediaId);
 
-      if (galleryItem && galleryItem.name) {
+      if (mediaItem && mediaItem.name) {
         // Check if name starts with "cmho_temp" or "cmho-temp_"
-        const name = galleryItem.name.trim();
+        const name = mediaItem.name.trim();
         if (name.startsWith("cmho_temp") || name.startsWith("cmho-temp_")) {
-          // Update gallery item name to match inventory item name
-          await galleryService.update(galleryItem._id.toString(), {
+          // Update media item name to match inventory item name
+          await mediaService.update(mediaItem._id.toString(), {
             name: inventoryItemName,
           });
         }
       }
     } catch (error) {
       // Log error but don't fail the inventory item operation
-      console.error("Error updating gallery item name:", error);
+      console.error("Error updating media item name:", error);
     }
   }
 
