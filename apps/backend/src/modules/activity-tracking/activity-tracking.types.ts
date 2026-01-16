@@ -23,10 +23,10 @@ export const ActivityTypes = {
   UPDATE_SUPPLIER: "update_supplier",
   DELETE_SUPPLIER: "delete_supplier",
 
-  // Gallery operations
-  CREATE_GALLERY_ITEM: "create_gallery_item",
-  UPDATE_GALLERY_ITEM: "update_gallery_item",
-  DELETE_GALLERY_ITEM: "delete_gallery_item",
+  // Media operations (formerly Gallery)
+  CREATE_MEDIA_ITEM: "create_media_item",
+  UPDATE_MEDIA_ITEM: "update_media_item",
+  DELETE_MEDIA_ITEM: "delete_media_item",
 
   // Admin operations
   CREATE_ADMIN: "create_admin",

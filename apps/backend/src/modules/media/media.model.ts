@@ -8,6 +8,11 @@ const mediaSchema = new Schema<IMedia>(
     type: { type: String },
     public_id: { type: String },
     filename: { type: String },
+    name: {
+      type: String,
+      required: false,
+      trim: true,
+    },
     category: {
       type: String,
       enum: Object.values(MediaCategory),
@@ -15,6 +20,8 @@ const mediaSchema = new Schema<IMedia>(
       required: true,
     },
     duration: { type: Schema.Types.Mixed, default: null },
+    isDeleted: { type: Boolean, required: false, default: false },
+    deletedAt: { type: Date, required: false, default: null },
   },
   {
     timestamps: true,
@@ -22,6 +29,7 @@ const mediaSchema = new Schema<IMedia>(
 );
 
 mediaSchema.index({ category: 1 });
+mediaSchema.index({ category: 1, isDeleted: 1 });
 mediaSchema.index({ public_id: 1 }, { unique: true });
 
 export default model("media", mediaSchema);

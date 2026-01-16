@@ -112,7 +112,7 @@ const development: z.infer<typeof schema> = {
   ...common,
   CLOUDINARY_FOLDER: `${common.APP_NAME}_dev`,
   NODE_ENV: "development",
-  DATABASE_URL: `mongodb://localhost:27018/${common.APP_NAME}?directConnection=true`,
+  DATABASE_URL: `mongodb://localhost:27017/${common.APP_NAME}?directConnection=true`,
   // Cookie Config for development - allows access from localhost and IP addresses
   COOKIE_CONFIG: {
     httpOnly: false,
@@ -128,7 +128,7 @@ const test: z.infer<typeof schema> = {
   ...common,
   CLOUDINARY_FOLDER: `${common.APP_NAME}_test`,
   NODE_ENV: "test",
-  DATABASE_URL: `mongodb://localhost:27018/${common.APP_NAME}_test`,
+  DATABASE_URL: `mongodb://localhost:27017/${common.APP_NAME}_test`,
   PORT: 3002,
 };
 

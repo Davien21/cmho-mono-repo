@@ -35,7 +35,7 @@ import {
   useGetInventoryCategoriesQuery,
   useGetSuppliersQuery,
 } from "@/store/inventory-slice";
-import { useGetGalleryQuery } from "@/store/gallery-slice";
+import { useGetMediaQuery, MediaCategory } from "@/store/media-slice";
 
 // Centralized navigation configuration with breadcrumb support
 export const navigationConfig = {
@@ -210,15 +210,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: suppliersSummary } = useGetSuppliersQuery(undefined, {
     skip: !isInventoryPath,
   });
-  const { data: galleryData } = useGetGalleryQuery(
-    { page: 1, limit: 100 },
+  const { data: mediaData } = useGetMediaQuery(
+    { page: 1, limit: 100, category: MediaCategory.INVENTORY },
     { skip: !isInventoryPath }
   );
 
   const unitsCount = unitsSummary?.data?.length ?? 0;
   const categoriesCount = categoriesSummary?.data?.length ?? 0;
   const suppliersCount = suppliersSummary?.data?.length ?? 0;
-  const galleryCount = galleryData?.data?.meta?.total ?? 0;
+  const galleryCount = mediaData?.data?.meta?.total ?? 0;
 
   const currentApp =
     (isInventoryPath

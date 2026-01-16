@@ -13,7 +13,7 @@ import {
   CheckSquare,
   Trash2,
 } from "lucide-react";
-import { optimizeImage, processInBatches } from "@/lib/image-utils";
+import { processInBatches } from "@/lib/image-utils";
 import {
   useGetStagedItemsQuery,
   useProcessInventoryBalanceMutation,
@@ -62,13 +62,13 @@ export default function BalanceStockPage() {
   // 2. Unfinished: Media items with at least 1 AIInventoryBalanceItem (partially processed)
 
   const unprocessedMedia: IMediaDto[] =
-    mediaData?.data.filter(
+    mediaData?.data.items.filter(
       (media) =>
         !stagedData?.data.items.some((staged) => staged.media.id === media._id)
     ) || [];
 
   const unfinishedImages =
-    mediaData?.data
+    mediaData?.data.items
       .filter((media) =>
         stagedData?.data.items.some((staged) => staged.media.id === media._id)
       )
@@ -79,14 +79,7 @@ export default function BalanceStockPage() {
       })) || [];
 
   // Convert media to gallery-like format for GalleryCard
-  const mediaAsGallery = unprocessedMedia.map((media) => ({
-    _id: media._id,
-    name: media.filename,
-    imageUrl: media.url,
-    media_id: media,
-    createdAt: media.createdAt,
-    updatedAt: media.updatedAt,
-  }));
+  // Media items are already in the correct format for GalleryCard (IMediaDto)
 
   const handleUpload = async (files: File[]) => {
     if (files.length === 0) return;
@@ -119,9 +112,9 @@ export default function BalanceStockPage() {
         async (file) => {
           const formData = new FormData();
           formData.append("file", file);
+          formData.append("category", MediaCategory.BALANCE_SHEET);
           const response = await uploadMedia({
             formData,
-            category: MediaCategory.BALANCE_SHEET,
           }).unwrap();
           return response.data;
         }
@@ -262,16 +255,16 @@ export default function BalanceStockPage() {
         try {
           // Delete unprocessed media
           const unprocessedDeletePromises = unprocessedToDelete.map((media) =>
-            deleteMedia({ public_id: media.public_id }).unwrap()
+            deleteMedia(media._id).unwrap()
           );
 
           // Delete unfinished media (need to find the full media object)
           const unfinishedDeletePromises = unfinishedToDelete.map((img) => {
-            const media = mediaData?.data.find((m) => m._id === img.id);
+            const media = mediaData?.data.items.find(
+              (m: IMediaDto) => m._id === img.id
+            );
             if (!media) throw new Error("Media not found");
-            return deleteMedia({
-              public_id: media.public_id,
-            }).unwrap();
+            return deleteMedia(media._id).unwrap();
           });
 
           await Promise.all([
@@ -426,7 +419,7 @@ export default function BalanceStockPage() {
           {selectedFiles.length === 0 ? (
             <>
               {/* Unprocessed Images Section */}
-              {mediaAsGallery.length > 0 ? (
+              {unprocessedMedia.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {isLoadingMedia ? (
                     <div className="col-span-full py-10 flex items-center justify-center text-muted-foreground">
@@ -434,11 +427,11 @@ export default function BalanceStockPage() {
                       Loading unprocessed sheets...
                     </div>
                   ) : (
-                    mediaAsGallery.map((galleryItem) => (
+                    unprocessedMedia.map((mediaItem) => (
                       <GalleryCard
-                        key={galleryItem._id}
-                        item={galleryItem}
-                        isSelected={selectedMediaIds.includes(galleryItem._id)}
+                        key={mediaItem._id}
+                        item={mediaItem}
+                        isSelected={selectedMediaIds.includes(mediaItem._id)}
                         viewMode="grid"
                         showCheckbox={showCheckboxes}
                         showZoomButton={false}
@@ -498,17 +491,11 @@ export default function BalanceStockPage() {
                         </div>
                       ) : (
                         unfinishedImages.map((file) => {
-                          // Convert unfinished image to gallery format for GalleryCard
-                          const unfinishedAsGallery = {
-                            _id: file.id!,
-                            name: file.name,
-                            imageUrl: file.url,
-                            media_id:
-                              mediaData?.data.find((m) => m._id === file.id) ||
-                              file.id!,
-                            createdAt: "",
-                            updatedAt: "",
-                          };
+                          // Find the full media object for this unfinished item
+                          const mediaItem = mediaData?.data.items.find(
+                            (m: IMediaDto) => m._id === file.id
+                          );
+                          if (!mediaItem) return null;
 
                           // Find staged items for this media
                           const stagedItems =
@@ -519,7 +506,7 @@ export default function BalanceStockPage() {
                           return (
                             <GalleryCard
                               key={file.id}
-                              item={unfinishedAsGallery}
+                              item={mediaItem}
                               isSelected={selectedUnfinishedIds.includes(
                                 file.id!
                               )}

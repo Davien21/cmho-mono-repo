@@ -1,24 +1,51 @@
 import { Request, Response } from "express";
-import { uploadToCloudHighQuality } from "../../lib/cloudinary";
+import { uploadToCloudHighQuality, deleteFromCloud } from "../../lib/cloudinary";
 import { successResponse } from "../../utils/response";
 import mediaService from "./media.service";
 import { getMediaType, uploadFncs } from "../../utils/helpers";
 import * as fs from "fs/promises";
-import { BadRequestError } from "../../config/errors";
+import { BadRequestError, NotFoundError } from "../../config/errors";
 import { geminiService } from "../../services/gemini.service";
 import { MediaCategory } from "./media.types";
 import inventoryBalancesService from "../inventory-balances/inventory-balances.service";
+import activityTrackingService from "../activity-tracking/activity-tracking.service";
+import { ActivityTypes } from "../activity-tracking/activity-tracking.types";
+import { getAdminFromReq } from "../../utils/request-helpers";
 
 class MediaController {
+  /**
+   * Get paginated list of media (replaces Gallery getAll)
+   */
   async getAll(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string || "1");
+    const limit = parseInt(req.query.limit as string || "100");
     const category = req.query.category as MediaCategory;
-    const media = await mediaService.findAll(category);
-    res.send(successResponse("Successfully retrieved media", media));
+
+    const result = await mediaService.list({ page, limit, category });
+    res.send(successResponse("Media items fetched successfully", result));
   }
 
+  /**
+   * Get single media item
+   */
+  async getOne(req: Request, res: Response) {
+    const { id } = req.params;
+    const media = await mediaService.findById(id);
+
+    if (!media) {
+      throw new NotFoundError("Media not found");
+    }
+
+    res.send(successResponse("Media fetched successfully", media));
+  }
+
+  /**
+   * Create media with activity tracking
+   */
   async create(req: Request, res: Response) {
+    const admin = getAdminFromReq(req);
     const { file } = req;
-    const { category } = req.body;
+    const { category, name } = req.body;
 
     if (!file) throw new BadRequestError("File is required");
 
@@ -33,6 +60,11 @@ class MediaController {
 
     const upload = await uploader(file.path);
 
+    // Generate name using convention: provided name or cmho-temp_[filename]
+    const mediaName = name && name.trim()
+      ? name.trim()
+      : `cmho-temp_${upload.filename || file.originalname}`;
+
     const media = await mediaService.create({
       filename: upload.filename || file.originalname,
       public_id: upload.public_id,
@@ -41,13 +73,95 @@ class MediaController {
       url: upload.url,
       category: category || MediaCategory.INVENTORY,
       duration: upload.duration || null,
+      name: mediaName,
     });
 
     await fs.unlink(file.path);
 
+    // Track activity
+    await activityTrackingService.trackActivity({
+      type: ActivityTypes.CREATE_MEDIA_ITEM,
+      module: "inventory",
+      entities: [{ id: media._id, name: "media" }],
+      performerId: admin._id,
+      performerName: admin.name,
+      description: `Added media "${media.name}"`,
+      metadata: {
+        url: media.url,
+        filename: media.filename,
+        public_id: media.public_id,
+        category: media.category,
+      },
+    });
+
     res.send(successResponse("Successfully saved media", media));
   }
 
+  /**
+   * Update media metadata
+   */
+  async update(req: Request, res: Response) {
+    const admin = getAdminFromReq(req);
+    const { id } = req.params;
+    const { name, category } = req.body;
+
+    const media = await mediaService.update(id, { name, category });
+
+    if (!media) {
+      throw new NotFoundError("Media not found");
+    }
+
+    // Track activity
+    await activityTrackingService.trackActivity({
+      type: ActivityTypes.UPDATE_MEDIA_ITEM,
+      module: "inventory",
+      entities: [{ id: media._id, name: "media" }],
+      performerId: admin._id,
+      performerName: admin.name,
+      description: `Updated media "${media.name}"`,
+    });
+
+    res.send(successResponse("Media updated successfully", media));
+  }
+
+  /**
+   * Delete media by ID (soft delete with activity tracking)
+   */
+  async deleteById(req: Request, res: Response) {
+    const admin = getAdminFromReq(req);
+    const { id } = req.params;
+
+    const media = await mediaService.findById(id);
+    if (!media) {
+      throw new NotFoundError("Media not found");
+    }
+
+    // Delete associated AI inventory balance items
+    await inventoryBalancesService.deleteByMediaId(id);
+
+    // Soft delete the media
+    await mediaService.softDelete(id);
+
+    // Also delete from cloud
+    await deleteFromCloud(media.public_id);
+
+    // Track activity
+    await activityTrackingService.trackActivity({
+      type: ActivityTypes.DELETE_MEDIA_ITEM,
+      module: "inventory",
+      entities: [{ id: media._id, name: "media" }],
+      performerId: admin._id,
+      performerName: admin.name,
+      description: `Deleted media "${media.name}"`,
+    });
+
+    res.send(successResponse("Successfully deleted media"));
+  }
+
+  /**
+   * Legacy: Delete by public_id (hard delete)
+   * Kept for backward compatibility
+   */
   async delete(req: Request, res: Response) {
     // First, get the media to find its ID
     const media = await mediaService.findByPublicId(req.body.public_id);
@@ -63,6 +177,10 @@ class MediaController {
     res.send(successResponse("Successfully deleted media"));
   }
 
+  /**
+   * Legacy: Delete by URL (hard delete)
+   * Kept for backward compatibility
+   */
   async deleteByUrl(req: Request, res: Response) {
     console.log({ url: req.body.url });
 
