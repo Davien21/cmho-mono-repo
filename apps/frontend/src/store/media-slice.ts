@@ -15,10 +15,25 @@ export interface IMediaDto {
   type: string;
   public_id: string;
   filename: string;
+  name?: string; // User-friendly name or cmho-temp_[filename]
   category: MediaCategory;
   duration?: any;
+  isDeleted?: boolean;
+  deletedAt?: Date;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface IMediaResponse {
+  items: IMediaDto[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
 }
 
 export interface ITranscriptionResult {
@@ -28,35 +43,143 @@ export interface ITranscriptionResult {
 
 export const mediaApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getMedia: builder.query<IAPIResponse<IMediaDto[]>, { category?: MediaCategory } | void>({
-      query: (params) => ({
-        url: "/media",
-        method: "GET",
-        params: params || {},
-      }),
-      providesTags: [TagTypes.MEDIA],
-    }),
-    uploadMedia: builder.mutation<IAPIResponse<IMediaDto>, { formData: FormData; category?: MediaCategory }>({
-      query: ({ formData, category }) => {
-        if (category) {
-          formData.append("category", category);
+    // Paginated list with merge logic (for infinite scroll)
+    getMedia: builder.query<
+      IAPIResponse<IMediaResponse>,
+      { page?: number; limit?: number; category?: MediaCategory }
+    >({
+      query: ({ page = 1, limit = 100, category }) => {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString(),
+        });
+        if (category) params.append("category", category);
+        return `/media?${params.toString()}`;
+      },
+      providesTags: (result) =>
+        result?.data.items
+          ? [
+              ...result.data.items.map(({ _id }) => ({
+                type: TagTypes.MEDIA as const,
+                id: _id,
+              })),
+              { type: TagTypes.MEDIA, id: "LIST" },
+            ]
+          : [{ type: TagTypes.MEDIA, id: "LIST" }],
+      // Merge logic for pagination
+      serializeQueryArgs: ({ queryArgs }) => {
+        return { category: queryArgs.category };
+      },
+      merge: (currentCache, newItems, { arg }) => {
+        if (arg.page === 1) {
+          return newItems;
         }
         return {
-          url: "/media",
-          method: "POST",
-          body: formData,
+          ...newItems,
+          data: {
+            ...newItems.data,
+            items: [...currentCache.data.items, ...newItems.data.items],
+          },
         };
       },
-      invalidatesTags: [TagTypes.MEDIA],
+      forceRefetch: ({ currentArg, previousArg }) => {
+        return currentArg?.category !== previousArg?.category;
+      },
     }),
-    deleteMedia: builder.mutation<IAPIResponse<void>, { public_id: string }>({
+
+    // Infinite query support (RTK Query built-in)
+    getMediaPagesInfinite: builder.query<
+      IAPIResponse<IMediaResponse>,
+      { limit?: number; category?: MediaCategory; page?: number }
+    >({
+      query: ({ limit = 100, category, page = 1 }) => {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString(),
+        });
+        if (category) params.append("category", category);
+        return `/media?${params.toString()}`;
+      },
+      providesTags: [{ type: TagTypes.MEDIA, id: "LIST" }],
+      serializeQueryArgs: ({ queryArgs }) => {
+        return { category: queryArgs.category, limit: queryArgs.limit };
+      },
+      merge: (currentCache, newItems, { arg }) => {
+        // If it's page 1, replace cache. Otherwise, append
+        if (arg.page === 1) {
+          return newItems;
+        }
+        return {
+          ...newItems,
+          data: {
+            ...newItems.data,
+            items: [...currentCache.data.items, ...newItems.data.items],
+          },
+        };
+      },
+      forceRefetch: ({ currentArg, previousArg }) => {
+        return (
+          currentArg?.category !== previousArg?.category ||
+          currentArg?.page !== previousArg?.page
+        );
+      },
+    }),
+
+    // Get single media item
+    getMediaItem: builder.query<IAPIResponse<IMediaDto>, string>({
+      query: (id) => `/media/${id}`,
+      providesTags: (result, error, id) => [{ type: TagTypes.MEDIA, id }],
+    }),
+
+    // Upload media
+    uploadMedia: builder.mutation<
+      IAPIResponse<IMediaDto>,
+      { formData: FormData }
+    >({
+      query: ({ formData }) => ({
+        url: "/media",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: [{ type: TagTypes.MEDIA, id: "LIST" }],
+    }),
+
+    // Update media metadata
+    updateMedia: builder.mutation<
+      IAPIResponse<IMediaDto>,
+      { id: string; name?: string; category?: MediaCategory }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/media/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: TagTypes.MEDIA, id },
+        { type: TagTypes.MEDIA, id: "LIST" },
+      ],
+    }),
+
+    // Delete media by ID
+    deleteMedia: builder.mutation<IAPIResponse<void>, string>({
+      query: (id) => ({
+        url: `/media/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: TagTypes.MEDIA, id: "LIST" }],
+    }),
+
+    // Legacy: Delete by public_id (kept for backward compatibility)
+    deleteMediaByPublicId: builder.mutation<IAPIResponse<void>, { public_id: string }>({
       query: (body) => ({
         url: "/media/delete",
         method: "POST",
         body,
       }),
-      invalidatesTags: [TagTypes.MEDIA],
+      invalidatesTags: [{ type: TagTypes.MEDIA, id: "LIST" }],
     }),
+
+    // Transcribe image (AI feature)
     transcribeImage: builder.mutation<
       IAPIResponse<ITranscriptionResult>,
       { imageUrl: string }
@@ -72,7 +195,11 @@ export const mediaApi = baseApi.injectEndpoints({
 
 export const {
   useGetMediaQuery,
+  useGetMediaPagesInfiniteQuery,
+  useGetMediaItemQuery,
   useUploadMediaMutation,
+  useUpdateMediaMutation,
   useDeleteMediaMutation,
+  useDeleteMediaByPublicIdMutation,
   useTranscribeImageMutation,
 } = mediaApi;
