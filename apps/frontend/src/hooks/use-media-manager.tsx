@@ -2,17 +2,17 @@ import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { processInBatches, optimizeImage } from "@/lib/image-utils";
 import {
-  useUploadGalleryMutation,
-  useDeleteGalleryMutation,
-  IGalleryDto,
-} from "@/store/gallery-slice";
-import { MediaCategory } from "@/store/media-slice";
+  useUploadMediaMutation,
+  useDeleteMediaMutation,
+  IMediaDto,
+  MediaCategory,
+} from "@/store/media-slice";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
 import { useModalContext } from "@/contexts/modal-context";
 
 export interface UseMediaManagerOptions {
   category?: MediaCategory;
-  onUploadSuccess?: (uploadedItems: IGalleryDto[]) => void;
+  onUploadSuccess?: (uploadedItems: IMediaDto[]) => void;
   onDeleteSuccess?: (deletedId: string) => void;
   onBulkDeleteSuccess?: (deletedIds: string[]) => void;
 }
@@ -24,8 +24,8 @@ export interface FailedFile {
 }
 
 export function useMediaManager(options: UseMediaManagerOptions = {}) {
-  const [uploadGallery] = useUploadGalleryMutation();
-  const [deleteGallery, { isLoading: isDeleting }] = useDeleteGalleryMutation();
+  const [uploadMedia] = useUploadMediaMutation();
+  const [deleteMedia, { isLoading: isDeleting }] = useDeleteMediaMutation();
   const [isUploading, setIsUploading] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const { openModal, closeModal } = useModalContext();
@@ -161,13 +161,13 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
             if (options.category) {
               formData.append("category", options.category);
             }
-            return uploadGallery({ formData }).unwrap();
+            return uploadMedia({ formData }).unwrap();
           }
         );
 
         // Collect failed uploads and successful uploads
         const uploadFailedFiles: FailedFile[] = [];
-        const successfulUploads: IGalleryDto[] = [];
+        const successfulUploads: IMediaDto[] = [];
 
         uploadResults.forEach((result, index) => {
           if (result.status === "rejected") {
@@ -259,14 +259,14 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
         setIsUploading(false);
       }
     },
-    [uploadGallery, openModal, options]
+    [uploadMedia, openModal, options]
   );
 
   /**
    * Delete a single media item with confirmation
    */
   const handleDelete = useCallback(
-    async (galleryItem: IGalleryDto, displayName: string) => {
+    async (mediaItem: IMediaDto, displayName: string) => {
       openModal("confirmation-dialog", {
         title: "Delete image",
         message: `Are you sure you want to delete "${displayName}"? This action cannot be undone.`,
@@ -284,16 +284,16 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
           });
 
           try {
-            await deleteGallery(galleryItem._id).unwrap();
+            await deleteMedia(mediaItem._id).unwrap();
             toast.success("Image deleted successfully", {
               duration: 3000,
             });
             setSelectedMedia((prev) =>
-              prev.filter((id) => id !== galleryItem._id)
+              prev.filter((id) => id !== mediaItem._id)
             );
             closeModal("confirmation-dialog");
             if (options.onDeleteSuccess) {
-              options.onDeleteSuccess(galleryItem._id);
+              options.onDeleteSuccess(mediaItem._id);
             }
           } catch (error: unknown) {
             const message = getRTKQueryErrorMessage(
@@ -307,7 +307,7 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
               message: `Are you sure you want to delete "${displayName}"? This action cannot be undone.`,
               type: "danger",
               isLoading: false,
-              onConfirm: () => handleDelete(galleryItem, displayName),
+              onConfirm: () => handleDelete(mediaItem, displayName),
               onCancel: () => closeModal("confirmation-dialog"),
             });
           }
@@ -315,14 +315,14 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
         onCancel: () => closeModal("confirmation-dialog"),
       });
     },
-    [deleteGallery, openModal, closeModal, options]
+    [deleteMedia, openModal, closeModal, options]
   );
 
   /**
    * Delete multiple selected media items with confirmation
    */
   const handleBulkDelete = useCallback(
-    async (itemsToDelete: IGalleryDto[]) => {
+    async (itemsToDelete: IMediaDto[]) => {
       if (selectedMedia.length === 0) return;
 
       const count = selectedMedia.length;
@@ -346,7 +346,7 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
 
           try {
             await Promise.all(
-              itemsToDelete.map((item) => deleteGallery(item._id).unwrap())
+              itemsToDelete.map((item) => deleteMedia(item._id).unwrap())
             );
             toast.success(`${count} ${itemText} deleted successfully`, {
               duration: 3000,
@@ -376,7 +376,7 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
         onCancel: () => closeModal("confirmation-dialog"),
       });
     },
-    [selectedMedia, deleteGallery, openModal, closeModal, options]
+    [selectedMedia, deleteMedia, openModal, closeModal, options]
   );
 
   /**
