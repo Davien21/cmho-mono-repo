@@ -258,13 +258,10 @@ export default function BalanceStockPage() {
             deleteMedia(media._id).unwrap()
           );
 
-          // Delete unfinished media (need to find the full media object)
+          // Delete unfinished media (use id directly from unfinishedImages)
           const unfinishedDeletePromises = unfinishedToDelete.map((img) => {
-            const media = mediaData?.data.items.find(
-              (m: IMediaDto) => m._id === img.id
-            );
-            if (!media) throw new Error("Media not found");
-            return deleteMedia(media._id).unwrap();
+            if (!img.id) throw new Error("Media ID not found");
+            return deleteMedia(img.id).unwrap();
           });
 
           await Promise.all([

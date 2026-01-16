@@ -82,8 +82,12 @@ export const mediaApi = baseApi.injectEndpoints({
           },
         };
       },
-      forceRefetch: ({ currentArg, previousArg }) => {
-        return currentArg?.category !== previousArg?.category;
+      forceRefetch: ({ currentArg, previousArg, state, endpointState }) => {
+        // Force refetch if category changed OR if cache was invalidated
+        return (
+          currentArg?.category !== previousArg?.category ||
+          endpointState?.status === 'uninitialized'
+        );
       },
     }),
 
@@ -166,7 +170,49 @@ export const mediaApi = baseApi.injectEndpoints({
         url: `/media/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [{ type: TagTypes.MEDIA, id: "LIST" }],
+      async onQueryStarted(id, { dispatch, queryFulfilled, getState }) {
+        // Optimistically remove from all getMedia caches
+        const patches: any[] = [];
+
+        // Get all cache entries for getMedia
+        const state: any = getState();
+        const cacheEntries = state.api.queries;
+
+        // Update each getMedia cache entry
+        Object.keys(cacheEntries).forEach((key) => {
+          if (key.startsWith('getMedia(')) {
+            const match = key.match(/getMedia\((.*?)\)/);
+            if (match) {
+              try {
+                const args = JSON.parse(match[1]);
+                const patch = dispatch(
+                  mediaApi.util.updateQueryData('getMedia', args, (draft: any) => {
+                    if (draft?.data?.items) {
+                      draft.data.items = draft.data.items.filter((item: IMediaDto) => item._id !== id);
+                      draft.data.meta.total = Math.max(0, draft.data.meta.total - 1);
+                    }
+                  })
+                );
+                patches.push(patch);
+              } catch (e) {
+                // Skip invalid cache entries
+              }
+            }
+          }
+        });
+
+        try {
+          await queryFulfilled;
+        } catch {
+          // Rollback on error
+          patches.forEach(patch => patch.undo());
+        }
+      },
+      invalidatesTags: (result, error, id) => [
+        { type: TagTypes.MEDIA, id },
+        { type: TagTypes.MEDIA, id: "LIST" },
+        TagTypes.INVENTORY_BALANCES, // Backend deletes associated balance items
+      ],
     }),
 
     // Legacy: Delete by public_id (kept for backward compatibility)
@@ -176,7 +222,10 @@ export const mediaApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: TagTypes.MEDIA, id: "LIST" }],
+      invalidatesTags: [
+        { type: TagTypes.MEDIA, id: "LIST" },
+        TagTypes.INVENTORY_BALANCES,
+      ],
     }),
 
     // Transcribe image (AI feature)
