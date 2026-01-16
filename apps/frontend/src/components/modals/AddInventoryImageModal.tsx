@@ -3,7 +3,7 @@ import { Upload, Image as ImageIcon, X, RotateCcw, Check } from "lucide-react";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useUploadGalleryMutation, IGalleryDto } from "@/store/gallery-slice";
+import { useUploadMediaMutation, IMediaDto, MediaCategory } from "@/store/media-slice";
 import { ImagePickerModal } from "./ImagePickerModal";
 import { toast } from "sonner";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
@@ -27,14 +27,14 @@ export function AddInventoryImageModal({
   mode = "add",
 }: AddInventoryImageModalProps) {
   const isMobile = useMediaQuery("mobile");
-  const [selectedImage, setSelectedImage] = useState<IGalleryDto | null>(null);
+  const [selectedImage, setSelectedImage] = useState<IMediaDto | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     mode === "edit" && item.image?.url ? item.image.url : null
   );
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadGallery, { isLoading: isUploadingImage }] =
-    useUploadGalleryMutation();
+  const [uploadMedia, { isLoading: isUploadingImage }] =
+    useUploadMediaMutation();
   const [updateInventoryItem, { isLoading: isSubmitting }] =
     useUpdateInventoryItemMutation();
   const { refetch } = useGetInventoryItemsQuery();
@@ -107,7 +107,7 @@ export function AddInventoryImageModal({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const result = await uploadGallery({ formData }).unwrap();
+      const result = await uploadMedia({ formData }).unwrap();
       setSelectedImage(result.data);
 
       // Clean up blob URL and use the server URL instead
@@ -145,11 +145,9 @@ export function AddInventoryImageModal({
     }
   };
 
-  const handleSelectFromGallery = (galleryItem: IGalleryDto) => {
-    setSelectedImage(galleryItem);
-    const media =
-      typeof galleryItem.media_id === "object" ? galleryItem.media_id : null;
-    setImagePreview(galleryItem.imageUrl || media?.url || null);
+  const handleSelectFromGallery = (mediaItem: IMediaDto) => {
+    setSelectedImage(mediaItem);
+    setImagePreview(mediaItem.url || null);
     setIsImagePickerOpen(false);
   };
 

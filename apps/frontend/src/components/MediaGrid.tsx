@@ -2,10 +2,10 @@ import { ImageIcon } from "lucide-react";
 import { GalleryCard, GalleryCardViewMode } from "./GalleryCard";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { IGalleryDto } from "@/store/gallery-slice";
+import { IMediaDto } from "@/store/media-slice";
 
 export interface MediaGridProps {
-  items: IGalleryDto[];
+  items: IMediaDto[];
   viewMode: "grid" | "list";
   selectedIds: string[];
   showCheckboxes: boolean;
@@ -16,7 +16,7 @@ export interface MediaGridProps {
   hasNextPage?: boolean;
   isFetching?: boolean;
   loadMoreRef?: React.RefObject<HTMLDivElement>;
-  onSelect: (item: IGalleryDto) => void;
+  onSelect: (item: IMediaDto) => void;
   onZoom?: (index: number) => void;
   onEmptyAction?: () => void;
 }

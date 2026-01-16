@@ -12,9 +12,9 @@ export function AIPreviewModal() {
   const { modals, closeModal } = useModalContext();
   const modal = modals["ai-preview"];
 
-  if (!modal?.isOpen || !modal.data) return null;
-
-  const { imageUrl, items } = modal.data;
+  // Extract data before conditional checks (for hooks to work)
+  const imageUrl = modal?.data?.imageUrl || "";
+  const items = modal?.data?.items || [];
 
   // State to track selected values for each item, initialized with item names
   const [itemSelections, setItemSelections] = useState<Record<number, string>>(
@@ -52,6 +52,9 @@ export function AIPreviewModal() {
       label: item.name,
     }));
   }, [searchResponse]);
+
+  // NOW check if modal should be shown (after all hooks are called)
+  if (!modal?.isOpen || !modal.data) return null;
 
   const handleDownloadJSON = () => {
     const dataToDownload = {

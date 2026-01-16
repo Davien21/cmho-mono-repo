@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Image as ImageIcon, Check, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { IGalleryDto } from "@/store/gallery-slice";
+import { IMediaDto } from "@/store/media-slice";
 
 // Helper function to strip "cmho-temp_" prefix from display name
 export const getDisplayName = (name?: string): string => {
@@ -15,16 +15,16 @@ export const getDisplayName = (name?: string): string => {
 export type GalleryCardViewMode = "grid" | "list";
 
 export interface GalleryCardProps {
-  item: IGalleryDto;
+  item: IMediaDto;
   isSelected: boolean;
-  onSelect: (item: IGalleryDto) => void;
+  onSelect: (item: IMediaDto) => void;
   viewMode?: GalleryCardViewMode;
   showCheckbox?: boolean;
   showZoomButton?: boolean;
   onZoomClick?: () => void;
   checkboxSize?: "small" | "medium";
   hoverBehavior?: boolean; // Show checkbox on hover (desktop only)
-  onDoubleClick?: (item: IGalleryDto) => void;
+  onDoubleClick?: (item: IMediaDto) => void;
 }
 
 export function GalleryCard({
@@ -40,10 +40,9 @@ export function GalleryCard({
   onDoubleClick,
 }: GalleryCardProps) {
   const [imageError, setImageError] = useState(false);
-  const media = typeof item.media_id === "object" ? item.media_id : null;
-  const mediaUrl = item.imageUrl || media?.url || "";
-  const displayName = getDisplayName(item.name || media?.filename);
-  const mediaType = media?.type || "";
+  const mediaUrl = item.url || "";
+  const displayName = getDisplayName(item.name || item.filename);
+  const mediaType = item.type || "";
 
   const isImage =
     (mediaType?.toLowerCase().includes("image") ||

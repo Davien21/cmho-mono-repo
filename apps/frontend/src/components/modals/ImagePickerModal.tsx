@@ -3,14 +3,14 @@ import { Search, Image as ImageIcon } from "lucide-react";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useGetGalleryQuery, IGalleryDto } from "@/store/gallery-slice";
+import { useGetMediaQuery, IMediaDto, MediaCategory } from "@/store/media-slice";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { GalleryCard, getDisplayName } from "@/components/GalleryCard";
 
 interface ImagePickerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (image: IGalleryDto) => void;
+  onSelect: (image: IMediaDto) => void;
 }
 
 export function ImagePickerModal({
@@ -21,22 +21,21 @@ export function ImagePickerModal({
   const isMobile = useMediaQuery("mobile");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
-  const { data: galleryResponse, isLoading } = useGetGalleryQuery({
+  const { data: mediaResponse, isLoading } = useGetMediaQuery({
     page: 1,
     limit: 100,
+    category: MediaCategory.INVENTORY,
   });
 
-  const galleryItems = galleryResponse?.data?.items || [];
+  const mediaItems = mediaResponse?.data?.items || [];
 
   const filteredImages = useMemo(() => {
-    if (!searchQuery.trim()) return galleryItems;
+    if (!searchQuery.trim()) return mediaItems;
     const query = searchQuery.toLowerCase();
-    return galleryItems.filter((item) => {
-      const media =
-        typeof item.media_id === "object" ? item.media_id : null;
-      const storedName = item.name || media?.filename || "";
+    return mediaItems.filter((item) => {
+      const storedName = item.name || item.filename || "";
       const displayName = getDisplayName(storedName);
-      const url = item.imageUrl || media?.url || "";
+      const url = item.url || "";
       // Search both stored name (with prefix) and display name (without prefix)
       return (
         storedName.toLowerCase().includes(query) ||
@@ -44,15 +43,15 @@ export function ImagePickerModal({
         url.toLowerCase().includes(query)
       );
     });
-  }, [galleryItems, searchQuery]);
+  }, [mediaItems, searchQuery]);
 
-  const handleSelect = (image: IGalleryDto) => {
+  const handleSelect = (image: IMediaDto) => {
     setSelectedImageId((prev) => (prev === image._id ? null : image._id));
   };
 
   const handleConfirm = () => {
     if (selectedImageId) {
-      const selectedImage = galleryItems.find(
+      const selectedImage = mediaItems.find(
         (item) => item._id === selectedImageId
       );
       if (selectedImage) {
@@ -64,7 +63,7 @@ export function ImagePickerModal({
     }
   };
 
-  const handleDoubleClick = (image: IGalleryDto) => {
+  const handleDoubleClick = (image: IMediaDto) => {
     onSelect(image);
     onOpenChange(false);
     setSelectedImageId(null);
