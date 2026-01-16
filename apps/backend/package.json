@@ -63,7 +63,6 @@
     "seed": "tsx seeds/index.ts",
     "backup": "tsx scripts/backup-db.ts",
     "sync-algolia": "tsx scripts/sync-algolia.ts",
-    "cleanup-duplicates": "tsx scripts/cleanup-duplicates.ts",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "build": "echo '🟡 Skipped build (using tsx)'"
