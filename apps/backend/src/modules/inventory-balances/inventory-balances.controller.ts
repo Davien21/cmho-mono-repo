@@ -20,13 +20,22 @@ export async function processInventoryBalance(req: Request, res: Response) {
     const aiResult = await geminiService.transcribeImage(imageUrl);
 
     // Save individual items
-    await inventoryBalancesService.createMany({
+    const savedItems = await inventoryBalancesService.createMany({
       media_id,
       imageUrl,
       items: aiResult.inventory,
     });
 
-    res.send(successResponse("Inventory balance processed successfully"));
+    // Return the data in the expected format for the frontend
+    const responseData = {
+      media: {
+        id: media_id,
+        url: imageUrl,
+      },
+      items: savedItems,
+    };
+
+    res.send(successResponse("Inventory balance processed successfully", responseData));
   } catch (error: any) {
     // If AI fails, we still have the media. We could return the media info so user can retry or manually enter
     console.error("[ProcessInventoryBalance] AI Error:", error);

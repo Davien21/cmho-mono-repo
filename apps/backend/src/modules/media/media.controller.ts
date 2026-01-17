@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
-import { uploadToCloudHighQuality, deleteFromCloud } from "../../lib/cloudinary";
+import {
+  uploadForStockBalanceProcessing,
+  deleteFromCloud,
+} from "../../lib/cloudinary";
 import { successResponse } from "../../utils/response";
 import mediaService from "./media.service";
 import { getMediaType, uploadFncs } from "../../utils/helpers";
@@ -17,8 +20,8 @@ class MediaController {
    * Get paginated list of media (replaces Gallery getAll)
    */
   async getAll(req: Request, res: Response) {
-    const page = parseInt(req.query.page as string || "1");
-    const limit = parseInt(req.query.limit as string || "100");
+    const page = parseInt((req.query.page as string) || "1");
+    const limit = parseInt((req.query.limit as string) || "100");
     const category = req.query.category as MediaCategory;
 
     const result = await mediaService.list({ page, limit, category });
@@ -55,15 +58,16 @@ class MediaController {
     const isBalanceSheet = category === MediaCategory.BALANCE_SHEET;
     const uploader =
       isBalanceSheet && fileType === "image"
-        ? uploadToCloudHighQuality
+        ? uploadForStockBalanceProcessing
         : uploadFncs[fileType];
 
     const upload = await uploader(file.path);
 
     // Generate name using convention: provided name or cmho-temp_[filename]
-    const mediaName = name && name.trim()
-      ? name.trim()
-      : `cmho-temp_${upload.filename || file.originalname}`;
+    const mediaName =
+      name && name.trim()
+        ? name.trim()
+        : `cmho-temp_${upload.filename || file.originalname}`;
 
     const media = await mediaService.create({
       filename: upload.filename || file.originalname,

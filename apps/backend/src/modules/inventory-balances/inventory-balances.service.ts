@@ -34,7 +34,9 @@ class InventoryBalancesService {
       status: AIInventoryBalanceStatus.PENDING,
     }));
 
-    return AIInventoryBalanceItem.insertMany(docs);
+    const result = await AIInventoryBalanceItem.insertMany(docs);
+    // Convert to plain objects for response
+    return result.map(doc => doc.toObject());
   }
 
   async update(id: string, data: Partial<IAIInventoryBalanceItem>) {

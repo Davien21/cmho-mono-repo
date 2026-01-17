@@ -63,7 +63,9 @@ export const uploadToCloud = async function (filepath: string) {
  * High-quality upload for balance sheets and documents requiring AI transcription
  * Preserves image quality and resolution for better OCR/text recognition
  */
-export const uploadToCloudHighQuality = async function (filepath: string) {
+export const uploadForStockBalanceProcessing = async function (
+  filepath: string
+) {
   try {
     const result = await cloudinary.uploader.upload(filepath, {
       folder: `${env.CLOUDINARY_FOLDER}/balance-sheets`,
@@ -73,21 +75,21 @@ export const uploadToCloudHighQuality = async function (filepath: string) {
       // High-quality transformations for text recognition
       transformation: [
         {
-          // Allow much larger dimensions for text clarity
-          width: 2048,
-          height: 2048,
+          // Optimized dimensions for AI processing - balances quality and speed
+          width: 1600,
+          height: 1600,
           crop: "limit", // Maintains aspect ratio, only resizes if exceeds dimensions
-          quality: 100, // High quality for text clarity (90-100 range)
+          quality: 90, // Optimal quality for text clarity without excessive file size
           fetch_format: "webp", // WebP for crisp text with better compression
         },
       ],
       // Eager transformations to generate high-quality version immediately
       eager: [
         {
-          width: 2048,
-          height: 2048,
+          width: 1600,
+          height: 1600,
           crop: "limit",
-          quality: 100,
+          quality: 90,
           fetch_format: "webp",
         },
       ],
