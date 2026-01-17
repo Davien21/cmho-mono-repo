@@ -12,7 +12,7 @@ import {
   CheckSquare,
   Trash2,
 } from "lucide-react";
-import { processInBatches } from "@/lib/image-utils";
+import { processInBatches, optimizeImage } from "@/lib/image-utils";
 import {
   useGetStagedItemsQuery,
   useProcessInventoryBalanceMutation,
@@ -73,9 +73,15 @@ export default function BalanceStockPage() {
     const toastId = toast.loading(`Uploading ${files.length} image(s)...`);
 
     try {
-      // Light optimization: high quality (0.95), larger thresholds for AI processing
+      // Moderate optimization for AI processing: balances quality and upload speed
+      // Higher thresholds than gallery to preserve text clarity for OCR
       const optimizationResults = await processInBatches(files, 4, (file) =>
-        Promise.resolve(file)
+        optimizeImage(file, {
+          sizeThreshold: 500 * 1024, // 500KB - allow larger files before optimization
+          dimensionThreshold: 2000, // Larger dimensions for text clarity
+          quality: 0.92, // High quality for text recognition
+          targetSizeKB: 800, // Target 800KB after first pass
+        })
       );
 
       const optimizedFiles: File[] = [];
@@ -107,9 +113,11 @@ export default function BalanceStockPage() {
       );
 
       let successCount = 0;
+      const uploadedMediaIds: string[] = [];
       uploadResults.forEach((result, index) => {
         if (result.status === "fulfilled") {
           successCount++;
+          uploadedMediaIds.push(result.value._id);
         } else {
           toast.error(`Failed to upload ${optimizedFiles[index].name}`);
         }
@@ -119,6 +127,10 @@ export default function BalanceStockPage() {
         toast.success(`Successfully uploaded ${successCount} image(s)`, {
           id: toastId,
         });
+
+        // Auto-select newly uploaded images and enable checkbox mode
+        setSelectedMediaIds(uploadedMediaIds);
+        setShowCheckboxes(true);
       } else {
         toast.error("All uploads failed", { id: toastId });
       }
