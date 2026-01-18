@@ -1,10 +1,18 @@
 import { useModalContext } from "@/contexts/modal-context";
-import { X, Download, ChevronLeft, ChevronRight, Edit2, Save, Loader2 } from "lucide-react";
+import {
+  X,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  Edit2,
+  Save,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Autocomplete } from "@/components/Autocomplete";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchInventoryItemsQuery } from "@/store/inventory-slice";
 import { useGetStagedItemsByMediaIdQuery } from "@/store/inventory-balances-slice";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -21,29 +29,38 @@ export function AIPreviewModal() {
 
   // Extract data - array of media references with IDs
   const processedMedia: ProcessedMediaRef[] = modal?.data?.processedMedia || [];
-  const [currentIndex, setCurrentIndex] = useState(modal?.data?.startIndex || 0);
+  const [currentIndex, setCurrentIndex] = useState(
+    modal?.data?.startIndex || 0
+  );
 
   // Get current media reference
   const currentMediaRef = processedMedia[currentIndex];
 
   // Fetch staged items for current media ID
-  const { data: stagedResponse, isLoading: isLoadingStaged, isFetching } = useGetStagedItemsByMediaIdQuery(
-    currentMediaRef?.mediaId || "",
-    {
-      skip: !currentMediaRef?.mediaId,
-    }
-  );
+  const {
+    data: stagedResponse,
+    isLoading: isLoadingStaged,
+    isFetching,
+  } = useGetStagedItemsByMediaIdQuery(currentMediaRef?.mediaId || "", {
+    skip: !currentMediaRef?.mediaId,
+  });
 
   const currentItems = stagedResponse?.data?.items || [];
 
   // State to track edited values for ALL images (persisted across navigation)
-  const [allEdits, setAllEdits] = useState<Record<string, Record<number, string>>>({});
+  const [allEdits, setAllEdits] = useState<
+    Record<string, Record<number, string>>
+  >({});
 
   // Get edits for current media
-  const currentEdits = currentMediaRef?.mediaId ? allEdits[currentMediaRef.mediaId] || {} : {};
+  const currentEdits = currentMediaRef?.mediaId
+    ? allEdits[currentMediaRef.mediaId] || {}
+    : {};
 
   // State to track selected values for current image items
-  const [itemSelections, setItemSelections] = useState<Record<number, string>>({});
+  const [itemSelections, setItemSelections] = useState<Record<number, string>>(
+    {}
+  );
 
   // Track editing state
   const [isEditing, setIsEditing] = useState(false);
@@ -88,13 +105,24 @@ export function AIPreviewModal() {
     }));
   }, [searchResponse]);
 
-  if (!modal?.isOpen || !modal.data || processedMedia.length === 0) return null;
-
+  // Compute values needed for hooks before early return
   const hasMultipleImages = processedMedia.length > 1;
   const canGoPrevious = currentIndex > 0;
   const canGoNext = currentIndex < processedMedia.length - 1;
 
-  const handlePrevious = () => {
+  // All hooks must be called before any early returns
+  const handleSaveEdits = useCallback(() => {
+    if (currentMediaRef?.mediaId) {
+      // Save current edits
+      setAllEdits((prev) => ({
+        ...prev,
+        [currentMediaRef.mediaId]: itemSelections,
+      }));
+    }
+    setIsEditing(false);
+  }, [currentMediaRef?.mediaId, itemSelections]);
+
+  const handlePrevious = useCallback(() => {
     if (canGoPrevious) {
       if (isEditing) {
         handleSaveEdits();
@@ -102,9 +130,9 @@ export function AIPreviewModal() {
       setCurrentIndex(currentIndex - 1);
       setIsEditing(false);
     }
-  };
+  }, [canGoPrevious, isEditing, handleSaveEdits, currentIndex]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (canGoNext) {
       if (isEditing) {
         handleSaveEdits();
@@ -112,20 +140,10 @@ export function AIPreviewModal() {
       setCurrentIndex(currentIndex + 1);
       setIsEditing(false);
     }
-  };
+  }, [canGoNext, isEditing, handleSaveEdits, currentIndex]);
 
-  const handleSaveEdits = () => {
-    if (currentMediaRef?.mediaId) {
-      // Save current edits
-      setAllEdits(prev => ({
-        ...prev,
-        [currentMediaRef.mediaId]: itemSelections,
-      }));
-    }
-    setIsEditing(false);
-  };
-
-  const handleDownloadCurrent = () => {
+  // Regular function handlers (can be defined after hooks but before early return)
+  const handleDownloadCurrent = useCallback(() => {
     if (!currentMediaRef) return;
 
     const dataToDownload = {
@@ -149,9 +167,9 @@ export function AIPreviewModal() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  };
+  }, [currentMediaRef, currentItems, currentEdits, currentIndex]);
 
-  const handleDownloadAll = () => {
+  const handleDownloadAll = useCallback(() => {
     const dataToDownload = processedMedia.map((mediaRef) => {
       const edits = allEdits[mediaRef.mediaId] || {};
       return {
@@ -172,7 +190,7 @@ export function AIPreviewModal() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  };
+  }, [processedMedia, allEdits]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -191,14 +209,24 @@ export function AIPreviewModal() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, canGoPrevious, canGoNext, isEditing]);
+  }, [
+    canGoPrevious,
+    canGoNext,
+    isEditing,
+    handlePrevious,
+    handleNext,
+    handleSaveEdits,
+    closeModal,
+  ]);
+
+  // Early return after all hooks
+  if (!modal?.isOpen || !modal.data || processedMedia.length === 0) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-background">
-      {/* Header with Navigation and Close Button */}
-      <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between">
-        {/* Navigation Controls */}
-        {hasMultipleImages && (
+      {/* Navigation Controls - Only shown over image on desktop */}
+      {hasMultipleImages && (
+        <div className="absolute top-4 left-4 z-10 md:block hidden">
           <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm border rounded-lg shadow-lg p-2">
             <Button
               variant="ghost"
@@ -222,23 +250,8 @@ export function AIPreviewModal() {
               <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
-        )}
-
-        {/* Close Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            if (isEditing) {
-              handleSaveEdits();
-            }
-            closeModal("ai-preview");
-          }}
-          className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border shadow-lg hover:bg-background ml-auto"
-        >
-          <X className="h-5 w-5" />
-        </Button>
-      </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="h-full w-full flex flex-col md:flex-row">
@@ -296,8 +309,8 @@ export function AIPreviewModal() {
         <div className="w-full md:w-[500px] lg:w-[600px] border-l bg-background flex flex-col">
           {/* Header */}
           <div className="p-6 border-b">
-            <div className="flex items-start justify-between">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
                 <h2 className="text-2xl font-bold">AI Extracted Items</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   {isLoadingStaged || isFetching ? (
@@ -305,36 +318,79 @@ export function AIPreviewModal() {
                   ) : (
                     <>
                       Found {currentItems.length}{" "}
-                      {currentItems.length === 1 ? "item" : "items"} in
-                      this image
+                      {currentItems.length === 1 ? "item" : "items"} in this
+                      image
                     </>
                   )}
                 </p>
-              </div>
-              <Button
-                variant={isEditing ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  if (isEditing) {
-                    handleSaveEdits();
-                  } else {
-                    setIsEditing(true);
-                  }
-                }}
-                disabled={isLoadingStaged || isFetching}
-              >
-                {isEditing ? (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save
-                  </>
-                ) : (
-                  <>
-                    <Edit2 className="h-4 w-4 mr-2" />
-                    Edit
-                  </>
+                {/* Navigation on mobile */}
+                {hasMultipleImages && (
+                  <div className="flex items-center gap-2 mt-3 md:hidden">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePrevious}
+                      disabled={!canGoPrevious}
+                      className="h-8"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      Prev
+                    </Button>
+                    <span className="text-sm font-medium px-2">
+                      {currentIndex + 1} / {processedMedia.length}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleNext}
+                      disabled={!canGoNext}
+                      className="h-8"
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
                 )}
-              </Button>
+              </div>
+              <div className="flex items-start gap-2">
+                <Button
+                  variant={isEditing ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    if (isEditing) {
+                      handleSaveEdits();
+                    } else {
+                      setIsEditing(true);
+                    }
+                  }}
+                  disabled={isLoadingStaged || isFetching}
+                >
+                  {isEditing ? (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save
+                    </>
+                  ) : (
+                    <>
+                      <Edit2 className="h-4 w-4 mr-2" />
+                      Edit
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (isEditing) {
+                      handleSaveEdits();
+                    }
+                    closeModal("ai-preview");
+                  }}
+                  className="h-9 w-9"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
 
