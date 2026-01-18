@@ -2,7 +2,13 @@ import { useState, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, Scale, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Image as ImageIcon,
+  Scale,
+  Trash2,
+  Sparkles,
+} from "lucide-react";
 import { processInBatches } from "@/lib/image-utils";
 import {
   useGetStagedItemsQuery,
@@ -82,12 +88,22 @@ export default function BalanceStockPage() {
     );
 
     if (mediaWithStatus?.isProcessed) {
+      // Get all processed media IDs
+      const allProcessedMedia = allMediaWithStatus
+        .filter(({ isProcessed }) => isProcessed)
+        .map(({ media }) => ({
+          mediaId: media._id,
+          imageUrl: media.url,
+        }));
+
+      // Find the index of the clicked item
+      const startIndex = allProcessedMedia.findIndex(
+        (m) => m.mediaId === item._id
+      );
+
       openModal("ai-preview", {
-        imageUrl: item.url,
-        items: mediaWithStatus.stagedItems.map((staged) => ({
-          name: staged.name,
-          quantity_details: staged.quantity_details,
-        })),
+        processedMedia: allProcessedMedia,
+        startIndex: Math.max(0, startIndex),
       });
     }
   };
@@ -109,7 +125,11 @@ export default function BalanceStockPage() {
     if (filesToProcess.length === 0) return;
 
     setIsProcessing(true);
-    const toastId = toast.loading("Processing images with AI...");
+    const toastId = toast.loading(
+      `Processing ${filesToProcess.length} image${
+        filesToProcess.length === 1 ? "" : "s"
+      } with AI...`
+    );
 
     try {
       const results = await processInBatches(
@@ -128,29 +148,26 @@ export default function BalanceStockPage() {
         }
       );
 
-      const successCount = results.filter(
-        (r) => r.status === "fulfilled"
-      ).length;
+      const successfulResults = results
+        .filter((r) => r.status === "fulfilled")
+        .map((r) => (r.status === "fulfilled" ? r.value : null))
+        .filter(Boolean);
 
-      if (successCount > 0) {
+      if (successfulResults.length > 0) {
         toast.success(
-          `Successfully processed ${successCount} image(s)! You can now review them (marked with checkmark).`,
+          `Successfully processed ${successfulResults.length} image(s)! You can now review them (marked with checkmark).`,
           { id: toastId }
         );
         setSelectedMedia([]);
 
-        // Show preview modal for the first successfully processed image
-        const firstSuccess = results.find((r) => r.status === "fulfilled");
-        if (firstSuccess && firstSuccess.status === "fulfilled") {
-          const processedData = firstSuccess.value;
-          openModal("ai-preview", {
-            imageUrl: processedData.media.url,
-            items: processedData.items.map((item) => ({
-              name: item.name,
-              quantity_details: item.quantity_details,
-            })),
-          });
-        }
+        // Open modal with media IDs only - data will be fetched on demand
+        openModal("ai-preview", {
+          processedMedia: successfulResults.map((data: any) => ({
+            mediaId: data.media.id,
+            imageUrl: data.media.url,
+          })),
+          startIndex: 0,
+        });
       } else {
         toast.error("Failed to process images", { id: toastId });
       }
@@ -224,16 +241,17 @@ export default function BalanceStockPage() {
             {/* Process Button - shown when unprocessed items are selected */}
             {selectedMedia.length > 0 && hasUnprocessedSelected && (
               <Button
+                size="icon"
+                variant="outline"
                 onClick={handleProcessSelected}
                 disabled={isProcessing}
-                className="bg-blue-600 hover:bg-blue-700"
+                title={`Process ${selectedMedia.length} selected with AI`}
               >
                 {isProcessing ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Scale className="h-4 w-4 mr-2" />
+                  <Sparkles className="h-4 w-4" />
                 )}
-                Process
               </Button>
             )}
 
@@ -301,11 +319,13 @@ export default function BalanceStockPage() {
                         // Show preview modal for the processed image
                         if (result.data) {
                           openModal("ai-preview", {
-                            imageUrl: result.data.media.url,
-                            items: result.data.items.map((item) => ({
-                              name: item.name,
-                              quantity_details: item.quantity_details,
-                            })),
+                            processedMedia: [
+                              {
+                                mediaId: result.data.media.id,
+                                imageUrl: result.data.media.url,
+                              },
+                            ],
+                            startIndex: 0,
                           });
                         }
                       } catch (error: any) {

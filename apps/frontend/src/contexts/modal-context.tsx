@@ -18,8 +18,11 @@ type EditInventoryModalData = InventoryItem;
 type AddStockModalData = InventoryItem;
 type ReduceStockModalData = InventoryItem;
 type AIPreviewModalData = {
-  imageUrl: string;
-  items: Array<{ name: string; quantity_details: string }>;
+  processedMedia: Array<{
+    mediaId: string;
+    imageUrl: string;
+  }>;
+  startIndex?: number;
 };
 
 export type ModalDataMap = {

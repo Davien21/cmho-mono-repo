@@ -39,6 +39,18 @@ export const inventoryBalancesApi = baseApi.injectEndpoints({
       }),
       providesTags: [TagTypes.INVENTORY_BALANCES],
     }),
+    getStagedItemsByMediaId: builder.query<
+      IAPIResponse<IInventoryBalancesResponse>,
+      string
+    >({
+      query: (mediaId) => ({
+        url: `/inventory-balances/staged/media/${mediaId}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, mediaId) => [
+        { type: TagTypes.INVENTORY_BALANCES, id: mediaId },
+      ],
+    }),
     processInventoryBalance: builder.mutation<
       IAPIResponse<{ media: { id: string; url: string }; items: IAIInventoryBalanceItemDto[] }>,
       { media_id: string; imageUrl: string }
@@ -62,6 +74,7 @@ export const inventoryBalancesApi = baseApi.injectEndpoints({
 
 export const {
   useGetStagedItemsQuery,
+  useGetStagedItemsByMediaIdQuery,
   useProcessInventoryBalanceMutation,
   useDeleteStagedItemMutation,
 } = inventoryBalancesApi;
