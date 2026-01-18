@@ -323,9 +323,9 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
    */
   const handleBulkDelete = useCallback(
     async (itemsToDelete: IMediaDto[]) => {
-      if (selectedMedia.length === 0) return;
+      if (itemsToDelete.length === 0) return;
 
-      const count = selectedMedia.length;
+      const count = itemsToDelete.length;
       const itemText = count === 1 ? "image" : "images";
 
       openModal("confirmation-dialog", {
@@ -354,7 +354,7 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
             setSelectedMedia([]);
             closeModal("confirmation-dialog");
             if (options.onBulkDeleteSuccess) {
-              options.onBulkDeleteSuccess(selectedMedia);
+              options.onBulkDeleteSuccess(itemsToDelete.map(item => item._id));
             }
           } catch (error: unknown) {
             const message = getRTKQueryErrorMessage(
@@ -376,7 +376,7 @@ export function useMediaManager(options: UseMediaManagerOptions = {}) {
         onCancel: () => closeModal("confirmation-dialog"),
       });
     },
-    [selectedMedia, deleteMedia, openModal, closeModal, options]
+    [deleteMedia, openModal, closeModal, options]
   );
 
   /**
