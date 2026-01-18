@@ -16,19 +16,10 @@ class AuthService {
     return jwt.verify(token, env.JWT_SECRET_KEY) as AuthTokenPayload;
   }
 
-  async validatePassword(
-    input: string,
-    passwordHash: string
-  ): Promise<boolean> {
-    if (!passwordHash) {
-      return false;
-    }
+  validatePassword(input: string, passwordHash: string): Promise<boolean> {
+    if (!passwordHash) return Promise.resolve(false);
 
     return bcrypt.compare(input, passwordHash);
-  }
-
-  async validPassword(input: string, passwordHash: string): Promise<boolean> {
-    return this.validatePassword(input, passwordHash);
   }
 }
 

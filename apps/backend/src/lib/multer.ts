@@ -37,10 +37,10 @@ const storage = multer.diskStorage({
     fs.mkdir(dir, { recursive: true }, (err) => cb(err, dir));
   },
   filename: function (req, file, callback: FileNameCallback) {
-    // Generate shorter unique ID: base36 timestamp + 4 random hex chars
+    // Generate shorter unique ID: base36 timestamp
     const timestamp = Date.now().toString(36); // 8-9 characters, chronological
-    const random = crypto.randomBytes(2).toString('hex'); // 4 characters, collision-resistant
-    callback(null, `${timestamp}${random}_${file.originalname}`);
+
+    callback(null, `${timestamp}_${file.originalname}`);
   },
 });
 
@@ -69,7 +69,9 @@ const mediaFileFilter = function (
     callback(null, true);
   } else {
     callback(
-      new BadRequestError("Image upload failed. Supports only jpeg, png, webp, and heic")
+      new BadRequestError(
+        "Image upload failed. Supports only jpeg, png, webp, and heic"
+      )
     );
   }
 };

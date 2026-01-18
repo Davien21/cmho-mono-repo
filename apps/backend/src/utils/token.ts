@@ -4,10 +4,18 @@ import { env } from "../config/env";
 import { AdminRole, IAdmin } from "../modules/admins/admins.types";
 import { AuthTokenPayload } from "../modules/auth/auth.service";
 
+// 3 days in production, effectively infinite in development
+const EXPIRES_IN = env.NODE_ENV === "development" ? "365d" : "3d";
 interface ITokenOptions {
   length: number;
   range: string[] | number[];
   prefix: string;
+}
+
+interface IAdminTokenOptions {
+  _id?: string;
+  isSuperAdmin?: boolean;
+  roles?: AdminRole[];
 }
 
 const generateToken = ({ length, range, prefix }: ITokenOptions) => {
@@ -38,23 +46,15 @@ const generateAuthToken = (
     roles: user.roles,
   };
 
-  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: EXPIRES_IN });
 };
 
-const generateAdminToken = (options?: {
-  _id?: string;
-  isSuperAdmin?: boolean;
-  roles?: AdminRole[];
-}): string => {
+const generateAdminToken = (options?: IAdminTokenOptions): string => {
   const { _id = "Admin", isSuperAdmin = true, roles = [] } = options || {};
 
-  const payload: AuthTokenPayload = {
-    _id,
-    isSuperAdmin,
-    roles,
-  };
+  const payload: AuthTokenPayload = { _id, isSuperAdmin, roles };
 
-  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+  return jwt.sign(payload, env.JWT_SECRET_KEY, { expiresIn: EXPIRES_IN });
 };
 
 const generateRandomString = (length = 64) =>
