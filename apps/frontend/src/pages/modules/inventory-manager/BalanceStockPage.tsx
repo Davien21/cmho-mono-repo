@@ -134,7 +134,7 @@ export default function BalanceStockPage() {
     try {
       const results = await processInBatches(
         filesToProcess,
-        2,
+        8,
         async (fileObj) => {
           if (!fileObj.id || !fileObj.url) {
             throw new Error("Media ID and URL are required");
