@@ -286,12 +286,27 @@ export default function BalanceStockPage() {
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {allMediaWithStatus.map(({ media, isProcessed }) => {
+                // Check if this item is part of the selection
+                const isInSelection = selectedMedia.includes(media._id);
+
                 const contextMenuItems: GalleryCardMenuItem[] = [
                   {
-                    label: "Delete",
+                    label:
+                      isInSelection && selectedMedia.length > 1
+                        ? `Delete ${selectedMedia.length} selected`
+                        : "Delete",
                     icon: <Trash2 className="h-4 w-4" />,
                     onClick: () => {
-                      handleBulkDelete([media]);
+                      // If item is in selection and there are multiple selected, delete all selected
+                      if (isInSelection && selectedMedia.length > 0) {
+                        const itemsToDelete = galleryList.filter((item) =>
+                          selectedMedia.includes(item._id)
+                        );
+                        handleBulkDelete(itemsToDelete);
+                      } else {
+                        // Otherwise, delete just this item
+                        handleBulkDelete([media]);
+                      }
                     },
                     variant: "destructive",
                   },
@@ -300,41 +315,50 @@ export default function BalanceStockPage() {
                 // Add Process option if not processed
                 if (!isProcessed) {
                   contextMenuItems.unshift({
-                    label: "Process with AI",
+                    label:
+                      isInSelection && selectedMedia.length > 1
+                        ? `Process ${selectedMedia.length} selected`
+                        : "Process with AI",
                     icon: <Scale className="h-4 w-4" />,
                     onClick: async () => {
-                      setIsProcessing(true);
-                      const toastId = toast.loading(
-                        "Processing image with AI..."
-                      );
-                      try {
-                        const result = await processBalance({
-                          media_id: media._id,
-                          imageUrl: media.url,
-                        }).unwrap();
-                        toast.success("Image processed successfully!", {
-                          id: toastId,
-                        });
-
-                        // Show preview modal for the processed image
-                        if (result.data) {
-                          openModal("ai-preview", {
-                            processedMedia: [
-                              {
-                                mediaId: result.data.media.id,
-                                imageUrl: result.data.media.url,
-                              },
-                            ],
-                            startIndex: 0,
-                          });
-                        }
-                      } catch (error: any) {
-                        toast.error(
-                          error?.message || "Failed to process image",
-                          { id: toastId }
+                      // If item is in selection and there are multiple selected, process all selected
+                      if (isInSelection && selectedMedia.length > 1) {
+                        handleProcessSelected();
+                      } else {
+                        // Otherwise, process just this item
+                        setIsProcessing(true);
+                        const toastId = toast.loading(
+                          "Processing image with AI..."
                         );
-                      } finally {
-                        setIsProcessing(false);
+                        try {
+                          const result = await processBalance({
+                            media_id: media._id,
+                            imageUrl: media.url,
+                          }).unwrap();
+                          toast.success("Image processed successfully!", {
+                            id: toastId,
+                          });
+
+                          // Show preview modal for the processed image
+                          if (result.data) {
+                            openModal("ai-preview", {
+                              processedMedia: [
+                                {
+                                  mediaId: result.data.media.id,
+                                  imageUrl: result.data.media.url,
+                                },
+                              ],
+                              startIndex: 0,
+                            });
+                          }
+                        } catch (error: any) {
+                          toast.error(
+                            error?.message || "Failed to process image",
+                            { id: toastId }
+                          );
+                        } finally {
+                          setIsProcessing(false);
+                        }
                       }
                     },
                   });
