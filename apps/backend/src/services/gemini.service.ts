@@ -50,7 +50,7 @@ export class GeminiService {
           responseMimeType: "application/json",
           responseSchema: INVENTORY_SCHEMA,
           thinkingConfig: {
-            thinkingLevel: ThinkingLevel.LOW,
+            thinkingLevel: ThinkingLevel.HIGH,
           },
         },
       });
