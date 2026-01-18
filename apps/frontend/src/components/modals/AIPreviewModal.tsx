@@ -4,7 +4,6 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
-  Edit2,
   Save,
   Loader2,
   RefreshCw,
@@ -115,9 +114,6 @@ export function AIPreviewModal() {
     {}
   );
 
-  // Track editing state
-  const [isEditing, setIsEditing] = useState(false);
-
   // Initialize item selections when items change
   useEffect(() => {
     if (currentMediaRef?.mediaId) {
@@ -163,6 +159,20 @@ export function AIPreviewModal() {
   const canGoPrevious = currentIndex > 0;
   const canGoNext = currentIndex < processedMedia.length - 1;
 
+  // Detect if there are unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    if (!currentMediaRef?.mediaId) return false;
+
+    const savedEdits = allEdits[currentMediaRef.mediaId] || {};
+
+    // Check if any current selection differs from the saved state
+    return currentItems.some((item, index) => {
+      const currentValue = itemSelections[index];
+      const savedValue = savedEdits[index] || item.name;
+      return currentValue !== savedValue;
+    });
+  }, [currentMediaRef?.mediaId, itemSelections, allEdits, currentItems]);
+
   // All hooks must be called before any early returns
   const handleSaveEdits = useCallback(() => {
     if (currentMediaRef?.mediaId) {
@@ -172,7 +182,6 @@ export function AIPreviewModal() {
         [currentMediaRef.mediaId]: itemSelections,
       }));
     }
-    setIsEditing(false);
   }, [currentMediaRef?.mediaId, itemSelections]);
 
   const handleCancelEdits = useCallback(() => {
@@ -188,28 +197,21 @@ export function AIPreviewModal() {
       );
       setItemSelections(originalSelections);
     }
-    setIsEditing(false);
   }, [currentMediaRef?.mediaId, currentItems, allEdits]);
 
   const handlePrevious = useCallback(() => {
     if (canGoPrevious) {
-      if (isEditing) {
-        handleSaveEdits();
-      }
+      handleSaveEdits();
       setCurrentIndex(currentIndex - 1);
-      setIsEditing(false);
     }
-  }, [canGoPrevious, isEditing, handleSaveEdits, currentIndex]);
+  }, [canGoPrevious, handleSaveEdits, currentIndex]);
 
   const handleNext = useCallback(() => {
     if (canGoNext) {
-      if (isEditing) {
-        handleSaveEdits();
-      }
+      handleSaveEdits();
       setCurrentIndex(currentIndex + 1);
-      setIsEditing(false);
     }
-  }, [canGoNext, isEditing, handleSaveEdits, currentIndex]);
+  }, [canGoNext, handleSaveEdits, currentIndex]);
 
   // Regular function handlers (can be defined after hooks but before early return)
   const handleDownloadCurrent = useCallback(() => {
@@ -279,17 +281,14 @@ export function AIPreviewModal() {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" && canGoPrevious && !isEditing) {
+      if (e.key === "ArrowLeft" && canGoPrevious) {
         handlePrevious();
-      } else if (e.key === "ArrowRight" && canGoNext && !isEditing) {
+      } else if (e.key === "ArrowRight" && canGoNext) {
         handleNext();
       } else if (e.key === "Escape") {
-        if (isEditing) {
-          handleCancelEdits();
-        } else {
-          setSearchParams({}, { replace: true });
-          closeModal("ai-preview");
-        }
+        handleCancelEdits();
+        setSearchParams({}, { replace: true });
+        closeModal("ai-preview");
       }
     };
 
@@ -298,7 +297,6 @@ export function AIPreviewModal() {
   }, [
     canGoPrevious,
     canGoNext,
-    isEditing,
     handlePrevious,
     handleNext,
     handleCancelEdits,
@@ -343,9 +341,7 @@ export function AIPreviewModal() {
             variant="ghost"
             size="icon"
             onClick={() => {
-              if (isEditing) {
-                handleSaveEdits();
-              }
+              handleSaveEdits();
               setSearchParams({}, { replace: true });
               closeModal("ai-preview");
             }}
@@ -460,9 +456,7 @@ export function AIPreviewModal() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      if (isEditing) {
-                        handleSaveEdits();
-                      }
+                      handleSaveEdits();
                       setSearchParams({}, { replace: true });
                       closeModal("ai-preview");
                     }}
@@ -474,18 +468,17 @@ export function AIPreviewModal() {
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                {!isEditing ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditing(true)}
-                    disabled={isLoadingStaged || isFetching}
-                  >
-                    <Edit2 className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                ) : (
+                {hasUnsavedChanges && (
                   <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCancelEdits}
+                      disabled={isLoadingStaged || isFetching}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Undo
+                    </Button>
                     <Button
                       variant="primary"
                       size="sm"
@@ -494,15 +487,6 @@ export function AIPreviewModal() {
                     >
                       <Save className="h-4 w-4 mr-2" />
                       Save
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCancelEdits}
-                      disabled={isLoadingStaged || isFetching}
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Cancel
                     </Button>
                   </>
                 )}
@@ -528,10 +512,7 @@ export function AIPreviewModal() {
                 currentItems.map((item, index) => (
                   <Card
                     key={item._id}
-                    className={cn(
-                      "p-4 transition-all shadow-none",
-                      isEditing && "ring-2 ring-primary/20"
-                    )}
+                    className="p-4 transition-all shadow-none"
                   >
                     <div className="flex gap-4">
                       {/* Number Badge */}
@@ -544,32 +525,26 @@ export function AIPreviewModal() {
                       {/* Content */}
                       <div className="flex-1 space-y-2">
                         <div>
-                          {isEditing ? (
-                            <Autocomplete
-                              options={
-                                activeItemIndex === index
-                                  ? autocompleteOptions
-                                  : []
-                              }
-                              value={itemSelections[index] ?? item.name}
-                              onValueChange={(value) => {
-                                setItemSelections((prev) => ({
-                                  ...prev,
-                                  [index]: value,
-                                }));
-                              }}
-                              onFocus={() => setActiveItemIndex(index)}
-                              onBlur={() => {
-                                setTimeout(() => setActiveItemIndex(null), 200);
-                              }}
-                              placeholder={item.name}
-                              hideOutsideHoverOrFocus={true}
-                            />
-                          ) : (
-                            <p className="font-medium text-lg">
-                              {currentEdits[index] || item.name}
-                            </p>
-                          )}
+                          <Autocomplete
+                            options={
+                              activeItemIndex === index
+                                ? autocompleteOptions
+                                : []
+                            }
+                            value={itemSelections[index] ?? item.name}
+                            onValueChange={(value) => {
+                              setItemSelections((prev) => ({
+                                ...prev,
+                                [index]: value,
+                              }));
+                            }}
+                            onFocus={() => setActiveItemIndex(index)}
+                            onBlur={() => {
+                              setTimeout(() => setActiveItemIndex(null), 200);
+                            }}
+                            placeholder={item.name}
+                            hideOutsideHoverOrFocus={true}
+                          />
                         </div>
                         <div>
                           <p className="text-sm text-foreground/90">
@@ -625,9 +600,7 @@ export function AIPreviewModal() {
               )}
               <Button
                 onClick={() => {
-                  if (isEditing) {
-                    handleSaveEdits();
-                  }
+                  handleSaveEdits();
                   setSearchParams({}, { replace: true });
                   closeModal("ai-preview");
                 }}
