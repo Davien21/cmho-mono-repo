@@ -24,7 +24,16 @@ class InventoryBalancesService {
   }
 
   async createMany(data: CreateAIInventoryBalanceRequest) {
-    const docs = data.items.map((item) => ({
+    // Filter out items with empty or invalid quantity_details
+    const validItems = data.items.filter(
+      (item) => item.name?.trim() && item.quantity_details?.trim()
+    );
+
+    if (validItems.length === 0) {
+      throw new Error("No valid inventory items found in the image");
+    }
+
+    const docs = validItems.map((item) => ({
       media: {
         id: new mongoose.Types.ObjectId(data.media_id),
         url: data.imageUrl,

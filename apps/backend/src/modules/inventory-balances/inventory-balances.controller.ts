@@ -19,6 +19,11 @@ export async function processInventoryBalance(req: Request, res: Response) {
   try {
     const aiResult = await geminiService.transcribeImage(imageUrl);
 
+    // Validate that we got inventory items
+    if (!aiResult.inventory || aiResult.inventory.length === 0) {
+      throw new Error("No inventory items could be extracted from the image");
+    }
+
     // Save individual items
     const savedItems = await inventoryBalancesService.createMany({
       media_id,
@@ -35,13 +40,22 @@ export async function processInventoryBalance(req: Request, res: Response) {
       items: savedItems,
     };
 
-    res.send(successResponse("Inventory balance processed successfully", responseData));
+    res.send(
+      successResponse("Inventory balance processed successfully", responseData)
+    );
   } catch (error: any) {
     // If AI fails, we still have the media. We could return the media info so user can retry or manually enter
     console.error("[ProcessInventoryBalance] AI Error:", error);
+
+    // Provide more specific error message
+    const errorMessage = error.message?.includes("validation failed")
+      ? "Could not extract valid inventory data from the image. Please try a clearer image or enter manually."
+      : error.message ||
+        "AI transcription failed. Please try again or enter manually.";
+
     res.status(500).send({
       success: false,
-      message: "AI transcription failed. Please try again or enter manually.",
+      message: errorMessage,
     });
   }
 }
