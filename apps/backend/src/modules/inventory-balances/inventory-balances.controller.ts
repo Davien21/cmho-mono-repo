@@ -56,3 +56,14 @@ export async function deleteStagedItem(req: Request, res: Response) {
   await inventoryBalancesService.delete(id);
   res.send(successResponse("Staged item deleted successfully"));
 }
+
+export async function getStagedItemsByMediaId(req: Request, res: Response) {
+  const { media_id } = req.params;
+
+  if (!media_id) {
+    throw new BadRequestError("media_id is required");
+  }
+
+  const result = await inventoryBalancesService.getByMediaId(media_id);
+  res.send(successResponse("Staged items fetched successfully", result));
+}

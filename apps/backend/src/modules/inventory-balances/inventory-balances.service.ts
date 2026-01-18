@@ -59,6 +59,20 @@ class InventoryBalancesService {
       { new: true }
     ).lean();
   }
+
+  async getByMediaId(mediaId: string) {
+    const items = await AIInventoryBalanceItem.find({
+      "media.id": new mongoose.Types.ObjectId(mediaId),
+      isDeleted: { $ne: true },
+      status: AIInventoryBalanceStatus.PENDING,
+    })
+      .sort({ _id: 1 })
+      .lean();
+
+    return {
+      items,
+    };
+  }
 }
 
 export default new InventoryBalancesService();
