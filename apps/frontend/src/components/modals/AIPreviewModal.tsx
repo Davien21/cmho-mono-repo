@@ -7,16 +7,21 @@ import {
   Edit2,
   Save,
   Loader2,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Autocomplete } from "@/components/Autocomplete";
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useSearchInventoryItemsQuery } from "@/store/inventory-slice";
-import { useGetStagedItemsByMediaIdQuery } from "@/store/inventory-balances-slice";
+import {
+  useGetStagedItemsByMediaIdQuery,
+  useProcessInventoryBalanceMutation,
+} from "@/store/inventory-balances-slice";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "react-router-dom";
 
 interface ProcessedMediaRef {
   mediaId: string;
@@ -26,15 +31,59 @@ interface ProcessedMediaRef {
 export function AIPreviewModal() {
   const { modals, closeModal } = useModalContext();
   const modal = modals["ai-preview"];
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Track if we're programmatically updating the URL to prevent loops
+  const isUpdatingUrlRef = useRef(false);
 
   // Extract data - array of media references with IDs
   const processedMedia: ProcessedMediaRef[] = modal?.data?.processedMedia || [];
-  const [currentIndex, setCurrentIndex] = useState(
-    modal?.data?.startIndex || 0
-  );
+
+  // Get media ID from URL or fall back to initial data
+  const urlMediaId = searchParams.get("mediaId");
+
+  // Determine current index based on URL mediaId or startIndex
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    if (urlMediaId) {
+      const index = processedMedia.findIndex((m) => m.mediaId === urlMediaId);
+      return index >= 0 ? index : modal?.data?.startIndex || 0;
+    }
+    return modal?.data?.startIndex || 0;
+  });
 
   // Get current media reference
   const currentMediaRef = processedMedia[currentIndex];
+
+  // Sync URL when currentIndex changes (from user navigation)
+  useEffect(() => {
+    if (currentMediaRef?.mediaId && modal?.isOpen) {
+      isUpdatingUrlRef.current = true;
+      setSearchParams({ mediaId: currentMediaRef.mediaId }, { replace: true });
+      // Reset flag after a short delay to allow URL update to complete
+      setTimeout(() => {
+        isUpdatingUrlRef.current = false;
+      }, 0);
+    }
+  }, [currentIndex, currentMediaRef?.mediaId, modal?.isOpen, setSearchParams]);
+
+  // Handle URL changes from browser back/forward (only if not programmatic)
+  useEffect(() => {
+    if (isUpdatingUrlRef.current) return; // Skip if we're the ones updating the URL
+
+    if (urlMediaId && processedMedia.length > 0) {
+      const index = processedMedia.findIndex((m) => m.mediaId === urlMediaId);
+      if (index >= 0 && index !== currentIndex) {
+        setCurrentIndex(index);
+      }
+    }
+  }, [urlMediaId, processedMedia]);
+
+  // Clear URL params when modal is closed
+  useEffect(() => {
+    if (!modal?.isOpen && urlMediaId) {
+      setSearchParams({}, { replace: true });
+    }
+  }, [modal?.isOpen, urlMediaId, setSearchParams]);
 
   // Fetch staged items for current media ID
   const {
@@ -46,6 +95,10 @@ export function AIPreviewModal() {
   });
 
   const currentItems = stagedResponse?.data?.items || [];
+
+  // Mutation for reprocessing
+  const [processInventoryBalance, { isLoading: isReprocessing }] =
+    useProcessInventoryBalanceMutation();
 
   // State to track edited values for ALL images (persisted across navigation)
   const [allEdits, setAllEdits] = useState<
@@ -122,6 +175,22 @@ export function AIPreviewModal() {
     setIsEditing(false);
   }, [currentMediaRef?.mediaId, itemSelections]);
 
+  const handleCancelEdits = useCallback(() => {
+    // Reset to original API data
+    if (currentMediaRef?.mediaId) {
+      const savedEdits = allEdits[currentMediaRef.mediaId] || {};
+      const originalSelections = currentItems.reduce(
+        (acc, item, index) => ({
+          ...acc,
+          [index]: savedEdits[index] || item.name,
+        }),
+        {}
+      );
+      setItemSelections(originalSelections);
+    }
+    setIsEditing(false);
+  }, [currentMediaRef?.mediaId, currentItems, allEdits]);
+
   const handlePrevious = useCallback(() => {
     if (canGoPrevious) {
       if (isEditing) {
@@ -192,6 +261,21 @@ export function AIPreviewModal() {
     URL.revokeObjectURL(url);
   }, [processedMedia, allEdits]);
 
+  const handleReprocess = useCallback(async () => {
+    if (!currentMediaRef) return;
+
+    try {
+      await processInventoryBalance({
+        media_id: currentMediaRef.mediaId,
+        imageUrl: currentMediaRef.imageUrl,
+      }).unwrap();
+      // Successfully reprocessed - data will automatically refresh via RTK Query
+    } catch (error) {
+      console.error("Failed to reprocess image:", error);
+      // Optionally show an error toast here
+    }
+  }, [currentMediaRef, processInventoryBalance]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -201,9 +285,11 @@ export function AIPreviewModal() {
         handleNext();
       } else if (e.key === "Escape") {
         if (isEditing) {
-          handleSaveEdits();
+          handleCancelEdits();
+        } else {
+          setSearchParams({}, { replace: true });
+          closeModal("ai-preview");
         }
-        closeModal("ai-preview");
       }
     };
 
@@ -215,8 +301,9 @@ export function AIPreviewModal() {
     isEditing,
     handlePrevious,
     handleNext,
-    handleSaveEdits,
+    handleCancelEdits,
     closeModal,
+    setSearchParams,
   ]);
 
   // Early return after all hooks
@@ -224,18 +311,18 @@ export function AIPreviewModal() {
 
   return (
     <div className="fixed inset-0 z-50 bg-background">
-      {/* Navigation Controls - Only shown over image on desktop */}
-      {hasMultipleImages && (
-        <div className="absolute top-4 left-4 z-10 md:block hidden">
-          <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm border rounded-lg shadow-lg p-2">
+      {/* Navigation & Close Controls */}
+      <div className="absolute top-4 left-4 z-10 md:flex hidden items-center gap-3">
+        {hasMultipleImages && (
+          <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm border rounded-lg shadow-lg p-1.5">
             <Button
               variant="ghost"
               size="icon"
               onClick={handlePrevious}
               disabled={!canGoPrevious}
-              className="h-8 w-8"
+              className="h-7 w-7"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="text-sm font-medium px-2">
               {currentIndex + 1} / {processedMedia.length}
@@ -245,13 +332,30 @@ export function AIPreviewModal() {
               size="icon"
               onClick={handleNext}
               disabled={!canGoNext}
-              className="h-8 w-8"
+              className="h-7 w-7"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
+        )}
+        <div className="bg-background/80 backdrop-blur-sm border rounded-lg shadow-lg p-1.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (isEditing) {
+                handleSaveEdits();
+              }
+              setSearchParams({}, { replace: true });
+              closeModal("ai-preview");
+            }}
+            className="h-7 w-7"
+            title="Close preview"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-      )}
+      </div>
 
       {/* Main Content */}
       <div className="h-full w-full flex flex-col md:flex-row">
@@ -323,73 +427,85 @@ export function AIPreviewModal() {
                     </>
                   )}
                 </p>
-                {/* Navigation on mobile */}
-                {hasMultipleImages && (
-                  <div className="flex items-center gap-2 mt-3 md:hidden">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePrevious}
-                      disabled={!canGoPrevious}
-                      className="h-8"
-                    >
-                      <ChevronLeft className="h-4 w-4 mr-1" />
-                      Prev
-                    </Button>
-                    <span className="text-sm font-medium px-2">
-                      {currentIndex + 1} / {processedMedia.length}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleNext}
-                      disabled={!canGoNext}
-                      className="h-8"
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-start gap-2">
-                <Button
-                  variant={isEditing ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    if (isEditing) {
-                      handleSaveEdits();
-                    } else {
-                      setIsEditing(true);
-                    }
-                  }}
-                  disabled={isLoadingStaged || isFetching}
-                >
-                  {isEditing ? (
+                {/* Navigation and close button on mobile */}
+                <div className="flex items-center gap-2 mt-3 md:hidden">
+                  {hasMultipleImages && (
                     <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save
-                    </>
-                  ) : (
-                    <>
-                      <Edit2 className="h-4 w-4 mr-2" />
-                      Edit
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePrevious}
+                        disabled={!canGoPrevious}
+                        className="h-8"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Prev
+                      </Button>
+                      <span className="text-sm font-medium px-2">
+                        {currentIndex + 1} / {processedMedia.length}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleNext}
+                        disabled={!canGoNext}
+                        className="h-8"
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
                     </>
                   )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    if (isEditing) {
-                      handleSaveEdits();
-                    }
-                    closeModal("ai-preview");
-                  }}
-                  className="h-9 w-9"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (isEditing) {
+                        handleSaveEdits();
+                      }
+                      setSearchParams({}, { replace: true });
+                      closeModal("ai-preview");
+                    }}
+                    className="h-8 ml-auto"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Close
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                {!isEditing ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                    disabled={isLoadingStaged || isFetching}
+                  >
+                    <Edit2 className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSaveEdits}
+                      disabled={isLoadingStaged || isFetching}
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCancelEdits}
+                      disabled={isLoadingStaged || isFetching}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -398,12 +514,12 @@ export function AIPreviewModal() {
           <ScrollArea className="flex-1">
             <div className="p-6 space-y-4">
               {isLoadingStaged || isFetching ? (
-                <Card className="p-8 text-center">
+                <Card className="p-8 text-center shadow-none">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">Loading items...</p>
                 </Card>
               ) : currentItems.length === 0 ? (
-                <Card className="p-8 text-center">
+                <Card className="p-8 text-center shadow-none">
                   <p className="text-muted-foreground">
                     No items were extracted from this image.
                   </p>
@@ -413,7 +529,7 @@ export function AIPreviewModal() {
                   <Card
                     key={item._id}
                     className={cn(
-                      "p-4 transition-all",
+                      "p-4 transition-all shadow-none",
                       isEditing && "ring-2 ring-primary/20"
                     )}
                   >
@@ -477,9 +593,23 @@ export function AIPreviewModal() {
                 size="lg"
                 className="flex-none"
                 title="Download current as JSON"
-                disabled={isLoadingStaged || isFetching}
+                disabled={isLoadingStaged || isFetching || isReprocessing}
               >
                 <Download className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleReprocess}
+                size="lg"
+                className="flex-none"
+                title="Reprocess this image with AI"
+                disabled={isLoadingStaged || isFetching || isReprocessing}
+              >
+                {isReprocessing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
               </Button>
               {hasMultipleImages && (
                 <Button
@@ -488,6 +618,7 @@ export function AIPreviewModal() {
                   size="lg"
                   className="flex-1"
                   title="Download all edits"
+                  disabled={isReprocessing}
                 >
                   Download All Edits
                 </Button>
@@ -497,10 +628,12 @@ export function AIPreviewModal() {
                   if (isEditing) {
                     handleSaveEdits();
                   }
+                  setSearchParams({}, { replace: true });
                   closeModal("ai-preview");
                 }}
                 className="flex-1"
                 size="lg"
+                disabled={isReprocessing}
               >
                 Done
               </Button>

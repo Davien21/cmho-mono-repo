@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import {
   Loader2,
   Image as ImageIcon,
-  Scale,
   Trash2,
   Sparkles,
+  Eye,
 } from "lucide-react";
 import { processInBatches } from "@/lib/image-utils";
 import {
@@ -194,6 +194,16 @@ export default function BalanceStockPage() {
       selectedMedia.includes(media._id) && !isProcessed
   );
 
+  // Check if any selected items are processed
+  const hasProcessedSelected = allMediaWithStatus.some(
+    ({ media, isProcessed }) => selectedMedia.includes(media._id) && isProcessed
+  );
+
+  // Count processed selected items
+  const processedSelectedCount = allMediaWithStatus.filter(
+    ({ media, isProcessed }) => selectedMedia.includes(media._id) && isProcessed
+  ).length;
+
   if (isLoading) {
     return (
       <Layout>
@@ -235,6 +245,37 @@ export default function BalanceStockPage() {
                 title={`Delete ${selectedMedia.length} selected`}
               >
                 <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+
+            {/* View Results Button - shown when processed items are selected */}
+            {selectedMedia.length > 0 && hasProcessedSelected && (
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => {
+                  const processedMediaInSelection = allMediaWithStatus
+                    .filter(
+                      ({ media, isProcessed }) =>
+                        selectedMedia.includes(media._id) && isProcessed
+                    )
+                    .map(({ media }) => ({
+                      mediaId: media._id,
+                      imageUrl: media.url,
+                    }));
+
+                  openModal("ai-preview", {
+                    processedMedia: processedMediaInSelection,
+                    startIndex: 0,
+                  });
+                }}
+                title={
+                  processedSelectedCount === 1
+                    ? "View 1 result"
+                    : `View ${processedSelectedCount} results`
+                }
+              >
+                <Eye className="h-4 w-4" />
               </Button>
             )}
 
@@ -289,6 +330,28 @@ export default function BalanceStockPage() {
                 // Check if this item is part of the selection
                 const isInSelection = selectedMedia.includes(media._id);
 
+                // Count processed items in selection
+                const processedInSelection =
+                  isInSelection && selectedMedia.length > 1
+                    ? allMediaWithStatus.filter(
+                        ({ media: m, isProcessed: p }) =>
+                          selectedMedia.includes(m._id) && p
+                      ).length
+                    : isProcessed
+                    ? 1
+                    : 0;
+
+                // Count unprocessed items in selection
+                const unprocessedInSelection =
+                  isInSelection && selectedMedia.length > 1
+                    ? allMediaWithStatus.filter(
+                        ({ media: m, isProcessed: p }) =>
+                          selectedMedia.includes(m._id) && !p
+                      ).length
+                    : !isProcessed
+                    ? 1
+                    : 0;
+
                 const contextMenuItems: GalleryCardMenuItem[] = [
                   {
                     label:
@@ -312,17 +375,58 @@ export default function BalanceStockPage() {
                   },
                 ];
 
-                // Add Process option if not processed
-                if (!isProcessed) {
+                // Add View Results option if there are processed items (in selection or single)
+                if (processedInSelection > 0) {
                   contextMenuItems.unshift({
                     label:
-                      isInSelection && selectedMedia.length > 1
-                        ? `Process ${selectedMedia.length} selected`
-                        : "Process with AI",
-                    icon: <Scale className="h-4 w-4" />,
+                      processedInSelection === 1
+                        ? "View 1 result"
+                        : `View ${processedInSelection} results`,
+                    icon: <Eye className="h-4 w-4" />,
+                    onClick: () => {
+                      // If item is in selection and there are multiple processed selected, show all processed
+                      if (isInSelection && processedInSelection > 1) {
+                        const processedMediaInSelection = allMediaWithStatus
+                          .filter(
+                            ({ media: m, isProcessed: p }) =>
+                              selectedMedia.includes(m._id) && p
+                          )
+                          .map(({ media: m }) => ({
+                            mediaId: m._id,
+                            imageUrl: m.url,
+                          }));
+
+                        openModal("ai-preview", {
+                          processedMedia: processedMediaInSelection,
+                          startIndex: 0,
+                        });
+                      } else {
+                        // Otherwise, show just this item
+                        openModal("ai-preview", {
+                          processedMedia: [
+                            {
+                              mediaId: media._id,
+                              imageUrl: media.url,
+                            },
+                          ],
+                          startIndex: 0,
+                        });
+                      }
+                    },
+                  });
+                }
+
+                // Add Process option if there are unprocessed items (in selection or single)
+                if (unprocessedInSelection > 0) {
+                  contextMenuItems.unshift({
+                    label:
+                      unprocessedInSelection === 1
+                        ? "Process 1 item"
+                        : `Process ${unprocessedInSelection} items`,
+                    icon: <Sparkles className="h-4 w-4" />,
                     onClick: async () => {
                       // If item is in selection and there are multiple selected, process all selected
-                      if (isInSelection && selectedMedia.length > 1) {
+                      if (isInSelection && unprocessedInSelection > 1) {
                         handleProcessSelected();
                       } else {
                         // Otherwise, process just this item
