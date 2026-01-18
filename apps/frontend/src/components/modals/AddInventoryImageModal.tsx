@@ -3,7 +3,7 @@ import { Upload, Image as ImageIcon, X, RotateCcw, Check } from "lucide-react";
 import { ResponsiveDialog } from "@/components/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useUploadMediaMutation, IMediaDto, MediaCategory } from "@/store/media-slice";
+import { useUploadMediaMutation, useGetMediaQuery, IMediaDto, MediaCategory } from "@/store/media-slice";
 import { ImagePickerModal } from "./ImagePickerModal";
 import { toast } from "sonner";
 import { getRTKQueryErrorMessage } from "@/lib/utils";
@@ -38,6 +38,14 @@ export function AddInventoryImageModal({
   const [updateInventoryItem, { isLoading: isSubmitting }] =
     useUpdateInventoryItemMutation();
   const { refetch } = useGetInventoryItemsQuery();
+
+  // Check if there are any media items to determine if "Choose from Gallery" should be shown
+  const { data: mediaResponse } = useGetMediaQuery({
+    page: 1,
+    limit: 1, // We only need to check if any exist
+    category: MediaCategory.INVENTORY,
+  });
+  const hasMediaItems = (mediaResponse?.data?.items?.length ?? 0) > 0;
 
   const [dragActive, setDragActive] = useState(false);
 
@@ -342,15 +350,17 @@ export function AddInventoryImageModal({
                   </div>
                 ) : isMobile ? (
                   <div className="flex flex-col gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setIsImagePickerOpen(true)}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <ImageIcon size={20} />
-                      Choose from Gallery
-                    </Button>
+                    {hasMediaItems && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsImagePickerOpen(true)}
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <ImageIcon size={20} />
+                        Choose from Gallery
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       variant="outline"
@@ -362,7 +372,7 @@ export function AddInventoryImageModal({
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className={`gap-3 mb-4 ${hasMediaItems ? 'grid grid-cols-2' : ''}`}>
                       <Button
                         type="button"
                         variant="outline"
@@ -373,15 +383,17 @@ export function AddInventoryImageModal({
                         <Upload size={20} className="sm:size-4" />
                         {isUploadingImage ? "Uploading..." : "Upload"}
                       </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsImagePickerOpen(true)}
-                        className="flex items-center justify-center gap-2"
-                      >
-                        <ImageIcon size={20} className="sm:size-4" />
-                        Choose from Gallery
-                      </Button>
+                      {hasMediaItems && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsImagePickerOpen(true)}
+                          className="flex items-center justify-center gap-2"
+                        >
+                          <ImageIcon size={20} className="sm:size-4" />
+                          Choose from Gallery
+                        </Button>
+                      )}
                     </div>
 
                     <Button

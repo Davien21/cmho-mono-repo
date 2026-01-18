@@ -1,12 +1,23 @@
 import { useState, useRef, useMemo, useEffect } from "react";
-import { ChevronLeft, ChevronRight, X, Loader2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Loader2,
+  Search,
+  List,
+  Grid3x3,
+  Trash2,
+  Image as ImageIcon,
+} from "lucide-react";
 import { useMediaManager } from "@/hooks/use-media-manager";
-import { MediaGrid } from "@/components/MediaGrid";
+import { GalleryCard, GalleryCardMenuItem } from "@/components/GalleryCard";
 import { MediaUploadZone } from "@/components/MediaUploadZone";
-import { MediaSearchBar } from "@/components/MediaSearchBar";
 import { useInfiniteMedia } from "@/hooks/use-infinite-media";
 import { MediaCategory } from "@/store/media-slice";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 // Helper function to strip "cmho-temp_" prefix from display name
 const getDisplayName = (name?: string): string => {
@@ -58,7 +69,6 @@ export function GallerySection({
   // UI state
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [slideshowIndex, setSlideshowIndex] = useState<number | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const slideshowImageRef = useRef<HTMLImageElement>(null);
@@ -81,14 +91,8 @@ export function GallerySection({
   }, [galleryList, searchQuery]);
 
   // Handle item selection - adapter to convert IMediaDto to id string
-  const handleItemSelect = (item: typeof galleryList[0]) => {
+  const handleItemSelect = (item: (typeof galleryList)[0]) => {
     toggleSelection(item._id);
-  };
-
-  // Handle item deletion with display name
-  const handleItemDelete = (item: typeof galleryList[0]) => {
-    const displayName = getDisplayName(item.name || item.filename || "this image");
-    handleDelete(item, displayName);
   };
 
   // Handle bulk deletion
@@ -97,14 +101,6 @@ export function GallerySection({
       selectedMedia.includes(item._id)
     );
     handleBulkDelete(itemsToDelete);
-  };
-
-  // Toggle checkbox mode and clear selection when hiding
-  const handleCheckboxToggle = () => {
-    setShowCheckboxes(!showCheckboxes);
-    if (showCheckboxes) {
-      setSelectedMedia([]);
-    }
   };
 
   // Expose processFiles to parent
@@ -178,45 +174,146 @@ export function GallerySection({
   return (
     <div className="flex flex-col gap-4">
       {/* Search and Actions Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <MediaSearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          showCheckboxes={showCheckboxes}
-          onCheckboxToggle={handleCheckboxToggle}
-          selectedCount={selectedMedia.length}
-          isDeleting={isDeleting}
-          onDeleteSelected={selectedMedia.length > 0 ? handleBulkDeleteClick : undefined}
-        />
+      {galleryList.length > 0 ? (
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+          {/* Search and View Toggle */}
+          <div className="flex gap-2 items-center flex-1 w-full">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-white"
+              />
+            </div>
 
-        <MediaUploadZone
-          isUploading={isUploading}
-          onFilesSelected={processFiles}
-        />
-      </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+              title={viewMode === "grid" ? "List view" : "Grid view"}
+            >
+              {viewMode === "grid" ? (
+                <List className="h-4 w-4" />
+              ) : (
+                <Grid3x3 className="h-4 w-4" />
+              )}
+            </Button>
+
+            {/* Delete Selected Button */}
+            {selectedMedia.length > 0 && (
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={handleBulkDeleteClick}
+                disabled={isDeleting}
+                title={`Delete ${selectedMedia.length} selected`}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+
+          <MediaUploadZone
+            isUploading={isUploading}
+            onFilesSelected={processFiles}
+          />
+        </div>
+      ) : (
+        <div className="flex justify-end">
+          <MediaUploadZone
+            isUploading={isUploading}
+            onFilesSelected={processFiles}
+          />
+        </div>
+      )}
 
       {/* Media Grid/List */}
-      <MediaGrid
-        items={filteredMedia}
-        viewMode={viewMode}
-        selectedIds={selectedMedia}
-        showCheckboxes={showCheckboxes}
-        showZoomButton={true}
-        isLoading={isLoading}
-        searchQuery={searchQuery}
-        isFetchingNextPage={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-        isFetching={isFetching}
-        loadMoreRef={loadMoreRef}
-        onSelect={handleItemSelect}
-        onZoom={(index) => setSlideshowIndex(index)}
-        onEmptyAction={() => {
-          // Trigger file input click
-          document.querySelector<HTMLInputElement>('input[type="file"]')?.click();
-        }}
-      />
+      {filteredMedia.length === 0 && !isLoading ? (
+        <div className="flex flex-col items-center justify-center py-12 border border-dashed rounded-lg">
+          <ImageIcon className="h-12 w-12 text-muted-foreground mb-4" />
+          <p className="text-sm text-muted-foreground mb-2">
+            {searchQuery ? "No media found" : "No media uploaded yet"}
+          </p>
+          {!searchQuery && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                document
+                  .querySelector<HTMLInputElement>('input[type="file"]')
+                  ?.click();
+              }}
+            >
+              Upload your first file
+            </Button>
+          )}
+        </div>
+      ) : (
+        <div>
+          {/* Media Grid/List */}
+          <div
+            className={cn(
+              viewMode === "grid"
+                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+                : "flex flex-col gap-2"
+            )}
+          >
+            {filteredMedia.map((item, index) => {
+              const contextMenuItems: GalleryCardMenuItem[] = [
+                {
+                  label: "Delete",
+                  icon: <Trash2 className="h-4 w-4" />,
+                  onClick: () => {
+                    const displayName = getDisplayName(
+                      item.name || item.filename || "this image"
+                    );
+                    handleDelete(item, displayName);
+                  },
+                  variant: "destructive",
+                },
+              ];
+
+              return (
+                <GalleryCard
+                  key={item._id}
+                  item={item}
+                  isSelected={selectedMedia.includes(item._id)}
+                  viewMode={viewMode}
+                  showCheckbox={true}
+                  showZoomButton={true}
+                  onZoomClick={() => setSlideshowIndex(index)}
+                  checkboxSize="medium"
+                  onSelect={handleItemSelect}
+                  contextMenuItems={contextMenuItems}
+                />
+              );
+            })}
+          </div>
+
+          {/* Loading indicator at bottom for infinite scroll */}
+          {isFetchingNextPage && (
+            <div className="flex justify-center py-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                Loading more images...
+              </div>
+            </div>
+          )}
+
+          {/* Intersection observer target */}
+          {hasNextPage && <div ref={loadMoreRef} className="h-20" />}
+
+          {/* End of list indicator */}
+          {!hasNextPage && filteredMedia.length > 0 && !isFetching && (
+            <div className="text-center py-4 text-sm text-muted-foreground">
+              No more images to load
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Full Screen Slideshow Overlay */}
       {slideshowIndex !== null && filteredMedia[slideshowIndex] && (
@@ -330,4 +427,3 @@ export function GallerySection({
     </div>
   );
 }
-

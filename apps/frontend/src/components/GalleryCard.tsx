@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Image as ImageIcon, Check, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { IMediaDto } from "@/store/media-slice";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 // Helper function to strip "cmho-temp_" prefix from display name
 export const getDisplayName = (name?: string): string => {
@@ -13,6 +19,13 @@ export const getDisplayName = (name?: string): string => {
 };
 
 export type GalleryCardViewMode = "grid" | "list";
+
+export interface GalleryCardMenuItem {
+  label: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+  variant?: "default" | "destructive";
+}
 
 export interface GalleryCardProps {
   item: IMediaDto;
@@ -27,6 +40,7 @@ export interface GalleryCardProps {
   onDoubleClick?: (item: IMediaDto) => void;
   className?: string;
   showProcessedIndicator?: boolean; // Show green checkmark for processed items
+  contextMenuItems?: GalleryCardMenuItem[]; // Context menu items for right-click
 }
 
 export function GalleryCard({
@@ -42,6 +56,7 @@ export function GalleryCard({
   onDoubleClick,
   className,
   showProcessedIndicator = false,
+  contextMenuItems,
 }: GalleryCardProps) {
   const [imageError, setImageError] = useState(false);
   const mediaUrl = item.url || "";
@@ -68,15 +83,15 @@ export function GalleryCard({
     }
   };
 
-  return (
+  const cardContent = (
     <div
       className={cn(
         "relative group rounded-lg overflow-hidden border transition-all",
         viewMode === "grid" ? "aspect-square" : "flex items-center gap-3 p-2",
-        showCheckbox && "cursor-pointer",
+        "cursor-pointer",
         className
       )}
-      onClick={showCheckbox ? handleClick : undefined}
+      onClick={handleClick}
       onDoubleClick={onDoubleClick ? handleDoubleClick : undefined}
     >
       {/* Dark overlay on selection */}
@@ -179,4 +194,32 @@ export function GalleryCard({
       </div>
     </div>
   );
+
+  // Wrap with context menu if items provided
+  if (contextMenuItems && contextMenuItems.length > 0) {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{cardContent}</ContextMenuTrigger>
+        <ContextMenuContent>
+          {contextMenuItems.map((menuItem, index) => (
+            <ContextMenuItem
+              key={index}
+              onClick={(e) => {
+                e.stopPropagation();
+                menuItem.onClick();
+              }}
+              className={
+                menuItem.variant === "destructive" ? "text-red-600" : ""
+              }
+            >
+              {menuItem.icon}
+              <span className="ml-2">{menuItem.label}</span>
+            </ContextMenuItem>
+          ))}
+        </ContextMenuContent>
+      </ContextMenu>
+    );
+  }
+
+  return cardContent;
 }

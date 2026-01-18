@@ -1,15 +1,8 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  Image as ImageIcon,
-  MousePointer2,
-  Scale,
-  CheckSquare,
-  Trash2,
-} from "lucide-react";
+import { Loader2, Image as ImageIcon, Scale, Trash2 } from "lucide-react";
 import { processInBatches } from "@/lib/image-utils";
 import {
   useGetStagedItemsQuery,
@@ -19,13 +12,12 @@ import { MediaCategory } from "@/store/media-slice";
 import { useModalContext } from "@/contexts/modal-context";
 import { useInfiniteMedia } from "@/hooks/use-infinite-media";
 import { useMediaManager } from "@/hooks/use-media-manager";
-import { GalleryCard } from "@/components/GalleryCard";
+import { GalleryCard, GalleryCardMenuItem } from "@/components/GalleryCard";
 import { MediaUploadZone } from "@/components/MediaUploadZone";
 
 export default function BalanceStockPage() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showCheckboxes, setShowCheckboxes] = useState(false);
 
   const { openModal } = useModalContext();
 
@@ -146,7 +138,6 @@ export default function BalanceStockPage() {
           { id: toastId }
         );
         setSelectedMedia([]);
-        setShowCheckboxes(false);
 
         // Show preview modal for the first successfully processed image
         const firstSuccess = results.find((r) => r.status === "fulfilled");
@@ -179,26 +170,6 @@ export default function BalanceStockPage() {
     );
     handleBulkDelete(itemsToDelete);
   };
-
-  // Toggle checkbox mode and clear selection when hiding
-  const handleCheckboxToggle = () => {
-    setShowCheckboxes(!showCheckboxes);
-    if (showCheckboxes) {
-      setSelectedMedia([]);
-    }
-  };
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && selectedMedia.length > 0) {
-        setSelectedMedia([]);
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [selectedMedia.length, setSelectedMedia]);
 
   // Check if any selected items are unprocessed
   const hasUnprocessedSelected = allMediaWithStatus.some(
@@ -237,23 +208,8 @@ export default function BalanceStockPage() {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
-            {/* Selection Mode Toggle */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleCheckboxToggle}
-              disabled={isProcessing}
-              title={showCheckboxes ? "Exit select mode" : "Select items"}
-            >
-              {showCheckboxes ? (
-                <CheckSquare className="h-4 w-4" />
-              ) : (
-                <MousePointer2 className="h-4 w-4" />
-              )}
-            </Button>
-
             {/* Delete Selected Button */}
-            {showCheckboxes && selectedMedia.length > 0 && (
+            {selectedMedia.length > 0 && (
               <Button
                 variant="destructive"
                 size="icon"
@@ -266,22 +222,20 @@ export default function BalanceStockPage() {
             )}
 
             {/* Process Button - shown when unprocessed items are selected */}
-            {showCheckboxes &&
-              selectedMedia.length > 0 &&
-              hasUnprocessedSelected && (
-                <Button
-                  onClick={handleProcessSelected}
-                  disabled={isProcessing}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  {isProcessing ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Scale className="h-4 w-4 mr-2" />
-                  )}
-                  Process
-                </Button>
-              )}
+            {selectedMedia.length > 0 && hasUnprocessedSelected && (
+              <Button
+                onClick={handleProcessSelected}
+                disabled={isProcessing}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {isProcessing ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Scale className="h-4 w-4 mr-2" />
+                )}
+                Process
+              </Button>
+            )}
 
             {/* Upload Button - Always visible */}
             <MediaUploadZone
@@ -313,20 +267,75 @@ export default function BalanceStockPage() {
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {allMediaWithStatus.map(({ media, isProcessed }) => (
-                <GalleryCard
-                  key={media._id}
-                  item={media}
-                  isSelected={selectedMedia.includes(media._id)}
-                  viewMode="grid"
-                  showCheckbox={showCheckboxes}
-                  showZoomButton={false}
-                  checkboxSize="medium"
-                  showProcessedIndicator={isProcessed}
-                  onSelect={handleItemSelect}
-                  onDoubleClick={isProcessed ? handleDoubleClick : undefined}
-                />
-              ))}
+              {allMediaWithStatus.map(({ media, isProcessed }) => {
+                const contextMenuItems: GalleryCardMenuItem[] = [
+                  {
+                    label: "Delete",
+                    icon: <Trash2 className="h-4 w-4" />,
+                    onClick: () => {
+                      handleBulkDelete([media]);
+                    },
+                    variant: "destructive",
+                  },
+                ];
+
+                // Add Process option if not processed
+                if (!isProcessed) {
+                  contextMenuItems.unshift({
+                    label: "Process with AI",
+                    icon: <Scale className="h-4 w-4" />,
+                    onClick: async () => {
+                      setIsProcessing(true);
+                      const toastId = toast.loading(
+                        "Processing image with AI..."
+                      );
+                      try {
+                        const result = await processBalance({
+                          media_id: media._id,
+                          imageUrl: media.url,
+                        }).unwrap();
+                        toast.success("Image processed successfully!", {
+                          id: toastId,
+                        });
+
+                        // Show preview modal for the processed image
+                        if (result.data) {
+                          openModal("ai-preview", {
+                            imageUrl: result.data.media.url,
+                            items: result.data.items.map((item) => ({
+                              name: item.name,
+                              quantity_details: item.quantity_details,
+                            })),
+                          });
+                        }
+                      } catch (error: any) {
+                        toast.error(
+                          error?.message || "Failed to process image",
+                          { id: toastId }
+                        );
+                      } finally {
+                        setIsProcessing(false);
+                      }
+                    },
+                  });
+                }
+
+                return (
+                  <GalleryCard
+                    key={media._id}
+                    item={media}
+                    isSelected={selectedMedia.includes(media._id)}
+                    viewMode="grid"
+                    showCheckbox={true}
+                    showZoomButton={false}
+                    checkboxSize="medium"
+                    showProcessedIndicator={isProcessed}
+                    onSelect={handleItemSelect}
+                    onDoubleClick={isProcessed ? handleDoubleClick : undefined}
+                    contextMenuItems={contextMenuItems}
+                  />
+                );
+              })}
             </div>
 
             {/* Loading indicator at bottom for infinite scroll */}
